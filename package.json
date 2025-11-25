@@ -1,12 +1,61 @@
 {
-  "name": "verba-monorepo",
-  "module": "index.ts",
-  "type": "module",
+  "name": "verba",
+  "version": "0.1.0",
   "private": true,
+  "description": "AI-powered text enhancement platform - Monorepo containing browser extension and web application",
+  "type": "module",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "concurrently -n \"ext,web\" -c \"cyan,magenta\" \"bun dev:ext\" \"bun dev:web\"",
+    "dev:ext": "cd apps/extension && bun run dev",
+    "dev:ext:firefox": "cd apps/extension && bun run dev:firefox",
+    "dev:web": "cd apps/web && bun run dev",
+    "build": "concurrently -n \"ext,web\" -c \"cyan,magenta\" \"bun build:ext\" \"bun build:web\"",
+    "build:ext": "cd apps/extension && bun run build",
+    "build:ext:firefox": "cd apps/extension && bun run build:firefox",
+    "build:web": "cd apps/web && bun run build",
+    "test": "concurrently -n \"ext,web\" -c \"cyan,magenta\" \"bun test:ext\" \"bun test:web\"",
+    "test:ext": "cd apps/extension && bun run test",
+    "test:web": "cd apps/web && bun run test",
+    "test:coverage": "concurrently -n \"ext,web\" -c \"cyan,magenta\" \"bun test:ext:coverage\" \"bun test:web:coverage\"",
+    "test:ext:coverage": "cd apps/extension && bun run test:coverage",
+    "test:web:coverage": "cd apps/web && bun run test:coverage",
+    "lint": "concurrently -n \"ext,web\" -c \"cyan,magenta\" \"bun lint:ext\" \"bun lint:web\"",
+    "lint:ext": "cd apps/extension && bun run compile",
+    "lint:web": "cd apps/web && bun run lint",
+    "install:all": "bun install",
+    "zip:ext": "cd apps/extension && bun run zip",
+    "zip:ext:firefox": "cd apps/extension && bun run zip:firefox"
+  },
   "devDependencies": {
-    "@types/bun": "latest"
+    "@types/bun": "latest",
+    "concurrently": "^9.1.0"
   },
   "peerDependencies": {
     "typescript": "^5"
-  }
+  },
+  "engines": {
+    "bun": ">=1.2.21",
+    "node": ">=20.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/verba-monorepo"
+  },
+  "keywords": [
+    "ai",
+    "text-enhancement",
+    "browser-extension",
+    "nextjs",
+    "react",
+    "typescript",
+    "supabase",
+    "claude",
+    "monorepo"
+  ],
+  "author": "Verba",
+  "license": "PROPRIETARY"
 }
