@@ -65,720 +65,76 @@
   },
   "suites": [
     {
-      "title": "subscription.spec.ts",
-      "file": "subscription.spec.ts",
+      "title": "smoke.spec.ts",
+      "file": "smoke.spec.ts",
       "column": 0,
       "line": 0,
-      "specs": [],
-      "suites": [
+      "specs": [
         {
-          "title": "Subscription & Usage Limits",
-          "file": "subscription.spec.ts",
-          "line": 14,
-          "column": 6,
-          "specs": [
+          "title": "smoke test: extension loads",
+          "ok": false,
+          "tags": [],
+          "tests": [
             {
-              "title": "trial user should see correct subscription badge",
-              "ok": false,
-              "tags": [],
-              "tests": [
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium-extension",
+              "projectName": "chromium-extension",
+              "results": [
                 {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium-extension",
-                  "projectName": "chromium-extension",
-                  "results": [
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "timedOut",
+                  "duration": 56972,
+                  "error": {
+                    "message": "\u001b[31mTest timeout of 30000ms exceeded while setting up \"extensionId\".\u001b[39m",
+                    "stack": "\u001b[31mTest timeout of 30000ms exceeded while setting up \"extensionId\".\u001b[39m"
+                  },
+                  "errors": [
                     {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "failed",
-                      "duration": 33930,
-                      "error": {
-                        "message": "TimeoutError: browserContext.waitForEvent: Timeout 10000ms exceeded while waiting for event \"serviceworker\"",
-                        "stack": "TimeoutError: browserContext.waitForEvent: Timeout 10000ms exceeded while waiting for event \"serviceworker\"\n    at Object.extensionId (F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts:46:40)",
-                        "location": {
-                          "file": "F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts",
-                          "column": 40,
-                          "line": 46
-                        },
-                        "snippet": "\u001b[90m   at \u001b[39mfixtures\\extension.ts:46\n\n\u001b[0m \u001b[90m 44 |\u001b[39m         \u001b[36mlet\u001b[39m [background] \u001b[33m=\u001b[39m context\u001b[33m.\u001b[39mserviceWorkers()\u001b[33m;\u001b[39m\n \u001b[90m 45 |\u001b[39m         \u001b[36mif\u001b[39m (\u001b[33m!\u001b[39mbackground) {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 46 |\u001b[39m             background \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m context\u001b[33m.\u001b[39mwaitForEvent(\u001b[32m'serviceworker'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                        \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 47 |\u001b[39m         }\n \u001b[90m 48 |\u001b[39m\n \u001b[90m 49 |\u001b[39m         \u001b[36mconst\u001b[39m extensionId \u001b[33m=\u001b[39m background\u001b[33m.\u001b[39murl()\u001b[33m.\u001b[39msplit(\u001b[32m'/'\u001b[39m)[\u001b[35m2\u001b[39m]\u001b[33m;\u001b[39m\u001b[0m"
-                      },
-                      "errors": [
-                        {
-                          "location": {
-                            "file": "F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts",
-                            "column": 40,
-                            "line": 46
-                          },
-                          "message": "TimeoutError: browserContext.waitForEvent: Timeout 10000ms exceeded while waiting for event \"serviceworker\"\n\n\u001b[90m   at \u001b[39mfixtures\\extension.ts:46\n\n\u001b[0m \u001b[90m 44 |\u001b[39m         \u001b[36mlet\u001b[39m [background] \u001b[33m=\u001b[39m context\u001b[33m.\u001b[39mserviceWorkers()\u001b[33m;\u001b[39m\n \u001b[90m 45 |\u001b[39m         \u001b[36mif\u001b[39m (\u001b[33m!\u001b[39mbackground) {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 46 |\u001b[39m             background \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m context\u001b[33m.\u001b[39mwaitForEvent(\u001b[32m'serviceworker'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                        \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 47 |\u001b[39m         }\n \u001b[90m 48 |\u001b[39m\n \u001b[90m 49 |\u001b[39m         \u001b[36mconst\u001b[39m extensionId \u001b[33m=\u001b[39m background\u001b[33m.\u001b[39murl()\u001b[33m.\u001b[39msplit(\u001b[32m'/'\u001b[39m)[\u001b[35m2\u001b[39m]\u001b[33m;\u001b[39m\u001b[0m\n\u001b[2m    at Object.extensionId (F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts:46:40)\u001b[22m"
-                        }
-                      ],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-11-27T17:02:07.041Z",
-                      "annotations": [],
-                      "attachments": [
-                        {
-                          "name": "screenshot",
-                          "contentType": "image/png",
-                          "path": "F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\test-results\\subscription-Subscription--766e9--correct-subscription-badge-chromium-extension\\test-failed-2.png"
-                        },
-                        {
-                          "name": "screenshot",
-                          "contentType": "image/png",
-                          "path": "F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\test-results\\subscription-Subscription--766e9--correct-subscription-badge-chromium-extension\\test-failed-1.png"
-                        }
-                      ],
-                      "errorLocation": {
-                        "file": "F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts",
-                        "column": 40,
-                        "line": 46
-                      }
+                      "message": "\u001b[31mTest timeout of 30000ms exceeded while setting up \"extensionId\".\u001b[39m"
                     }
                   ],
-                  "status": "unexpected"
-                }
-              ],
-              "id": "7d953d1cdb8684155dd7-fc0dbd81babfc33c7a48",
-              "file": "subscription.spec.ts",
-              "line": 19,
-              "column": 5
-            },
-            {
-              "title": "trial user should see usage increment after enhancement",
-              "ok": false,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium-extension",
-                  "projectName": "chromium-extension",
-                  "results": [
+                  "stdout": [
                     {
-                      "workerIndex": 1,
-                      "parallelIndex": 0,
-                      "status": "failed",
-                      "duration": 12738,
-                      "error": {
-                        "message": "TimeoutError: browserContext.waitForEvent: Timeout 10000ms exceeded while waiting for event \"serviceworker\"",
-                        "stack": "TimeoutError: browserContext.waitForEvent: Timeout 10000ms exceeded while waiting for event \"serviceworker\"\n    at Object.extensionId (F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts:46:40)",
-                        "location": {
-                          "file": "F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts",
-                          "column": 40,
-                          "line": 46
-                        },
-                        "snippet": "\u001b[90m   at \u001b[39mfixtures\\extension.ts:46\n\n\u001b[0m \u001b[90m 44 |\u001b[39m         \u001b[36mlet\u001b[39m [background] \u001b[33m=\u001b[39m context\u001b[33m.\u001b[39mserviceWorkers()\u001b[33m;\u001b[39m\n \u001b[90m 45 |\u001b[39m         \u001b[36mif\u001b[39m (\u001b[33m!\u001b[39mbackground) {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 46 |\u001b[39m             background \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m context\u001b[33m.\u001b[39mwaitForEvent(\u001b[32m'serviceworker'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                        \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 47 |\u001b[39m         }\n \u001b[90m 48 |\u001b[39m\n \u001b[90m 49 |\u001b[39m         \u001b[36mconst\u001b[39m extensionId \u001b[33m=\u001b[39m background\u001b[33m.\u001b[39murl()\u001b[33m.\u001b[39msplit(\u001b[32m'/'\u001b[39m)[\u001b[35m2\u001b[39m]\u001b[33m;\u001b[39m\u001b[0m"
-                      },
-                      "errors": [
-                        {
-                          "location": {
-                            "file": "F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts",
-                            "column": 40,
-                            "line": 46
-                          },
-                          "message": "TimeoutError: browserContext.waitForEvent: Timeout 10000ms exceeded while waiting for event \"serviceworker\"\n\n\u001b[90m   at \u001b[39mfixtures\\extension.ts:46\n\n\u001b[0m \u001b[90m 44 |\u001b[39m         \u001b[36mlet\u001b[39m [background] \u001b[33m=\u001b[39m context\u001b[33m.\u001b[39mserviceWorkers()\u001b[33m;\u001b[39m\n \u001b[90m 45 |\u001b[39m         \u001b[36mif\u001b[39m (\u001b[33m!\u001b[39mbackground) {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 46 |\u001b[39m             background \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m context\u001b[33m.\u001b[39mwaitForEvent(\u001b[32m'serviceworker'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                        \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 47 |\u001b[39m         }\n \u001b[90m 48 |\u001b[39m\n \u001b[90m 49 |\u001b[39m         \u001b[36mconst\u001b[39m extensionId \u001b[33m=\u001b[39m background\u001b[33m.\u001b[39murl()\u001b[33m.\u001b[39msplit(\u001b[32m'/'\u001b[39m)[\u001b[35m2\u001b[39m]\u001b[33m;\u001b[39m\u001b[0m\n\u001b[2m    at Object.extensionId (F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts:46:40)\u001b[22m"
-                        }
-                      ],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-11-27T17:02:44.303Z",
-                      "annotations": [],
-                      "attachments": [
-                        {
-                          "name": "screenshot",
-                          "contentType": "image/png",
-                          "path": "F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\test-results\\subscription-Subscription--c65b1-increment-after-enhancement-chromium-extension\\test-failed-1.png"
-                        },
-                        {
-                          "name": "screenshot",
-                          "contentType": "image/png",
-                          "path": "F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\test-results\\subscription-Subscription--c65b1-increment-after-enhancement-chromium-extension\\test-failed-2.png"
-                        }
-                      ],
-                      "errorLocation": {
-                        "file": "F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts",
-                        "column": 40,
-                        "line": 46
-                      }
+                      "text": "No service worker found initially, waiting...\n"
+                    },
+                    {
+                      "text": "Timeout waiting for serviceworker event\n"
+                    },
+                    {
+                      "text": "Could not determine extension ID from service worker, trying fallback...\n"
+                    },
+                    {
+                      "text": "Found Extension ID: oogebepnfoonbddcmdpkaahkkobjgmkm\n"
                     }
                   ],
-                  "status": "unexpected"
-                }
-              ],
-              "id": "7d953d1cdb8684155dd7-0bb01a8a920add04fab3",
-              "file": "subscription.spec.ts",
-              "line": 33,
-              "column": 5
-            },
-            {
-              "title": "trial user should see warning at 80% usage",
-              "ok": false,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2025-11-27T18:00:07.466Z",
                   "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium-extension",
-                  "projectName": "chromium-extension",
-                  "results": [
-                    {
-                      "workerIndex": 2,
-                      "parallelIndex": 0,
-                      "status": "failed",
-                      "duration": 11188,
-                      "error": {
-                        "message": "TimeoutError: browserContext.waitForEvent: Timeout 10000ms exceeded while waiting for event \"serviceworker\"",
-                        "stack": "TimeoutError: browserContext.waitForEvent: Timeout 10000ms exceeded while waiting for event \"serviceworker\"\n    at Object.extensionId (F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts:46:40)",
-                        "location": {
-                          "file": "F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts",
-                          "column": 40,
-                          "line": 46
-                        },
-                        "snippet": "\u001b[90m   at \u001b[39mfixtures\\extension.ts:46\n\n\u001b[0m \u001b[90m 44 |\u001b[39m         \u001b[36mlet\u001b[39m [background] \u001b[33m=\u001b[39m context\u001b[33m.\u001b[39mserviceWorkers()\u001b[33m;\u001b[39m\n \u001b[90m 45 |\u001b[39m         \u001b[36mif\u001b[39m (\u001b[33m!\u001b[39mbackground) {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 46 |\u001b[39m             background \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m context\u001b[33m.\u001b[39mwaitForEvent(\u001b[32m'serviceworker'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                        \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 47 |\u001b[39m         }\n \u001b[90m 48 |\u001b[39m\n \u001b[90m 49 |\u001b[39m         \u001b[36mconst\u001b[39m extensionId \u001b[33m=\u001b[39m background\u001b[33m.\u001b[39murl()\u001b[33m.\u001b[39msplit(\u001b[32m'/'\u001b[39m)[\u001b[35m2\u001b[39m]\u001b[33m;\u001b[39m\u001b[0m"
-                      },
-                      "errors": [
-                        {
-                          "location": {
-                            "file": "F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts",
-                            "column": 40,
-                            "line": 46
-                          },
-                          "message": "TimeoutError: browserContext.waitForEvent: Timeout 10000ms exceeded while waiting for event \"serviceworker\"\n\n\u001b[90m   at \u001b[39mfixtures\\extension.ts:46\n\n\u001b[0m \u001b[90m 44 |\u001b[39m         \u001b[36mlet\u001b[39m [background] \u001b[33m=\u001b[39m context\u001b[33m.\u001b[39mserviceWorkers()\u001b[33m;\u001b[39m\n \u001b[90m 45 |\u001b[39m         \u001b[36mif\u001b[39m (\u001b[33m!\u001b[39mbackground) {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 46 |\u001b[39m             background \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m context\u001b[33m.\u001b[39mwaitForEvent(\u001b[32m'serviceworker'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                        \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 47 |\u001b[39m         }\n \u001b[90m 48 |\u001b[39m\n \u001b[90m 49 |\u001b[39m         \u001b[36mconst\u001b[39m extensionId \u001b[33m=\u001b[39m background\u001b[33m.\u001b[39murl()\u001b[33m.\u001b[39msplit(\u001b[32m'/'\u001b[39m)[\u001b[35m2\u001b[39m]\u001b[33m;\u001b[39m\u001b[0m\n\u001b[2m    at Object.extensionId (F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts:46:40)\u001b[22m"
-                        }
-                      ],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-11-27T17:02:59.369Z",
-                      "annotations": [],
-                      "attachments": [
-                        {
-                          "name": "screenshot",
-                          "contentType": "image/png",
-                          "path": "F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\test-results\\subscription-Subscription--50abe-uld-see-warning-at-80-usage-chromium-extension\\test-failed-2.png"
-                        },
-                        {
-                          "name": "screenshot",
-                          "contentType": "image/png",
-                          "path": "F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\test-results\\subscription-Subscription--50abe-uld-see-warning-at-80-usage-chromium-extension\\test-failed-1.png"
-                        }
-                      ],
-                      "errorLocation": {
-                        "file": "F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts",
-                        "column": 40,
-                        "line": 46
-                      }
-                    }
-                  ],
-                  "status": "unexpected"
+                  "attachments": []
                 }
               ],
-              "id": "7d953d1cdb8684155dd7-7db64fc9c46a000ced04",
-              "file": "subscription.spec.ts",
-              "line": 58,
-              "column": 5
-            },
-            {
-              "title": "trial user at limit should see upgrade prompt",
-              "ok": false,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium-extension",
-                  "projectName": "chromium-extension",
-                  "results": [
-                    {
-                      "workerIndex": 3,
-                      "parallelIndex": 0,
-                      "status": "failed",
-                      "duration": 14327,
-                      "error": {
-                        "message": "TimeoutError: browserContext.waitForEvent: Timeout 10000ms exceeded while waiting for event \"serviceworker\"",
-                        "stack": "TimeoutError: browserContext.waitForEvent: Timeout 10000ms exceeded while waiting for event \"serviceworker\"\n    at Object.extensionId (F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts:46:40)",
-                        "location": {
-                          "file": "F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts",
-                          "column": 40,
-                          "line": 46
-                        },
-                        "snippet": "\u001b[90m   at \u001b[39mfixtures\\extension.ts:46\n\n\u001b[0m \u001b[90m 44 |\u001b[39m         \u001b[36mlet\u001b[39m [background] \u001b[33m=\u001b[39m context\u001b[33m.\u001b[39mserviceWorkers()\u001b[33m;\u001b[39m\n \u001b[90m 45 |\u001b[39m         \u001b[36mif\u001b[39m (\u001b[33m!\u001b[39mbackground) {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 46 |\u001b[39m             background \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m context\u001b[33m.\u001b[39mwaitForEvent(\u001b[32m'serviceworker'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                        \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 47 |\u001b[39m         }\n \u001b[90m 48 |\u001b[39m\n \u001b[90m 49 |\u001b[39m         \u001b[36mconst\u001b[39m extensionId \u001b[33m=\u001b[39m background\u001b[33m.\u001b[39murl()\u001b[33m.\u001b[39msplit(\u001b[32m'/'\u001b[39m)[\u001b[35m2\u001b[39m]\u001b[33m;\u001b[39m\u001b[0m"
-                      },
-                      "errors": [
-                        {
-                          "location": {
-                            "file": "F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts",
-                            "column": 40,
-                            "line": 46
-                          },
-                          "message": "TimeoutError: browserContext.waitForEvent: Timeout 10000ms exceeded while waiting for event \"serviceworker\"\n\n\u001b[90m   at \u001b[39mfixtures\\extension.ts:46\n\n\u001b[0m \u001b[90m 44 |\u001b[39m         \u001b[36mlet\u001b[39m [background] \u001b[33m=\u001b[39m context\u001b[33m.\u001b[39mserviceWorkers()\u001b[33m;\u001b[39m\n \u001b[90m 45 |\u001b[39m         \u001b[36mif\u001b[39m (\u001b[33m!\u001b[39mbackground) {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 46 |\u001b[39m             background \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m context\u001b[33m.\u001b[39mwaitForEvent(\u001b[32m'serviceworker'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                        \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 47 |\u001b[39m         }\n \u001b[90m 48 |\u001b[39m\n \u001b[90m 49 |\u001b[39m         \u001b[36mconst\u001b[39m extensionId \u001b[33m=\u001b[39m background\u001b[33m.\u001b[39murl()\u001b[33m.\u001b[39msplit(\u001b[32m'/'\u001b[39m)[\u001b[35m2\u001b[39m]\u001b[33m;\u001b[39m\u001b[0m\n\u001b[2m    at Object.extensionId (F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts:46:40)\u001b[22m"
-                        }
-                      ],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-11-27T17:03:13.904Z",
-                      "annotations": [],
-                      "attachments": [
-                        {
-                          "name": "screenshot",
-                          "contentType": "image/png",
-                          "path": "F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\test-results\\subscription-Subscription--bd47d-t-should-see-upgrade-prompt-chromium-extension\\test-failed-2.png"
-                        },
-                        {
-                          "name": "screenshot",
-                          "contentType": "image/png",
-                          "path": "F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\test-results\\subscription-Subscription--bd47d-t-should-see-upgrade-prompt-chromium-extension\\test-failed-1.png"
-                        }
-                      ],
-                      "errorLocation": {
-                        "file": "F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts",
-                        "column": 40,
-                        "line": 46
-                      }
-                    }
-                  ],
-                  "status": "unexpected"
-                }
-              ],
-              "id": "7d953d1cdb8684155dd7-f0be5f8d55dbc03fdd23",
-              "file": "subscription.spec.ts",
-              "line": 77,
-              "column": 5
-            },
-            {
-              "title": "trial user at limit cannot enhance",
-              "ok": false,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium-extension",
-                  "projectName": "chromium-extension",
-                  "results": [
-                    {
-                      "workerIndex": 4,
-                      "parallelIndex": 0,
-                      "status": "failed",
-                      "duration": 11863,
-                      "error": {
-                        "message": "TimeoutError: browserContext.waitForEvent: Timeout 10000ms exceeded while waiting for event \"serviceworker\"",
-                        "stack": "TimeoutError: browserContext.waitForEvent: Timeout 10000ms exceeded while waiting for event \"serviceworker\"\n    at Object.extensionId (F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts:46:40)",
-                        "location": {
-                          "file": "F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts",
-                          "column": 40,
-                          "line": 46
-                        },
-                        "snippet": "\u001b[90m   at \u001b[39mfixtures\\extension.ts:46\n\n\u001b[0m \u001b[90m 44 |\u001b[39m         \u001b[36mlet\u001b[39m [background] \u001b[33m=\u001b[39m context\u001b[33m.\u001b[39mserviceWorkers()\u001b[33m;\u001b[39m\n \u001b[90m 45 |\u001b[39m         \u001b[36mif\u001b[39m (\u001b[33m!\u001b[39mbackground) {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 46 |\u001b[39m             background \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m context\u001b[33m.\u001b[39mwaitForEvent(\u001b[32m'serviceworker'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                        \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 47 |\u001b[39m         }\n \u001b[90m 48 |\u001b[39m\n \u001b[90m 49 |\u001b[39m         \u001b[36mconst\u001b[39m extensionId \u001b[33m=\u001b[39m background\u001b[33m.\u001b[39murl()\u001b[33m.\u001b[39msplit(\u001b[32m'/'\u001b[39m)[\u001b[35m2\u001b[39m]\u001b[33m;\u001b[39m\u001b[0m"
-                      },
-                      "errors": [
-                        {
-                          "location": {
-                            "file": "F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts",
-                            "column": 40,
-                            "line": 46
-                          },
-                          "message": "TimeoutError: browserContext.waitForEvent: Timeout 10000ms exceeded while waiting for event \"serviceworker\"\n\n\u001b[90m   at \u001b[39mfixtures\\extension.ts:46\n\n\u001b[0m \u001b[90m 44 |\u001b[39m         \u001b[36mlet\u001b[39m [background] \u001b[33m=\u001b[39m context\u001b[33m.\u001b[39mserviceWorkers()\u001b[33m;\u001b[39m\n \u001b[90m 45 |\u001b[39m         \u001b[36mif\u001b[39m (\u001b[33m!\u001b[39mbackground) {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 46 |\u001b[39m             background \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m context\u001b[33m.\u001b[39mwaitForEvent(\u001b[32m'serviceworker'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                        \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 47 |\u001b[39m         }\n \u001b[90m 48 |\u001b[39m\n \u001b[90m 49 |\u001b[39m         \u001b[36mconst\u001b[39m extensionId \u001b[33m=\u001b[39m background\u001b[33m.\u001b[39murl()\u001b[33m.\u001b[39msplit(\u001b[32m'/'\u001b[39m)[\u001b[35m2\u001b[39m]\u001b[33m;\u001b[39m\u001b[0m\n\u001b[2m    at Object.extensionId (F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts:46:40)\u001b[22m"
-                        }
-                      ],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-11-27T17:03:30.923Z",
-                      "annotations": [],
-                      "attachments": [
-                        {
-                          "name": "screenshot",
-                          "contentType": "image/png",
-                          "path": "F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\test-results\\subscription-Subscription--b731d-ser-at-limit-cannot-enhance-chromium-extension\\test-failed-1.png"
-                        },
-                        {
-                          "name": "screenshot",
-                          "contentType": "image/png",
-                          "path": "F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\test-results\\subscription-Subscription--b731d-ser-at-limit-cannot-enhance-chromium-extension\\test-failed-2.png"
-                        }
-                      ],
-                      "errorLocation": {
-                        "file": "F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts",
-                        "column": 40,
-                        "line": 46
-                      }
-                    }
-                  ],
-                  "status": "unexpected"
-                }
-              ],
-              "id": "7d953d1cdb8684155dd7-75852de54eaa42b149be",
-              "file": "subscription.spec.ts",
-              "line": 97,
-              "column": 5
-            },
-            {
-              "title": "upgrade CTA should link to pricing page",
-              "ok": false,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium-extension",
-                  "projectName": "chromium-extension",
-                  "results": [
-                    {
-                      "workerIndex": 5,
-                      "parallelIndex": 0,
-                      "status": "failed",
-                      "duration": 11981,
-                      "error": {
-                        "message": "TimeoutError: browserContext.waitForEvent: Timeout 10000ms exceeded while waiting for event \"serviceworker\"",
-                        "stack": "TimeoutError: browserContext.waitForEvent: Timeout 10000ms exceeded while waiting for event \"serviceworker\"\n    at Object.extensionId (F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts:46:40)",
-                        "location": {
-                          "file": "F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts",
-                          "column": 40,
-                          "line": 46
-                        },
-                        "snippet": "\u001b[90m   at \u001b[39mfixtures\\extension.ts:46\n\n\u001b[0m \u001b[90m 44 |\u001b[39m         \u001b[36mlet\u001b[39m [background] \u001b[33m=\u001b[39m context\u001b[33m.\u001b[39mserviceWorkers()\u001b[33m;\u001b[39m\n \u001b[90m 45 |\u001b[39m         \u001b[36mif\u001b[39m (\u001b[33m!\u001b[39mbackground) {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 46 |\u001b[39m             background \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m context\u001b[33m.\u001b[39mwaitForEvent(\u001b[32m'serviceworker'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                        \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 47 |\u001b[39m         }\n \u001b[90m 48 |\u001b[39m\n \u001b[90m 49 |\u001b[39m         \u001b[36mconst\u001b[39m extensionId \u001b[33m=\u001b[39m background\u001b[33m.\u001b[39murl()\u001b[33m.\u001b[39msplit(\u001b[32m'/'\u001b[39m)[\u001b[35m2\u001b[39m]\u001b[33m;\u001b[39m\u001b[0m"
-                      },
-                      "errors": [
-                        {
-                          "location": {
-                            "file": "F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts",
-                            "column": 40,
-                            "line": 46
-                          },
-                          "message": "TimeoutError: browserContext.waitForEvent: Timeout 10000ms exceeded while waiting for event \"serviceworker\"\n\n\u001b[90m   at \u001b[39mfixtures\\extension.ts:46\n\n\u001b[0m \u001b[90m 44 |\u001b[39m         \u001b[36mlet\u001b[39m [background] \u001b[33m=\u001b[39m context\u001b[33m.\u001b[39mserviceWorkers()\u001b[33m;\u001b[39m\n \u001b[90m 45 |\u001b[39m         \u001b[36mif\u001b[39m (\u001b[33m!\u001b[39mbackground) {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 46 |\u001b[39m             background \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m context\u001b[33m.\u001b[39mwaitForEvent(\u001b[32m'serviceworker'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                        \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 47 |\u001b[39m         }\n \u001b[90m 48 |\u001b[39m\n \u001b[90m 49 |\u001b[39m         \u001b[36mconst\u001b[39m extensionId \u001b[33m=\u001b[39m background\u001b[33m.\u001b[39murl()\u001b[33m.\u001b[39msplit(\u001b[32m'/'\u001b[39m)[\u001b[35m2\u001b[39m]\u001b[33m;\u001b[39m\u001b[0m\n\u001b[2m    at Object.extensionId (F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts:46:40)\u001b[22m"
-                        }
-                      ],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-11-27T17:03:47.176Z",
-                      "annotations": [],
-                      "attachments": [
-                        {
-                          "name": "screenshot",
-                          "contentType": "image/png",
-                          "path": "F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\test-results\\subscription-Subscription--b796f-should-link-to-pricing-page-chromium-extension\\test-failed-2.png"
-                        },
-                        {
-                          "name": "screenshot",
-                          "contentType": "image/png",
-                          "path": "F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\test-results\\subscription-Subscription--b796f-should-link-to-pricing-page-chromium-extension\\test-failed-1.png"
-                        }
-                      ],
-                      "errorLocation": {
-                        "file": "F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts",
-                        "column": 40,
-                        "line": 46
-                      }
-                    }
-                  ],
-                  "status": "unexpected"
-                }
-              ],
-              "id": "7d953d1cdb8684155dd7-ba3c1c556668a0915fb2",
-              "file": "subscription.spec.ts",
-              "line": 128,
-              "column": 5
-            },
-            {
-              "title": "paid user should see unlimited usage",
-              "ok": false,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium-extension",
-                  "projectName": "chromium-extension",
-                  "results": [
-                    {
-                      "workerIndex": 6,
-                      "parallelIndex": 0,
-                      "status": "failed",
-                      "duration": 11020,
-                      "error": {
-                        "message": "TimeoutError: browserContext.waitForEvent: Timeout 10000ms exceeded while waiting for event \"serviceworker\"",
-                        "stack": "TimeoutError: browserContext.waitForEvent: Timeout 10000ms exceeded while waiting for event \"serviceworker\"\n    at Object.extensionId (F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts:46:40)",
-                        "location": {
-                          "file": "F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts",
-                          "column": 40,
-                          "line": 46
-                        },
-                        "snippet": "\u001b[90m   at \u001b[39mfixtures\\extension.ts:46\n\n\u001b[0m \u001b[90m 44 |\u001b[39m         \u001b[36mlet\u001b[39m [background] \u001b[33m=\u001b[39m context\u001b[33m.\u001b[39mserviceWorkers()\u001b[33m;\u001b[39m\n \u001b[90m 45 |\u001b[39m         \u001b[36mif\u001b[39m (\u001b[33m!\u001b[39mbackground) {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 46 |\u001b[39m             background \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m context\u001b[33m.\u001b[39mwaitForEvent(\u001b[32m'serviceworker'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                        \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 47 |\u001b[39m         }\n \u001b[90m 48 |\u001b[39m\n \u001b[90m 49 |\u001b[39m         \u001b[36mconst\u001b[39m extensionId \u001b[33m=\u001b[39m background\u001b[33m.\u001b[39murl()\u001b[33m.\u001b[39msplit(\u001b[32m'/'\u001b[39m)[\u001b[35m2\u001b[39m]\u001b[33m;\u001b[39m\u001b[0m"
-                      },
-                      "errors": [
-                        {
-                          "location": {
-                            "file": "F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts",
-                            "column": 40,
-                            "line": 46
-                          },
-                          "message": "TimeoutError: browserContext.waitForEvent: Timeout 10000ms exceeded while waiting for event \"serviceworker\"\n\n\u001b[90m   at \u001b[39mfixtures\\extension.ts:46\n\n\u001b[0m \u001b[90m 44 |\u001b[39m         \u001b[36mlet\u001b[39m [background] \u001b[33m=\u001b[39m context\u001b[33m.\u001b[39mserviceWorkers()\u001b[33m;\u001b[39m\n \u001b[90m 45 |\u001b[39m         \u001b[36mif\u001b[39m (\u001b[33m!\u001b[39mbackground) {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 46 |\u001b[39m             background \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m context\u001b[33m.\u001b[39mwaitForEvent(\u001b[32m'serviceworker'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                        \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 47 |\u001b[39m         }\n \u001b[90m 48 |\u001b[39m\n \u001b[90m 49 |\u001b[39m         \u001b[36mconst\u001b[39m extensionId \u001b[33m=\u001b[39m background\u001b[33m.\u001b[39murl()\u001b[33m.\u001b[39msplit(\u001b[32m'/'\u001b[39m)[\u001b[35m2\u001b[39m]\u001b[33m;\u001b[39m\u001b[0m\n\u001b[2m    at Object.extensionId (F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts:46:40)\u001b[22m"
-                        }
-                      ],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-11-27T17:04:01.500Z",
-                      "annotations": [],
-                      "attachments": [
-                        {
-                          "name": "screenshot",
-                          "contentType": "image/png",
-                          "path": "F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\test-results\\subscription-Subscription--2de38--should-see-unlimited-usage-chromium-extension\\test-failed-2.png"
-                        },
-                        {
-                          "name": "screenshot",
-                          "contentType": "image/png",
-                          "path": "F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\test-results\\subscription-Subscription--2de38--should-see-unlimited-usage-chromium-extension\\test-failed-1.png"
-                        }
-                      ],
-                      "errorLocation": {
-                        "file": "F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts",
-                        "column": 40,
-                        "line": 46
-                      }
-                    }
-                  ],
-                  "status": "unexpected"
-                }
-              ],
-              "id": "7d953d1cdb8684155dd7-ec3e71dd9391c013dad5",
-              "file": "subscription.spec.ts",
-              "line": 151,
-              "column": 5
-            },
-            {
-              "title": "paid user should not see usage warnings",
-              "ok": false,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium-extension",
-                  "projectName": "chromium-extension",
-                  "results": [
-                    {
-                      "workerIndex": 7,
-                      "parallelIndex": 0,
-                      "status": "failed",
-                      "duration": 11134,
-                      "error": {
-                        "message": "TimeoutError: browserContext.waitForEvent: Timeout 10000ms exceeded while waiting for event \"serviceworker\"",
-                        "stack": "TimeoutError: browserContext.waitForEvent: Timeout 10000ms exceeded while waiting for event \"serviceworker\"\n    at Object.extensionId (F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts:46:40)",
-                        "location": {
-                          "file": "F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts",
-                          "column": 40,
-                          "line": 46
-                        },
-                        "snippet": "\u001b[90m   at \u001b[39mfixtures\\extension.ts:46\n\n\u001b[0m \u001b[90m 44 |\u001b[39m         \u001b[36mlet\u001b[39m [background] \u001b[33m=\u001b[39m context\u001b[33m.\u001b[39mserviceWorkers()\u001b[33m;\u001b[39m\n \u001b[90m 45 |\u001b[39m         \u001b[36mif\u001b[39m (\u001b[33m!\u001b[39mbackground) {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 46 |\u001b[39m             background \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m context\u001b[33m.\u001b[39mwaitForEvent(\u001b[32m'serviceworker'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                        \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 47 |\u001b[39m         }\n \u001b[90m 48 |\u001b[39m\n \u001b[90m 49 |\u001b[39m         \u001b[36mconst\u001b[39m extensionId \u001b[33m=\u001b[39m background\u001b[33m.\u001b[39murl()\u001b[33m.\u001b[39msplit(\u001b[32m'/'\u001b[39m)[\u001b[35m2\u001b[39m]\u001b[33m;\u001b[39m\u001b[0m"
-                      },
-                      "errors": [
-                        {
-                          "location": {
-                            "file": "F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts",
-                            "column": 40,
-                            "line": 46
-                          },
-                          "message": "TimeoutError: browserContext.waitForEvent: Timeout 10000ms exceeded while waiting for event \"serviceworker\"\n\n\u001b[90m   at \u001b[39mfixtures\\extension.ts:46\n\n\u001b[0m \u001b[90m 44 |\u001b[39m         \u001b[36mlet\u001b[39m [background] \u001b[33m=\u001b[39m context\u001b[33m.\u001b[39mserviceWorkers()\u001b[33m;\u001b[39m\n \u001b[90m 45 |\u001b[39m         \u001b[36mif\u001b[39m (\u001b[33m!\u001b[39mbackground) {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 46 |\u001b[39m             background \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m context\u001b[33m.\u001b[39mwaitForEvent(\u001b[32m'serviceworker'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                        \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 47 |\u001b[39m         }\n \u001b[90m 48 |\u001b[39m\n \u001b[90m 49 |\u001b[39m         \u001b[36mconst\u001b[39m extensionId \u001b[33m=\u001b[39m background\u001b[33m.\u001b[39murl()\u001b[33m.\u001b[39msplit(\u001b[32m'/'\u001b[39m)[\u001b[35m2\u001b[39m]\u001b[33m;\u001b[39m\u001b[0m\n\u001b[2m    at Object.extensionId (F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts:46:40)\u001b[22m"
-                        }
-                      ],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-11-27T17:04:15.076Z",
-                      "annotations": [],
-                      "attachments": [
-                        {
-                          "name": "screenshot",
-                          "contentType": "image/png",
-                          "path": "F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\test-results\\subscription-Subscription--a0a62-ould-not-see-usage-warnings-chromium-extension\\test-failed-1.png"
-                        },
-                        {
-                          "name": "screenshot",
-                          "contentType": "image/png",
-                          "path": "F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\test-results\\subscription-Subscription--a0a62-ould-not-see-usage-warnings-chromium-extension\\test-failed-2.png"
-                        }
-                      ],
-                      "errorLocation": {
-                        "file": "F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts",
-                        "column": 40,
-                        "line": 46
-                      }
-                    }
-                  ],
-                  "status": "unexpected"
-                }
-              ],
-              "id": "7d953d1cdb8684155dd7-7c2ae6cc5cd00f2714af",
-              "file": "subscription.spec.ts",
-              "line": 177,
-              "column": 5
-            },
-            {
-              "title": "paid user can enhance unlimited times",
-              "ok": false,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium-extension",
-                  "projectName": "chromium-extension",
-                  "results": [
-                    {
-                      "workerIndex": 8,
-                      "parallelIndex": 0,
-                      "status": "failed",
-                      "duration": 11140,
-                      "error": {
-                        "message": "TimeoutError: browserContext.waitForEvent: Timeout 10000ms exceeded while waiting for event \"serviceworker\"",
-                        "stack": "TimeoutError: browserContext.waitForEvent: Timeout 10000ms exceeded while waiting for event \"serviceworker\"\n    at Object.extensionId (F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts:46:40)",
-                        "location": {
-                          "file": "F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts",
-                          "column": 40,
-                          "line": 46
-                        },
-                        "snippet": "\u001b[90m   at \u001b[39mfixtures\\extension.ts:46\n\n\u001b[0m \u001b[90m 44 |\u001b[39m         \u001b[36mlet\u001b[39m [background] \u001b[33m=\u001b[39m context\u001b[33m.\u001b[39mserviceWorkers()\u001b[33m;\u001b[39m\n \u001b[90m 45 |\u001b[39m         \u001b[36mif\u001b[39m (\u001b[33m!\u001b[39mbackground) {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 46 |\u001b[39m             background \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m context\u001b[33m.\u001b[39mwaitForEvent(\u001b[32m'serviceworker'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                        \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 47 |\u001b[39m         }\n \u001b[90m 48 |\u001b[39m\n \u001b[90m 49 |\u001b[39m         \u001b[36mconst\u001b[39m extensionId \u001b[33m=\u001b[39m background\u001b[33m.\u001b[39murl()\u001b[33m.\u001b[39msplit(\u001b[32m'/'\u001b[39m)[\u001b[35m2\u001b[39m]\u001b[33m;\u001b[39m\u001b[0m"
-                      },
-                      "errors": [
-                        {
-                          "location": {
-                            "file": "F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts",
-                            "column": 40,
-                            "line": 46
-                          },
-                          "message": "TimeoutError: browserContext.waitForEvent: Timeout 10000ms exceeded while waiting for event \"serviceworker\"\n\n\u001b[90m   at \u001b[39mfixtures\\extension.ts:46\n\n\u001b[0m \u001b[90m 44 |\u001b[39m         \u001b[36mlet\u001b[39m [background] \u001b[33m=\u001b[39m context\u001b[33m.\u001b[39mserviceWorkers()\u001b[33m;\u001b[39m\n \u001b[90m 45 |\u001b[39m         \u001b[36mif\u001b[39m (\u001b[33m!\u001b[39mbackground) {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 46 |\u001b[39m             background \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m context\u001b[33m.\u001b[39mwaitForEvent(\u001b[32m'serviceworker'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                        \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 47 |\u001b[39m         }\n \u001b[90m 48 |\u001b[39m\n \u001b[90m 49 |\u001b[39m         \u001b[36mconst\u001b[39m extensionId \u001b[33m=\u001b[39m background\u001b[33m.\u001b[39murl()\u001b[33m.\u001b[39msplit(\u001b[32m'/'\u001b[39m)[\u001b[35m2\u001b[39m]\u001b[33m;\u001b[39m\u001b[0m\n\u001b[2m    at Object.extensionId (F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts:46:40)\u001b[22m"
-                        }
-                      ],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-11-27T17:04:28.862Z",
-                      "annotations": [],
-                      "attachments": [
-                        {
-                          "name": "screenshot",
-                          "contentType": "image/png",
-                          "path": "F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\test-results\\subscription-Subscription--f44c0-can-enhance-unlimited-times-chromium-extension\\test-failed-1.png"
-                        },
-                        {
-                          "name": "screenshot",
-                          "contentType": "image/png",
-                          "path": "F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\test-results\\subscription-Subscription--f44c0-can-enhance-unlimited-times-chromium-extension\\test-failed-2.png"
-                        }
-                      ],
-                      "errorLocation": {
-                        "file": "F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts",
-                        "column": 40,
-                        "line": 46
-                      }
-                    }
-                  ],
-                  "status": "unexpected"
-                }
-              ],
-              "id": "7d953d1cdb8684155dd7-35222c05a01d0fbf3a22",
-              "file": "subscription.spec.ts",
-              "line": 196,
-              "column": 5
-            },
-            {
-              "title": "lifetime user should see correct badge",
-              "ok": false,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium-extension",
-                  "projectName": "chromium-extension",
-                  "results": [
-                    {
-                      "workerIndex": 9,
-                      "parallelIndex": 0,
-                      "status": "failed",
-                      "duration": 11294,
-                      "error": {
-                        "message": "TimeoutError: browserContext.waitForEvent: Timeout 10000ms exceeded while waiting for event \"serviceworker\"",
-                        "stack": "TimeoutError: browserContext.waitForEvent: Timeout 10000ms exceeded while waiting for event \"serviceworker\"\n    at Object.extensionId (F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts:46:40)",
-                        "location": {
-                          "file": "F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts",
-                          "column": 40,
-                          "line": 46
-                        },
-                        "snippet": "\u001b[90m   at \u001b[39mfixtures\\extension.ts:46\n\n\u001b[0m \u001b[90m 44 |\u001b[39m         \u001b[36mlet\u001b[39m [background] \u001b[33m=\u001b[39m context\u001b[33m.\u001b[39mserviceWorkers()\u001b[33m;\u001b[39m\n \u001b[90m 45 |\u001b[39m         \u001b[36mif\u001b[39m (\u001b[33m!\u001b[39mbackground) {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 46 |\u001b[39m             background \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m context\u001b[33m.\u001b[39mwaitForEvent(\u001b[32m'serviceworker'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                        \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 47 |\u001b[39m         }\n \u001b[90m 48 |\u001b[39m\n \u001b[90m 49 |\u001b[39m         \u001b[36mconst\u001b[39m extensionId \u001b[33m=\u001b[39m background\u001b[33m.\u001b[39murl()\u001b[33m.\u001b[39msplit(\u001b[32m'/'\u001b[39m)[\u001b[35m2\u001b[39m]\u001b[33m;\u001b[39m\u001b[0m"
-                      },
-                      "errors": [
-                        {
-                          "location": {
-                            "file": "F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts",
-                            "column": 40,
-                            "line": 46
-                          },
-                          "message": "TimeoutError: browserContext.waitForEvent: Timeout 10000ms exceeded while waiting for event \"serviceworker\"\n\n\u001b[90m   at \u001b[39mfixtures\\extension.ts:46\n\n\u001b[0m \u001b[90m 44 |\u001b[39m         \u001b[36mlet\u001b[39m [background] \u001b[33m=\u001b[39m context\u001b[33m.\u001b[39mserviceWorkers()\u001b[33m;\u001b[39m\n \u001b[90m 45 |\u001b[39m         \u001b[36mif\u001b[39m (\u001b[33m!\u001b[39mbackground) {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 46 |\u001b[39m             background \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m context\u001b[33m.\u001b[39mwaitForEvent(\u001b[32m'serviceworker'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                        \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 47 |\u001b[39m         }\n \u001b[90m 48 |\u001b[39m\n \u001b[90m 49 |\u001b[39m         \u001b[36mconst\u001b[39m extensionId \u001b[33m=\u001b[39m background\u001b[33m.\u001b[39murl()\u001b[33m.\u001b[39msplit(\u001b[32m'/'\u001b[39m)[\u001b[35m2\u001b[39m]\u001b[33m;\u001b[39m\u001b[0m\n\u001b[2m    at Object.extensionId (F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts:46:40)\u001b[22m"
-                        }
-                      ],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-11-27T17:04:42.839Z",
-                      "annotations": [],
-                      "attachments": [
-                        {
-                          "name": "screenshot",
-                          "contentType": "image/png",
-                          "path": "F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\test-results\\subscription-Subscription--b8ff3-er-should-see-correct-badge-chromium-extension\\test-failed-1.png"
-                        },
-                        {
-                          "name": "screenshot",
-                          "contentType": "image/png",
-                          "path": "F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\test-results\\subscription-Subscription--b8ff3-er-should-see-correct-badge-chromium-extension\\test-failed-2.png"
-                        }
-                      ],
-                      "errorLocation": {
-                        "file": "F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts",
-                        "column": 40,
-                        "line": 46
-                      }
-                    }
-                  ],
-                  "status": "unexpected"
-                }
-              ],
-              "id": "7d953d1cdb8684155dd7-59d4e67bdd4cdd0141df",
-              "file": "subscription.spec.ts",
-              "line": 229,
-              "column": 5
+              "status": "unexpected"
             }
-          ]
+          ],
+          "id": "4219922fea2e2bd3c691-41d6a2a9f8b544c69da7",
+          "file": "smoke.spec.ts",
+          "line": 7,
+          "column": 1
         }
       ]
     }
   ],
   "errors": [],
   "stats": {
-    "startTime": "2025-11-27T17:02:03.377Z",
-    "duration": 170868.824,
+    "startTime": "2025-11-27T18:00:05.024Z",
+    "duration": 61755.966,
     "expected": 0,
     "skipped": 0,
-    "unexpected": 10,
+    "unexpected": 1,
     "flaky": 0
   }
 }
