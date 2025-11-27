@@ -6,6 +6,19 @@ export default defineConfig({
   modules: ['@wxt-dev/module-react'],
   vite: () => ({
     plugins: [tailwindcss()],
+    build: {
+      chunkSizeWarningLimit: 600, // Increase limit for extension context
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            // Split React and React DOM into separate chunk
+            'react-vendor': ['react', 'react-dom', 'react-dom/client'],
+            // Split TanStack Query into separate chunk
+            'query-vendor': ['@tanstack/react-query'],
+          },
+        },
+      },
+    },
   }),
   manifest: {
     name: 'Verba',
@@ -22,11 +35,11 @@ export default defineConfig({
       'https://*.verba.app/*',
     ],
     icons: {
-      16: '/icon-16.png',
-      32: '/icon-32.png',
-      48: '/icon-48.png',
-      96: '/icon-96.png',
-      128: '/icon-128.png',
+      16: '/icon/16.png',
+      32: '/icon/32.png',
+      48: '/icon/48.png',
+      96: '/icon/96.png',
+      128: '/icon/128.png',
     },
   },
 });

@@ -1,4 +1,4 @@
-```css * {
+* {
   box-sizing: border-box;
 }
 
@@ -54,5 +54,3 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: #94a3b8;
 }
-
-```

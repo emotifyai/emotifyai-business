@@ -1,11 +1,13 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, lazy, Suspense } from 'react';
 import { useAuth } from './hooks/useAuth';
 import { useSubscription } from './hooks/useSubscription';
 import AuthView from './components/AuthView';
-import Dashboard from './components/Dashboard';
-import Settings from './components/Settings';
 import { startMockAPI } from '@/mocks/browser';
 import './App.css';
+
+// Lazy load heavy components
+const Dashboard = lazy(() => import('./components/Dashboard'));
+const Settings = lazy(() => import('./components/Settings'));
 
 type View = 'dashboard' | 'settings';
 
@@ -54,18 +56,24 @@ function App() {
 
   return (
     <div className="app">
-      {currentView === 'dashboard' && user && (
-        <Dashboard
-          user={user}
-          subscription={subscription.subscription}
-          usage={subscription.usage}
-          onLogout={handleLogout}
-          onOpenSettings={() => setCurrentView('settings')}
-        />
-      )}
-      {currentView === 'settings' && (
-        <Settings onBack={() => setCurrentView('dashboard')} />
-      )}
+      <Suspense fallback={
+        <div className="app app--loading">
+          <div className="spinner" />
+        </div>
+      }>
+        {currentView === 'dashboard' && user && (
+          <Dashboard
+            user={user}
+            subscription={subscription.subscription}
+            usage={subscription.usage}
+            onLogout={handleLogout}
+            onOpenSettings={() => setCurrentView('settings')}
+          />
+        )}
+        {currentView === 'settings' && (
+          <Settings onBack={() => setCurrentView('dashboard')} />
+        )}
+      </Suspense>
     </div>
   );
 }
