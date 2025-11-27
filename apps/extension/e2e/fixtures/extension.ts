@@ -1,5 +1,9 @@
 import { test as base, chromium, type BrowserContext } from '@playwright/test';
+import { fileURLToPath } from 'url';
 import path from 'path';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 
 /**
  * Extension fixture for Playwright tests
