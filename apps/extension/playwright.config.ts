@@ -1,10 +1,9 @@
 import { defineConfig, devices } from '@playwright/test';
-import path from 'path';
 
 /**
  * Playwright configuration for Verba Extension E2E tests
  * 
- * Tests the extension in a real browser environment with MSW mocking
+ * Tests the extension in a real browser environment
  */
 export default defineConfig({
     testDir: './e2e',
@@ -20,16 +19,13 @@ export default defineConfig({
 
     // Reporter configuration
     reporter: [
-        ['html', { outputFolder: 'test-results/html' }],
+        ['html', { outputFolder: 'playwright-report' }],
         ['list'],
         ['json', { outputFile: 'test-results/results.json' }],
     ],
 
     // Shared settings for all projects
     use: {
-        // Base URL for test pages
-        baseURL: 'http://localhost:5173',
-
         // Collect trace on failure
         trace: 'on-first-retry',
 
@@ -49,24 +45,7 @@ export default defineConfig({
             name: 'chromium-extension',
             use: {
                 ...devices['Desktop Chrome'],
-                // Extension will be loaded via fixtures
             },
         },
-
-        // Firefox extension testing (optional, can enable later)
-        // {
-        //   name: 'firefox-extension',
-        //   use: {
-        //     ...devices['Desktop Firefox'],
-        //   },
-        // },
     ],
-
-    // Run dev server before tests (for test pages)
-    webServer: {
-        command: 'bun run dev',
-        url: 'http://localhost:5173',
-        reuseExistingServer: !process.env.CI,
-        timeout: 120 * 1000,
-    },
 });

@@ -1,5 +1,5 @@
-import { test, expect } from '../fixtures/extension';
-import { PopupPage, ContentPage, clearExtensionStorage } from '../helpers/page-objects';
+import { test, expect } from './fixtures/extension';
+import { PopupPage, ContentPage, clearExtensionStorage } from './helpers/page-objects';
 import path from 'path';
 
 /**
@@ -7,7 +7,6 @@ import path from 'path';
  * 
  * Tests error handling for network failures, API errors, and edge cases
  */
-
 test.describe('Error Scenarios', () => {
     test.beforeEach(async ({ page, extensionId }) => {
         await clearExtensionStorage(page);

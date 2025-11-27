@@ -10,13 +10,15 @@
     "grep": {},
     "grepInvert": null,
     "maxFailures": 0,
-    "metadata": {},
+    "metadata": {
+      "actualWorkers": 1
+    },
     "preserveOutput": "always",
     "reporter": [
       [
         "html",
         {
-          "outputFolder": "test-results/html"
+          "outputFolder": "playwright-report"
         }
       ],
       [
@@ -40,7 +42,9 @@
         "outputDir": "F:/Projects/Languages/Websites/extensions/verba/apps/extension/test-results",
         "repeatEach": 1,
         "retries": 0,
-        "metadata": {},
+        "metadata": {
+          "actualWorkers": 1
+        },
         "id": "chromium-extension",
         "name": "chromium-extension",
         "testDir": "F:/Projects/Languages/Websites/extensions/verba/apps/extension/e2e",
@@ -57,26 +61,1518 @@
     "updateSourceMethod": "patch",
     "version": "1.57.0",
     "workers": 1,
-    "webServer": {
-      "command": "bun run dev",
-      "url": "http://localhost:5173",
-      "reuseExistingServer": true,
-      "timeout": 120000
-    }
+    "webServer": null
   },
-  "suites": [],
-  "errors": [
+  "suites": [
     {
-      "message": "Error: Timed out waiting 120000ms from config.webServer.",
-      "stack": "Error: Timed out waiting 120000ms from config.webServer."
+      "title": "enhancement.spec.ts",
+      "file": "enhancement.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Core Enhancement Flow",
+          "file": "enhancement.spec.ts",
+          "line": 11,
+          "column": 6,
+          "specs": [
+            {
+              "title": "should enhance text using context menu",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-extension",
+                  "projectName": "chromium-extension",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 79,
+                      "error": {
+                        "message": "ReferenceError: __dirname is not defined",
+                        "stack": "ReferenceError: __dirname is not defined\n    at Object.context (F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts:18:43)",
+                        "location": {
+                          "file": "F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts",
+                          "column": 43,
+                          "line": 18
+                        },
+                        "snippet": "\u001b[90m   at \u001b[39mfixtures\\extension.ts:18\n\n\u001b[0m \u001b[90m 16 |\u001b[39m     \u001b[90m// Override context to load extension\u001b[39m\n \u001b[90m 17 |\u001b[39m     context\u001b[33m:\u001b[39m \u001b[36masync\u001b[39m ({ }\u001b[33m,\u001b[39m use) \u001b[33m=>\u001b[39m {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 18 |\u001b[39m         \u001b[36mconst\u001b[39m pathToExtension \u001b[33m=\u001b[39m path\u001b[33m.\u001b[39mjoin(__dirname\u001b[33m,\u001b[39m \u001b[32m'../../.output/chrome-mv3'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                           \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 19 |\u001b[39m\n \u001b[90m 20 |\u001b[39m         \u001b[36mconst\u001b[39m context \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m chromium\u001b[33m.\u001b[39mlaunchPersistentContext(\u001b[32m''\u001b[39m\u001b[33m,\u001b[39m {\n \u001b[90m 21 |\u001b[39m             headless\u001b[33m:\u001b[39m \u001b[36mtrue\u001b[39m\u001b[33m,\u001b[39m \u001b[90m// Use new headless mode which supports extensions\u001b[39m\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts",
+                            "column": 43,
+                            "line": 18
+                          },
+                          "message": "ReferenceError: __dirname is not defined\n\n   at fixtures\\extension.ts:18\n\n  16 |     // Override context to load extension\n  17 |     context: async ({ }, use) => {\n> 18 |         const pathToExtension = path.join(__dirname, '../../.output/chrome-mv3');\n     |                                           ^\n  19 |\n  20 |         const context = await chromium.launchPersistentContext('', {\n  21 |             headless: true, // Use new headless mode which supports extensions\n    at Object.context (F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts:18:43)"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-11-27T16:19:47.976Z",
+                      "annotations": [],
+                      "attachments": [],
+                      "errorLocation": {
+                        "file": "F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts",
+                        "column": 43,
+                        "line": 18
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "64d52f9c09753dd20357-c5f2552ce5ea35538672",
+              "file": "enhancement.spec.ts",
+              "line": 20,
+              "column": 5
+            },
+            {
+              "title": "should enhance text using keyboard shortcut",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-extension",
+                  "projectName": "chromium-extension",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 93,
+                      "error": {
+                        "message": "ReferenceError: __dirname is not defined",
+                        "stack": "ReferenceError: __dirname is not defined\n    at Object.context (F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts:18:43)",
+                        "location": {
+                          "file": "F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts",
+                          "column": 43,
+                          "line": 18
+                        },
+                        "snippet": "\u001b[90m   at \u001b[39mfixtures\\extension.ts:18\n\n\u001b[0m \u001b[90m 16 |\u001b[39m     \u001b[90m// Override context to load extension\u001b[39m\n \u001b[90m 17 |\u001b[39m     context\u001b[33m:\u001b[39m \u001b[36masync\u001b[39m ({ }\u001b[33m,\u001b[39m use) \u001b[33m=>\u001b[39m {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 18 |\u001b[39m         \u001b[36mconst\u001b[39m pathToExtension \u001b[33m=\u001b[39m path\u001b[33m.\u001b[39mjoin(__dirname\u001b[33m,\u001b[39m \u001b[32m'../../.output/chrome-mv3'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                           \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 19 |\u001b[39m\n \u001b[90m 20 |\u001b[39m         \u001b[36mconst\u001b[39m context \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m chromium\u001b[33m.\u001b[39mlaunchPersistentContext(\u001b[32m''\u001b[39m\u001b[33m,\u001b[39m {\n \u001b[90m 21 |\u001b[39m             headless\u001b[33m:\u001b[39m \u001b[36mtrue\u001b[39m\u001b[33m,\u001b[39m \u001b[90m// Use new headless mode which supports extensions\u001b[39m\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts",
+                            "column": 43,
+                            "line": 18
+                          },
+                          "message": "ReferenceError: __dirname is not defined\n\n   at fixtures\\extension.ts:18\n\n  16 |     // Override context to load extension\n  17 |     context: async ({ }, use) => {\n> 18 |         const pathToExtension = path.join(__dirname, '../../.output/chrome-mv3');\n     |                                           ^\n  19 |\n  20 |         const context = await chromium.launchPersistentContext('', {\n  21 |             headless: true, // Use new headless mode which supports extensions\n    at Object.context (F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts:18:43)"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-11-27T16:19:50.198Z",
+                      "annotations": [],
+                      "attachments": [],
+                      "errorLocation": {
+                        "file": "F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts",
+                        "column": 43,
+                        "line": 18
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "64d52f9c09753dd20357-396c28a93d68d68b567a",
+              "file": "enhancement.spec.ts",
+              "line": 47,
+              "column": 5
+            },
+            {
+              "title": "should update usage count after enhancement",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-extension",
+                  "projectName": "chromium-extension",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 10,
+                      "error": {
+                        "message": "ReferenceError: __dirname is not defined",
+                        "stack": "ReferenceError: __dirname is not defined\n    at Object.context (F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts:18:43)",
+                        "location": {
+                          "file": "F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts",
+                          "column": 43,
+                          "line": 18
+                        },
+                        "snippet": "\u001b[90m   at \u001b[39mfixtures\\extension.ts:18\n\n\u001b[0m \u001b[90m 16 |\u001b[39m     \u001b[90m// Override context to load extension\u001b[39m\n \u001b[90m 17 |\u001b[39m     context\u001b[33m:\u001b[39m \u001b[36masync\u001b[39m ({ }\u001b[33m,\u001b[39m use) \u001b[33m=>\u001b[39m {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 18 |\u001b[39m         \u001b[36mconst\u001b[39m pathToExtension \u001b[33m=\u001b[39m path\u001b[33m.\u001b[39mjoin(__dirname\u001b[33m,\u001b[39m \u001b[32m'../../.output/chrome-mv3'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                           \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 19 |\u001b[39m\n \u001b[90m 20 |\u001b[39m         \u001b[36mconst\u001b[39m context \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m chromium\u001b[33m.\u001b[39mlaunchPersistentContext(\u001b[32m''\u001b[39m\u001b[33m,\u001b[39m {\n \u001b[90m 21 |\u001b[39m             headless\u001b[33m:\u001b[39m \u001b[36mtrue\u001b[39m\u001b[33m,\u001b[39m \u001b[90m// Use new headless mode which supports extensions\u001b[39m\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts",
+                            "column": 43,
+                            "line": 18
+                          },
+                          "message": "ReferenceError: __dirname is not defined\n\n   at fixtures\\extension.ts:18\n\n  16 |     // Override context to load extension\n  17 |     context: async ({ }, use) => {\n> 18 |         const pathToExtension = path.join(__dirname, '../../.output/chrome-mv3');\n     |                                           ^\n  19 |\n  20 |         const context = await chromium.launchPersistentContext('', {\n  21 |             headless: true, // Use new headless mode which supports extensions\n    at Object.context (F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts:18:43)"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-11-27T16:19:52.589Z",
+                      "annotations": [],
+                      "attachments": [],
+                      "errorLocation": {
+                        "file": "F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts",
+                        "column": 43,
+                        "line": 18
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "64d52f9c09753dd20357-b578bbbbf661dee5ca63",
+              "file": "enhancement.spec.ts",
+              "line": 68,
+              "column": 5
+            },
+            {
+              "title": "should allow undo after enhancement",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-extension",
+                  "projectName": "chromium-extension",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 10,
+                      "error": {
+                        "message": "ReferenceError: __dirname is not defined",
+                        "stack": "ReferenceError: __dirname is not defined\n    at Object.context (F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts:18:43)",
+                        "location": {
+                          "file": "F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts",
+                          "column": 43,
+                          "line": 18
+                        },
+                        "snippet": "\u001b[90m   at \u001b[39mfixtures\\extension.ts:18\n\n\u001b[0m \u001b[90m 16 |\u001b[39m     \u001b[90m// Override context to load extension\u001b[39m\n \u001b[90m 17 |\u001b[39m     context\u001b[33m:\u001b[39m \u001b[36masync\u001b[39m ({ }\u001b[33m,\u001b[39m use) \u001b[33m=>\u001b[39m {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 18 |\u001b[39m         \u001b[36mconst\u001b[39m pathToExtension \u001b[33m=\u001b[39m path\u001b[33m.\u001b[39mjoin(__dirname\u001b[33m,\u001b[39m \u001b[32m'../../.output/chrome-mv3'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                           \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 19 |\u001b[39m\n \u001b[90m 20 |\u001b[39m         \u001b[36mconst\u001b[39m context \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m chromium\u001b[33m.\u001b[39mlaunchPersistentContext(\u001b[32m''\u001b[39m\u001b[33m,\u001b[39m {\n \u001b[90m 21 |\u001b[39m             headless\u001b[33m:\u001b[39m \u001b[36mtrue\u001b[39m\u001b[33m,\u001b[39m \u001b[90m// Use new headless mode which supports extensions\u001b[39m\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts",
+                            "column": 43,
+                            "line": 18
+                          },
+                          "message": "ReferenceError: __dirname is not defined\n\n   at fixtures\\extension.ts:18\n\n  16 |     // Override context to load extension\n  17 |     context: async ({ }, use) => {\n> 18 |         const pathToExtension = path.join(__dirname, '../../.output/chrome-mv3');\n     |                                           ^\n  19 |\n  20 |         const context = await chromium.launchPersistentContext('', {\n  21 |             headless: true, // Use new headless mode which supports extensions\n    at Object.context (F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts:18:43)"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-11-27T16:19:55.950Z",
+                      "annotations": [],
+                      "attachments": [],
+                      "errorLocation": {
+                        "file": "F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts",
+                        "column": 43,
+                        "line": 18
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "64d52f9c09753dd20357-3897ea72b9eb3a4c4f10",
+              "file": "enhancement.spec.ts",
+              "line": 88,
+              "column": 5
+            },
+            {
+              "title": "should enhance long text",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-extension",
+                  "projectName": "chromium-extension",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 21,
+                      "error": {
+                        "message": "ReferenceError: __dirname is not defined",
+                        "stack": "ReferenceError: __dirname is not defined\n    at Object.context (F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts:18:43)",
+                        "location": {
+                          "file": "F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts",
+                          "column": 43,
+                          "line": 18
+                        },
+                        "snippet": "\u001b[90m   at \u001b[39mfixtures\\extension.ts:18\n\n\u001b[0m \u001b[90m 16 |\u001b[39m     \u001b[90m// Override context to load extension\u001b[39m\n \u001b[90m 17 |\u001b[39m     context\u001b[33m:\u001b[39m \u001b[36masync\u001b[39m ({ }\u001b[33m,\u001b[39m use) \u001b[33m=>\u001b[39m {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 18 |\u001b[39m         \u001b[36mconst\u001b[39m pathToExtension \u001b[33m=\u001b[39m path\u001b[33m.\u001b[39mjoin(__dirname\u001b[33m,\u001b[39m \u001b[32m'../../.output/chrome-mv3'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                           \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 19 |\u001b[39m\n \u001b[90m 20 |\u001b[39m         \u001b[36mconst\u001b[39m context \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m chromium\u001b[33m.\u001b[39mlaunchPersistentContext(\u001b[32m''\u001b[39m\u001b[33m,\u001b[39m {\n \u001b[90m 21 |\u001b[39m             headless\u001b[33m:\u001b[39m \u001b[36mtrue\u001b[39m\u001b[33m,\u001b[39m \u001b[90m// Use new headless mode which supports extensions\u001b[39m\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts",
+                            "column": 43,
+                            "line": 18
+                          },
+                          "message": "ReferenceError: __dirname is not defined\n\n   at fixtures\\extension.ts:18\n\n  16 |     // Override context to load extension\n  17 |     context: async ({ }, use) => {\n> 18 |         const pathToExtension = path.join(__dirname, '../../.output/chrome-mv3');\n     |                                           ^\n  19 |\n  20 |         const context = await chromium.launchPersistentContext('', {\n  21 |             headless: true, // Use new headless mode which supports extensions\n    at Object.context (F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts:18:43)"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-11-27T16:19:58.998Z",
+                      "annotations": [],
+                      "attachments": [],
+                      "errorLocation": {
+                        "file": "F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts",
+                        "column": 43,
+                        "line": 18
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "64d52f9c09753dd20357-2b896ebc52344397be00",
+              "file": "enhancement.spec.ts",
+              "line": 111,
+              "column": 5
+            },
+            {
+              "title": "should enhance editable content",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-extension",
+                  "projectName": "chromium-extension",
+                  "results": [
+                    {
+                      "workerIndex": 5,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 26,
+                      "error": {
+                        "message": "ReferenceError: __dirname is not defined",
+                        "stack": "ReferenceError: __dirname is not defined\n    at Object.context (F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts:18:43)",
+                        "location": {
+                          "file": "F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts",
+                          "column": 43,
+                          "line": 18
+                        },
+                        "snippet": "\u001b[90m   at \u001b[39mfixtures\\extension.ts:18\n\n\u001b[0m \u001b[90m 16 |\u001b[39m     \u001b[90m// Override context to load extension\u001b[39m\n \u001b[90m 17 |\u001b[39m     context\u001b[33m:\u001b[39m \u001b[36masync\u001b[39m ({ }\u001b[33m,\u001b[39m use) \u001b[33m=>\u001b[39m {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 18 |\u001b[39m         \u001b[36mconst\u001b[39m pathToExtension \u001b[33m=\u001b[39m path\u001b[33m.\u001b[39mjoin(__dirname\u001b[33m,\u001b[39m \u001b[32m'../../.output/chrome-mv3'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                           \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 19 |\u001b[39m\n \u001b[90m 20 |\u001b[39m         \u001b[36mconst\u001b[39m context \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m chromium\u001b[33m.\u001b[39mlaunchPersistentContext(\u001b[32m''\u001b[39m\u001b[33m,\u001b[39m {\n \u001b[90m 21 |\u001b[39m             headless\u001b[33m:\u001b[39m \u001b[36mtrue\u001b[39m\u001b[33m,\u001b[39m \u001b[90m// Use new headless mode which supports extensions\u001b[39m\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts",
+                            "column": 43,
+                            "line": 18
+                          },
+                          "message": "ReferenceError: __dirname is not defined\n\n   at fixtures\\extension.ts:18\n\n  16 |     // Override context to load extension\n  17 |     context: async ({ }, use) => {\n> 18 |         const pathToExtension = path.join(__dirname, '../../.output/chrome-mv3');\n     |                                           ^\n  19 |\n  20 |         const context = await chromium.launchPersistentContext('', {\n  21 |             headless: true, // Use new headless mode which supports extensions\n    at Object.context (F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts:18:43)"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-11-27T16:20:02.320Z",
+                      "annotations": [],
+                      "attachments": [],
+                      "errorLocation": {
+                        "file": "F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts",
+                        "column": 43,
+                        "line": 18
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "64d52f9c09753dd20357-fc08c612271edbd36589",
+              "file": "enhancement.spec.ts",
+              "line": 132,
+              "column": 5
+            },
+            {
+              "title": "should work on dynamically added content",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-extension",
+                  "projectName": "chromium-extension",
+                  "results": [
+                    {
+                      "workerIndex": 6,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 9,
+                      "error": {
+                        "message": "ReferenceError: __dirname is not defined",
+                        "stack": "ReferenceError: __dirname is not defined\n    at Object.context (F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts:18:43)",
+                        "location": {
+                          "file": "F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts",
+                          "column": 43,
+                          "line": 18
+                        },
+                        "snippet": "\u001b[90m   at \u001b[39mfixtures\\extension.ts:18\n\n\u001b[0m \u001b[90m 16 |\u001b[39m     \u001b[90m// Override context to load extension\u001b[39m\n \u001b[90m 17 |\u001b[39m     context\u001b[33m:\u001b[39m \u001b[36masync\u001b[39m ({ }\u001b[33m,\u001b[39m use) \u001b[33m=>\u001b[39m {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 18 |\u001b[39m         \u001b[36mconst\u001b[39m pathToExtension \u001b[33m=\u001b[39m path\u001b[33m.\u001b[39mjoin(__dirname\u001b[33m,\u001b[39m \u001b[32m'../../.output/chrome-mv3'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                           \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 19 |\u001b[39m\n \u001b[90m 20 |\u001b[39m         \u001b[36mconst\u001b[39m context \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m chromium\u001b[33m.\u001b[39mlaunchPersistentContext(\u001b[32m''\u001b[39m\u001b[33m,\u001b[39m {\n \u001b[90m 21 |\u001b[39m             headless\u001b[33m:\u001b[39m \u001b[36mtrue\u001b[39m\u001b[33m,\u001b[39m \u001b[90m// Use new headless mode which supports extensions\u001b[39m\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts",
+                            "column": 43,
+                            "line": 18
+                          },
+                          "message": "ReferenceError: __dirname is not defined\n\n   at fixtures\\extension.ts:18\n\n  16 |     // Override context to load extension\n  17 |     context: async ({ }, use) => {\n> 18 |         const pathToExtension = path.join(__dirname, '../../.output/chrome-mv3');\n     |                                           ^\n  19 |\n  20 |         const context = await chromium.launchPersistentContext('', {\n  21 |             headless: true, // Use new headless mode which supports extensions\n    at Object.context (F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts:18:43)"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-11-27T16:20:04.047Z",
+                      "annotations": [],
+                      "attachments": [],
+                      "errorLocation": {
+                        "file": "F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts",
+                        "column": 43,
+                        "line": 18
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "64d52f9c09753dd20357-0cc4e41770b73b5842f4",
+              "file": "enhancement.spec.ts",
+              "line": 157,
+              "column": 5
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "errors.spec.ts",
+      "file": "errors.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Error Scenarios",
+          "file": "errors.spec.ts",
+          "line": 10,
+          "column": 6,
+          "specs": [
+            {
+              "title": "should show error when not authenticated",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-extension",
+                  "projectName": "chromium-extension",
+                  "results": [
+                    {
+                      "workerIndex": 7,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 10,
+                      "error": {
+                        "message": "ReferenceError: __dirname is not defined",
+                        "stack": "ReferenceError: __dirname is not defined\n    at Object.context (F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts:18:43)",
+                        "location": {
+                          "file": "F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts",
+                          "column": 43,
+                          "line": 18
+                        },
+                        "snippet": "\u001b[90m   at \u001b[39mfixtures\\extension.ts:18\n\n\u001b[0m \u001b[90m 16 |\u001b[39m     \u001b[90m// Override context to load extension\u001b[39m\n \u001b[90m 17 |\u001b[39m     context\u001b[33m:\u001b[39m \u001b[36masync\u001b[39m ({ }\u001b[33m,\u001b[39m use) \u001b[33m=>\u001b[39m {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 18 |\u001b[39m         \u001b[36mconst\u001b[39m pathToExtension \u001b[33m=\u001b[39m path\u001b[33m.\u001b[39mjoin(__dirname\u001b[33m,\u001b[39m \u001b[32m'../../.output/chrome-mv3'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                           \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 19 |\u001b[39m\n \u001b[90m 20 |\u001b[39m         \u001b[36mconst\u001b[39m context \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m chromium\u001b[33m.\u001b[39mlaunchPersistentContext(\u001b[32m''\u001b[39m\u001b[33m,\u001b[39m {\n \u001b[90m 21 |\u001b[39m             headless\u001b[33m:\u001b[39m \u001b[36mtrue\u001b[39m\u001b[33m,\u001b[39m \u001b[90m// Use new headless mode which supports extensions\u001b[39m\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts",
+                            "column": 43,
+                            "line": 18
+                          },
+                          "message": "ReferenceError: __dirname is not defined\n\n   at fixtures\\extension.ts:18\n\n  16 |     // Override context to load extension\n  17 |     context: async ({ }, use) => {\n> 18 |         const pathToExtension = path.join(__dirname, '../../.output/chrome-mv3');\n     |                                           ^\n  19 |\n  20 |         const context = await chromium.launchPersistentContext('', {\n  21 |             headless: true, // Use new headless mode which supports extensions\n    at Object.context (F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts:18:43)"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-11-27T16:20:05.682Z",
+                      "annotations": [],
+                      "attachments": [],
+                      "errorLocation": {
+                        "file": "F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts",
+                        "column": 43,
+                        "line": 18
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "2c69674198c4542748c6-d86e2d0909e0d5fff8a4",
+              "file": "errors.spec.ts",
+              "line": 15,
+              "column": 5
+            },
+            {
+              "title": "should handle network errors gracefully",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-extension",
+                  "projectName": "chromium-extension",
+                  "results": [
+                    {
+                      "workerIndex": 8,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 9,
+                      "error": {
+                        "message": "ReferenceError: __dirname is not defined",
+                        "stack": "ReferenceError: __dirname is not defined\n    at Object.context (F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts:18:43)",
+                        "location": {
+                          "file": "F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts",
+                          "column": 43,
+                          "line": 18
+                        },
+                        "snippet": "\u001b[90m   at \u001b[39mfixtures\\extension.ts:18\n\n\u001b[0m \u001b[90m 16 |\u001b[39m     \u001b[90m// Override context to load extension\u001b[39m\n \u001b[90m 17 |\u001b[39m     context\u001b[33m:\u001b[39m \u001b[36masync\u001b[39m ({ }\u001b[33m,\u001b[39m use) \u001b[33m=>\u001b[39m {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 18 |\u001b[39m         \u001b[36mconst\u001b[39m pathToExtension \u001b[33m=\u001b[39m path\u001b[33m.\u001b[39mjoin(__dirname\u001b[33m,\u001b[39m \u001b[32m'../../.output/chrome-mv3'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                           \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 19 |\u001b[39m\n \u001b[90m 20 |\u001b[39m         \u001b[36mconst\u001b[39m context \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m chromium\u001b[33m.\u001b[39mlaunchPersistentContext(\u001b[32m''\u001b[39m\u001b[33m,\u001b[39m {\n \u001b[90m 21 |\u001b[39m             headless\u001b[33m:\u001b[39m \u001b[36mtrue\u001b[39m\u001b[33m,\u001b[39m \u001b[90m// Use new headless mode which supports extensions\u001b[39m\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts",
+                            "column": 43,
+                            "line": 18
+                          },
+                          "message": "ReferenceError: __dirname is not defined\n\n   at fixtures\\extension.ts:18\n\n  16 |     // Override context to load extension\n  17 |     context: async ({ }, use) => {\n> 18 |         const pathToExtension = path.join(__dirname, '../../.output/chrome-mv3');\n     |                                           ^\n  19 |\n  20 |         const context = await chromium.launchPersistentContext('', {\n  21 |             headless: true, // Use new headless mode which supports extensions\n    at Object.context (F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts:18:43)"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-11-27T16:20:07.725Z",
+                      "annotations": [],
+                      "attachments": [],
+                      "errorLocation": {
+                        "file": "F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts",
+                        "column": 43,
+                        "line": 18
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "2c69674198c4542748c6-2450dccf7b97d324cb1d",
+              "file": "errors.spec.ts",
+              "line": 31,
+              "column": 5
+            },
+            {
+              "title": "should handle API errors",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-extension",
+                  "projectName": "chromium-extension",
+                  "results": [
+                    {
+                      "workerIndex": 9,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 24,
+                      "error": {
+                        "message": "ReferenceError: __dirname is not defined",
+                        "stack": "ReferenceError: __dirname is not defined\n    at Object.context (F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts:18:43)",
+                        "location": {
+                          "file": "F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts",
+                          "column": 43,
+                          "line": 18
+                        },
+                        "snippet": "\u001b[90m   at \u001b[39mfixtures\\extension.ts:18\n\n\u001b[0m \u001b[90m 16 |\u001b[39m     \u001b[90m// Override context to load extension\u001b[39m\n \u001b[90m 17 |\u001b[39m     context\u001b[33m:\u001b[39m \u001b[36masync\u001b[39m ({ }\u001b[33m,\u001b[39m use) \u001b[33m=>\u001b[39m {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 18 |\u001b[39m         \u001b[36mconst\u001b[39m pathToExtension \u001b[33m=\u001b[39m path\u001b[33m.\u001b[39mjoin(__dirname\u001b[33m,\u001b[39m \u001b[32m'../../.output/chrome-mv3'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                           \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 19 |\u001b[39m\n \u001b[90m 20 |\u001b[39m         \u001b[36mconst\u001b[39m context \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m chromium\u001b[33m.\u001b[39mlaunchPersistentContext(\u001b[32m''\u001b[39m\u001b[33m,\u001b[39m {\n \u001b[90m 21 |\u001b[39m             headless\u001b[33m:\u001b[39m \u001b[36mtrue\u001b[39m\u001b[33m,\u001b[39m \u001b[90m// Use new headless mode which supports extensions\u001b[39m\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts",
+                            "column": 43,
+                            "line": 18
+                          },
+                          "message": "ReferenceError: __dirname is not defined\n\n   at fixtures\\extension.ts:18\n\n  16 |     // Override context to load extension\n  17 |     context: async ({ }, use) => {\n> 18 |         const pathToExtension = path.join(__dirname, '../../.output/chrome-mv3');\n     |                                           ^\n  19 |\n  20 |         const context = await chromium.launchPersistentContext('', {\n  21 |             headless: true, // Use new headless mode which supports extensions\n    at Object.context (F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts:18:43)"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-11-27T16:20:09.969Z",
+                      "annotations": [],
+                      "attachments": [],
+                      "errorLocation": {
+                        "file": "F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts",
+                        "column": 43,
+                        "line": 18
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "2c69674198c4542748c6-7329be12af007ff9a54c",
+              "file": "errors.spec.ts",
+              "line": 66,
+              "column": 5
+            },
+            {
+              "title": "should handle unsupported language",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-extension",
+                  "projectName": "chromium-extension",
+                  "results": [
+                    {
+                      "workerIndex": 10,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 11,
+                      "error": {
+                        "message": "ReferenceError: __dirname is not defined",
+                        "stack": "ReferenceError: __dirname is not defined\n    at Object.context (F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts:18:43)",
+                        "location": {
+                          "file": "F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts",
+                          "column": 43,
+                          "line": 18
+                        },
+                        "snippet": "\u001b[90m   at \u001b[39mfixtures\\extension.ts:18\n\n\u001b[0m \u001b[90m 16 |\u001b[39m     \u001b[90m// Override context to load extension\u001b[39m\n \u001b[90m 17 |\u001b[39m     context\u001b[33m:\u001b[39m \u001b[36masync\u001b[39m ({ }\u001b[33m,\u001b[39m use) \u001b[33m=>\u001b[39m {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 18 |\u001b[39m         \u001b[36mconst\u001b[39m pathToExtension \u001b[33m=\u001b[39m path\u001b[33m.\u001b[39mjoin(__dirname\u001b[33m,\u001b[39m \u001b[32m'../../.output/chrome-mv3'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                           \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 19 |\u001b[39m\n \u001b[90m 20 |\u001b[39m         \u001b[36mconst\u001b[39m context \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m chromium\u001b[33m.\u001b[39mlaunchPersistentContext(\u001b[32m''\u001b[39m\u001b[33m,\u001b[39m {\n \u001b[90m 21 |\u001b[39m             headless\u001b[33m:\u001b[39m \u001b[36mtrue\u001b[39m\u001b[33m,\u001b[39m \u001b[90m// Use new headless mode which supports extensions\u001b[39m\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts",
+                            "column": 43,
+                            "line": 18
+                          },
+                          "message": "ReferenceError: __dirname is not defined\n\n   at fixtures\\extension.ts:18\n\n  16 |     // Override context to load extension\n  17 |     context: async ({ }, use) => {\n> 18 |         const pathToExtension = path.join(__dirname, '../../.output/chrome-mv3');\n     |                                           ^\n  19 |\n  20 |         const context = await chromium.launchPersistentContext('', {\n  21 |             headless: true, // Use new headless mode which supports extensions\n    at Object.context (F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts:18:43)"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-11-27T16:20:13.265Z",
+                      "annotations": [],
+                      "attachments": [],
+                      "errorLocation": {
+                        "file": "F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts",
+                        "column": 43,
+                        "line": 18
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "2c69674198c4542748c6-1609550ae2591c092531",
+              "file": "errors.spec.ts",
+              "line": 97,
+              "column": 5
+            },
+            {
+              "title": "should handle rate limiting",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-extension",
+                  "projectName": "chromium-extension",
+                  "results": [
+                    {
+                      "workerIndex": 11,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 8,
+                      "error": {
+                        "message": "ReferenceError: __dirname is not defined",
+                        "stack": "ReferenceError: __dirname is not defined\n    at Object.context (F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts:18:43)",
+                        "location": {
+                          "file": "F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts",
+                          "column": 43,
+                          "line": 18
+                        },
+                        "snippet": "\u001b[90m   at \u001b[39mfixtures\\extension.ts:18\n\n\u001b[0m \u001b[90m 16 |\u001b[39m     \u001b[90m// Override context to load extension\u001b[39m\n \u001b[90m 17 |\u001b[39m     context\u001b[33m:\u001b[39m \u001b[36masync\u001b[39m ({ }\u001b[33m,\u001b[39m use) \u001b[33m=>\u001b[39m {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 18 |\u001b[39m         \u001b[36mconst\u001b[39m pathToExtension \u001b[33m=\u001b[39m path\u001b[33m.\u001b[39mjoin(__dirname\u001b[33m,\u001b[39m \u001b[32m'../../.output/chrome-mv3'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                           \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 19 |\u001b[39m\n \u001b[90m 20 |\u001b[39m         \u001b[36mconst\u001b[39m context \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m chromium\u001b[33m.\u001b[39mlaunchPersistentContext(\u001b[32m''\u001b[39m\u001b[33m,\u001b[39m {\n \u001b[90m 21 |\u001b[39m             headless\u001b[33m:\u001b[39m \u001b[36mtrue\u001b[39m\u001b[33m,\u001b[39m \u001b[90m// Use new headless mode which supports extensions\u001b[39m\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts",
+                            "column": 43,
+                            "line": 18
+                          },
+                          "message": "ReferenceError: __dirname is not defined\n\n   at fixtures\\extension.ts:18\n\n  16 |     // Override context to load extension\n  17 |     context: async ({ }, use) => {\n> 18 |         const pathToExtension = path.join(__dirname, '../../.output/chrome-mv3');\n     |                                           ^\n  19 |\n  20 |         const context = await chromium.launchPersistentContext('', {\n  21 |             headless: true, // Use new headless mode which supports extensions\n    at Object.context (F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts:18:43)"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-11-27T16:20:15.582Z",
+                      "annotations": [],
+                      "attachments": [],
+                      "errorLocation": {
+                        "file": "F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts",
+                        "column": 43,
+                        "line": 18
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "2c69674198c4542748c6-83caeceeef7cb8e626b9",
+              "file": "errors.spec.ts",
+              "line": 140,
+              "column": 5
+            },
+            {
+              "title": "should handle empty selection",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-extension",
+                  "projectName": "chromium-extension",
+                  "results": [
+                    {
+                      "workerIndex": 12,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 10,
+                      "error": {
+                        "message": "ReferenceError: __dirname is not defined",
+                        "stack": "ReferenceError: __dirname is not defined\n    at Object.context (F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts:18:43)",
+                        "location": {
+                          "file": "F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts",
+                          "column": 43,
+                          "line": 18
+                        },
+                        "snippet": "\u001b[90m   at \u001b[39mfixtures\\extension.ts:18\n\n\u001b[0m \u001b[90m 16 |\u001b[39m     \u001b[90m// Override context to load extension\u001b[39m\n \u001b[90m 17 |\u001b[39m     context\u001b[33m:\u001b[39m \u001b[36masync\u001b[39m ({ }\u001b[33m,\u001b[39m use) \u001b[33m=>\u001b[39m {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 18 |\u001b[39m         \u001b[36mconst\u001b[39m pathToExtension \u001b[33m=\u001b[39m path\u001b[33m.\u001b[39mjoin(__dirname\u001b[33m,\u001b[39m \u001b[32m'../../.output/chrome-mv3'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                           \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 19 |\u001b[39m\n \u001b[90m 20 |\u001b[39m         \u001b[36mconst\u001b[39m context \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m chromium\u001b[33m.\u001b[39mlaunchPersistentContext(\u001b[32m''\u001b[39m\u001b[33m,\u001b[39m {\n \u001b[90m 21 |\u001b[39m             headless\u001b[33m:\u001b[39m \u001b[36mtrue\u001b[39m\u001b[33m,\u001b[39m \u001b[90m// Use new headless mode which supports extensions\u001b[39m\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts",
+                            "column": 43,
+                            "line": 18
+                          },
+                          "message": "ReferenceError: __dirname is not defined\n\n   at fixtures\\extension.ts:18\n\n  16 |     // Override context to load extension\n  17 |     context: async ({ }, use) => {\n> 18 |         const pathToExtension = path.join(__dirname, '../../.output/chrome-mv3');\n     |                                           ^\n  19 |\n  20 |         const context = await chromium.launchPersistentContext('', {\n  21 |             headless: true, // Use new headless mode which supports extensions\n    at Object.context (F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts:18:43)"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-11-27T16:20:18.197Z",
+                      "annotations": [],
+                      "attachments": [],
+                      "errorLocation": {
+                        "file": "F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts",
+                        "column": 43,
+                        "line": 18
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "2c69674198c4542748c6-c53d3bf22bb0ec089be1",
+              "file": "errors.spec.ts",
+              "line": 175,
+              "column": 5
+            },
+            {
+              "title": "should recover from errors and allow retry",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-extension",
+                  "projectName": "chromium-extension",
+                  "results": [
+                    {
+                      "workerIndex": 13,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 8,
+                      "error": {
+                        "message": "ReferenceError: __dirname is not defined",
+                        "stack": "ReferenceError: __dirname is not defined\n    at Object.context (F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts:18:43)",
+                        "location": {
+                          "file": "F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts",
+                          "column": 43,
+                          "line": 18
+                        },
+                        "snippet": "\u001b[90m   at \u001b[39mfixtures\\extension.ts:18\n\n\u001b[0m \u001b[90m 16 |\u001b[39m     \u001b[90m// Override context to load extension\u001b[39m\n \u001b[90m 17 |\u001b[39m     context\u001b[33m:\u001b[39m \u001b[36masync\u001b[39m ({ }\u001b[33m,\u001b[39m use) \u001b[33m=>\u001b[39m {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 18 |\u001b[39m         \u001b[36mconst\u001b[39m pathToExtension \u001b[33m=\u001b[39m path\u001b[33m.\u001b[39mjoin(__dirname\u001b[33m,\u001b[39m \u001b[32m'../../.output/chrome-mv3'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                           \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 19 |\u001b[39m\n \u001b[90m 20 |\u001b[39m         \u001b[36mconst\u001b[39m context \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m chromium\u001b[33m.\u001b[39mlaunchPersistentContext(\u001b[32m''\u001b[39m\u001b[33m,\u001b[39m {\n \u001b[90m 21 |\u001b[39m             headless\u001b[33m:\u001b[39m \u001b[36mtrue\u001b[39m\u001b[33m,\u001b[39m \u001b[90m// Use new headless mode which supports extensions\u001b[39m\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts",
+                            "column": 43,
+                            "line": 18
+                          },
+                          "message": "ReferenceError: __dirname is not defined\n\n   at fixtures\\extension.ts:18\n\n  16 |     // Override context to load extension\n  17 |     context: async ({ }, use) => {\n> 18 |         const pathToExtension = path.join(__dirname, '../../.output/chrome-mv3');\n     |                                           ^\n  19 |\n  20 |         const context = await chromium.launchPersistentContext('', {\n  21 |             headless: true, // Use new headless mode which supports extensions\n    at Object.context (F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts:18:43)"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-11-27T16:20:20.876Z",
+                      "annotations": [],
+                      "attachments": [],
+                      "errorLocation": {
+                        "file": "F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts",
+                        "column": 43,
+                        "line": 18
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "2c69674198c4542748c6-d4143c5849ad1a4ee6d2",
+              "file": "errors.spec.ts",
+              "line": 202,
+              "column": 5
+            },
+            {
+              "title": "should handle session expiry",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-extension",
+                  "projectName": "chromium-extension",
+                  "results": [
+                    {
+                      "workerIndex": 14,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 8,
+                      "error": {
+                        "message": "ReferenceError: __dirname is not defined",
+                        "stack": "ReferenceError: __dirname is not defined\n    at Object.context (F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts:18:43)",
+                        "location": {
+                          "file": "F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts",
+                          "column": 43,
+                          "line": 18
+                        },
+                        "snippet": "\u001b[90m   at \u001b[39mfixtures\\extension.ts:18\n\n\u001b[0m \u001b[90m 16 |\u001b[39m     \u001b[90m// Override context to load extension\u001b[39m\n \u001b[90m 17 |\u001b[39m     context\u001b[33m:\u001b[39m \u001b[36masync\u001b[39m ({ }\u001b[33m,\u001b[39m use) \u001b[33m=>\u001b[39m {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 18 |\u001b[39m         \u001b[36mconst\u001b[39m pathToExtension \u001b[33m=\u001b[39m path\u001b[33m.\u001b[39mjoin(__dirname\u001b[33m,\u001b[39m \u001b[32m'../../.output/chrome-mv3'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                           \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 19 |\u001b[39m\n \u001b[90m 20 |\u001b[39m         \u001b[36mconst\u001b[39m context \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m chromium\u001b[33m.\u001b[39mlaunchPersistentContext(\u001b[32m''\u001b[39m\u001b[33m,\u001b[39m {\n \u001b[90m 21 |\u001b[39m             headless\u001b[33m:\u001b[39m \u001b[36mtrue\u001b[39m\u001b[33m,\u001b[39m \u001b[90m// Use new headless mode which supports extensions\u001b[39m\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts",
+                            "column": 43,
+                            "line": 18
+                          },
+                          "message": "ReferenceError: __dirname is not defined\n\n   at fixtures\\extension.ts:18\n\n  16 |     // Override context to load extension\n  17 |     context: async ({ }, use) => {\n> 18 |         const pathToExtension = path.join(__dirname, '../../.output/chrome-mv3');\n     |                                           ^\n  19 |\n  20 |         const context = await chromium.launchPersistentContext('', {\n  21 |             headless: true, // Use new headless mode which supports extensions\n    at Object.context (F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts:18:43)"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-11-27T16:20:22.456Z",
+                      "annotations": [],
+                      "attachments": [],
+                      "errorLocation": {
+                        "file": "F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts",
+                        "column": 43,
+                        "line": 18
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "2c69674198c4542748c6-9a2938328e1a9b426e3c",
+              "file": "errors.spec.ts",
+              "line": 254,
+              "column": 5
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "subscription.spec.ts",
+      "file": "subscription.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Subscription & Usage Limits",
+          "file": "subscription.spec.ts",
+          "line": 11,
+          "column": 6,
+          "specs": [
+            {
+              "title": "trial user should see correct subscription badge",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-extension",
+                  "projectName": "chromium-extension",
+                  "results": [
+                    {
+                      "workerIndex": 15,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 6,
+                      "error": {
+                        "message": "ReferenceError: __dirname is not defined",
+                        "stack": "ReferenceError: __dirname is not defined\n    at Object.context (F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts:18:43)",
+                        "location": {
+                          "file": "F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts",
+                          "column": 43,
+                          "line": 18
+                        },
+                        "snippet": "\u001b[90m   at \u001b[39mfixtures\\extension.ts:18\n\n\u001b[0m \u001b[90m 16 |\u001b[39m     \u001b[90m// Override context to load extension\u001b[39m\n \u001b[90m 17 |\u001b[39m     context\u001b[33m:\u001b[39m \u001b[36masync\u001b[39m ({ }\u001b[33m,\u001b[39m use) \u001b[33m=>\u001b[39m {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 18 |\u001b[39m         \u001b[36mconst\u001b[39m pathToExtension \u001b[33m=\u001b[39m path\u001b[33m.\u001b[39mjoin(__dirname\u001b[33m,\u001b[39m \u001b[32m'../../.output/chrome-mv3'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                           \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 19 |\u001b[39m\n \u001b[90m 20 |\u001b[39m         \u001b[36mconst\u001b[39m context \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m chromium\u001b[33m.\u001b[39mlaunchPersistentContext(\u001b[32m''\u001b[39m\u001b[33m,\u001b[39m {\n \u001b[90m 21 |\u001b[39m             headless\u001b[33m:\u001b[39m \u001b[36mtrue\u001b[39m\u001b[33m,\u001b[39m \u001b[90m// Use new headless mode which supports extensions\u001b[39m\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts",
+                            "column": 43,
+                            "line": 18
+                          },
+                          "message": "ReferenceError: __dirname is not defined\n\n   at fixtures\\extension.ts:18\n\n  16 |     // Override context to load extension\n  17 |     context: async ({ }, use) => {\n> 18 |         const pathToExtension = path.join(__dirname, '../../.output/chrome-mv3');\n     |                                           ^\n  19 |\n  20 |         const context = await chromium.launchPersistentContext('', {\n  21 |             headless: true, // Use new headless mode which supports extensions\n    at Object.context (F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts:18:43)"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-11-27T16:20:24.112Z",
+                      "annotations": [],
+                      "attachments": [],
+                      "errorLocation": {
+                        "file": "F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts",
+                        "column": 43,
+                        "line": 18
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "7d953d1cdb8684155dd7-fc0dbd81babfc33c7a48",
+              "file": "subscription.spec.ts",
+              "line": 16,
+              "column": 5
+            },
+            {
+              "title": "trial user should see usage increment after enhancement",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-extension",
+                  "projectName": "chromium-extension",
+                  "results": [
+                    {
+                      "workerIndex": 16,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 22,
+                      "error": {
+                        "message": "ReferenceError: __dirname is not defined",
+                        "stack": "ReferenceError: __dirname is not defined\n    at Object.context (F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts:18:43)",
+                        "location": {
+                          "file": "F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts",
+                          "column": 43,
+                          "line": 18
+                        },
+                        "snippet": "\u001b[90m   at \u001b[39mfixtures\\extension.ts:18\n\n\u001b[0m \u001b[90m 16 |\u001b[39m     \u001b[90m// Override context to load extension\u001b[39m\n \u001b[90m 17 |\u001b[39m     context\u001b[33m:\u001b[39m \u001b[36masync\u001b[39m ({ }\u001b[33m,\u001b[39m use) \u001b[33m=>\u001b[39m {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 18 |\u001b[39m         \u001b[36mconst\u001b[39m pathToExtension \u001b[33m=\u001b[39m path\u001b[33m.\u001b[39mjoin(__dirname\u001b[33m,\u001b[39m \u001b[32m'../../.output/chrome-mv3'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                           \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 19 |\u001b[39m\n \u001b[90m 20 |\u001b[39m         \u001b[36mconst\u001b[39m context \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m chromium\u001b[33m.\u001b[39mlaunchPersistentContext(\u001b[32m''\u001b[39m\u001b[33m,\u001b[39m {\n \u001b[90m 21 |\u001b[39m             headless\u001b[33m:\u001b[39m \u001b[36mtrue\u001b[39m\u001b[33m,\u001b[39m \u001b[90m// Use new headless mode which supports extensions\u001b[39m\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts",
+                            "column": 43,
+                            "line": 18
+                          },
+                          "message": "ReferenceError: __dirname is not defined\n\n   at fixtures\\extension.ts:18\n\n  16 |     // Override context to load extension\n  17 |     context: async ({ }, use) => {\n> 18 |         const pathToExtension = path.join(__dirname, '../../.output/chrome-mv3');\n     |                                           ^\n  19 |\n  20 |         const context = await chromium.launchPersistentContext('', {\n  21 |             headless: true, // Use new headless mode which supports extensions\n    at Object.context (F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts:18:43)"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-11-27T16:20:25.787Z",
+                      "annotations": [],
+                      "attachments": [],
+                      "errorLocation": {
+                        "file": "F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts",
+                        "column": 43,
+                        "line": 18
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "7d953d1cdb8684155dd7-0bb01a8a920add04fab3",
+              "file": "subscription.spec.ts",
+              "line": 30,
+              "column": 5
+            },
+            {
+              "title": "trial user should see warning at 80% usage",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-extension",
+                  "projectName": "chromium-extension",
+                  "results": [
+                    {
+                      "workerIndex": 17,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 7,
+                      "error": {
+                        "message": "ReferenceError: __dirname is not defined",
+                        "stack": "ReferenceError: __dirname is not defined\n    at Object.context (F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts:18:43)",
+                        "location": {
+                          "file": "F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts",
+                          "column": 43,
+                          "line": 18
+                        },
+                        "snippet": "\u001b[90m   at \u001b[39mfixtures\\extension.ts:18\n\n\u001b[0m \u001b[90m 16 |\u001b[39m     \u001b[90m// Override context to load extension\u001b[39m\n \u001b[90m 17 |\u001b[39m     context\u001b[33m:\u001b[39m \u001b[36masync\u001b[39m ({ }\u001b[33m,\u001b[39m use) \u001b[33m=>\u001b[39m {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 18 |\u001b[39m         \u001b[36mconst\u001b[39m pathToExtension \u001b[33m=\u001b[39m path\u001b[33m.\u001b[39mjoin(__dirname\u001b[33m,\u001b[39m \u001b[32m'../../.output/chrome-mv3'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                           \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 19 |\u001b[39m\n \u001b[90m 20 |\u001b[39m         \u001b[36mconst\u001b[39m context \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m chromium\u001b[33m.\u001b[39mlaunchPersistentContext(\u001b[32m''\u001b[39m\u001b[33m,\u001b[39m {\n \u001b[90m 21 |\u001b[39m             headless\u001b[33m:\u001b[39m \u001b[36mtrue\u001b[39m\u001b[33m,\u001b[39m \u001b[90m// Use new headless mode which supports extensions\u001b[39m\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts",
+                            "column": 43,
+                            "line": 18
+                          },
+                          "message": "ReferenceError: __dirname is not defined\n\n   at fixtures\\extension.ts:18\n\n  16 |     // Override context to load extension\n  17 |     context: async ({ }, use) => {\n> 18 |         const pathToExtension = path.join(__dirname, '../../.output/chrome-mv3');\n     |                                           ^\n  19 |\n  20 |         const context = await chromium.launchPersistentContext('', {\n  21 |             headless: true, // Use new headless mode which supports extensions\n    at Object.context (F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts:18:43)"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-11-27T16:20:28.908Z",
+                      "annotations": [],
+                      "attachments": [],
+                      "errorLocation": {
+                        "file": "F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts",
+                        "column": 43,
+                        "line": 18
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "7d953d1cdb8684155dd7-7db64fc9c46a000ced04",
+              "file": "subscription.spec.ts",
+              "line": 55,
+              "column": 5
+            },
+            {
+              "title": "trial user at limit should see upgrade prompt",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-extension",
+                  "projectName": "chromium-extension",
+                  "results": [
+                    {
+                      "workerIndex": 18,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 19,
+                      "error": {
+                        "message": "ReferenceError: __dirname is not defined",
+                        "stack": "ReferenceError: __dirname is not defined\n    at Object.context (F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts:18:43)",
+                        "location": {
+                          "file": "F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts",
+                          "column": 43,
+                          "line": 18
+                        },
+                        "snippet": "\u001b[90m   at \u001b[39mfixtures\\extension.ts:18\n\n\u001b[0m \u001b[90m 16 |\u001b[39m     \u001b[90m// Override context to load extension\u001b[39m\n \u001b[90m 17 |\u001b[39m     context\u001b[33m:\u001b[39m \u001b[36masync\u001b[39m ({ }\u001b[33m,\u001b[39m use) \u001b[33m=>\u001b[39m {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 18 |\u001b[39m         \u001b[36mconst\u001b[39m pathToExtension \u001b[33m=\u001b[39m path\u001b[33m.\u001b[39mjoin(__dirname\u001b[33m,\u001b[39m \u001b[32m'../../.output/chrome-mv3'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                           \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 19 |\u001b[39m\n \u001b[90m 20 |\u001b[39m         \u001b[36mconst\u001b[39m context \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m chromium\u001b[33m.\u001b[39mlaunchPersistentContext(\u001b[32m''\u001b[39m\u001b[33m,\u001b[39m {\n \u001b[90m 21 |\u001b[39m             headless\u001b[33m:\u001b[39m \u001b[36mtrue\u001b[39m\u001b[33m,\u001b[39m \u001b[90m// Use new headless mode which supports extensions\u001b[39m\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts",
+                            "column": 43,
+                            "line": 18
+                          },
+                          "message": "ReferenceError: __dirname is not defined\n\n   at fixtures\\extension.ts:18\n\n  16 |     // Override context to load extension\n  17 |     context: async ({ }, use) => {\n> 18 |         const pathToExtension = path.join(__dirname, '../../.output/chrome-mv3');\n     |                                           ^\n  19 |\n  20 |         const context = await chromium.launchPersistentContext('', {\n  21 |             headless: true, // Use new headless mode which supports extensions\n    at Object.context (F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts:18:43)"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-11-27T16:20:37.787Z",
+                      "annotations": [],
+                      "attachments": [],
+                      "errorLocation": {
+                        "file": "F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts",
+                        "column": 43,
+                        "line": 18
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "7d953d1cdb8684155dd7-f0be5f8d55dbc03fdd23",
+              "file": "subscription.spec.ts",
+              "line": 74,
+              "column": 5
+            },
+            {
+              "title": "trial user at limit cannot enhance",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-extension",
+                  "projectName": "chromium-extension",
+                  "results": [
+                    {
+                      "workerIndex": 19,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 20,
+                      "error": {
+                        "message": "ReferenceError: __dirname is not defined",
+                        "stack": "ReferenceError: __dirname is not defined\n    at Object.context (F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts:18:43)",
+                        "location": {
+                          "file": "F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts",
+                          "column": 43,
+                          "line": 18
+                        },
+                        "snippet": "\u001b[90m   at \u001b[39mfixtures\\extension.ts:18\n\n\u001b[0m \u001b[90m 16 |\u001b[39m     \u001b[90m// Override context to load extension\u001b[39m\n \u001b[90m 17 |\u001b[39m     context\u001b[33m:\u001b[39m \u001b[36masync\u001b[39m ({ }\u001b[33m,\u001b[39m use) \u001b[33m=>\u001b[39m {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 18 |\u001b[39m         \u001b[36mconst\u001b[39m pathToExtension \u001b[33m=\u001b[39m path\u001b[33m.\u001b[39mjoin(__dirname\u001b[33m,\u001b[39m \u001b[32m'../../.output/chrome-mv3'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                           \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 19 |\u001b[39m\n \u001b[90m 20 |\u001b[39m         \u001b[36mconst\u001b[39m context \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m chromium\u001b[33m.\u001b[39mlaunchPersistentContext(\u001b[32m''\u001b[39m\u001b[33m,\u001b[39m {\n \u001b[90m 21 |\u001b[39m             headless\u001b[33m:\u001b[39m \u001b[36mtrue\u001b[39m\u001b[33m,\u001b[39m \u001b[90m// Use new headless mode which supports extensions\u001b[39m\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts",
+                            "column": 43,
+                            "line": 18
+                          },
+                          "message": "ReferenceError: __dirname is not defined\n\n   at fixtures\\extension.ts:18\n\n  16 |     // Override context to load extension\n  17 |     context: async ({ }, use) => {\n> 18 |         const pathToExtension = path.join(__dirname, '../../.output/chrome-mv3');\n     |                                           ^\n  19 |\n  20 |         const context = await chromium.launchPersistentContext('', {\n  21 |             headless: true, // Use new headless mode which supports extensions\n    at Object.context (F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts:18:43)"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-11-27T16:20:44.296Z",
+                      "annotations": [],
+                      "attachments": [],
+                      "errorLocation": {
+                        "file": "F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts",
+                        "column": 43,
+                        "line": 18
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "7d953d1cdb8684155dd7-75852de54eaa42b149be",
+              "file": "subscription.spec.ts",
+              "line": 94,
+              "column": 5
+            },
+            {
+              "title": "upgrade CTA should link to pricing page",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-extension",
+                  "projectName": "chromium-extension",
+                  "results": [
+                    {
+                      "workerIndex": 20,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 31,
+                      "error": {
+                        "message": "ReferenceError: __dirname is not defined",
+                        "stack": "ReferenceError: __dirname is not defined\n    at Object.context (F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts:18:43)",
+                        "location": {
+                          "file": "F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts",
+                          "column": 43,
+                          "line": 18
+                        },
+                        "snippet": "\u001b[90m   at \u001b[39mfixtures\\extension.ts:18\n\n\u001b[0m \u001b[90m 16 |\u001b[39m     \u001b[90m// Override context to load extension\u001b[39m\n \u001b[90m 17 |\u001b[39m     context\u001b[33m:\u001b[39m \u001b[36masync\u001b[39m ({ }\u001b[33m,\u001b[39m use) \u001b[33m=>\u001b[39m {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 18 |\u001b[39m         \u001b[36mconst\u001b[39m pathToExtension \u001b[33m=\u001b[39m path\u001b[33m.\u001b[39mjoin(__dirname\u001b[33m,\u001b[39m \u001b[32m'../../.output/chrome-mv3'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                           \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 19 |\u001b[39m\n \u001b[90m 20 |\u001b[39m         \u001b[36mconst\u001b[39m context \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m chromium\u001b[33m.\u001b[39mlaunchPersistentContext(\u001b[32m''\u001b[39m\u001b[33m,\u001b[39m {\n \u001b[90m 21 |\u001b[39m             headless\u001b[33m:\u001b[39m \u001b[36mtrue\u001b[39m\u001b[33m,\u001b[39m \u001b[90m// Use new headless mode which supports extensions\u001b[39m\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts",
+                            "column": 43,
+                            "line": 18
+                          },
+                          "message": "ReferenceError: __dirname is not defined\n\n   at fixtures\\extension.ts:18\n\n  16 |     // Override context to load extension\n  17 |     context: async ({ }, use) => {\n> 18 |         const pathToExtension = path.join(__dirname, '../../.output/chrome-mv3');\n     |                                           ^\n  19 |\n  20 |         const context = await chromium.launchPersistentContext('', {\n  21 |             headless: true, // Use new headless mode which supports extensions\n    at Object.context (F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts:18:43)"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-11-27T16:20:49.100Z",
+                      "annotations": [],
+                      "attachments": [],
+                      "errorLocation": {
+                        "file": "F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts",
+                        "column": 43,
+                        "line": 18
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "7d953d1cdb8684155dd7-ba3c1c556668a0915fb2",
+              "file": "subscription.spec.ts",
+              "line": 125,
+              "column": 5
+            },
+            {
+              "title": "paid user should see unlimited usage",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-extension",
+                  "projectName": "chromium-extension",
+                  "results": [
+                    {
+                      "workerIndex": 21,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 11,
+                      "error": {
+                        "message": "ReferenceError: __dirname is not defined",
+                        "stack": "ReferenceError: __dirname is not defined\n    at Object.context (F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts:18:43)",
+                        "location": {
+                          "file": "F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts",
+                          "column": 43,
+                          "line": 18
+                        },
+                        "snippet": "\u001b[90m   at \u001b[39mfixtures\\extension.ts:18\n\n\u001b[0m \u001b[90m 16 |\u001b[39m     \u001b[90m// Override context to load extension\u001b[39m\n \u001b[90m 17 |\u001b[39m     context\u001b[33m:\u001b[39m \u001b[36masync\u001b[39m ({ }\u001b[33m,\u001b[39m use) \u001b[33m=>\u001b[39m {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 18 |\u001b[39m         \u001b[36mconst\u001b[39m pathToExtension \u001b[33m=\u001b[39m path\u001b[33m.\u001b[39mjoin(__dirname\u001b[33m,\u001b[39m \u001b[32m'../../.output/chrome-mv3'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                           \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 19 |\u001b[39m\n \u001b[90m 20 |\u001b[39m         \u001b[36mconst\u001b[39m context \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m chromium\u001b[33m.\u001b[39mlaunchPersistentContext(\u001b[32m''\u001b[39m\u001b[33m,\u001b[39m {\n \u001b[90m 21 |\u001b[39m             headless\u001b[33m:\u001b[39m \u001b[36mtrue\u001b[39m\u001b[33m,\u001b[39m \u001b[90m// Use new headless mode which supports extensions\u001b[39m\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts",
+                            "column": 43,
+                            "line": 18
+                          },
+                          "message": "ReferenceError: __dirname is not defined\n\n   at fixtures\\extension.ts:18\n\n  16 |     // Override context to load extension\n  17 |     context: async ({ }, use) => {\n> 18 |         const pathToExtension = path.join(__dirname, '../../.output/chrome-mv3');\n     |                                           ^\n  19 |\n  20 |         const context = await chromium.launchPersistentContext('', {\n  21 |             headless: true, // Use new headless mode which supports extensions\n    at Object.context (F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts:18:43)"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-11-27T16:20:52.000Z",
+                      "annotations": [],
+                      "attachments": [],
+                      "errorLocation": {
+                        "file": "F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts",
+                        "column": 43,
+                        "line": 18
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "7d953d1cdb8684155dd7-ec3e71dd9391c013dad5",
+              "file": "subscription.spec.ts",
+              "line": 148,
+              "column": 5
+            },
+            {
+              "title": "paid user should not see usage warnings",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-extension",
+                  "projectName": "chromium-extension",
+                  "results": [
+                    {
+                      "workerIndex": 22,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 11,
+                      "error": {
+                        "message": "ReferenceError: __dirname is not defined",
+                        "stack": "ReferenceError: __dirname is not defined\n    at Object.context (F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts:18:43)",
+                        "location": {
+                          "file": "F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts",
+                          "column": 43,
+                          "line": 18
+                        },
+                        "snippet": "\u001b[90m   at \u001b[39mfixtures\\extension.ts:18\n\n\u001b[0m \u001b[90m 16 |\u001b[39m     \u001b[90m// Override context to load extension\u001b[39m\n \u001b[90m 17 |\u001b[39m     context\u001b[33m:\u001b[39m \u001b[36masync\u001b[39m ({ }\u001b[33m,\u001b[39m use) \u001b[33m=>\u001b[39m {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 18 |\u001b[39m         \u001b[36mconst\u001b[39m pathToExtension \u001b[33m=\u001b[39m path\u001b[33m.\u001b[39mjoin(__dirname\u001b[33m,\u001b[39m \u001b[32m'../../.output/chrome-mv3'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                           \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 19 |\u001b[39m\n \u001b[90m 20 |\u001b[39m         \u001b[36mconst\u001b[39m context \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m chromium\u001b[33m.\u001b[39mlaunchPersistentContext(\u001b[32m''\u001b[39m\u001b[33m,\u001b[39m {\n \u001b[90m 21 |\u001b[39m             headless\u001b[33m:\u001b[39m \u001b[36mtrue\u001b[39m\u001b[33m,\u001b[39m \u001b[90m// Use new headless mode which supports extensions\u001b[39m\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts",
+                            "column": 43,
+                            "line": 18
+                          },
+                          "message": "ReferenceError: __dirname is not defined\n\n   at fixtures\\extension.ts:18\n\n  16 |     // Override context to load extension\n  17 |     context: async ({ }, use) => {\n> 18 |         const pathToExtension = path.join(__dirname, '../../.output/chrome-mv3');\n     |                                           ^\n  19 |\n  20 |         const context = await chromium.launchPersistentContext('', {\n  21 |             headless: true, // Use new headless mode which supports extensions\n    at Object.context (F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts:18:43)"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-11-27T16:20:54.852Z",
+                      "annotations": [],
+                      "attachments": [],
+                      "errorLocation": {
+                        "file": "F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts",
+                        "column": 43,
+                        "line": 18
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "7d953d1cdb8684155dd7-7c2ae6cc5cd00f2714af",
+              "file": "subscription.spec.ts",
+              "line": 174,
+              "column": 5
+            },
+            {
+              "title": "paid user can enhance unlimited times",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-extension",
+                  "projectName": "chromium-extension",
+                  "results": [
+                    {
+                      "workerIndex": 23,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 25,
+                      "error": {
+                        "message": "ReferenceError: __dirname is not defined",
+                        "stack": "ReferenceError: __dirname is not defined\n    at Object.context (F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts:18:43)",
+                        "location": {
+                          "file": "F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts",
+                          "column": 43,
+                          "line": 18
+                        },
+                        "snippet": "\u001b[90m   at \u001b[39mfixtures\\extension.ts:18\n\n\u001b[0m \u001b[90m 16 |\u001b[39m     \u001b[90m// Override context to load extension\u001b[39m\n \u001b[90m 17 |\u001b[39m     context\u001b[33m:\u001b[39m \u001b[36masync\u001b[39m ({ }\u001b[33m,\u001b[39m use) \u001b[33m=>\u001b[39m {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 18 |\u001b[39m         \u001b[36mconst\u001b[39m pathToExtension \u001b[33m=\u001b[39m path\u001b[33m.\u001b[39mjoin(__dirname\u001b[33m,\u001b[39m \u001b[32m'../../.output/chrome-mv3'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                           \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 19 |\u001b[39m\n \u001b[90m 20 |\u001b[39m         \u001b[36mconst\u001b[39m context \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m chromium\u001b[33m.\u001b[39mlaunchPersistentContext(\u001b[32m''\u001b[39m\u001b[33m,\u001b[39m {\n \u001b[90m 21 |\u001b[39m             headless\u001b[33m:\u001b[39m \u001b[36mtrue\u001b[39m\u001b[33m,\u001b[39m \u001b[90m// Use new headless mode which supports extensions\u001b[39m\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts",
+                            "column": 43,
+                            "line": 18
+                          },
+                          "message": "ReferenceError: __dirname is not defined\n\n   at fixtures\\extension.ts:18\n\n  16 |     // Override context to load extension\n  17 |     context: async ({ }, use) => {\n> 18 |         const pathToExtension = path.join(__dirname, '../../.output/chrome-mv3');\n     |                                           ^\n  19 |\n  20 |         const context = await chromium.launchPersistentContext('', {\n  21 |             headless: true, // Use new headless mode which supports extensions\n    at Object.context (F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts:18:43)"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-11-27T16:20:57.904Z",
+                      "annotations": [],
+                      "attachments": [],
+                      "errorLocation": {
+                        "file": "F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts",
+                        "column": 43,
+                        "line": 18
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "7d953d1cdb8684155dd7-35222c05a01d0fbf3a22",
+              "file": "subscription.spec.ts",
+              "line": 193,
+              "column": 5
+            },
+            {
+              "title": "lifetime user should see correct badge",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-extension",
+                  "projectName": "chromium-extension",
+                  "results": [
+                    {
+                      "workerIndex": 24,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 10,
+                      "error": {
+                        "message": "ReferenceError: __dirname is not defined",
+                        "stack": "ReferenceError: __dirname is not defined\n    at Object.context (F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts:18:43)",
+                        "location": {
+                          "file": "F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts",
+                          "column": 43,
+                          "line": 18
+                        },
+                        "snippet": "\u001b[90m   at \u001b[39mfixtures\\extension.ts:18\n\n\u001b[0m \u001b[90m 16 |\u001b[39m     \u001b[90m// Override context to load extension\u001b[39m\n \u001b[90m 17 |\u001b[39m     context\u001b[33m:\u001b[39m \u001b[36masync\u001b[39m ({ }\u001b[33m,\u001b[39m use) \u001b[33m=>\u001b[39m {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 18 |\u001b[39m         \u001b[36mconst\u001b[39m pathToExtension \u001b[33m=\u001b[39m path\u001b[33m.\u001b[39mjoin(__dirname\u001b[33m,\u001b[39m \u001b[32m'../../.output/chrome-mv3'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                           \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 19 |\u001b[39m\n \u001b[90m 20 |\u001b[39m         \u001b[36mconst\u001b[39m context \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m chromium\u001b[33m.\u001b[39mlaunchPersistentContext(\u001b[32m''\u001b[39m\u001b[33m,\u001b[39m {\n \u001b[90m 21 |\u001b[39m             headless\u001b[33m:\u001b[39m \u001b[36mtrue\u001b[39m\u001b[33m,\u001b[39m \u001b[90m// Use new headless mode which supports extensions\u001b[39m\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts",
+                            "column": 43,
+                            "line": 18
+                          },
+                          "message": "ReferenceError: __dirname is not defined\n\n   at fixtures\\extension.ts:18\n\n  16 |     // Override context to load extension\n  17 |     context: async ({ }, use) => {\n> 18 |         const pathToExtension = path.join(__dirname, '../../.output/chrome-mv3');\n     |                                           ^\n  19 |\n  20 |         const context = await chromium.launchPersistentContext('', {\n  21 |             headless: true, // Use new headless mode which supports extensions\n    at Object.context (F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts:18:43)"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-11-27T16:21:05.127Z",
+                      "annotations": [],
+                      "attachments": [],
+                      "errorLocation": {
+                        "file": "F:\\Projects\\Languages\\Websites\\extensions\\verba\\apps\\extension\\e2e\\fixtures\\extension.ts",
+                        "column": 43,
+                        "line": 18
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "7d953d1cdb8684155dd7-59d4e67bdd4cdd0141df",
+              "file": "subscription.spec.ts",
+              "line": 226,
+              "column": 5
+            }
+          ]
+        }
+      ]
     }
   ],
+  "errors": [],
   "stats": {
-    "startTime": "2025-11-27T13:54:51.222Z",
-    "duration": 120929.775,
+    "startTime": "2025-11-27T16:19:44.683Z",
+    "duration": 80532.987,
     "expected": 0,
     "skipped": 0,
-    "unexpected": 0,
+    "unexpected": 25,
     "flaky": 0
   }
 }

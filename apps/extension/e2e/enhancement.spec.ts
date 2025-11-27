@@ -1,5 +1,5 @@
-import { test, expect } from '../fixtures/extension';
-import { PopupPage, ContentPage, simulateLogin, clearExtensionStorage } from '../helpers/page-objects';
+import { test, expect } from './fixtures/extension';
+import { PopupPage, ContentPage, simulateLogin, clearExtensionStorage } from './helpers/page-objects';
 import path from 'path';
 
 /**
