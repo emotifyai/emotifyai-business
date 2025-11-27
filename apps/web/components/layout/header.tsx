@@ -34,13 +34,31 @@ export function Header() {
 
                 {/* Navigation */}
                 <nav className="hidden md:flex items-center space-x-6">
-                    <Link href="/pricing" className="text-sm font-medium transition-colors hover:text-primary">
+                    <Link
+                        href="/pricing"
+                        className={`text-sm font-medium transition-colors ${typeof window !== 'undefined' && window.location.pathname === '/pricing'
+                                ? 'text-primary'
+                                : 'text-muted-foreground hover:text-primary'
+                            }`}
+                    >
                         Pricing
                     </Link>
-                    <Link href="/docs" className="text-sm font-medium transition-colors hover:text-primary">
+                    <Link
+                        href="/docs"
+                        className={`text-sm font-medium transition-colors ${typeof window !== 'undefined' && window.location.pathname === '/docs'
+                                ? 'text-primary'
+                                : 'text-muted-foreground hover:text-primary'
+                            }`}
+                    >
                         Docs
                     </Link>
-                    <Link href="/about" className="text-sm font-medium transition-colors hover:text-primary">
+                    <Link
+                        href="/about"
+                        className={`text-sm font-medium transition-colors ${typeof window !== 'undefined' && window.location.pathname === '/about'
+                                ? 'text-primary'
+                                : 'text-muted-foreground hover:text-primary'
+                            }`}
+                    >
                         About
                     </Link>
                 </nav>
