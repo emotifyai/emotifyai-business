@@ -71,6 +71,9 @@ async function updateContextMenuState(isAuthenticated: boolean): Promise<void> {
 
 // Handle text enhancement
 async function handleEnhanceText(text: string, tabId?: number): Promise<void> {
+  // Track total enhancement time (extension code + backend)
+  const enhancementStart = performance.now();
+
   try {
     logger.info('Enhancing text from context menu', { textLength: text.length });
 
@@ -91,7 +94,7 @@ async function handleEnhanceText(text: string, tabId?: number): Promise<void> {
       });
     }
 
-    // Enhance text
+    // Enhance text (backend API call is tracked inside enhanceText)
     const result = await enhanceText(text, { language: 'auto' });
 
     // Increment usage
@@ -108,9 +111,17 @@ async function handleEnhanceText(text: string, tabId?: number): Promise<void> {
       });
     }
 
-    logger.info('Text enhanced successfully');
+    // Log total enhancement time
+    const totalDuration = performance.now() - enhancementStart;
+    logger.info('Text enhanced successfully', {
+      totalDuration: `${totalDuration.toFixed(2)}ms`,
+    });
   } catch (error) {
-    logger.error('Text enhancement failed', error);
+    const totalDuration = performance.now() - enhancementStart;
+    logger.error('Text enhancement failed', {
+      error,
+      totalDuration: `${totalDuration.toFixed(2)}ms`,
+    });
 
     // Send error to content script
     if (tabId) {
