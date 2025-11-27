@@ -27,7 +27,7 @@ export async function getUserSubscription(userId: string): Promise<SubscriptionI
         currentPeriodStart: new Date(subscription.current_period_start),
         currentPeriodEnd: new Date(subscription.current_period_end),
         cancelAt: subscription.cancel_at ? new Date(subscription.cancel_at) : null,
-        limits: SUBSCRIPTION_LIMITS[subscription.tier],
+        limits: SUBSCRIPTION_LIMITS[subscription.tier as SubscriptionTier],
     }
 }
 

@@ -144,11 +144,11 @@ function buildSystemPrompt(
         professional: 'Use clear, professional language suitable for business contexts.',
     }
 
+    const toneInstruction = tone ? `\nTone: ${toneInstructions[tone]}` : ''
+
     return `${basePrompt}
 
-${modeInstructions[mode]}
-
-Tone: ${toneInstructions[tone]}
+${modeInstructions[mode]}${toneInstruction}
 
 IMPORTANT:
 - Output ONLY the enhanced text, no explanations or meta-commentary
