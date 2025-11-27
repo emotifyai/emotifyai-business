@@ -222,6 +222,179 @@ Output files:
 - ✅ Firefox (Manifest V2)
 - ⏳ Safari (future support)
 
+## Troubleshooting
+
+### Extension Not Loading
+
+**Problem**: Extension doesn't appear in browser after installation
+
+**Solutions**:
+1. Check if extension is enabled in browser settings
+   - Chrome: `chrome://extensions`
+   - Firefox: `about:addons`
+2. Reload the extension
+3. Check browser console for errors (F12)
+4. Verify manifest.json is valid
+
+### Context Menu Not Appearing
+
+**Problem**: Right-click menu doesn't show "Enhance with Verba"
+
+**Solutions**:
+1. Ensure you're logged in (click extension icon)
+2. Select text before right-clicking
+3. Check extension permissions in browser settings
+4. Reload the page and try again
+5. Verify extension is enabled
+
+### Text Not Enhancing
+
+**Problem**: Selected text doesn't get enhanced
+
+**Solutions**:
+1. **Check Authentication**
+   - Click extension icon
+   - Verify you're logged in
+   - Re-login if needed
+
+2. **Check Usage Limits**
+   - Open extension popup
+   - Check remaining enhancements
+   - Upgrade if limit reached
+
+3. **Check Network**
+   - Open browser DevTools (F12)
+   - Go to Network tab
+   - Try enhancement again
+   - Look for failed API requests
+   - Check error messages
+
+4. **Check Language Support**
+   - Verba supports: English, Arabic, French
+   - Other languages may not work well
+
+### Login Issues
+
+**Problem**: Can't log in to extension
+
+**Solutions**:
+1. Clear browser cache and cookies
+2. Disable other extensions temporarily
+3. Check if popup blocker is blocking OAuth window
+4. Try incognito/private mode
+5. Verify internet connection
+
+### Performance Issues
+
+**Problem**: Extension is slow or freezing
+
+**Solutions**:
+1. **Check Text Length**
+   - Very long text (>5000 words) may be slow
+   - Try smaller selections
+
+2. **Check Network Speed**
+   - AI processing requires good internet
+   - Test on different network
+
+3. **Clear Extension Data**
+   ```javascript
+   // In browser console
+   chrome.storage.local.clear()
+   ```
+
+4. **Disable Other Extensions**
+   - Conflicts with other extensions possible
+   - Test with only Verba enabled
+
+### Keyboard Shortcut Not Working
+
+**Problem**: Ctrl+Shift+E doesn't trigger enhancement
+
+**Solutions**:
+1. Check if shortcut conflicts with other extensions
+   - Chrome: `chrome://extensions/shortcuts`
+2. Verify text is selected
+3. Try right-click menu instead
+4. Reassign shortcut if needed
+
+### Extension Crashes
+
+**Problem**: Extension stops working or crashes browser
+
+**Solutions**:
+1. **Update Browser**
+   - Ensure latest version installed
+
+2. **Reinstall Extension**
+   - Remove extension
+   - Clear browser cache
+   - Reinstall from store
+
+3. **Check Console Errors**
+   - Open DevTools (F12)
+   - Check Console tab
+   - Look for error messages
+   - Report errors to support
+
+4. **Disable Conflicting Extensions**
+   - Other extensions may interfere
+   - Test with minimal extensions
+
+### API Errors
+
+**Problem**: Getting error messages from API
+
+**Common Errors**:
+
+| Error | Cause | Solution |
+|-------|-------|----------|
+| `AUTHENTICATION_ERROR` | Not logged in | Log in via extension popup |
+| `SUBSCRIPTION_ERROR` | Usage limit reached | Upgrade subscription |
+| `LANGUAGE_NOT_SUPPORTED` | Unsupported language | Use EN/AR/FR only |
+| `NETWORK_ERROR` | No internet | Check connection |
+| `RATE_LIMIT_ERROR` | Too many requests | Wait a few minutes |
+
+### Data Not Syncing
+
+**Problem**: Settings/usage not syncing across devices
+
+**Note**: Currently, data is stored locally per browser. Cross-device sync coming soon.
+
+**Workaround**:
+- Log in on each device
+- Settings are per-device
+
+### Firefox-Specific Issues
+
+**Problem**: Extension works on Chrome but not Firefox
+
+**Solutions**:
+1. Ensure using Firefox version (not Chrome version)
+2. Check Firefox version (requires 109+)
+3. Enable extension in `about:addons`
+4. Check Firefox console for errors
+
+### Still Having Issues?
+
+If none of the above solutions work:
+
+1. **Collect Information**
+   - Browser version
+   - Extension version
+   - Error messages
+   - Steps to reproduce
+
+2. **Report Issue**
+   - Email: support@verba.app
+   - Include collected information
+   - Attach screenshots if helpful
+
+3. **Temporary Workarounds**
+   - Use web app directly: https://verba.app
+   - Try different browser
+   - Use incognito mode
+
 ## Contributing
 
 1. Fork the repository
@@ -239,5 +412,5 @@ Output files:
 
 For issues and questions:
 - GitHub Issues: [Your Repo]
-- Email: [Your Email]
-- Documentation: [Your Docs URL]
+- Email: support@verba.app
+- Documentation: https://verba.app/docs

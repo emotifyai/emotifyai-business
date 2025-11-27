@@ -7,17 +7,9 @@ export default defineConfig({
   vite: () => ({
     plugins: [tailwindcss()],
     build: {
-      chunkSizeWarningLimit: 600, // Increase limit for extension context
-      rollupOptions: {
-        output: {
-          manualChunks: {
-            // Split React and React DOM into separate chunk
-            'react-vendor': ['react', 'react-dom', 'react-dom/client'],
-            // Split TanStack Query into separate chunk
-            'query-vendor': ['@tanstack/react-query'],
-          },
-        },
-      },
+      // Increase chunk size warning limit for extension context
+      // Extensions don't have the same performance constraints as websites
+      chunkSizeWarningLimit: 600,
     },
   }),
   manifest: {
