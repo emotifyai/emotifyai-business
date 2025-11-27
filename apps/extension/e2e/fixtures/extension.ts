@@ -18,11 +18,12 @@ export const test = base.extend<ExtensionFixtures>({
         const pathToExtension = path.join(__dirname, '../../.output/chrome-mv3');
 
         const context = await chromium.launchPersistentContext('', {
-            headless: false, // Extensions require headed mode
+            headless: true, // Use new headless mode which supports extensions
             args: [
                 `--disable-extensions-except=${pathToExtension}`,
                 `--load-extension=${pathToExtension}`,
                 '--no-sandbox',
+                '--headless=new', // Explicitly use new headless mode
             ],
         });
 
