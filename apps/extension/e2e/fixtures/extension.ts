@@ -38,7 +38,7 @@ export const test = base.extend<ExtensionFixtures>({
     // Get extension ID for accessing extension pages
     extensionId: async ({ context }, use) => {
         // Wait for extension to load
-        await context.waitForEvent('page');
+
 
         // Get extension ID from background page
         let [background] = context.serviceWorkers();
