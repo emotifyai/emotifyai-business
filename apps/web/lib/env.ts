@@ -56,15 +56,11 @@ export const env = createEnv({
         RATE_LIMIT_RPM: z.coerce.number().int().positive().default(10),
         RATE_LIMIT_WINDOW: z.coerce.number().int().positive().default(60),
 
-        // Optional: Email
+        // Optional: Email Configuration
         EMAIL_PROVIDER: z.string().optional(),
         EMAIL_API_KEY: z.string().optional(),
         EMAIL_FROM_ADDRESS: z.string().email().optional(),
         EMAIL_FROM_NAME: z.string().optional(),
-
-        // Optional: Monitoring
-        NEXT_PUBLIC_SENTRY_DSN: z.string().url().optional(),
-        NEXT_PUBLIC_SENTRY_ENVIRONMENT: z.string().optional(),
 
         // Development Only
         DEBUG: z
@@ -112,21 +108,7 @@ export const env = createEnv({
             message: 'NEXT_PUBLIC_APP_URL must be a valid URL',
         }),
 
-        // Optional: Analytics
-        NEXT_PUBLIC_ANALYTICS_ID: z.string().optional(),
-        NEXT_PUBLIC_ANALYTICS_PROVIDER: z.string().optional(),
-
         // Optional: Feature Flags
-        NEXT_PUBLIC_ENABLE_BETA_FEATURES: z
-            .string()
-            .optional()
-            .transform((val) => val === 'true')
-            .pipe(z.boolean().optional()),
-        NEXT_PUBLIC_ENABLE_TEAM_FEATURES: z
-            .string()
-            .optional()
-            .transform((val) => val === 'true')
-            .pipe(z.boolean().optional()),
         NEXT_PUBLIC_ENABLE_SHOPIFY_APP: z
             .string()
             .optional()
@@ -158,8 +140,6 @@ export const env = createEnv({
         EMAIL_API_KEY: process.env.EMAIL_API_KEY,
         EMAIL_FROM_ADDRESS: process.env.EMAIL_FROM_ADDRESS,
         EMAIL_FROM_NAME: process.env.EMAIL_FROM_NAME,
-        NEXT_PUBLIC_SENTRY_DSN: process.env.NEXT_PUBLIC_SENTRY_DSN,
-        NEXT_PUBLIC_SENTRY_ENVIRONMENT: process.env.NEXT_PUBLIC_SENTRY_ENVIRONMENT,
         DEBUG: process.env.DEBUG,
         SKIP_AUTH: process.env.SKIP_AUTH,
         MOCK_AI_RESPONSES: process.env.MOCK_AI_RESPONSES,
@@ -170,10 +150,6 @@ export const env = createEnv({
         NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
         NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
         NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
-        NEXT_PUBLIC_ANALYTICS_ID: process.env.NEXT_PUBLIC_ANALYTICS_ID,
-        NEXT_PUBLIC_ANALYTICS_PROVIDER: process.env.NEXT_PUBLIC_ANALYTICS_PROVIDER,
-        NEXT_PUBLIC_ENABLE_BETA_FEATURES: process.env.NEXT_PUBLIC_ENABLE_BETA_FEATURES,
-        NEXT_PUBLIC_ENABLE_TEAM_FEATURES: process.env.NEXT_PUBLIC_ENABLE_TEAM_FEATURES,
         NEXT_PUBLIC_ENABLE_SHOPIFY_APP: process.env.NEXT_PUBLIC_ENABLE_SHOPIFY_APP,
     },
 

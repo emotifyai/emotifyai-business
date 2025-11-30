@@ -1,4 +1,4 @@
-"this is project idea "Project Overview
+this is project idea "Project Overview
 
 We are building a cross-browser extension supported by a full web platform that together deliver an AI-powered text enhancement and rewriting experience.
 The extension integrates seamlessly into the user’s workflow via the browser context menu (right-click), enabling instant rewriting, rephrasing, and text enhancement powered by AI.
@@ -80,5 +80,3 @@ Nextjs for the website
 monorepo arch for better development"
 
 this is full project idea, now check the current project and check what has been done, then we will proceed with the extension part to fully complete it, i want you to fully generate a plan to complete the extension package, covering everything from source to test to deploy
-
-"

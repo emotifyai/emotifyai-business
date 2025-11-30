@@ -23,9 +23,6 @@
     "test:coverage": "concurrently -n \"ext,web\" -c \"cyan,magenta\" \"bun test:ext:coverage\" \"bun test:web:coverage\"",
     "test:ext:coverage": "cd apps/extension && bun run test:coverage",
     "test:web:coverage": "cd apps/web && bun run test:coverage",
-    "lint": "concurrently -n \"ext,web\" -c \"cyan,magenta\" \"bun lint:ext\" \"bun lint:web\"",
-    "lint:ext": "cd apps/extension && bun run compile",
-    "lint:web": "cd apps/web && bun run lint",
     "install:all": "bun install",
     "zip:ext": "cd apps/extension && bun run zip",
     "zip:ext:firefox": "cd apps/extension && bun run zip:firefox"
