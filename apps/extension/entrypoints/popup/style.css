@@ -16,6 +16,9 @@
 
     /* Animations */
     --animate-glow: glow 2s ease-in-out infinite alternate;
+    --animate-float: float 6s ease-in-out infinite;
+    --animate-spin: spin 1s linear infinite;
+    --animate-slideIn: slideIn 0.3s ease-out;
 
     @keyframes glow {
         from {
@@ -26,6 +29,112 @@
             box-shadow: 0 0 20px 5px var(--color-electric-violet);
         }
     }
+
+    @keyframes float {
+        0% {
+            transform: translateY(0px);
+        }
+
+        50% {
+            transform: translateY(-10px);
+        }
+
+        100% {
+            transform: translateY(0px);
+        }
+    }
+
+    @keyframes spin {
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    @keyframes slideIn {
+        from {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+}
+
+/* Semantic Theme Variables (copied from web app for consistency) */
+@theme inline {
+    --radius-sm: calc(var(--radius) - 4px);
+    --radius-md: calc(var(--radius) - 2px);
+    --radius-lg: var(--radius);
+    --radius-xl: calc(var(--radius) + 4px);
+    --color-background: var(--background);
+    --color-foreground: var(--foreground);
+    --color-card: var(--card);
+    --color-card-foreground: var(--card-foreground);
+    --color-popover: var(--popover);
+    --color-popover-foreground: var(--popover-foreground);
+    --color-primary: var(--primary);
+    --color-primary-foreground: var(--primary-foreground);
+    --color-secondary: var(--secondary);
+    --color-secondary-foreground: var(--secondary-foreground);
+    --color-muted: var(--muted);
+    --color-muted-foreground: var(--muted-foreground);
+    --color-accent: var(--accent);
+    --color-accent-foreground: var(--accent-foreground);
+    --color-destructive: var(--destructive);
+    --color-border: var(--border);
+    --color-input: var(--input);
+    --color-ring: var(--ring);
+}
+
+:root {
+    --radius: 0.5rem;
+    /* Light Mode */
+    --background: #ffffff;
+    --foreground: #0f172a;
+    --card: #ffffff;
+    --card-foreground: #0f172a;
+    --popover: #ffffff;
+    --popover-foreground: #0f172a;
+    --primary: #7C3AED;
+    /* electric-violet */
+    --primary-foreground: #ffffff;
+    --secondary: #f1f5f9;
+    --secondary-foreground: #0f172a;
+    --muted: #f1f5f9;
+    --muted-foreground: #64748b;
+    --accent: #f1f5f9;
+    --accent-foreground: #0f172a;
+    --destructive: #ef4444;
+    --border: #e2e8f0;
+    --input: #e2e8f0;
+    --ring: #7C3AED;
+}
+
+.dark {
+    /* Dark Mode */
+    --background: #030712;
+    /* deep-void */
+    --foreground: #f8fafc;
+    --card: #030712;
+    --card-foreground: #f8fafc;
+    --popover: #030712;
+    --popover-foreground: #f8fafc;
+    --primary: #8B5CF6;
+    /* hyper-violet */
+    --primary-foreground: #ffffff;
+    --secondary: #1e293b;
+    --secondary-foreground: #f8fafc;
+    --muted: #1e293b;
+    --muted-foreground: #94a3b8;
+    --accent: #1e293b;
+    --accent-foreground: #f8fafc;
+    --destructive: #7f1d1d;
+    --border: #1e293b;
+    --input: #1e293b;
+    --ring: #8B5CF6;
 }
 
 /* Utility Classes for Glassmorphism */
@@ -40,5 +149,15 @@
         background: linear-gradient(to right, var(--color-electric-violet), var(--color-cyan-ray));
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
+    }
+}
+
+@layer base {
+    * {
+        @apply border-border outline-ring/50;
+    }
+
+    body {
+        @apply bg-background text-foreground;
     }
 }

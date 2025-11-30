@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import './ui-overlay.css';
+import '../popup/style.css';
 
 interface OverlayState {
     visible: boolean;
@@ -64,16 +64,25 @@ export default function UIOverlay() {
         setState((prev) => ({ ...prev, visible: false }));
     };
 
+    const getBackgroundClass = () => {
+        switch (state.type) {
+            case 'success': return 'bg-gradient-to-br from-[#667eea] to-[#764ba2]';
+            case 'error': return 'bg-gradient-to-br from-[#f093fb] to-[#f5576c]';
+            case 'loading':
+            default: return 'bg-black/90';
+        }
+    };
+
     return (
-        <div className={`verba-overlay verba-overlay--${state.type}`}>
-            <div className="verba-overlay__content">
+        <div className={`fixed top-5 right-5 z-[999999] p-4 rounded-xl backdrop-blur-md shadow-2xl text-white text-sm font-sans animate-slideIn ${getBackgroundClass()}`}>
+            <div className="flex items-center gap-3">
                 {state.type === 'loading' && (
-                    <div className="verba-spinner" />
+                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                 )}
-                <span className="verba-overlay__message">{state.message}</span>
+                <span className="font-medium">{state.message}</span>
                 {state.type === 'success' && (
                     <button
-                        className="verba-overlay__undo"
+                        className="px-3 py-1.5 border-none rounded-md bg-white/20 text-white text-xs font-semibold cursor-pointer transition-colors hover:bg-white/30"
                         onClick={handleUndo}
                         type="button"
                     >

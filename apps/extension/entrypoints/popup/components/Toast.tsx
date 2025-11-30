@@ -1,5 +1,4 @@
 import { createContext, useContext, useState, useCallback, ReactNode } from 'react';
-import './Toast.css';
 
 type ToastType = 'success' | 'error' | 'info' | 'warning';
 
@@ -81,20 +80,42 @@ export function ToastProvider({ children }: ToastProviderProps) {
         warning,
     };
 
+    const getToastStyles = (type: ToastType) => {
+        switch (type) {
+            case 'success': return 'border-l-4 border-emerald-500';
+            case 'error': return 'border-l-4 border-red-500';
+            case 'warning': return 'border-l-4 border-amber-500';
+            case 'info': return 'border-l-4 border-blue-500';
+            default: return 'border-l-4 border-blue-500';
+        }
+    };
+
+    const getIconStyles = (type: ToastType) => {
+        switch (type) {
+            case 'success': return 'bg-emerald-500 text-white';
+            case 'error': return 'bg-red-500 text-white';
+            case 'warning': return 'bg-amber-500 text-white';
+            case 'info': return 'bg-blue-500 text-white';
+            default: return 'bg-blue-500 text-white';
+        }
+    };
+
     return (
         <ToastContext.Provider value={value}>
             {children}
-            <div className="toast-container">
+            <div className="fixed top-4 right-4 z-[9999] flex flex-col gap-3 pointer-events-none">
                 {toasts.map((toast) => (
                     <div
                         key={toast.id}
-                        className={`toast toast--${toast.type}`}
+                        className={`flex items-center gap-3 min-w-[280px] max-w-[400px] px-4 py-3.5 bg-white rounded-lg shadow-lg pointer-events-auto cursor-pointer animate-slideIn transition-all hover:-translate-y-0.5 hover:shadow-xl ${getToastStyles(toast.type)}`}
                         onClick={() => removeToast(toast.id)}
                     >
-                        <div className="toast__icon">{getIcon(toast.type)}</div>
-                        <div className="toast__message">{toast.message}</div>
+                        <div className={`shrink-0 w-6 h-6 flex items-center justify-center rounded-full text-sm font-bold ${getIconStyles(toast.type)}`}>
+                            {getIcon(toast.type)}
+                        </div>
+                        <div className="flex-1 text-sm text-gray-800 leading-snug">{toast.message}</div>
                         <button
-                            className="toast__close"
+                            className="shrink-0 w-5 h-5 flex items-center justify-center bg-transparent border-none rounded text-xl text-gray-400 cursor-pointer transition-all p-0 leading-none hover:bg-gray-100 hover:text-gray-600"
                             onClick={(e) => {
                                 e.stopPropagation();
                                 removeToast(toast.id);

@@ -19,6 +19,8 @@
 
   /* Animations */
   --animate-glow: glow 2s ease-in-out infinite alternate;
+  --animate-float: float 6s ease-in-out infinite;
+  --animate-slideIn: slideIn 0.3s ease-out;
 
   @keyframes glow {
     from {
@@ -27,6 +29,32 @@
 
     to {
       box-shadow: 0 0 20px 5px var(--color-electric-violet);
+    }
+  }
+
+  @keyframes float {
+    0% {
+      transform: translateY(0px);
+    }
+
+    50% {
+      transform: translateY(-10px);
+    }
+
+    100% {
+      transform: translateY(0px);
+    }
+  }
+
+  @keyframes slideIn {
+    from {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+
+    to {
+      transform: translateX(0);
+      opacity: 1;
     }
   }
 }

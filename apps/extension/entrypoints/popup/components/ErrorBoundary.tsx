@@ -1,5 +1,4 @@
 import { Component, ErrorInfo, ReactNode } from 'react';
-import './ErrorBoundary.css';
 
 interface Props {
     children: ReactNode;
@@ -54,22 +53,22 @@ class ErrorBoundary extends Component<Props, State> {
             }
 
             return (
-                <div className="error-boundary">
-                    <div className="error-boundary__content">
-                        <div className="error-boundary__icon">⚠️</div>
-                        <h2 className="error-boundary__title">Something went wrong</h2>
-                        <p className="error-boundary__message">
+                <div className="flex items-center justify-center min-h-[400px] p-8 bg-gradient-to-br from-[#667eea] to-[#764ba2]">
+                    <div className="text-center bg-white rounded-xl p-8 max-w-[400px] shadow-2xl">
+                        <div className="text-5xl mb-4">⚠️</div>
+                        <h2 className="text-2xl font-bold text-gray-900 mb-2">Something went wrong</h2>
+                        <p className="text-gray-600 mb-6 text-sm leading-relaxed">
                             {this.state.error?.message || 'An unexpected error occurred'}
                         </p>
-                        <div className="error-boundary__actions">
+                        <div className="flex gap-3 justify-center">
                             <button
-                                className="error-boundary__button error-boundary__button--primary"
+                                className="px-5 py-2.5 rounded-lg text-sm font-semibold cursor-pointer transition-all border-none bg-gradient-to-br from-[#667eea] to-[#764ba2] text-white hover:-translate-y-px hover:shadow-lg hover:shadow-[#667eea]/40"
                                 onClick={this.handleReset}
                             >
                                 Try Again
                             </button>
                             <button
-                                className="error-boundary__button error-boundary__button--secondary"
+                                className="px-5 py-2.5 rounded-lg text-sm font-semibold cursor-pointer transition-all border-none bg-gray-200 text-gray-600 hover:bg-gray-300"
                                 onClick={() => window.location.reload()}
                             >
                                 Reload Extension
