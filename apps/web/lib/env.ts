@@ -33,11 +33,28 @@ export const env = createEnv({
         LEMONSQUEEZY_WEBHOOK_SECRET: z.string().min(1, {
             message: 'LEMONSQUEEZY_WEBHOOK_SECRET is required',
         }),
-        LEMONSQUEEZY_MONTHLY_VARIANT_ID: z.string().min(1, {
-            message: 'LEMONSQUEEZY_MONTHLY_VARIANT_ID is required',
+
+        // Lemon Squeezy Product Variant IDs
+        LEMONSQUEEZY_LIFETIME_LAUNCH_VARIANT_ID: z.string().min(1, {
+            message: 'LEMONSQUEEZY_LIFETIME_LAUNCH_VARIANT_ID is required',
         }),
-        LEMONSQUEEZY_LIFETIME_VARIANT_ID: z.string().min(1, {
-            message: 'LEMONSQUEEZY_LIFETIME_VARIANT_ID is required',
+        LEMONSQUEEZY_BASIC_MONTHLY_VARIANT_ID: z.string().min(1, {
+            message: 'LEMONSQUEEZY_BASIC_MONTHLY_VARIANT_ID is required',
+        }),
+        LEMONSQUEEZY_PRO_MONTHLY_VARIANT_ID: z.string().min(1, {
+            message: 'LEMONSQUEEZY_PRO_MONTHLY_VARIANT_ID is required',
+        }),
+        LEMONSQUEEZY_BUSINESS_MONTHLY_VARIANT_ID: z.string().min(1, {
+            message: 'LEMONSQUEEZY_BUSINESS_MONTHLY_VARIANT_ID is required',
+        }),
+        LEMONSQUEEZY_BASIC_ANNUAL_VARIANT_ID: z.string().min(1, {
+            message: 'LEMONSQUEEZY_BASIC_ANNUAL_VARIANT_ID is required',
+        }),
+        LEMONSQUEEZY_PRO_ANNUAL_VARIANT_ID: z.string().min(1, {
+            message: 'LEMONSQUEEZY_PRO_ANNUAL_VARIANT_ID is required',
+        }),
+        LEMONSQUEEZY_BUSINESS_ANNUAL_VARIANT_ID: z.string().min(1, {
+            message: 'LEMONSQUEEZY_BUSINESS_ANNUAL_VARIANT_ID is required',
         }),
 
         // Anthropic (Claude)
@@ -126,8 +143,13 @@ export const env = createEnv({
         LEMONSQUEEZY_API_KEY: process.env.LEMONSQUEEZY_API_KEY,
         LEMONSQUEEZY_STORE_ID: process.env.LEMONSQUEEZY_STORE_ID,
         LEMONSQUEEZY_WEBHOOK_SECRET: process.env.LEMONSQUEEZY_WEBHOOK_SECRET,
-        LEMONSQUEEZY_MONTHLY_VARIANT_ID: process.env.LEMONSQUEEZY_MONTHLY_VARIANT_ID,
-        LEMONSQUEEZY_LIFETIME_VARIANT_ID: process.env.LEMONSQUEEZY_LIFETIME_VARIANT_ID,
+        LEMONSQUEEZY_LIFETIME_LAUNCH_VARIANT_ID: process.env.LEMONSQUEEZY_LIFETIME_LAUNCH_VARIANT_ID,
+        LEMONSQUEEZY_BASIC_MONTHLY_VARIANT_ID: process.env.LEMONSQUEEZY_BASIC_MONTHLY_VARIANT_ID,
+        LEMONSQUEEZY_PRO_MONTHLY_VARIANT_ID: process.env.LEMONSQUEEZY_PRO_MONTHLY_VARIANT_ID,
+        LEMONSQUEEZY_BUSINESS_MONTHLY_VARIANT_ID: process.env.LEMONSQUEEZY_BUSINESS_MONTHLY_VARIANT_ID,
+        LEMONSQUEEZY_BASIC_ANNUAL_VARIANT_ID: process.env.LEMONSQUEEZY_BASIC_ANNUAL_VARIANT_ID,
+        LEMONSQUEEZY_PRO_ANNUAL_VARIANT_ID: process.env.LEMONSQUEEZY_PRO_ANNUAL_VARIANT_ID,
+        LEMONSQUEEZY_BUSINESS_ANNUAL_VARIANT_ID: process.env.LEMONSQUEEZY_BUSINESS_ANNUAL_VARIANT_ID,
         ANTHROPIC_API_KEY: process.env.ANTHROPIC_API_KEY,
         ANTHROPIC_MODEL: process.env.ANTHROPIC_MODEL,
         ANTHROPIC_MAX_TOKENS: process.env.ANTHROPIC_MAX_TOKENS,

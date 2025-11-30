@@ -1,4 +1,11 @@
-import Anthropic from '@anthropic-ai/sdk'
+import Anthropic from '@anthropic-ai/sdk';
+import {
+    buildCachedSystemPrompt,
+    buildUserPrompt,
+    cacheStats,
+    parseCacheUsage,
+    calculateCacheSavings
+} from './prompt-cache';
 
 // Initialize Anthropic client
 const anthropic = new Anthropic({
@@ -19,6 +26,11 @@ export interface EnhanceResult {
     enhancedText: string
     tokensUsed: number
     language: string
+    cached?: boolean
+    cacheStats?: {
+        tokensSaved: number
+        percentageSaved: number
+    }
 }
 
 /**
@@ -37,14 +49,21 @@ export async function enhanceText(options: EnhanceOptions): Promise<EnhanceResul
 
     while (retries < maxRetries) {
         try {
+            // Detect language if needed
+            const detectedLanguage = language as 'en' | 'ar' | 'fr';
+
+            // Build cached prompts
+            const systemPrompt = buildCachedSystemPrompt(detectedLanguage);
+            const userPromptContent = buildUserPrompt(text, mode, tone, true);
+
             const message = await anthropic.messages.create({
                 model: MODEL,
                 max_tokens: MAX_TOKENS,
-                system: systemPrompt,
+                system: [systemPrompt],
                 messages: [
                     {
                         role: 'user',
-                        content: userPrompt,
+                        content: [userPromptContent],
                     },
                 ],
             })
@@ -55,13 +74,34 @@ export async function enhanceText(options: EnhanceOptions): Promise<EnhanceResul
                 .map((block) => (block as Anthropic.TextBlock).text)
                 .join('\n')
 
-            // Calculate tokens used (approximation)
+            // Parse cache usage
+            const cacheUsage = parseCacheUsage(message);
+            const savings = calculateCacheSavings(cacheUsage);
+
+            // Track cache statistics
+            if (savings.wasCacheHit) {
+                cacheStats.recordHit(savings.tokensSaved);
+            } else {
+                cacheStats.recordMiss();
+            }
+
+            // Calculate total tokens used
             const tokensUsed = message.usage.input_tokens + message.usage.output_tokens
+
+            // Log cache stats periodically
+            if (cacheStats.getStats().totalRequests % 10 === 0) {
+                cacheStats.logStats();
+            }
 
             return {
                 enhancedText,
                 tokensUsed,
-                language,
+                language: detectedLanguage,
+                cached: savings.wasCacheHit,
+                cacheStats: {
+                    tokensSaved: savings.tokensSaved,
+                    percentageSaved: savings.percentageSaved
+                }
             }
         } catch (error) {
             if (error instanceof Anthropic.APIError) {
