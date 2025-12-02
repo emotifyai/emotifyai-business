@@ -30,7 +30,7 @@ export function useAuth() {
             });
         };
 
-        loadAuthState();
+        loadAuthState().then(r => r);
 
         // Watch for auth changes
         const unwatchToken = watchStorage('local:authToken', async (newToken) => {

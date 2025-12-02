@@ -1,4 +1,4 @@
-import { test, expect } from './fixtures/extension';
+import { test, expect } from './fixtures/extension.ts';
 import { fileURLToPath } from 'url';
 import path from 'path';
 const __filename = fileURLToPath(import.meta.url);

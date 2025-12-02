@@ -1,7 +1,7 @@
 type LogLevel = 'debug' | 'info' | 'warn' | 'error';
 
 class Logger {
-    private logLevel: LogLevel;
+    private readonly logLevel: LogLevel;
 
     constructor() {
         this.logLevel = (import.meta.env.VITE_LOG_LEVEL as LogLevel) || 'info';

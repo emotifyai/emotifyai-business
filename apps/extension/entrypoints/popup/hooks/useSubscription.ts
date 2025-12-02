@@ -57,7 +57,7 @@ export function useSubscription() {
     };
 
     useEffect(() => {
-        loadData();
+        loadData().then(r => r);
 
         // Watch for subscription changes
         const unwatchSubscription = watchStorage('local:subscription', (newSub) => {

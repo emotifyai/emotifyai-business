@@ -13,7 +13,7 @@ export default function SettingsComponent({ onBack }: SettingsProps) {
     const [isSyncing, setIsSyncing] = useState(false);
 
     useEffect(() => {
-        loadSettings();
+        loadSettings().then(r => r);
     }, []);
 
     const loadSettings = async () => {

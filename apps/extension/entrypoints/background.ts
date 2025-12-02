@@ -4,6 +4,7 @@ import { getAuthToken, incrementUsage, watchStorage } from '@/utils/storage';
 import { logger } from '@/utils/logger';
 import { SubscriptionError, LanguageNotSupportedError, AuthenticationError } from '@/utils/errors';
 import type { EnhanceTextMessage, EnhanceTextResponse, MessageType } from '@/types';
+import {browser} from "wxt/browser";
 
 export default defineBackground(() => {
   logger.info('Background script initialized');

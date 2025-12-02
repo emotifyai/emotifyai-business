@@ -1,6 +1,7 @@
 import type { User, Subscription, UsageStats, Settings, StorageSchema } from '@/types';
 import { DEFAULT_SETTINGS } from '@/types';
 import { logger } from './logger';
+import {browser} from "wxt/browser";
 
 /**
  * Type-safe storage utilities using browser.storage API directly
