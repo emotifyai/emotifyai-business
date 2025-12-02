@@ -1,0 +1,70 @@
+### ✅ **Issues and Required Fixes**
+
+1.  **Styling**
+    
+    -   `entrypoints/popups` do **not use the global Tailwind common styles**.
+        
+    -   Consider building a **shared UI package** to be used by both **extension** and **web** to reduce style inconsistency and duplicated code.
+        
+2.  **Code Quality**
+    
+    -   Many **unused functions** exist inside the web `libs`.
+        
+    -   Implement a strategy to **automatically detect and resolve unused code**, ideally using **AI-generated cleanup**.
+        
+    -   The following file is completely unused and should be removed:
+        
+        swift
+        
+        Copy code
+        
+        `apps/extension/entrypoints/popup/components/Toast.tsx`
+        
+3.  **Payment System**
+    
+    -   Payment logic is **mixed between old and new implementations**.
+        
+    -   It is **not centralized**, so it needs to be **refactored and unified** into a single source of truth.
+        
+4.  **Extension Errors**
+    
+    -   No **ESLint configuration** is present in the extension.
+        
+    -   There are **TypeScript errors** that need resolution.
+        
+5.  **Environment Configuration**
+    
+    -   The web project uses `.local` patterns inside `.env`, while the extension does not — these should be aligned.
+        
+    -   Configuration for **Supabase functionality is not working yet**.
+        
+    -   **Middleware is not fully configured**, so authentication handling may be incomplete.
+        
+    -   Ensure the app works in both **production and development environments**.
+        
+6.  **Deployment & Client Config**
+    
+    -   Missing required configuration files such as:
+        
+        -   `netlify.toml`
+            
+        -   Shopify configuration
+            
+        -   Other deployment and environment requirements
+            
+    -   Verify **production readiness** for all parts.
+        
+7.  **Assets**
+    
+    -   The `public/` directory contains **multiple asset folders**, and it is unclear which are actually used.
+        
+    -   Confirm that **all assets inside `public/` are being consumed properly** and clean unused folders if needed.
+        
+8.  **Testing**
+    
+    -   Tests exist but **may require fixes and updates**.
+        
+9.  **Client Domain**
+    
+    -   Add the **new client domain** to the project configuration.
+

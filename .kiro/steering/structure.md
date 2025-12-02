@@ -55,7 +55,7 @@ extension/
 ├── .output/                # Build output (gitignored)
 │   ├── chrome-mv3/
 │   ├── chrome-mv3-dev/
-│   └── firefox-mv2/
+│   └── firefox/
 ├── wxt.config.ts           # WXT configuration
 ├── vitest.config.ts        # Vitest configuration
 ├── playwright.config.ts    # Playwright configuration
@@ -144,17 +144,9 @@ web/
 
 ```
 assets/
-├── logo.svg                # Main logo
 └── theme.css               # Shared theme variables
 ```
 
-## Documentation (`docs/`)
-
-```
-docs/
-├── api-setup-guide.md
-└── environment-configuration.md
-```
 
 ## Configuration Files
 
@@ -168,13 +160,6 @@ docs/
 - **Extension**: `.output/` directory with browser-specific builds
 - **Web**: `.next/` directory (gitignored)
 - **Node Modules**: Hoisted to root when possible, app-specific when needed
-
-## Testing Structure
-
-- **Unit Tests**: Co-located with source files or in `tests/` directory
-- **E2E Tests**: `apps/extension/tests/e2e/` for Playwright tests
-- **Test Setup**: `setup.ts` or `vitest.setup.ts` for test configuration
-- **Mocks**: MSW handlers in `mocks/` directories
 
 ## Key Conventions
 

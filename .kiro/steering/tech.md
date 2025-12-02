@@ -69,73 +69,6 @@ Bun workspaces with two main apps:
 - Zod schemas
 - @t3-oss/env-nextjs for environment variables
 
-## Common Commands
-
-### Development
-```bash
-# Run both apps concurrently
-bun dev
-
-# Run extension only (Chrome)
-bun dev:ext
-
-# Run extension only (Firefox)  
-bun dev:ext:firefox
-
-# Run web app only
-bun dev:web
-```
-
-### Building
-```bash
-# Build both apps
-bun build
-
-# Build extension only
-bun build:ext
-
-# Build extension for Firefox
-bun build:ext:firefox
-
-# Build web app only
-bun build:web
-```
-
-### Testing
-```bash
-# Run all tests
-bun test
-
-# Run extension tests
-bun test:ext
-
-# Run web tests
-bun test:web
-
-# Run with coverage
-bun test:coverage
-
-# Extension E2E tests
-cd apps/extension && bun test:e2e
-```
-
-### Extension Packaging
-```bash
-# Create Chrome/Edge zip
-bun zip:ext
-
-# Create Firefox zip
-bun zip:ext:firefox
-```
-
-### Type Checking
-```bash
-# Extension type check
-cd apps/extension && bun compile
-
-# Web app type check (via Next.js build)
-cd apps/web && bun build
-```
 
 ## Environment Variables
 
@@ -153,23 +86,29 @@ cd apps/web && bun build
 ## Key Dependencies
 
 **Shared**:
-- React 19
-- TypeScript 5
-- Tailwind CSS v4
-- TanStack Query
-- Zod
-- Vitest
+- React 19 (with JSX transform, no React import needed)
+- TypeScript 5 (strict mode enabled)
+- Tailwind CSS v4 (via @tailwindcss/vite for extension, @tailwindcss/postcss for web)
+- TanStack Query (data fetching and caching)
+- Zod (runtime validation)
+- Vitest (unit testing)
 
 **Extension-specific**:
-- WXT
-- ky
-- MSW
-- Playwright
+- WXT 0.20+ (extension framework with Vite)
+- ky 1.7+ (HTTP client, modern fetch wrapper)
+- MSW 2.7+ (Mock Service Worker for API mocking)
+- Playwright 1.57+ (E2E testing)
+- happy-dom (DOM testing environment)
 
 **Web-specific**:
-- Next.js 16
-- Supabase
-- Lemon Squeezy SDK
-- Anthropic SDK
-- Radix UI
-- Recharts
+- Next.js 16 (App Router, Server Components, Server Actions)
+- @supabase/ssr 0.5+ (SSR-compatible Supabase client)
+- @supabase/supabase-js 2.47+ (Supabase client)
+- @lemonsqueezy/lemonsqueezy.js 3.3+ (payment SDK)
+- @anthropic-ai/sdk 0.32+ (Claude API)
+- @t3-oss/env-nextjs 0.13+ (type-safe env vars)
+- Radix UI (accessible component primitives)
+- Recharts (usage analytics charts)
+- date-fns (date manipulation)
+- sonner (toast notifications)
+- jsdom (DOM testing environment)
