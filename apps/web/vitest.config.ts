@@ -4,6 +4,15 @@ import path from 'path'
 
 export default defineConfig({
     plugins: [react()],
+    resolve: {
+        alias: {
+            '@': path.resolve(__dirname, './'),
+            '@/components': path.resolve(__dirname, './components'),
+            '@/lib': path.resolve(__dirname, './lib'),
+            '@/types': path.resolve(__dirname, './types'),
+            '@/app': path.resolve(__dirname, './app'),
+        },
+    },
     test: {
         environment: 'jsdom',
         globals: true,
@@ -20,15 +29,6 @@ export default defineConfig({
                 '**/*.config.*',
                 '**/mockData/**',
             ],
-        },
-    },
-    resolve: {
-        alias: {
-            '@': path.resolve(__dirname, './'),
-            '@/components': path.resolve(__dirname, './components'),
-            '@/lib': path.resolve(__dirname, './lib'),
-            '@/types': path.resolve(__dirname, './types'),
-            '@/app': path.resolve(__dirname, './app'),
         },
     },
 })

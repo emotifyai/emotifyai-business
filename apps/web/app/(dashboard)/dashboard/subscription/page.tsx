@@ -4,7 +4,7 @@ import { useSubscription, useCreateCheckout, useCustomerPortal } from '@/lib/hoo
 import { SubscriptionCard } from '@/components/dashboard/subscription-card'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
-import { Check, Loader2 } from 'lucide-react'
+import { Check } from 'lucide-react'
 import { SubscriptionTier } from '@/types/database'
 import { Skeleton } from '@/components/ui/skeleton'
 

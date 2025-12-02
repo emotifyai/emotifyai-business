@@ -22,7 +22,7 @@ export default function PricingPage() {
                             Simple, transparent pricing
                         </h1>
                         <p className="text-xl text-muted-foreground">
-                            Choose the plan that's right for you. All plans include access to our browser extension.
+                            Choose the plan that&#39;s right for you. All plans include access to our browser extension.
                         </p>
                     </div>
 

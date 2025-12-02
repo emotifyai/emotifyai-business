@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import AnimatedVLetter from '@/components/AnimatedVLetter'
+import React from "react";
 
 export default function AuthLayout({
     children,

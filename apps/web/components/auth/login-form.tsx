@@ -24,7 +24,7 @@ export function LoginForm() {
             toast.success('Logged in successfully')
             router.push('/dashboard')
         } catch (error) {
-            toast.error('Failed to login. Please check your credentials.')
+            toast.error(`Failed to login. Please check your credentials. ${error}`)
         }
     }
 

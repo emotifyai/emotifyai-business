@@ -217,4 +217,4 @@ async function main() {
     }
 }
 
-main();
+main().then(r => r);

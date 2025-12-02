@@ -3,6 +3,7 @@
 import { Header } from '@/components/layout/header'
 import { Sidebar, MobileSidebar } from '@/components/layout/sidebar'
 import ProtectedRoute from '@/components/auth/protected-route'
+import React from "react";
 
 export default function DashboardLayout({
     children,

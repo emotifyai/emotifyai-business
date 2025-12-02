@@ -44,7 +44,7 @@ export default function AboutPage() {
                                     <div className="flex-1">
                                         <h2 className="text-2xl font-bold mb-4">Our Mission</h2>
                                         <p className="text-lg text-muted-foreground leading-relaxed">
-                                            We believe that language shouldn't be a barrier to effective communication. Whether you're writing an important email, a technical document, or a creative piece, Verba helps you find the right words instantly—in English, Arabic, or French.
+                                            We believe that language shouldn&#39;t be a barrier to effective communication. Whether you&#39;re writing an important email, a technical document, or a creative piece, Verba helps you find the right words instantly—in English, Arabic, or French.
                                         </p>
                                     </div>
                                 </div>
@@ -94,7 +94,7 @@ export default function AboutPage() {
                                     <div className="flex-1">
                                         <h2 className="text-2xl font-bold mb-4">Multi-Language Excellence</h2>
                                         <p className="text-muted-foreground leading-relaxed mb-4">
-                                            Verba specializes in three languages, ensuring high-quality enhancements tailored to each language's unique characteristics:
+                                            Verba specializes in three languages, ensuring high-quality enhancements tailored to each language&#39;s unique characteristics:
                                         </p>
                                         <div className="grid gap-3 md:grid-cols-3">
                                             <div className="rounded-lg border bg-card p-4 text-center">

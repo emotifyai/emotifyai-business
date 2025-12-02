@@ -187,11 +187,12 @@ export const cacheStats = new CacheStatsTracker();
 /**
  * Parse cache usage from Claude API response
  */
-export function parseCacheUsage(response: any): {
+export function parseCacheUsage(response: unknown): {
     cacheCreationTokens: number;
     cacheReadTokens: number;
     inputTokens: number;
 } {
+    // @ts-ignore
     const usage = response.usage || {};
 
     return {

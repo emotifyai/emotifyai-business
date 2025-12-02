@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
 import { Skeleton } from '@/components/ui/skeleton'
 import { toast } from 'sonner'
+import React from "react";
 
 export default function SettingsPage() {
     const { data: user, isLoading } = useUser()

@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
-import { Check, Zap } from 'lucide-react'
+import { Check } from 'lucide-react'
 import { SubscriptionTier } from '@/types/database'
 import { formatDate } from '@/lib/utils'
 

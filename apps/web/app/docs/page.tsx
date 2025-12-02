@@ -124,7 +124,7 @@ export default function DocsPage() {
                                                     </li>
                                                     <li className="flex gap-3">
                                                         <span className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-green-500/10 text-xs font-semibold text-green-500">3</span>
-                                                        <span className="text-muted-foreground">Hover over "Verba" and select "Enhance"</span>
+                                                        <span className="text-muted-foreground">Hover over &#34;Verba&#34; and select &#34;Enhance&#34;</span>
                                                     </li>
                                                     <li className="flex gap-3">
                                                         <span className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-green-500/10 text-xs font-semibold text-green-500">4</span>
@@ -195,7 +195,7 @@ export default function DocsPage() {
                                             </li>
                                             <li className="flex items-start gap-2">
                                                 <div className="mt-1 h-1.5 w-1.5 rounded-full bg-orange-500 flex-shrink-0" />
-                                                <span className="text-muted-foreground">Click "Create API Key"</span>
+                                                <span className="text-muted-foreground">Click &#34;Create API Key&#34;</span>
                                             </li>
                                             <li className="flex items-start gap-2">
                                                 <div className="mt-1 h-1.5 w-1.5 rounded-full bg-orange-500 flex-shrink-0" />
@@ -281,11 +281,11 @@ export default function DocsPage() {
                                             </li>
                                             <li className="flex items-start gap-2">
                                                 <span className="text-muted-foreground">•</span>
-                                                <span className="text-muted-foreground">Verify you haven't exceeded your usage limit</span>
+                                                <span className="text-muted-foreground">Verify you haven&#39;t exceeded your usage limit</span>
                                             </li>
                                             <li className="flex items-start gap-2">
                                                 <span className="text-muted-foreground">•</span>
-                                                <span className="text-muted-foreground">Try refreshing the page if context menu doesn't appear</span>
+                                                <span className="text-muted-foreground">Try refreshing the page if context menu doesn&#39;t appear</span>
                                             </li>
                                         </ul>
                                     </div>
