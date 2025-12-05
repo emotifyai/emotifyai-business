@@ -1,66 +1,30 @@
-'use client'
-
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { delay, mockApiKeys } from '@/lib/mock-data'
-import type { ApiKey } from '@/types/database'
-
 /**
- * Get all API keys for current user
+ * Custom hook for API key management
+ * 
+ * @future - Will be used when API key management UI is implemented
+ * @see Planned feature: User-managed API keys for bring-your-own-key model
+ * @status Not yet implemented - awaiting backend API key management endpoints
  */
+
+import { useState, useEffect } from 'react'
+
+export interface ApiKey {
+    id: string
+    name: string
+    key: string
+    createdAt: string
+    lastUsed?: string
+}
+
 export function useApiKeys() {
-    return useQuery({
-        queryKey: ['api-keys'],
-        queryFn: async (): Promise<ApiKey[]> => {
-            await delay(400)
-            return mockApiKeys
-        },
-    })
-}
+    const [apiKeys, setApiKeys] = useState<ApiKey[]>([])
+    const [loading, setLoading] = useState(true)
+    const [error, setError] = useState<Error | null>(null)
 
-/**
- * Create new API key
- */
-export function useCreateApiKey() {
-    const queryClient = useQueryClient()
+    // Future implementation will fetch from /api/keys
+    useEffect(() => {
+        setLoading(false)
+    }, [])
 
-    return useMutation({
-        mutationFn: async ({ name }: { name: string }) => {
-            await delay(600)
-            // Mock API key creation
-            const newKey: ApiKey = {
-                id: `key-${Date.now()}`,
-                user_id: 'mock-user-id-123',
-                created_at: new Date().toISOString(),
-                key_hash: `hashed_${Date.now()}`,
-                name,
-                last_used_at: null,
-                revoked: false,
-            }
-            return {
-                ...newKey,
-                key: `vb_${Math.random().toString(36).substring(2, 15)}${Math.random().toString(36).substring(2, 15)}`, // Only returned once
-            }
-        },
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['api-keys'] })
-        },
-    })
-}
-
-/**
- * Revoke an API key
- */
-export function useRevokeApiKey() {
-    const queryClient = useQueryClient()
-
-    return useMutation({
-        mutationFn: async ({ id }: { id: string }) => {
-            await delay(400)
-            // Mock revoke
-            return { success: true, id }
-        },
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['api-keys'] })
-        },
-    })
+    return { apiKeys, loading, error }
 }

@@ -1,30 +1,21 @@
-'use client'
-
-import { useQuery } from '@tanstack/react-query'
-import { delay, mockUsageStats, mockUsageLogs } from '@/lib/mock-data'
-
 /**
- * Get usage statistics for current period
+ * Custom hook for usage statistics tracking
+ * 
+ * @future - Will be used for real-time usage dashboards and analytics
+ * @see Planned feature: Usage analytics dashboard with charts and insights
+ * @status Not yet implemented - currently using server-side usage logs
  */
-export function useUsageStats() {
-    return useQuery({
-        queryKey: ['usage', 'stats'],
-        queryFn: async () => {
-            await delay(400)
-            return mockUsageStats
-        },
-    })
-}
 
-/**
- * Get usage history
- */
-export function useUsageHistory() {
-    return useQuery({
-        queryKey: ['usage', 'history'],
-        queryFn: async () => {
-            await delay(500)
-            return mockUsageLogs
-        },
-    })
+import { useState, useEffect } from 'react'
+
+export function useUsage() {
+    const [usage, setUsage] = useState(null)
+    const [loading, setLoading] = useState(true)
+
+    // Future implementation will provide real-time usage metrics
+    useEffect(() => {
+        setLoading(false)
+    }, [])
+
+    return { usage, loading }
 }

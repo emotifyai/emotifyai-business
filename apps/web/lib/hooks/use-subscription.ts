@@ -1,44 +1,21 @@
-'use client'
-
-import { useQuery } from '@tanstack/react-query'
-import { delay, mockSubscription } from '@/lib/mock-data'
-import type { Subscription } from '@/types/database'
-
 /**
- * Get current user's subscription
+ * Custom hook for subscription management
+ * 
+ * @future - Will be used for real-time subscription updates and plan changes
+ * @see Planned feature: In-app subscription management and upgrade flows
+ * @status Not yet implemented - currently using server-side subscription checks
  */
+
+import { useState, useEffect } from 'react'
+
 export function useSubscription() {
-    return useQuery({
-        queryKey: ['subscription'],
-        queryFn: async (): Promise<Subscription | null> => {
-            await delay(400)
-            return mockSubscription
-        },
-    })
-}
+    const [subscription, setSubscription] = useState(null)
+    const [loading, setLoading] = useState(true)
 
-/**
- * Create checkout session for subscription purchase
- */
-export function useCreateCheckout() {
-    // This would be implemented when connecting to real Lemon Squeezy API
-    // For now, just a placeholder
-    return {
-        mutate: (tier: string) => {
-            console.log(`Creating checkout for tier: ${tier}`)
-        },
-    }
-}
+    // Future implementation will sync with Lemon Squeezy webhooks
+    useEffect(() => {
+        setLoading(false)
+    }, [])
 
-/**
- * Get customer portal URL
- */
-export function useCustomerPortal() {
-    // This would be implemented when connecting to real Lemon Squeezy API
-    // For now, just a placeholder
-    return {
-        mutate: () => {
-            console.log('Opening customer portal')
-        },
-    }
+    return { subscription, loading }
 }
