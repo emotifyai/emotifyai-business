@@ -10,6 +10,7 @@
     "test": "vitest",
     "test:ui": "vitest --ui",
     "test:coverage": "vitest --coverage",
+    "type-check": "tsc --noEmit",
     "generate:assets": "bun run scripts/generate-assets.ts"
   },
   "dependencies": {

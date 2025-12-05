@@ -1,7 +1,6 @@
 import '@testing-library/jest-dom/vitest';
 import { vi, beforeEach } from 'vitest';
-import '@testing-library/jest-dom/vitest';
-import { vi, beforeEach } from 'vitest';
+
 
 /**
  * Test Setup for Verba Extension
@@ -37,7 +36,7 @@ vi.mock('wxt/storage', () => ({
 
 // Extend global type to include browser
 declare global {
-    var browser: any;
+    // var browser: any;
     var chrome: any;
     var __mockStorage__: any;
 }

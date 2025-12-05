@@ -8,6 +8,16 @@ import { createClient } from '@/lib/supabase/server';
 import type { LifetimeSlotInfo } from './types';
 
 /**
+ * Type for the RPC function return value
+ */
+type RpcLifetimeSlotInfo = {
+    total: number;
+    used: number;
+    remaining: number;
+    percentage: number;
+};
+
+/**
  * Get current lifetime slot information
  */
 export async function getLifetimeSlotInfo(): Promise<LifetimeSlotInfo> {
@@ -22,12 +32,15 @@ export async function getLifetimeSlotInfo(): Promise<LifetimeSlotInfo> {
         throw new Error('Failed to fetch lifetime slot information');
     }
 
+    // Type assertion since we know the RPC function returns this structure
+    const slotData = data as RpcLifetimeSlotInfo;
+
     return {
-        total: data.total,
-        used: data.used,
-        remaining: data.remaining,
-        percentage: data.percentage,
-        available: data.remaining > 0
+        total: slotData.total,
+        used: slotData.used,
+        remaining: slotData.remaining,
+        percentage: slotData.percentage,
+        available: slotData.remaining > 0
     };
 }
 
