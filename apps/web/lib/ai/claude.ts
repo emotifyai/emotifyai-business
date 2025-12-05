@@ -17,7 +17,6 @@ const MAX_TOKENS = parseInt(process.env.ANTHROPIC_MAX_TOKENS || '1024', 10)
 
 export interface EnhanceOptions {
     text: string
-    mode: 'enhance' | 'rephrase' | 'simplify' | 'expand'
     language?: string
     tone?: 'formal' | 'casual' | 'professional'
 }
@@ -38,11 +37,7 @@ export interface EnhanceResult {
  * Implements retry logic with exponential backoff
  */
 export async function enhanceText(options: EnhanceOptions): Promise<EnhanceResult> {
-    const { text, mode, language = 'en', tone = 'professional' } = options
-
-    // Build the prompt
-    const systemPrompt = buildSystemPrompt(mode, language, tone)
-    const userPrompt = text
+    const { text, language = 'en', tone = 'professional' } = options
 
     let retries = 0
     const maxRetries = 3
@@ -54,7 +49,7 @@ export async function enhanceText(options: EnhanceOptions): Promise<EnhanceResul
 
             // Build cached prompts
             const systemPrompt = buildCachedSystemPrompt(detectedLanguage);
-            const userPromptContent = buildUserPrompt(text, mode, tone, true);
+            const userPromptContent = buildUserPrompt(text, tone, true);
 
             const message = await anthropic.messages.create({
                 model: MODEL,
@@ -132,10 +127,9 @@ export async function enhanceText(options: EnhanceOptions): Promise<EnhanceResul
 }
 
 /**
- * Build the system prompt based on mode, language, and tone
+ * Build the system prompt based on language and tone
  */
 function buildSystemPrompt(
-    mode: EnhanceOptions['mode'],
     language: string,
     tone: EnhanceOptions['tone']
 ): string {
@@ -149,34 +143,12 @@ function buildSystemPrompt(
 
     const basePrompt = `You are an expert writing assistant specializing in ${languageName} text enhancement. Your task is to improve the user's text while maintaining their original meaning and intent.`
 
-    const modeInstructions: Record<EnhanceOptions['mode'], string> = {
-        enhance: `Improve the text by:
+    const enhanceInstructions = `Improve the text by:
 - Correcting grammar and spelling errors
 - Enhancing clarity and readability
 - Improving word choice and vocabulary
 - Maintaining the original tone and style
-- Keeping the same length (approximately)`,
-
-        rephrase: `Rephrase the text by:
-- Using different words and sentence structures
-- Maintaining the exact same meaning
-- Keeping the same tone and formality level
-- Ensuring natural flow and readability`,
-
-        simplify: `Simplify the text by:
-- Using simpler words and shorter sentences
-- Breaking down complex ideas
-- Removing jargon and technical terms
-- Making it accessible to a general audience
-- Maintaining the core message`,
-
-        expand: `Expand the text by:
-- Adding relevant details and examples
-- Elaborating on key points
-- Improving depth and comprehensiveness
-- Maintaining coherence and flow
-- Doubling or tripling the length while staying relevant`,
-    }
+- Keeping the same length (approximately)`
 
     const toneInstructions: Record<NonNullable<EnhanceOptions['tone']>, string> = {
         formal: 'Use formal language, proper grammar, and professional vocabulary.',
@@ -188,7 +160,7 @@ function buildSystemPrompt(
 
     return `${basePrompt}
 
-${modeInstructions[mode]}${toneInstruction}
+${enhanceInstructions}${toneInstruction}
 
 IMPORTANT:
 - Output ONLY the enhanced text, no explanations or meta-commentary
@@ -205,17 +177,10 @@ export async function mockEnhanceText(options: EnhanceOptions): Promise<EnhanceR
     // Simulate API delay
     await new Promise((resolve) => setTimeout(resolve, 500))
 
-    const { text, mode } = options
-
-    const mockEnhancements: Record<EnhanceOptions['mode'], string> = {
-        enhance: `[ENHANCED] ${text}`,
-        rephrase: `[REPHRASED] ${text}`,
-        simplify: `[SIMPLIFIED] ${text}`,
-        expand: `[EXPANDED] ${text} - This is additional content to demonstrate expansion.`,
-    }
+    const { text } = options
 
     return {
-        enhancedText: mockEnhancements[mode],
+        enhancedText: `[ENHANCED] ${text}`,
         tokensUsed: 100,
         language: options.language || 'en',
     }

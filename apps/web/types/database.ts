@@ -174,17 +174,26 @@ export enum SubscriptionStatus {
     TRIAL = 'trial',
 }
 
+/**
+ * Unified Subscription Tier System
+ * Credit-based model with monthly generation limits
+ */
 export enum SubscriptionTier {
     TRIAL = 'trial',
-    MONTHLY = 'monthly',
-    LIFETIME = 'lifetime',
+    LIFETIME_LAUNCH = 'lifetime_launch',
+    BASIC_MONTHLY = 'basic_monthly',
+    PRO_MONTHLY = 'pro_monthly',
+    BUSINESS_MONTHLY = 'business_monthly',
+    BASIC_ANNUAL = 'basic_annual',
+    PRO_ANNUAL = 'pro_annual',
+    BUSINESS_ANNUAL = 'business_annual',
 }
 
+/**
+ * Enhancement Mode - Single mode only
+ */
 export enum EnhancementMode {
     ENHANCE = 'enhance',
-    REPHRASE = 'rephrase',
-    SIMPLIFY = 'simplify',
-    EXPAND = 'expand',
 }
 
 // =============================================================================

@@ -74,24 +74,16 @@ export function buildCachedSystemPrompt(language: 'en' | 'ar' | 'fr'): CachedPro
  */
 export function buildUserPrompt(
     text: string,
-    mode: 'enhance' | 'rephrase' | 'simplify' | 'expand',
     tone: 'professional' | 'casual' | 'formal',
     enableCaching: boolean = true
 ): CachedPrompt {
-    const modeInstructions = {
-        enhance: "Enhance and improve the following text while maintaining its core meaning:",
-        rephrase: "Rephrase the following text to make it clearer and more engaging:",
-        simplify: "Simplify the following text to make it easier to understand:",
-        expand: "Expand the following text with additional relevant details and examples:"
-    };
-
     const toneInstructions = {
         professional: "Use a professional and polished tone.",
         casual: "Use a friendly and conversational tone.",
         formal: "Use a formal and academic tone."
     };
 
-    const prompt = `${modeInstructions[mode]}
+    const prompt = `Enhance and improve the following text while maintaining its core meaning:
 
 ${toneInstructions[tone]}
 

@@ -7,24 +7,36 @@ export interface User {
     createdAt: string;
 }
 
-export enum SubscriptionTier {
-    TRIAL = 'trial',
-    MONTHLY = 'monthly',
-    LIFETIME = 'lifetime',
-}
+/**
+ * Unified Subscription Tier System
+ * Matches the backend credit-based model
+ */
+export type SubscriptionTier =
+    | 'trial'
+    | 'lifetime_launch'
+    | 'basic_monthly'
+    | 'pro_monthly'
+    | 'business_monthly'
+    | 'basic_annual'
+    | 'pro_annual'
+    | 'business_annual';
 
-export enum SubscriptionStatus {
-    ACTIVE = 'active',
-    EXPIRED = 'expired',
-    CANCELLED = 'cancelled',
-}
+export type SubscriptionStatus =
+    | 'active'
+    | 'cancelled'
+    | 'expired'
+    | 'past_due'
+    | 'paused'
+    | 'trial';
 
 export interface Subscription {
     tier: SubscriptionTier;
     status: SubscriptionStatus;
     startDate: string;
     endDate?: string;
-    usageLimit: number;
+    usageLimit: number; // generations per month
+    currentUsage: number; // current month usage
+    resetDate?: string; // when quota resets
 }
 
 export interface UsageStats {

@@ -1,10 +1,12 @@
 import { defineConfig } from 'wxt';
 import tailwindcss from '@tailwindcss/vite';
+import type { UserConfig } from 'vite';
 
 // See https://wxt.dev/api/config.html
 export default defineConfig({
   modules: ['@wxt-dev/module-react'],
-  vite: () => ({
+  // @ts-expect-error - Vite version conflict between main deps and vitest bundled vite
+  vite: (): UserConfig => ({
     plugins: [tailwindcss()],
     build: {
       // Increase chunk size warning limit for extension context
