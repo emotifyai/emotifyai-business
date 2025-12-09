@@ -37,8 +37,8 @@ export function Header() {
                     <Link
                         href="/pricing"
                         className={`text-sm font-medium transition-colors ${typeof window !== 'undefined' && window.location.pathname === '/pricing'
-                                ? 'text-primary'
-                                : 'text-muted-foreground hover:text-primary'
+                            ? 'text-primary'
+                            : 'text-muted-foreground hover:text-primary'
                             }`}
                     >
                         Pricing
@@ -46,8 +46,8 @@ export function Header() {
                     <Link
                         href="/docs"
                         className={`text-sm font-medium transition-colors ${typeof window !== 'undefined' && window.location.pathname === '/docs'
-                                ? 'text-primary'
-                                : 'text-muted-foreground hover:text-primary'
+                            ? 'text-primary'
+                            : 'text-muted-foreground hover:text-primary'
                             }`}
                     >
                         Docs
@@ -55,8 +55,8 @@ export function Header() {
                     <Link
                         href="/about"
                         className={`text-sm font-medium transition-colors ${typeof window !== 'undefined' && window.location.pathname === '/about'
-                                ? 'text-primary'
-                                : 'text-muted-foreground hover:text-primary'
+                            ? 'text-primary'
+                            : 'text-muted-foreground hover:text-primary'
                             }`}
                     >
                         About
@@ -71,7 +71,15 @@ export function Header() {
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                                 <Button variant="ghost" className="relative h-9 w-9 rounded-full">
-                                    <User className="h-5 w-5" />
+                                    {user.avatar_url ? (
+                                        <img
+                                            src={user.avatar_url}
+                                            alt={user.display_name || 'User'}
+                                            className="h-9 w-9 rounded-full object-cover"
+                                        />
+                                    ) : (
+                                        <User className="h-5 w-5" />
+                                    )}
                                 </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end" className="w-56">
@@ -83,15 +91,15 @@ export function Header() {
                                 </DropdownMenuLabel>
                                 <DropdownMenuSeparator />
                                 <DropdownMenuItem asChild>
-                                    <Link href="/dashboard" className="cursor-pointer">
+                                    <Link href="/pricing" className="cursor-pointer">
                                         <BarChart3 className="mr-2 h-4 w-4" />
-                                        Dashboard
+                                        Subscription
                                     </Link>
                                 </DropdownMenuItem>
                                 <DropdownMenuItem asChild>
-                                    <Link href="/dashboard/settings" className="cursor-pointer">
+                                    <Link href="/dashboard" className="cursor-pointer">
                                         <Settings className="mr-2 h-4 w-4" />
-                                        Settings
+                                        Dashboard
                                     </Link>
                                 </DropdownMenuItem>
                                 <DropdownMenuSeparator />

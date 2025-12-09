@@ -21,8 +21,8 @@ export function SignupForm() {
 
         try {
             await signup.mutateAsync({ email, password, displayName })
-            toast.success('Account created successfully')
-            router.push('/dashboard')
+            toast.success('Account created successfully! Choose your plan to get started.')
+            router.push('/pricing')
         } catch (error) {
             toast.error(`Failed to create account. Please try again. ${error}`)
         }
