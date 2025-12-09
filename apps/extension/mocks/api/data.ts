@@ -59,8 +59,25 @@ export const mockUsageStats: Record<string, UsageStats> = {
 };
 
 // Current mock user tier for testing
-export let currentMockUser: SubscriptionTier = 'trial';
+export let currentMockUserTier: SubscriptionTier = 'trial';
 
 export function setMockUser(tier: SubscriptionTier): void {
-    currentMockUser = tier;
+    currentMockUserTier = tier;
 }
+
+export function getCurrentMockUser(): User {
+    return mockUser;
+}
+
+export function getCurrentMockSubscription(): Subscription {
+    return mockSubscriptions[currentMockUserTier] || mockSubscriptions.trial;
+}
+
+export function getCurrentMockUsageStats(): UsageStats {
+    return mockUsageStats[currentMockUserTier] || mockUsageStats.trial;
+}
+
+export function getMockEnhancedText(text: string, tone: string = 'professional'): string {
+    return `[Enhanced (${tone})]: ${text}`;
+}
+

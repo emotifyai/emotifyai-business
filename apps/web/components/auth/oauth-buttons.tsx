@@ -2,12 +2,11 @@
 
 import { Button } from '@/components/ui/button'
 import { useOAuthLogin } from '@/lib/hooks/use-auth'
-import { Github } from 'lucide-react'
 
 export function OAuthButtons() {
     const oauthLogin = useOAuthLogin()
 
-    const handleLogin = (provider: 'google' | 'github') => {
+    const handleLogin = (provider: 'google') => {
         oauthLogin.mutate({ provider })
     }
 
@@ -22,14 +21,6 @@ export function OAuthButtons() {
                     </svg>
                 )}
                 Google
-            </Button>
-            <Button variant="outline" type="button" disabled={oauthLogin.isPending} onClick={() => handleLogin('github')}>
-                {oauthLogin.isPending ? (
-                    <span className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-                ) : (
-                    <Github className="mr-2 h-4 w-4" />
-                )}
-                GitHub
             </Button>
         </div>
     )

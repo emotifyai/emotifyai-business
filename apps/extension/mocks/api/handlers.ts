@@ -4,8 +4,6 @@ import {
     getCurrentMockSubscription,
     getCurrentMockUsageStats,
     getMockEnhancedText,
-    mockUsageStats,
-    currentMockUser,
 } from './data';
 import { detectLanguage, isLanguageSupported } from '@/utils/language-detector';
 
@@ -72,7 +70,7 @@ export const handlers = [
         }
 
         // Check usage limits
-        const currentUsage = mockUsageStats[currentMockUser];
+        const currentUsage = getCurrentMockUsageStats();
         if (currentUsage.used >= currentUsage.limit) {
             return HttpResponse.json(
                 {

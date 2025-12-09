@@ -26,7 +26,7 @@ function rateLimit(ip: string): boolean {
     return true
 }
 
-export async function middleware(request: NextRequest) {
+export default async function proxy(request: NextRequest) {
     const startTime = Date.now()
     const ip = request.headers.get('x-forwarded-for') || 'unknown'
     const path = request.nextUrl.pathname

@@ -59,11 +59,47 @@ export function useLogin() {
 }
 
 /**
+ * Hook to signup with email and password
+ */
+export function useSignup() {
+    const queryClient = useQueryClient()
+
+    return useMutation({
+        mutationFn: async ({
+            email,
+            password,
+            displayName
+        }: {
+            email: string;
+            password: string;
+            displayName?: string
+        }) => {
+            const supabase = createClient()
+            const { data, error } = await supabase.auth.signUp({
+                email,
+                password,
+                options: {
+                    data: {
+                        full_name: displayName,
+                    },
+                },
+            })
+            if (error) throw error
+            return data
+        },
+        onSuccess: () => {
+            // Invalidate user query to refetch user data
+            queryClient.invalidateQueries({ queryKey: ['user'] })
+        },
+    })
+}
+
+/**
  * Hook to login with OAuth providers
  */
 export function useOAuthLogin() {
     return useMutation({
-        mutationFn: async ({ provider }: { provider: 'google' | 'github' }) => {
+        mutationFn: async ({ provider }: { provider: 'google' }) => {
             const supabase = createClient()
             const { data, error } = await supabase.auth.signInWithOAuth({
                 provider,
