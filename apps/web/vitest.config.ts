@@ -4,6 +4,7 @@ import path from 'path'
 import type { PluginOption } from 'vite'
 
 export default defineConfig({
+    // @ts-ignore
     plugins: [react()] as PluginOption[],
     resolve: {
         alias: {

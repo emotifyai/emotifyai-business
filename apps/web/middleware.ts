@@ -28,7 +28,7 @@ function rateLimit(ip: string): boolean {
 
 export async function middleware(request: NextRequest) {
     const startTime = Date.now()
-    const ip = request.ip || request.headers.get('x-forwarded-for') || 'unknown'
+    const ip = request.headers.get('x-forwarded-for') || 'unknown'
     const path = request.nextUrl.pathname
 
     // Rate limiting for API routes
