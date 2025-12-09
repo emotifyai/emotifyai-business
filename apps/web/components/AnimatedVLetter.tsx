@@ -14,8 +14,16 @@ interface Block {
   offsetY: number;
 }
 
+interface Particle {
+  id: number;
+  left: number;
+  top: number;
+  delay: number;
+}
+
 const AnimatedVLetter = () => {
   const [blocks, setBlocks] = useState<Block[]>([]);
+  const [particles, setParticles] = useState<Particle[]>([]);
   const [animationPhase, setAnimationPhase] = useState(0);
 
   // Define the V shape using a grid - much bigger and steeper
@@ -56,6 +64,15 @@ const AnimatedVLetter = () => {
       offsetY: (Math.random() - 0.5) * 200,
     }));
     setBlocks(initialBlocks);
+
+    // Initialize particles
+    const initialParticles = Array.from({ length: 20 }, (_, i) => ({
+      id: i,
+      left: Math.random() * 100,
+      top: Math.random() * 100,
+      delay: Math.random() * 2,
+    }));
+    setParticles(initialParticles);
 
     // Animation loop
     const animationInterval = setInterval(() => {
@@ -155,14 +172,14 @@ const AnimatedVLetter = () => {
 
         {/* Particle effects */}
         <div className="absolute inset-0 pointer-events-none">
-          {[...Array(20)].map((_, i) => (
+          {particles.map((particle) => (
             <div
-              key={`particle-${i}`}
+              key={`particle-${particle.id}`}
               className="absolute w-1 h-1 bg-purple-400 rounded-full animate-float"
               style={{
-                left: `${Math.random() * 100}%`,
-                top: `${Math.random() * 100}%`,
-                animationDelay: `${Math.random() * 2}s`,
+                left: `${particle.left}%`,
+                top: `${particle.top}%`,
+                animationDelay: `${particle.delay}s`,
                 opacity: 0.3,
               }}
             />
