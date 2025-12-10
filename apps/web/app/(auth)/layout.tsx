@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import AnimatedVLetter from '@/components/AnimatedVLetter'
+import AnimatedELetter from '@/components/AnimatedELetter'
 import { Header } from '@/components/layout/header'
 import React from "react";
 
@@ -17,7 +17,7 @@ export default function AuthLayout({
 
                     {/* Animated V Letter Background */}
                     <div className="absolute inset-0 flex items-center justify-center opacity-40">
-                        <AnimatedVLetter />
+                        <AnimatedELetter />
                     </div>
 
                     <div className="relative z-20 flex items-center text-lg font-medium">

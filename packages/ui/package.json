@@ -7,7 +7,8 @@
     "types": "./src/index.ts",
     "exports": {
         ".": "./src/index.ts",
-        "./components/*": "./src/components/*.tsx",
+        "./src/*": "./src/*.tsx",
+        "./lib/*": "./lib/*",
         "./styles/*": "./src/styles/*"
     },
     "scripts": {

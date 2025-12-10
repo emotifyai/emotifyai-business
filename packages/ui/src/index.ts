@@ -2,4 +2,4 @@ export { theme, colors, spacing, borderRadius, fontSize, fontWeight, shadows, tr
 export type { Theme } from './theme'
 
 // Components
-export { ToastProvider, useToast } from './components/Toast'
+export { ToastProvider, useToast } from './Toast.tsx'
