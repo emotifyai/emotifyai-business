@@ -38,7 +38,9 @@
   - Document component APIs
   - _Requirements: 16.1, 16.2, 16.3, 16.5_
 
-- [-] 2. Subscription Model and Database
+- [x] 2. Subscription Model and Database
+
+
 
 
 
@@ -72,17 +74,23 @@
   - _Requirements: 4.1, 4.2, 4.3, 4.4, 4.5_
 
 
+
 - [ ] 2.4 Redesign Pricing Page with New Subscription Model
   - Implement new pricing page layout with 6 tiers
   - Add lifetime counter display with real-time updates
   - Handle ?from=new_user parameter for "Continue with Free Plan" button
   - Add conditional button text and navigation logic
   - Show annual savings and popular badges
+
+
   - _Requirements: 3.1, 3.2, 3.3, 3.4, 3.5, 3.6, 13.1, 13.2, 13.3, 13.4, 13.5_
 
-- [ ] 2.5 Create Complete Database Schema Documentation
+- [-] 2.5 Create Complete Database Schema Documentation
+
   - Create apps/web/supabase/schema.sql with complete schema
   - Document all tables, indexes, RLS policies, and functions
+
+
   - Create seed data file with examples for all subscription tiers
   - Include migration history and relationship documentation
   - _Requirements: 12.4, 12.5_
