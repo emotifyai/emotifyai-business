@@ -15,7 +15,7 @@ export default defineConfig({
     },
   }),
   manifest: {
-    name: 'Verba',
+    name: 'EmotifyAI',
     description: 'AI-powered text enhancement and rewriting',
     version: '0.1.0',
     permissions: [
@@ -26,7 +26,7 @@ export default defineConfig({
     ],
     host_permissions: [
       'http://localhost/*',
-      'https://*.verba.app/*',
+      'https://emotifyai.com/*',
     ],
     icons: {
       16: '/icon/16.png',

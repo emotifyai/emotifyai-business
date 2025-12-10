@@ -41,7 +41,7 @@ export default function Home() {
         <section className="container py-24">
           <div className="mx-auto max-w-5xl">
             <div className="mb-12 text-center">
-              <h2 className="mb-4 text-3xl font-bold">Why Choose Verba?</h2>
+              <h2 className="mb-4 text-3xl font-bold">Why Choose EmotifyAI?</h2>
               <p className="text-muted-foreground">
                 Powerful features to enhance your writing workflow
               </p>

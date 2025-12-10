@@ -5,8 +5,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { BookOpen, Download, Key, MousePointerClick, Keyboard, Settings, Code, Zap } from 'lucide-react'
 
 export const metadata: Metadata = {
-    title: 'Documentation - Verba',
-    description: 'Complete guide to using Verba browser extension and web app',
+    title: 'Documentation - EmotifyAI',
+    description: 'Complete guide to using EmotifyAI browser extension and web app',
 }
 
 export default function DocsPage() {
@@ -25,7 +25,7 @@ export default function DocsPage() {
                                 Documentation
                             </h1>
                             <p className="text-xl text-muted-foreground">
-                                Everything you need to know about using Verba to enhance your writing.
+                                Everything you need to know about using EmotifyAI to enhance your writing.
                             </p>
                         </div>
                     </div>
@@ -52,11 +52,11 @@ export default function DocsPage() {
                                         <ol className="space-y-3 text-sm">
                                             <li className="flex gap-3">
                                                 <span className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-primary/10 text-xs font-semibold text-primary">1</span>
-                                                <span className="text-muted-foreground">Install the Verba extension from the <strong className="text-foreground">Chrome Web Store</strong> or <strong className="text-foreground">Firefox Add-ons</strong></span>
+                                                <span className="text-muted-foreground">Install the EmotifyAI extension from the <strong className="text-foreground">Chrome Web Store</strong> or <strong className="text-foreground">Firefox Add-ons</strong></span>
                                             </li>
                                             <li className="flex gap-3">
                                                 <span className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-primary/10 text-xs font-semibold text-primary">2</span>
-                                                <span className="text-muted-foreground">Click the Verba icon in your browser toolbar to open the popup</span>
+                                                <span className="text-muted-foreground">Click the EmotifyAI icon in your browser toolbar to open the popup</span>
                                             </li>
                                             <li className="flex gap-3">
                                                 <span className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-primary/10 text-xs font-semibold text-primary">3</span>

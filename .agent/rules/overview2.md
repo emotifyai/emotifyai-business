@@ -213,10 +213,10 @@ bun run zip:firefox
 
 #### Production Extension
 ```env
-VITE_API_BASE_URL=https://api.verba.app/api
+VITE_API_BASE_URL=https://emotifyai.com/api
 VITE_MOCK_API_ENABLED=false
 VITE_OAUTH_CLIENT_ID=prod_client_id
-VITE_WEB_APP_URL=https://verba.app
+VITE_WEB_APP_URL=https://emotifyai.com
 VITE_EXTENSION_ID=chrome_extension_id
 VITE_LOG_LEVEL=error
 ```
@@ -229,7 +229,7 @@ SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
 LEMONSQUEEZY_API_KEY=your_api_key
 LEMONSQUEEZY_WEBHOOK_SECRET=your_webhook_secret
 ANTHROPIC_API_KEY=your_anthropic_key
-NEXT_PUBLIC_APP_URL=https://verba.app
+NEXT_PUBLIC_APP_URL=https://emotifyai.com
 ```
 
 ---

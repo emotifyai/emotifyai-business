@@ -1,7 +1,7 @@
 -- =============================================================================
--- VERBA DATABASE SCHEMA
+-- EMOTIFYAI DATABASE SCHEMA
 -- =============================================================================
--- This migration creates the initial database schema for the Verba application
+-- This migration creates the initial database schema for the EmotifyAI application
 -- Run with: psql -d your_database -f 001_initial_schema.sql
 -- Or through Supabase dashboard
 

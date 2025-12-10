@@ -2,7 +2,7 @@ import type { User, Subscription, UsageStats, SubscriptionTier } from '@/types';
 
 export const mockUser: User = {
     id: 'mock-user-123',
-    email: 'demo@verba.app',
+    email: 'demo@emotifyai.com',
     name: 'Demo User',
     avatarUrl: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Demo',
     createdAt: new Date().toISOString(),

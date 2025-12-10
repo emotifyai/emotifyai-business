@@ -2,7 +2,7 @@ import { createEnv } from '@t3-oss/env-nextjs';
 import { z } from 'zod';
 
 /**
- * Type-safe Environment Variables for Verba Web Application
+ * Type-safe Environment Variables for EmotifyAI Web Application
  * 
  * This module uses @t3-oss/env-nextjs to provide type-safe environment variables
  * with runtime validation. It separates client and server variables for security.

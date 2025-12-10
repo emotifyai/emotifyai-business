@@ -36,14 +36,14 @@ type WindowMessage = {
 // Constants
 // ============================================================================
 
-const OVERLAY_ROOT_ID = 'verba-overlay-root';
+const OVERLAY_ROOT_ID = 'emotifyai-overlay-root';
 const KEYBOARD_SHORTCUT = { ctrl: true, shift: true, key: 'E' };
 const MESSAGE_TYPES = {
   WINDOW: {
-    SHOW_LOADING: 'VERBA_SHOW_LOADING',
-    SHOW_SUCCESS: 'VERBA_SHOW_SUCCESS',
-    SHOW_ERROR: 'VERBA_SHOW_ERROR',
-    UNDO: 'VERBA_UNDO',
+    SHOW_LOADING: 'EMOTIFYAI_SHOW_LOADING',
+    SHOW_SUCCESS: 'EMOTIFYAI_SHOW_SUCCESS',
+    SHOW_ERROR: 'EMOTIFYAI_SHOW_ERROR',
+    UNDO: 'EMOTIFYAI_UNDO',
   },
   RUNTIME: {
     SHOW_LOADING: 'SHOW_LOADING',

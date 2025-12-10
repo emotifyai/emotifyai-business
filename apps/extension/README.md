@@ -1,4 +1,4 @@
-# Verba Browser Extension
+# EmotifyAI Browser Extension
 
 AI-powered text enhancement and rewriting browser extension built with WXT, React, and TypeScript.
 
@@ -142,7 +142,7 @@ bun run compile              # TypeScript type checking
 ### Context Menu
 1. Select text on any webpage
 2. Right-click to open context menu
-3. Click "Enhance with Verba"
+3. Click "Enhance with EmotifyAI"
 4. Enhanced text replaces selection
 
 ### Keyboard Shortcut
@@ -196,7 +196,7 @@ Tests cover:
 2. Open popup - verify UI renders
 3. Click login - verify mock authentication
 4. Select text on webpage
-5. Right-click → "Enhance with Verba"
+5. Right-click → "Enhance with EmotifyAI"
 6. Verify enhanced text appears
 7. Click undo - verify text reverts
 
@@ -238,7 +238,7 @@ Output files:
 
 ### Context Menu Not Appearing
 
-**Problem**: Right-click menu doesn't show "Enhance with Verba"
+**Problem**: Right-click menu doesn't show "Enhance with EmotifyAI"
 
 **Solutions**:
 1. Ensure you're logged in (click extension icon)
@@ -270,7 +270,7 @@ Output files:
    - Check error messages
 
 4. **Check Language Support**
-   - Verba supports: English, Arabic, French
+   - EmotifyAI supports: English, Arabic, French
    - Other languages may not work well
 
 ### Login Issues
@@ -305,7 +305,7 @@ Output files:
 
 4. **Disable Other Extensions**
    - Conflicts with other extensions possible
-   - Test with only Verba enabled
+   - Test with only EmotifyAI enabled
 
 ### Keyboard Shortcut Not Working
 
@@ -386,12 +386,12 @@ If none of the above solutions work:
    - Steps to reproduce
 
 2. **Report Issue**
-   - Email: support@verba.app
+   - Email: support@emotifyai.com
    - Include collected information
    - Attach screenshots if helpful
 
 3. **Temporary Workarounds**
-   - Use web app directly: https://verba.app
+   - Use web app directly: https://emotifyai.com
    - Try different browser
    - Use incognito mode
 
@@ -412,5 +412,5 @@ If none of the above solutions work:
 
 For issues and questions:
 - GitHub Issues: [Your Repo]
-- Email: support@verba.app
-- Documentation: https://verba.app/docs
+- Email: support@emotifyai.com
+- Documentation: https://emotifyai.com/docs

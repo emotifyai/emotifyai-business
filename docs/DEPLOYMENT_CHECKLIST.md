@@ -109,7 +109,7 @@ After deployment, verify:
 
 ```bash
 # Web app health
-curl https://verba.app/api/health
+curl https://emotifyai.com/api/health
 
 # Database connection
 # Check Supabase dashboard

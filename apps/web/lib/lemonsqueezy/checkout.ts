@@ -48,7 +48,7 @@ export async function createSubscriptionCheckout({
                 enabledVariants: [parseInt(variantId)],
                 redirectUrl: redirectUrl || `${process.env.NEXT_PUBLIC_APP_URL}/dashboard`,
                 receiptButtonText: 'Go to Dashboard',
-                receiptThankYouNote: 'Thank you for subscribing to Verba!',
+                receiptThankYouNote: 'Thank you for subscribing to EmotifyAI!',
             },
         }
     )

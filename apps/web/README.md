@@ -1,4 +1,4 @@
-# Verba Web Application
+# EmotifyAI Web Application
 
 AI-powered text enhancement platform built with Next.js 16, Supabase, and Claude 3.5 Sonnet.
 

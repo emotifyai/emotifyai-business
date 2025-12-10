@@ -34,7 +34,7 @@ export function SubscriptionCard({ tier, status, currentPeriodEnd, usage }: Subs
                 </div>
                 <CardDescription>
                     {isLifetime
-                        ? "You have lifetime access to Verba"
+                        ? "You have lifetime access to EmotifyAI"
                         : `Your plan renews on ${formatDate(currentPeriodEnd)}`
                     }
                 </CardDescription>

@@ -93,7 +93,7 @@ declare global {
         getAll: vi.fn(async () => [
             {
                 id: 'enhance-text',
-                title: 'Enhance with Verba',
+                title: 'Enhance with EmotifyAI',
                 contexts: ['selection'],
                 enabled: false,
             },

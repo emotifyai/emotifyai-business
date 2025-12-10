@@ -1,4 +1,4 @@
-# Netlify Deployment Configuration for Verba Web App
+# Netlify Deployment Configuration for EmotifyAI Web App
 
 [build]
   base = "apps/web"

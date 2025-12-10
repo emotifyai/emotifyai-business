@@ -29,7 +29,7 @@ export function Header() {
             <div className="container flex h-16 items-center justify-between">
                 {/* Logo */}
                 <Link href="/" className="flex items-center space-x-2">
-                    <div className="text-gradient-brand text-2xl font-bold">Verba</div>
+                    <div className="text-gradient-brand text-2xl font-bold">EmotifyAI</div>
                 </Link>
 
                 {/* Navigation */}

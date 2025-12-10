@@ -1,1 +1,1 @@
-export * from '@ui/lib/utils/cn'
+export * from './cn'

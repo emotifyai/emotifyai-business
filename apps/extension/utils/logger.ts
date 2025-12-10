@@ -16,7 +16,7 @@ class Logger {
 
     private formatMessage(level: LogLevel, message: string, ...args: unknown[]): void {
         const timestamp = new Date().toISOString();
-        const prefix = `[Verba ${level.toUpperCase()}] ${timestamp}:`;
+        const prefix = `[EmotifyAI ${level.toUpperCase()}] ${timestamp}:`;
 
         switch (level) {
             case 'debug':

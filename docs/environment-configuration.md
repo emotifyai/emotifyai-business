@@ -273,7 +273,7 @@ Always add comments in `.example` files:
 ```env
 # API Base URL
 # Development: http://localhost:3000/api
-# Production: https://api.verba.app/api
+# Production: https://emotifyai.com/api
 VITE_API_BASE_URL=http://localhost:3000/api
 ```
 

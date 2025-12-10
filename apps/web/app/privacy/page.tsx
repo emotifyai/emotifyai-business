@@ -5,8 +5,8 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Shield, Lock, Eye, Database, FileText, UserCheck } from 'lucide-react'
 
 export const metadata: Metadata = {
-    title: 'Privacy Policy - Verba',
-    description: 'Learn how Verba protects your privacy and handles your data',
+    title: 'Privacy Policy - EmotifyAI',
+    description: 'Learn how EmotifyAI protects your privacy and handles your data',
 }
 
 export default function PrivacyPage() {
@@ -48,10 +48,10 @@ export default function PrivacyPage() {
                                         <h2 className="text-2xl font-bold mb-4">Introduction</h2>
                                         <div className="prose prose-zinc dark:prose-invert max-w-none">
                                             <p>
-                                                Verba ("we," "our," or "us") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our browser extension and web application.
+                                                EmotifyAI ("we," "our," or "us") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our browser extension and web application.
                                             </p>
                                             <p>
-                                                By using Verba, you agree to the collection and use of information in accordance with this policy.
+                                                By using EmotifyAI, you agree to the collection and use of information in accordance with this policy.
                                             </p>
                                         </div>
                                     </div>
@@ -86,7 +86,7 @@ export default function PrivacyPage() {
 
                                             <h3>Text Data</h3>
                                             <p>
-                                                When you use Verba to enhance text, we temporarily process your text through our AI service. <strong>We do not store or log the content of your text.</strong> Text is processed in real-time and immediately discarded after enhancement.
+                                                When you use EmotifyAI to enhance text, we temporarily process your text through our AI service. <strong>We do not store or log the content of your text.</strong> Text is processed in real-time and immediately discarded after enhancement.
                                             </p>
                                         </div>
                                     </div>
@@ -188,7 +188,7 @@ export default function PrivacyPage() {
                                         <li><strong>Opt-Out:</strong> Unsubscribe from marketing communications</li>
                                     </ul>
                                     <p>
-                                        To exercise these rights, please contact us at <a href="mailto:privacy@verba.app">privacy@verba.app</a>.
+                                        To exercise these rights, please contact us at <a href="mailto:privacy@emotifyai.com">privacy@emotifyai.com</a>.
                                     </p>
                                 </div>
                             </CardContent>
@@ -203,8 +203,8 @@ export default function PrivacyPage() {
                                         If you have questions about this Privacy Policy, please contact us:
                                     </p>
                                     <ul>
-                                        <li>Email: <a href="mailto:privacy@verba.app">privacy@verba.app</a></li>
-                                        <li>Support: <a href="mailto:support@verba.app">support@verba.app</a></li>
+                                        <li>Email: <a href="mailto:privacy@emotifyai.com">privacy@emotifyai.com</a></li>
+                                        <li>Support: <a href="mailto:support@emotifyai.com">support@emotifyai.com</a></li>
                                     </ul>
                                 </div>
                             </CardContent>

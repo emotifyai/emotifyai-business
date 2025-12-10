@@ -73,7 +73,7 @@ This creates `.output/chrome-mv3.zip`
      - `storage`: To save user preferences
      - `scripting`: To replace enhanced text
    - **Host permissions**: To work on all websites
-   - **Privacy policy URL**: https://verba.app/privacy
+   - **Privacy policy URL**: https://emotifyai.com/privacy
 
 5. **Upload Assets**
    - Upload all required images

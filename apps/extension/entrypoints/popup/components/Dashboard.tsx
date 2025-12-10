@@ -9,7 +9,7 @@ interface DashboardProps {
     onOpenSettings: () => void;
 }
 
-const WEB_APP_URL = import.meta.env.VITE_WEB_APP_URL || 'https://verba.app';
+const WEB_APP_URL = import.meta.env.VITE_WEB_APP_URL || 'https://emotifyai.com';
 
 function Dashboard({ user, subscription, usage, onLogout, onOpenSettings }: DashboardProps) {
     const isTrialUser = subscription?.tier === 'trial';
@@ -107,7 +107,7 @@ function Dashboard({ user, subscription, usage, onLogout, onOpenSettings }: Dash
                         <div className="text-5xl mb-4">✨</div>
                         <h4 className="text-lg font-semibold text-gray-800 mb-2">Ready to enhance your text!</h4>
                         <p className="text-sm text-gray-500 mb-4 leading-relaxed">
-                            Select any text on a webpage, right-click, and choose "Enhance with Verba" to get started.
+                            Select any text on a webpage, right-click, and choose "Enhance with EmotifyAI" to get started.
                         </p>
                         <div className="pt-4 border-t border-gray-200">
                             <p className="text-xs text-gray-600 m-0">💡 <strong>Tip:</strong> Use <kbd className="px-1.5 py-0.5 bg-white border border-gray-300 rounded text-[11px] font-mono">Ctrl+Shift+E</kbd> for quick access</p>

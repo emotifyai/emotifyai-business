@@ -33,7 +33,7 @@ This guide explains how to obtain the necessary API tokens and configuration val
 
 4. **Configure URL Settings**:
    - Go to **Authentication** → **URL Configuration**
-   - Set **Site URL**: `http://localhost:3000` (development) or `https://verba.app` (production)
+   - Set **Site URL**: `http://localhost:3000` (development) or `https://emotifyai.com` (production)
    - Add **Redirect URLs**: `http://localhost:3000/auth/callback`
 
 ---

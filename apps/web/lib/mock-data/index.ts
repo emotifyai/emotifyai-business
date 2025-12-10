@@ -9,7 +9,7 @@ export const mockUser: Profile = {
     id: 'mock-user-id-123',
     created_at: '2024-01-15T10:00:00Z',
     updated_at: '2024-11-27T12:00:00Z',
-    email: 'demo@verba.app',
+    email: 'demo@emotifyai.com',
     display_name: 'Demo User',
     avatar_url: null,
 }

@@ -214,7 +214,7 @@ function CreateKeyDialog({
                 <DialogHeader>
                     <DialogTitle>Create API Key</DialogTitle>
                     <DialogDescription>
-                        Create a new API key to use with the Verba browser extension.
+                        Create a new API key to use with the EmotifyAI browser extension.
                     </DialogDescription>
                 </DialogHeader>
 

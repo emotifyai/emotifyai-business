@@ -1,13 +1,13 @@
-# Verba - AI-Powered Text Enhancement Platform
+# EmotifyAI - AI-Powered Text Enhancement Platform
 
-Verba is a comprehensive AI-powered text enhancement platform consisting of a cross-browser extension and a full-featured web application. The system delivers intelligent text rewriting, rephrasing, and enhancement powered by Claude 3.5 Sonnet, with support for English, Arabic, and French languages.
+EmotifyAI is a comprehensive AI-powered text enhancement platform consisting of a cross-browser extension and a full-featured web application. The system delivers intelligent text rewriting, rephrasing, and enhancement powered by Claude 3.5 Sonnet, with support for English, Arabic, and French languages.
 
 ## 🏗️ Architecture
 
 This is a **monorepo** managed with **Bun workspaces**, containing two main applications:
 
 ```
-verba-monorepo/
+emotifyai-monorepo/
 ├── apps/
 │   ├── extension/          # Browser extension (WXT + React + TypeScript)
 │   └── web/                # Web application (Next.js 16 + React)
@@ -243,4 +243,4 @@ Proprietary - All rights reserved
 
 ---
 
-**Built with ❤️ by the Verba**
+**Built with ❤️ by the EmotifyAI team**

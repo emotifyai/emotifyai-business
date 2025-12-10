@@ -24,10 +24,10 @@ interface WindowMessage {
 // ============================================================================
 
 const MESSAGE_TYPES = {
-    SHOW_LOADING: 'VERBA_SHOW_LOADING',
-    SHOW_SUCCESS: 'VERBA_SHOW_SUCCESS',
-    SHOW_ERROR: 'VERBA_SHOW_ERROR',
-    UNDO: 'VERBA_UNDO',
+    SHOW_LOADING: 'EMOTIFYAI_SHOW_LOADING',
+    SHOW_SUCCESS: 'EMOTIFYAI_SHOW_SUCCESS',
+    SHOW_ERROR: 'EMOTIFYAI_SHOW_ERROR',
+    UNDO: 'EMOTIFYAI_UNDO',
 } as const;
 
 const AUTO_HIDE_DURATION = {

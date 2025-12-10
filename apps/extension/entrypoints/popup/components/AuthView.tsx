@@ -42,7 +42,7 @@ export default function AuthView({ onLogin }: AuthViewProps) {
                 </svg>
             </div>
 
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">Welcome to Verba</h1>
+            <h1 className="text-2xl font-bold text-gray-900 mb-2">Welcome to EmotifyAI</h1>
             <p className="text-sm text-gray-500 mb-8 max-w-[240px] leading-relaxed">
                 AI-powered text enhancement at your fingertips
             </p>

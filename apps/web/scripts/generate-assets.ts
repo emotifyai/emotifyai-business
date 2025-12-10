@@ -191,7 +191,7 @@ async function generateSocialImages(): Promise<void> {
  * Main execution
  */
 async function main() {
-    console.log('🎨 Verba Asset Generation Script\n');
+    console.log('🎨 EmotifyAI Asset Generation Script\n');
     console.log('================================\n');
 
     try {

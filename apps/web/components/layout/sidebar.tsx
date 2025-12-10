@@ -107,7 +107,7 @@ export function MobileSidebar() {
             <SheetContent side="left" className="pr-0">
                 <div className="px-7">
                     <Link href="/" className="flex items-center" onClick={() => setOpen(false)}>
-                        <span className="text-gradient-brand text-2xl font-bold">Verba</span>
+                        <span className="text-gradient-brand text-2xl font-bold">EmotifyAI</span>
                     </Link>
                 </div>
                 <Sidebar className="my-4 h-[calc(100vh-8rem)] pb-10 pl-6" />

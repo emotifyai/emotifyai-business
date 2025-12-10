@@ -37,6 +37,12 @@
       ],
       "@/app/*": [
         "./app/*"
+      ],
+      "@ui/*": [
+        "../../packages/ui/src/*"
+      ],
+      "@ui/globals.css": [
+        "../../packages/ui/styles/globals.css"
       ]
     }
   },

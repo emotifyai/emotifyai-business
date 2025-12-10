@@ -104,7 +104,7 @@ async function generatePromotionalTiles(): Promise<void> {
  * Main execution
  */
 async function main() {
-    console.log('🎨 Verba Extension Asset Generation Script\n');
+    console.log('🎨 EmotifyAI Extension Asset Generation Script\n');
     console.log('==========================================\n');
 
     try {

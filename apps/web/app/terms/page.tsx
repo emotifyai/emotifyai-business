@@ -5,8 +5,8 @@ import { Card, CardContent } from '@/components/ui/card'
 import { FileText, Scale, AlertCircle, CheckCircle } from 'lucide-react'
 
 export const metadata: Metadata = {
-    title: 'Terms of Service - Verba',
-    description: 'Terms and conditions for using Verba',
+    title: 'Terms of Service - EmotifyAI',
+    description: 'Terms and conditions for using EmotifyAI',
 }
 
 export default function TermsPage() {
@@ -25,7 +25,7 @@ export default function TermsPage() {
                                 Terms of Service
                             </h1>
                             <p className="text-xl text-muted-foreground">
-                                Please read these terms carefully before using Verba.
+                                Please read these terms carefully before using EmotifyAI.
                             </p>
                             <p className="mt-4 text-sm text-muted-foreground">
                                 Last updated: November 27, 2025
@@ -48,7 +48,7 @@ export default function TermsPage() {
                                         <h2 className="text-2xl font-bold mb-4">Acceptance of Terms</h2>
                                         <div className="prose prose-zinc dark:prose-invert max-w-none">
                                             <p>
-                                                By accessing or using Verba's browser extension and web application ("Service"), you agree to be bound by these Terms of Service ("Terms"). If you do not agree to these Terms, please do not use our Service.
+                                                By accessing or using EmotifyAI's browser extension and web application ("Service"), you agree to be bound by these Terms of Service ("Terms"). If you do not agree to these Terms, please do not use our Service.
                                             </p>
                                             <p>
                                                 We reserve the right to modify these Terms at any time. Continued use of the Service after changes constitutes acceptance of the modified Terms.
@@ -70,7 +70,7 @@ export default function TermsPage() {
                                         <h2 className="text-2xl font-bold mb-4">Service Description</h2>
                                         <div className="prose prose-zinc dark:prose-invert max-w-none">
                                             <p>
-                                                Verba is an AI-powered text enhancement tool that helps users improve their writing. The Service includes:
+                                                EmotifyAI is an AI-powered text enhancement tool that helps users improve their writing. The Service includes:
                                             </p>
                                             <ul>
                                                 <li>Browser extension for Chrome and Firefox</li>
@@ -94,7 +94,7 @@ export default function TermsPage() {
                                     <h2 className="text-2xl font-bold mb-4">User Accounts</h2>
                                     <h3>Account Creation</h3>
                                     <p>
-                                        To use Verba, you must create an account. You agree to:
+                                        To use EmotifyAI, you must create an account. You agree to:
                                     </p>
                                     <ul>
                                         <li>Provide accurate and complete information</li>
@@ -184,12 +184,12 @@ export default function TermsPage() {
                                     
                                     <h3>Our Rights</h3>
                                     <p>
-                                        Verba and all related trademarks, logos, and content are owned by us or our licensors. You may not use our intellectual property without written permission.
+                                        EmotifyAI and all related trademarks, logos, and content are owned by us or our licensors. You may not use our intellectual property without written permission.
                                     </p>
 
                                     <h3>Your Content</h3>
                                     <p>
-                                        You retain all rights to the text you input into Verba. We do not claim ownership of your content. By using the Service, you grant us a limited license to process your text for the purpose of providing the enhancement service.
+                                        You retain all rights to the text you input into EmotifyAI. We do not claim ownership of your content. By using the Service, you grant us a limited license to process your text for the purpose of providing the enhancement service.
                                     </p>
 
                                     <h3>AI-Generated Content</h3>
@@ -209,7 +209,7 @@ export default function TermsPage() {
                                         TO THE MAXIMUM EXTENT PERMITTED BY LAW:
                                     </p>
                                     <ul>
-                                        <li>Verba is provided "AS-IS" without warranties of any kind</li>
+                                        <li>EmotifyAI is provided "AS-IS" without warranties of any kind</li>
                                         <li>We are not liable for any indirect, incidental, or consequential damages</li>
                                         <li>Our total liability is limited to the amount you paid in the last 12 months</li>
                                         <li>We are not responsible for third-party services or content</li>
@@ -239,8 +239,8 @@ export default function TermsPage() {
                                         If you have questions about these Terms, please contact us:
                                     </p>
                                     <ul>
-                                        <li>Email: <a href="mailto:legal@verba.app">legal@verba.app</a></li>
-                                        <li>Support: <a href="mailto:support@verba.app">support@verba.app</a></li>
+                                        <li>Email: <a href="mailto:legal@emotifyai.com">legal@emotifyai.com</a></li>
+                                        <li>Support: <a href="mailto:support@emotifyai.com">support@emotifyai.com</a></li>
                                     </ul>
                                 </div>
                             </CardContent>

@@ -1,6 +1,6 @@
-# Contributing to Verba
+# Contributing to EmotifyAI
 
-Thank you for your interest in contributing to Verba! This document provides guidelines for contributing.
+Thank you for your interest in contributing to EmotifyAI! This document provides guidelines for contributing.
 
 ## Code of Conduct
 
@@ -70,8 +70,8 @@ Be respectful, inclusive, and professional in all interactions.
 
 ```bash
 # Clone repository
-git clone https://github.com/yourusername/verba.git
-cd verba
+git clone https://github.com/yourusername/emotifyai.git
+cd emotifyai
 
 # Install dependencies
 bun install
@@ -169,7 +169,7 @@ refactor: simplify API client error handling
 ## Questions?
 
 - Open a discussion on GitHub
-- Email: dev@verba.app
+- Email: dev@emotifyai.com
 - Check existing issues and PRs
 
 ## License
@@ -178,4 +178,4 @@ By contributing, you agree that your contributions will be licensed under the sa
 
 ---
 
-Thank you for contributing to Verba! 🚀
+Thank you for contributing to EmotifyAI! 🚀

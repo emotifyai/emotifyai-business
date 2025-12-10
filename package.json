@@ -1,5 +1,5 @@
 {
-  "name": "verba",
+  "name": "emotifyai",
   "version": "0.1.0",
   "private": true,
   "description": "AI-powered text enhancement platform - Monorepo containing browser extension and web application",
@@ -40,7 +40,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/yourusername/verba-monorepo"
+    "url": "https://github.com/yourusername/emotifyai-monorepo"
   },
   "keywords": [
     "ai",
@@ -53,6 +53,6 @@
     "claude",
     "monorepo"
   ],
-  "author": "Verba",
+  "author": "EmotifyAI",
   "license": "PROPRIETARY"
 }

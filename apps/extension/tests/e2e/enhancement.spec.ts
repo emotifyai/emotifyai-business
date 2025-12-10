@@ -34,7 +34,7 @@ test.describe('Core Enhancement Flow', () => {
         // Act: Select text and enhance
         await contentPage.selectText('#sample-text-1');
         await contentPage.rightClickSelected();
-        await contentPage.clickContextMenuItem('Enhance with Verba');
+        await contentPage.clickContextMenuItem('Enhance with EmotifyAI');
 
         // Assert: Text should be enhanced
         await contentPage.waitForTextChange('#sample-text-1', originalText);

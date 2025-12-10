@@ -8,7 +8,7 @@ we need to ensure all dashboard pages work
 we need to fix this layout problem, so we should fully update the the styles and brand and layout
 we need to update the pricing page to have param `from` if the `from` value is new_user then we should update our free plan like to have text "Continue with Free plan",
 we should also to test Oauth Google, we need to update the callback url in the google console
-we need to create new logo, we need to update the project name instances of "Verba" into "EmotifyAi"
+we need to create new logo, we need to update the project name instances of "EmotifyAI" (COMPLETED)
 we need to ensure in production to use our bough domain `emotifyai.com`
 we need to fix `import { useUsageStats, useUsageHistory } from '@/lib/hooks/use-usage'` they are not implemented
 we need to update the pages inside to apps/web/app/(dashboard)/dashboard to have good separation between presentation and container and to have real data

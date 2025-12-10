@@ -47,7 +47,7 @@ async function createContextMenu(): Promise<void> {
 
     browser.contextMenus.create({
       id: 'enhance-text',
-      title: 'Enhance with Verba',
+      title: 'Enhance with EmotifyAI',
       contexts: ['selection'],
       enabled: isAuthenticated,
     });
@@ -81,7 +81,7 @@ async function handleEnhanceText(text: string, tabId?: number): Promise<void> {
     // Check authentication
     const token = await getAuthToken();
     if (!token) {
-      throw new AuthenticationError('Please log in to use Verba');
+      throw new AuthenticationError('Please log in to use EmotifyAI');
     }
 
     // Check usage limits
@@ -129,7 +129,7 @@ async function handleEnhanceText(text: string, tabId?: number): Promise<void> {
       let errorMessage = 'Enhancement failed. Please try again.';
 
       if (error instanceof AuthenticationError) {
-        errorMessage = 'Please log in to use Verba';
+        errorMessage = 'Please log in to use EmotifyAI';
       } else if (error instanceof SubscriptionError) {
         errorMessage = error.message;
       } else if (error instanceof LanguageNotSupportedError) {

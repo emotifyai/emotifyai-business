@@ -24,8 +24,8 @@ VITE_MOCK_API_ENABLED=true                   # Enable mock API for development
 ### Production Values
 
 ```bash
-VITE_API_BASE_URL=https://verba.app/api
-VITE_WEB_APP_URL=https://verba.app
+VITE_API_BASE_URL=https://emotifyai.com/api
+VITE_WEB_APP_URL=https://emotifyai.com
 VITE_EXTENSION_ID=actual_chrome_extension_id
 VITE_LOG_LEVEL=error
 VITE_MOCK_API_ENABLED=false
@@ -94,7 +94,7 @@ LEMONSQUEEZY_STORE_ID=prod_store_id
 LEMONSQUEEZY_WEBHOOK_SECRET=prod_webhook_secret
 
 # Application
-NEXT_PUBLIC_APP_URL=https://verba.app
+NEXT_PUBLIC_APP_URL=https://emotifyai.com
 NODE_ENV=production
 
 # Feature Flags
@@ -104,7 +104,7 @@ ENABLE_ANALYTICS=true
 
 # Security
 NEXTAUTH_SECRET=strong_random_secret_here
-NEXTAUTH_URL=https://verba.app
+NEXTAUTH_URL=https://emotifyai.com
 ```
 
 ## Setting Up Environment Variables
@@ -138,7 +138,7 @@ NEXTAUTH_URL=https://verba.app
 1. Create account at https://lemonsqueezy.com
 2. Create store and products
 3. Get API key from Settings → API
-4. Configure webhook endpoint: `https://verba.app/api/webhooks/lemonsqueezy`
+4. Configure webhook endpoint: `https://emotifyai.com/api/webhooks/lemonsqueezy`
 5. Copy webhook secret
 
 ### Anthropic Setup

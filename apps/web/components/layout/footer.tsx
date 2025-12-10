@@ -58,7 +58,7 @@ export function Footer() {
                         <h3 className="mb-4 text-sm font-semibold">Support</h3>
                         <ul className="space-y-2 text-sm">
                             <li>
-                                <a href="mailto:support@verba.app" className="text-muted-foreground hover:text-foreground transition-colors">
+                                <a href="mailto:support@emotifyai.com" className="text-muted-foreground hover:text-foreground transition-colors">
                                     Contact
                                 </a>
                             </li>
@@ -67,7 +67,7 @@ export function Footer() {
                 </div>
 
                 <div className="mt-8 border-t pt-8 text-center text-sm text-muted-foreground">
-                    <p>&copy; {currentYear} Verba. All rights reserved.</p>
+                    <p>&copy; {currentYear} EmotifyAI. All rights reserved.</p>
                 </div>
             </div>
         </footer>
