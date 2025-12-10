@@ -1,21 +1,15 @@
 Here are the things i want you to do:
-- We need to add shopify files into the extension package [you may need to install shopify cli locally] and remember to use bun
-
-second
-
 we need to update buttons to show loading when there is IO, like in signin or signup
 we need to ensure that the extension auth button will navigate us to the create account
 we need to add a page if the auth didnt sync between backend and frontend as fallback, like to generate auth and let user to use it only when things went wrong
 we need to cache the token in user browsers
-we need to ensure tests paths
+we need to ensure tests inside web packgage
 we need to ensure all dashboard pages work
 we need to fix this layout problem, so we should fully update the the styles and brand and layout
 we need to update the pricing page to have param `from` if the `from` value is new_user then we should update our free plan like to have text "Continue with Free plan",
 we should also to test Oauth Google, we need to update the callback url in the google console
 we need to create new logo, we need to update the project name instances of "Verba" into "EmotifyAi"
 we need to ensure in production to use our bough domain `emotifyai.com`
-we need to get lemon sqeezy subscriptions ids and tokens
-we need to ensure the extension is running successfully on chrome and firefox
 we need to fix `import { useUsageStats, useUsageHistory } from '@/lib/hooks/use-usage'` they are not implemented
 we need to update the pages inside to apps/web/app/(dashboard)/dashboard to have good separation between presentation and container and to have real data
 we need to check our full code and create .sql file just as reference [we may need to seed or migrate into supabase]
@@ -23,4 +17,4 @@ we need to fix our ui package to be our source
 we need to update the middleware and .env with `emotifyai.com`
 we need to update the global .env.example with global project configuration [not mixed with inner packages]
 we need to ensure our full code uses our new subsciption plans "The system supports a credit-based licensing model with multiple subscription tiers. A free plan offers 50 generation credits with a 10-day validity period, and lifetime access limited to testing purposes. The Lifetime Launch Offer—the primary public release plan—grants one-time lifetime access for 97 USD, with 500 generation credits renewed monthly, capped at the first 500 subscribers. This plan includes real-time counters displaying total subscribers and remaining lifetime offers to create transparency and urgency. Additional plans include monthly recurring subscriptions—Basic at 17 USD for 350 credits, Pro at 37 USD for 700 credits, and Business at 57 USD for 1500 credits. Annual variants of the recurring plans apply a 25% discount when prepaid for 12 months."
-when everything is working correctly, we will remove all redundant code
+- We need to add shopify files into the extension package [you may need to install shopify cli locally] and remember to use bun

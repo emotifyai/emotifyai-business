@@ -17,7 +17,7 @@
 
 ### 🔐 Auth State Management (`use-auth.ts`)
 **Status**: Not yet implemented  
-**Priority**: Low  
+**Priority**: HIGH  
 **Description**: Real-time auth state synchronization across browser tabs
 
 **Implementation Plan**:
@@ -28,9 +28,9 @@
 
 ---
 
-### ⚡ Streaming Enhancement (`use-enhancement.ts`)
+### ⚡ Streaming Enhancement (`use-enhancement.ts`) 
 **Status**: Not yet implemented  
-**Priority**: High  
+**Priority**: LOW
 **Description**: Stream AI responses for better UX with long texts
 
 **Implementation Plan**:
@@ -65,19 +65,3 @@
 - Metrics: Tokens used, cost estimates, popular features
 - Exports: CSV download of usage data
 - Alerts: Notify when approaching limits
-
----
-
-## Timeline
-
-**Q1 2025**:
-- Subscription Management UI
-- Streaming Enhancement
-
-**Q2 2025**:
-- Usage Analytics Dashboard
-- API Key Management
-
-**Q3 2025**:
-- Auth State Management
-- Additional features TBD
