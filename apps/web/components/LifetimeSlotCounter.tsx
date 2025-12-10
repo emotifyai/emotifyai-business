@@ -6,11 +6,12 @@ import { Badge } from '@/components/ui/badge';
 import { AlertCircle, TrendingUp, Zap } from 'lucide-react';
 
 interface LifetimeSlotInfo {
-    total: number;
-    used: number;
-    remaining: number;
-    percentage: number;
-    available: boolean;
+    total_slots: number;
+    used_slots: number;
+    remaining_slots: number;
+    is_available: boolean;
+    show_urgency: boolean;
+    percentage_taken: number;
 }
 
 interface LifetimeSlotCounterProps {
@@ -33,8 +34,12 @@ export function LifetimeSlotCounter({
             const response = await fetch('/api/subscription/lifetime-slots');
             if (!response.ok) throw new Error('Failed to fetch slot information');
 
-            const data = await response.json();
-            setSlotInfo(data);
+            const result = await response.json();
+            if (!result.success) {
+                throw new Error(result.error || 'Failed to fetch slot information');
+            }
+
+            setSlotInfo(result.data);
             setError(null);
         } catch (err) {
             console.error('[LifetimeSlotCounter] Error:', err);
@@ -72,10 +77,10 @@ export function LifetimeSlotCounter({
     }
 
     const getUrgencyLevel = (): 'low' | 'medium' | 'high' | 'critical' => {
-        if (slotInfo.remaining === 0) return 'critical';
-        if (slotInfo.remaining <= 10) return 'critical';
-        if (slotInfo.percentage >= 90) return 'high';
-        if (slotInfo.percentage >= 75) return 'medium';
+        if (slotInfo.remaining_slots === 0) return 'critical';
+        if (slotInfo.remaining_slots <= 10) return 'critical';
+        if (slotInfo.percentage_taken >= 90) return 'high';
+        if (slotInfo.percentage_taken >= 75) return 'medium';
         return 'low';
     };
 
@@ -100,16 +105,16 @@ export function LifetimeSlotCounter({
     };
 
     const getUrgencyMessage = (): string | null => {
-        if (slotInfo.remaining === 0) {
+        if (slotInfo.remaining_slots === 0) {
             return 'Sold Out!';
         }
-        if (slotInfo.remaining <= 10) {
-            return `Only ${slotInfo.remaining} left!`;
+        if (slotInfo.remaining_slots <= 10) {
+            return `Only ${slotInfo.remaining_slots} left!`;
         }
-        if (slotInfo.percentage >= 90) {
+        if (slotInfo.percentage_taken >= 90) {
             return 'Almost sold out!';
         }
-        if (slotInfo.percentage >= 75) {
+        if (slotInfo.percentage_taken >= 75) {
             return 'Selling fast!';
         }
         return null;
@@ -122,7 +127,7 @@ export function LifetimeSlotCounter({
             <div className="flex items-center gap-2">
                 <Zap className={`h-4 w-4 ${getUrgencyColor()}`} />
                 <span className={`text-sm font-medium ${getUrgencyColor()}`}>
-                    {slotInfo.remaining} / {slotInfo.total} available
+                    {slotInfo.remaining_slots} / {slotInfo.total_slots} available
                 </span>
                 {urgencyMessage && (
                     <Badge variant="destructive" className="text-xs">
@@ -151,38 +156,38 @@ export function LifetimeSlotCounter({
                 <div className="flex items-center justify-between text-sm">
                     <span className="text-muted-foreground">Subscriptions Remaining</span>
                     <span className={`font-bold ${getUrgencyColor()}`}>
-                        {slotInfo.remaining.toLocaleString()} / {slotInfo.total.toLocaleString()}
+                        {slotInfo.remaining_slots.toLocaleString()} / {slotInfo.total_slots.toLocaleString()}
                     </span>
                 </div>
 
                 {showProgress && (
                     <div className="space-y-1">
                         <Progress
-                            value={slotInfo.percentage}
+                            value={slotInfo.percentage_taken}
                             className="h-2"
                             indicatorClassName={getProgressColor()}
                         />
                         <p className="text-xs text-muted-foreground text-right">
-                            {slotInfo.percentage.toFixed(1)}% claimed
+                            {slotInfo.percentage_taken.toFixed(1)}% claimed
                         </p>
                     </div>
                 )}
             </div>
 
-            {slotInfo.remaining > 0 && slotInfo.remaining <= 50 && (
+            {slotInfo.show_urgency && slotInfo.remaining_slots > 0 && (
                 <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">
                     <p className="font-medium">⚡ Limited Time Offer</p>
                     <p className="text-xs mt-1">
-                        Secure your lifetime subscription before all {slotInfo.total} slots are gone!
+                        Secure your lifetime subscription before all {slotInfo.total_slots} slots are gone!
                     </p>
                 </div>
             )}
 
-            {slotInfo.remaining === 0 && (
+            {slotInfo.remaining_slots === 0 && (
                 <div className="rounded-md bg-muted p-3 text-sm text-muted-foreground">
                     <p className="font-medium">❌ Sold Out</p>
                     <p className="text-xs mt-1">
-                        All {slotInfo.total} lifetime subscriptions have been claimed. Check out our other plans!
+                        All {slotInfo.total_slots} lifetime subscriptions have been claimed. Check out our other plans!
                     </p>
                 </div>
             )}

@@ -41,18 +41,35 @@ function mapSubscriptionStatus(lsStatus: string): SubscriptionStatus {
  * Determine subscription tier from variant ID
  */
 function getSubscriptionTier(variantId: string): SubscriptionTier {
-    const monthlyVariantId = process.env.LEMONSQUEEZY_MONTHLY_VARIANT_ID
-    const lifetimeVariantId = process.env.LEMONSQUEEZY_LIFETIME_VARIANT_ID
-
-    if (variantId === monthlyVariantId) {
-        return SubscriptionTier.MONTHLY
+    // Lifetime Launch Offer
+    if (variantId === process.env.LEMONSQUEEZY_LIFETIME_LAUNCH_VARIANT_ID) {
+        return SubscriptionTier.LIFETIME_LAUNCH
     }
 
-    if (variantId === lifetimeVariantId) {
-        return SubscriptionTier.LIFETIME
+    // Monthly Plans
+    if (variantId === process.env.LEMONSQUEEZY_BASIC_MONTHLY_VARIANT_ID) {
+        return SubscriptionTier.BASIC_MONTHLY
+    }
+    if (variantId === process.env.LEMONSQUEEZY_PRO_MONTHLY_VARIANT_ID) {
+        return SubscriptionTier.PRO_MONTHLY
+    }
+    if (variantId === process.env.LEMONSQUEEZY_BUSINESS_MONTHLY_VARIANT_ID) {
+        return SubscriptionTier.BUSINESS_MONTHLY
     }
 
-    return SubscriptionTier.TRIAL
+    // Annual Plans
+    if (variantId === process.env.LEMONSQUEEZY_BASIC_ANNUAL_VARIANT_ID) {
+        return SubscriptionTier.BASIC_ANNUAL
+    }
+    if (variantId === process.env.LEMONSQUEEZY_PRO_ANNUAL_VARIANT_ID) {
+        return SubscriptionTier.PRO_ANNUAL
+    }
+    if (variantId === process.env.LEMONSQUEEZY_BUSINESS_ANNUAL_VARIANT_ID) {
+        return SubscriptionTier.BUSINESS_ANNUAL
+    }
+
+    // Default to free plan for unknown variants
+    return SubscriptionTier.FREE
 }
 
 export async function POST(request: NextRequest) {
@@ -102,14 +119,64 @@ export async function POST(request: NextRequest) {
                     return NextResponse.json({ error: 'User not found' }, { status: 404 })
                 }
 
+                const tier = getSubscriptionTier(variantId)
+                
+                // Get credit limits based on tier
+                const getCreditLimit = (tier: SubscriptionTier): number => {
+                    switch (tier) {
+                        case SubscriptionTier.FREE:
+                            return 50
+                        case SubscriptionTier.LIFETIME_LAUNCH:
+                            return 500
+                        case SubscriptionTier.BASIC_MONTHLY:
+                        case SubscriptionTier.BASIC_ANNUAL:
+                            return 350
+                        case SubscriptionTier.PRO_MONTHLY:
+                        case SubscriptionTier.PRO_ANNUAL:
+                            return 700
+                        case SubscriptionTier.BUSINESS_MONTHLY:
+                        case SubscriptionTier.BUSINESS_ANNUAL:
+                            return 1500
+                        default:
+                            return 50
+                    }
+                }
+
                 const subscriptionData = {
                     user_id: profile.id,
                     lemon_squeezy_id: payload.data.id,
                     status: mapSubscriptionStatus(attrs.status),
-                    tier: getSubscriptionTier(variantId),
+                    tier: tier,
+                    tier_name: tier,
                     current_period_start: attrs.renews_at || new Date().toISOString(),
                     current_period_end: attrs.ends_at || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
                     cancel_at: attrs.ends_at || null,
+                    credits_limit: getCreditLimit(tier),
+                    credits_used: 0,
+                    credits_reset_date: tier === SubscriptionTier.FREE ? null : 
+                        (tier.includes('annual') ? 
+                            new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString() :
+                            new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()),
+                    validity_days: tier === SubscriptionTier.FREE ? 10 : null,
+                }
+
+                // For lifetime subscriptions, reserve a slot
+                if (tier === SubscriptionTier.LIFETIME_LAUNCH && eventName === 'subscription_created') {
+                    try {
+                        const { data: subscriberNumber, error: slotError } = await supabase
+                            .rpc('reserve_lifetime_subscriber_slot', { user_uuid: profile.id })
+                            .single()
+
+                        if (slotError) {
+                            console.error('Error reserving lifetime slot:', slotError)
+                            return NextResponse.json({ error: 'Lifetime slots exhausted' }, { status: 400 })
+                        }
+
+                        console.log(`Reserved lifetime slot #${subscriberNumber} for user ${profile.id}`)
+                    } catch (error) {
+                        console.error('Error reserving lifetime slot:', error)
+                        return NextResponse.json({ error: 'Lifetime slots exhausted' }, { status: 400 })
+                    }
                 }
 
                 // Upsert subscription

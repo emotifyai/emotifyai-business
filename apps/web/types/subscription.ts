@@ -16,7 +16,7 @@ export interface SubscriptionLimits {
 
 export const SUBSCRIPTION_LIMITS: Record<SubscriptionTier, SubscriptionLimits> = {
     [SubscriptionTier.TRIAL]: {
-        enhancementsPerPeriod: 10,
+        enhancementsPerPeriod: 50,
         rateLimit: 5,
         features: {
             apiAccess: false,
@@ -24,8 +24,26 @@ export const SUBSCRIPTION_LIMITS: Record<SubscriptionTier, SubscriptionLimits> =
             advancedModes: false,
         },
     },
-    [SubscriptionTier.MONTHLY]: {
-        enhancementsPerPeriod: 1000,
+    [SubscriptionTier.FREE]: {
+        enhancementsPerPeriod: 50,
+        rateLimit: 5,
+        features: {
+            apiAccess: false,
+            prioritySupport: false,
+            advancedModes: false,
+        },
+    },
+    [SubscriptionTier.LIFETIME_LAUNCH]: {
+        enhancementsPerPeriod: 500,
+        rateLimit: 20,
+        features: {
+            apiAccess: true,
+            prioritySupport: true,
+            advancedModes: true,
+        },
+    },
+    [SubscriptionTier.BASIC_MONTHLY]: {
+        enhancementsPerPeriod: 350,
         rateLimit: 10,
         features: {
             apiAccess: true,
@@ -33,8 +51,44 @@ export const SUBSCRIPTION_LIMITS: Record<SubscriptionTier, SubscriptionLimits> =
             advancedModes: true,
         },
     },
-    [SubscriptionTier.LIFETIME]: {
-        enhancementsPerPeriod: Infinity,
+    [SubscriptionTier.PRO_MONTHLY]: {
+        enhancementsPerPeriod: 700,
+        rateLimit: 15,
+        features: {
+            apiAccess: true,
+            prioritySupport: true,
+            advancedModes: true,
+        },
+    },
+    [SubscriptionTier.BUSINESS_MONTHLY]: {
+        enhancementsPerPeriod: 1500,
+        rateLimit: 20,
+        features: {
+            apiAccess: true,
+            prioritySupport: true,
+            advancedModes: true,
+        },
+    },
+    [SubscriptionTier.BASIC_ANNUAL]: {
+        enhancementsPerPeriod: 350,
+        rateLimit: 10,
+        features: {
+            apiAccess: true,
+            prioritySupport: false,
+            advancedModes: true,
+        },
+    },
+    [SubscriptionTier.PRO_ANNUAL]: {
+        enhancementsPerPeriod: 700,
+        rateLimit: 15,
+        features: {
+            apiAccess: true,
+            prioritySupport: true,
+            advancedModes: true,
+        },
+    },
+    [SubscriptionTier.BUSINESS_ANNUAL]: {
+        enhancementsPerPeriod: 1500,
         rateLimit: 20,
         features: {
             apiAccess: true,

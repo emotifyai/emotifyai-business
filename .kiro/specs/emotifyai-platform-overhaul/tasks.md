@@ -20,7 +20,7 @@
 
 
 
-- [ ] 1.2 Domain Migration: verba.app → emotifyai.com
+- [x] 1.2 Domain Migration: verba.app → emotifyai.com
   - Update all environment variable examples and production configs
   - Update host_permissions in extension wxt.config.ts
   - Update API base URLs and web app URLs
@@ -31,23 +31,29 @@
 
   - _Requirements: 1.2, 2.1, 2.2, 2.3, 2.4, 2.5_
 
-- [ ] 1.3 Update Shared UI Package Branding
+- [x] 1.3 Update Shared UI Package Branding
   - Update package name from @verba/ui to @emotifyai/ui
   - Update imports in web and extension to use @emotifyai/ui
   - Ensure consistent theming across packages
   - Document component APIs
   - _Requirements: 16.1, 16.2, 16.3, 16.5_
 
-## 2. Subscription Model and Database
+- [-] 2. Subscription Model and Database
 
-- [ ] 2.1 Database Schema Updates for New Subscription Model
+
+
+- [x] 2.1 Database Schema Updates for New Subscription Model
+
+
   - Create migration to add new subscription tier columns (tier, credits_limit, credits_used, credits_reset_date, validity_days)
   - Create lifetime_subscribers tracking table with subscriber_number and functions
   - Add get_lifetime_subscriber_count() and get_remaining_lifetime_slots() database functions
   - Update subscription validation logic for credit-based system
   - _Requirements: 3.1, 3.2, 3.7, 12.1, 12.2, 12.3_
 
-- [ ] 2.2 Update Subscription Types and Configuration
+- [x] 2.2 Update Subscription Types and Configuration
+
+
   - Update subscription types to match new credit-based model
   - Add Free Plan (50 credits, 10-day validity)
   - Update Lifetime Launch Offer (500 credits/month, $97, limited to 500 subscribers)
@@ -55,13 +61,16 @@
   - Add Annual plans with 25% discount
   - _Requirements: 3.1, 3.2, 3.3, 3.4, 3.5, 3.6_
 
-- [ ] 2.3 Implement Lifetime Counter API and Component
+- [x] 2.3 Implement Lifetime Counter API and Component
+
+
   - Create /api/subscription/lifetime-slots endpoint
   - Implement real-time lifetime subscriber counter
   - Add LifetimeSlotCounter component with 30-second refresh
   - Show urgency messaging when < 50 spots remain
   - Hide offer when 500 subscribers reached
   - _Requirements: 4.1, 4.2, 4.3, 4.4, 4.5_
+
 
 - [ ] 2.4 Redesign Pricing Page with New Subscription Model
   - Implement new pricing page layout with 6 tiers
@@ -78,7 +87,8 @@
   - Include migration history and relationship documentation
   - _Requirements: 12.4, 12.5_
 
-## 3. User Experience and Navigation
+- [ ] 3. User Experience and Navigation
+
 
 - [ ] 3.1 Implement Navbar Avatar Dropdown for Authenticated Users
   - Create NavbarUserMenu component with avatar dropdown
