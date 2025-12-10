@@ -15,20 +15,45 @@ export async function GET(request: NextRequest) {
     try {
         const supabase = await createClient()
 
-        // Use the database function to get lifetime offer status
+        // Try to use the database function first
         const { data, error } = await supabase
             .rpc('get_lifetime_offer_status')
             .single()
 
         if (error) {
-            console.error('Error fetching lifetime offer status:', error)
-            return NextResponse.json(
-                { 
-                    success: false, 
-                    error: 'Failed to fetch lifetime offer status' 
-                },
-                { status: 500 }
-            )
+            console.error('Database function error, using fallback query:', error)
+            
+            // Fallback: manually count lifetime subscribers
+            const { count, error: countError } = await supabase
+                .from('lifetime_subscribers')
+                .select('*', { count: 'exact', head: true })
+
+            if (countError) {
+                console.error('Error counting lifetime subscribers:', countError)
+                return NextResponse.json(
+                    { 
+                        success: false, 
+                        error: 'Failed to fetch lifetime offer status' 
+                    },
+                    { status: 500 }
+                )
+            }
+
+            const usedSlots = count || 0
+            const remainingSlots = Math.max(0, 500 - usedSlots)
+            const percentageTaken = usedSlots > 0 ? Math.round((usedSlots / 500) * 100) : 0
+
+            return NextResponse.json({
+                success: true,
+                data: {
+                    total_slots: 500,
+                    used_slots: usedSlots,
+                    remaining_slots: remainingSlots,
+                    is_available: remainingSlots > 0,
+                    show_urgency: remainingSlots < 50 && remainingSlots > 0,
+                    percentage_taken: percentageTaken
+                }
+            })
         }
 
         // Type assertion for the database function result

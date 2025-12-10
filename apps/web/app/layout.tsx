@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "@ui/globals.css";
+import { ThemeProvider } from "next-themes";
 
 import { QueryProvider } from "@/lib/query-provider";
 import { Toaster } from "@ui/sonner";
@@ -18,10 +19,17 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className="antialiased" suppressHydrationWarning>
-        <QueryProvider>
-          {children}
-          <Toaster />
-        </QueryProvider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <QueryProvider>
+            {children}
+            <Toaster />
+          </QueryProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

@@ -75,7 +75,8 @@
 
 
 
-- [ ] 2.4 Redesign Pricing Page with New Subscription Model
+- [-] 2.4 Redesign Pricing Page with New Subscription Model
+
   - Implement new pricing page layout with 6 tiers
   - Add lifetime counter display with real-time updates
   - Handle ?from=new_user parameter for "Continue with Free Plan" button
@@ -303,12 +304,14 @@
 
   - **Property 55: Token expiration handling**
 
+
   - **Property 56: Cross-tab token synchronization**
   - **Property 57: Logout token cleanup**
   - **Validates: Requirements 14.3, 14.4, 14.5, 15.1, 15.2, 15.3, 15.4, 15.5**
 
 - [ ]* 5.11 Write Property Tests for Shared Components and Code Quality (Properties 58-66)
   - **Property 58: Shared component centralization**
+
   - **Property 59: Shared component import consistency**
   - **Property 60: Theme consistency across packages**
   - **Property 61: Component update propagation**

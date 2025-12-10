@@ -7,9 +7,9 @@
  * Run with: node scripts/test-oauth-config.js
  */
 
-const https = require('https');
-const fs = require('fs');
-const path = require('path');
+import https from 'https';
+import fs from 'fs';
+import path from 'path';
 
 // Configuration
 const DOMAIN = 'emotifyai.com';
@@ -305,14 +305,4 @@ async function main() {
 }
 
 // Run the script
-if (require.main === module) {
-  main();
-}
-
-module.exports = {
-  checkEnvironmentFiles,
-  checkOAuthConfiguration,
-  testProductionUrls,
-  checkExtensionManifest,
-  generateDeploymentChecklist
-};
+main();

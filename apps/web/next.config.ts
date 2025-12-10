@@ -2,6 +2,10 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   /* config options here */
+  experimental: {
+    optimizePackageImports: ['@ui/button', '@ui/card', '@ui/badge'],
+  },
+  productionBrowserSourceMaps: false,
   images: {
     remotePatterns: [
       {

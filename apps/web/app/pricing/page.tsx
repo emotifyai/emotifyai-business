@@ -17,7 +17,7 @@ export const metadata: Metadata = {
 }
 
 interface PricingPageProps {
-    searchParams: { from?: string }
+    searchParams: Promise<{ from?: string }>
 }
 
 function PricingCard({ tier, isPopular = false, fromNewUser = false }: { 
@@ -28,7 +28,6 @@ function PricingCard({ tier, isPopular = false, fromNewUser = false }: {
     const config = SUBSCRIPTION_TIERS[tier]
     const isLifetime = tier === 'lifetime_launch'
     const isAnnual = tier.includes('annual')
-    const isMonthly = tier.includes('monthly')
     const isFree = tier === 'trial'
     
     const monthlyPrice = isAnnual ? getMonthlyEquivalent(tier) : config.price
@@ -129,9 +128,9 @@ function PricingCard({ tier, isPopular = false, fromNewUser = false }: {
     )
 }
 
-export default function PricingPage({ searchParams }: PricingPageProps) {
-    const fromNewUser = searchParams.from === 'new_user'
-    const sortedTiers = getSortedTiers()
+export default async function PricingPage({ searchParams }: PricingPageProps) {
+    const params = await searchParams
+    const fromNewUser = params.from === 'new_user'
 
     return (
         <div className="flex min-h-screen flex-col">

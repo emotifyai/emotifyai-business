@@ -1,12 +1,14 @@
 'use client'
 
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { Button } from '@ui/button'
 import { useUser } from '@/lib/hooks/use-auth'
 import { NavbarUserMenu } from './navbar-user-menu'
 
 export function Header() {
     const { data: user, isLoading } = useUser()
+    const pathname = usePathname()
 
     return (
         <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -20,7 +22,7 @@ export function Header() {
                 <nav className="hidden md:flex items-center space-x-6">
                     <Link
                         href="/pricing"
-                        className={`text-sm font-medium transition-colors ${typeof window !== 'undefined' && window.location.pathname === '/pricing'
+                        className={`text-sm font-medium transition-colors ${pathname === '/pricing'
                             ? 'text-primary'
                             : 'text-muted-foreground hover:text-primary'
                             }`}
@@ -29,7 +31,7 @@ export function Header() {
                     </Link>
                     <Link
                         href="/docs"
-                        className={`text-sm font-medium transition-colors ${typeof window !== 'undefined' && window.location.pathname === '/docs'
+                        className={`text-sm font-medium transition-colors ${pathname === '/docs'
                             ? 'text-primary'
                             : 'text-muted-foreground hover:text-primary'
                             }`}
@@ -38,7 +40,7 @@ export function Header() {
                     </Link>
                     <Link
                         href="/about"
-                        className={`text-sm font-medium transition-colors ${typeof window !== 'undefined' && window.location.pathname === '/about'
+                        className={`text-sm font-medium transition-colors ${pathname === '/about'
                             ? 'text-primary'
                             : 'text-muted-foreground hover:text-primary'
                             }`}
@@ -58,7 +60,7 @@ export function Header() {
                             <Button variant="ghost" asChild>
                                 <Link href="/login">Login</Link>
                             </Button>
-                            <Button variant="glow" asChild>
+                            <Button variant="default" asChild>
                                 <Link href="/signup">Get Started</Link>
                             </Button>
                         </>
