@@ -22,13 +22,13 @@ export default function AuthLayout({
 
                     <div className="relative z-20 flex items-center text-lg font-medium">
                         <Link href="/" className="flex items-center gap-2">
-                            <span className="text-gradient-brand text-2xl font-bold">Verba</span>
+                            <span className="text-gradient-brand text-2xl font-bold">EmotifyAI</span>
                         </Link>
                     </div>
                     <div className="relative z-20 mt-auto">
                         <blockquote className="space-y-2">
                             <p className="text-lg">
-                                &ldquo;Verba has completely transformed how I write. The AI enhancement is subtle yet powerful, making my emails and documents sound so much more professional.&rdquo;
+                                &ldquo;EmotifyAI has completely transformed how I write. The AI enhancement is subtle yet powerful, making my emails and documents sound so much more professional.&rdquo;
                             </p>
                             <footer className="text-sm">Sofia Davis</footer>
                         </blockquote>

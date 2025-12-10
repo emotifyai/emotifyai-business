@@ -60,9 +60,6 @@ export function Header() {
                             <Button variant="ghost" asChild>
                                 <Link href="/login">Login</Link>
                             </Button>
-                            <Button variant="default" asChild>
-                                <Link href="/signup">Get Started</Link>
-                            </Button>
                         </>
                     )}
                 </div>

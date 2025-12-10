@@ -139,8 +139,8 @@ const AnimatedELetter = () => {
               key={`glow-${block.id}`}
               className="absolute bg-purple-500"
               style={{
-                left: `${block.col * (blockSize + gap)}px`,
-                top: `${block.row * (blockSize + gap)}px`,
+                left: `${block.col * (blockSize + gap) + 130}px`,
+                top: `${block.row * (blockSize + gap) + 30}px`,
                 width: `${blockSize * 2}px`,
                 height: `${blockSize * 2}px`,
                 transform: `translate(${block.offsetX}px, ${block.offsetY}px) scale(${block.scale}) rotate(${block.rotation}deg)`,
@@ -158,8 +158,8 @@ const AnimatedELetter = () => {
             key={block.id}
             className="absolute rounded-sm shadow-lg"
             style={{
-              left: `${block.col * (blockSize + gap)}px`,
-              top: `${block.row * (blockSize + gap)}px`,
+              left: `${block.col * (blockSize + gap) + 130}px`,
+              top: `${block.row * (blockSize + gap) + 30}px`,
               width: `${blockSize}px`,
               height: `${blockSize}px`,
               background: 'linear-gradient(135deg, #a78bfa 0%, #7c3aed 50%, #6d28d9 100%)',
