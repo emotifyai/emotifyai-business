@@ -44,7 +44,7 @@ const createAPIClient = (): KyInstance => {
 
                     // Handle non-2xx responses
                     if (!response.ok) {
-                        const errorData = await response.json().catch(() => ({}));
+                        const errorData = await response.json().catch(() => ({})) as any;
 
                         if (response.status === 401) {
                             throw new AuthenticationError(errorData.message || 'Unauthorized');

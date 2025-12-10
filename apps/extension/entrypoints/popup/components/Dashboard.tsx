@@ -54,8 +54,8 @@ function Dashboard({ user, subscription, usage, onLogout, onOpenSettings }: Dash
                     <div className="flex justify-between items-center mb-3">
                         <span className="text-base font-semibold text-white">
                             {subscription?.tier === 'trial' && '🎯 Trial'}
-                            {subscription?.tier === 'monthly' && '⭐ Monthly'}
-                            {subscription?.tier === 'lifetime' && '💎 Lifetime'}
+                            {(subscription?.tier === 'basic_monthly' || subscription?.tier === 'pro_monthly' || subscription?.tier === 'business_monthly') && '⭐ Monthly'}
+                            {subscription?.tier === 'lifetime_launch' && '💎 Lifetime'}
                         </span>
                         <span className="px-3 py-1 rounded-xl text-xs font-semibold bg-white/30 text-white">
                             {subscription?.status === 'active' ? '✓ Active' : '⚠ Inactive'}

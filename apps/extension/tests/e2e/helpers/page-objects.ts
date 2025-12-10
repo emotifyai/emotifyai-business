@@ -139,7 +139,7 @@ export class ContentPage {
 
     async waitForTextChange(selector: string, originalText: string, timeout = 10000) {
         await this.page.waitForFunction(
-            ({ sel, original }) => {
+            ({ selector: sel, original }) => {
                 const element = document.querySelector(sel);
                 return element?.textContent !== original;
             },

@@ -12,27 +12,7 @@ import { vi, beforeEach } from 'vitest';
  * - Global test utilities
  */
 
-// Mock WXT storage module
-vi.mock('wxt/storage', () => ({
-    storage: {
-        getItem: vi.fn(async (key: string) => {
-            const storage = global.__mockStorage__ || {};
-            return storage[key] || null;
-        }),
-        setItem: vi.fn(async (key: string, value: any) => {
-            if (!global.__mockStorage__) {
-                global.__mockStorage__ = {};
-            }
-            global.__mockStorage__[key] = value;
-        }),
-        removeItem: vi.fn(async (key: string) => {
-            if (global.__mockStorage__) {
-                delete global.__mockStorage__[key];
-            }
-        }),
-        watch: vi.fn(() => () => { }), // Return unwatch function
-    },
-}));
+// Note: No longer mocking wxt/storage as it's not used in the codebase
 
 // Extend global type to include browser
 declare global {

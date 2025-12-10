@@ -3,22 +3,89 @@
 import { useUsageStats, useUsageHistory } from '@/lib/hooks/use-usage'
 import { UsageChart } from '@/components/dashboard/usage-chart'
 import { StatsCard } from '@/components/dashboard/stats-card'
-import { Zap, Activity, Clock, BarChart3 } from 'lucide-react'
+import { Zap, Activity, Clock, BarChart3, AlertCircle } from 'lucide-react'
 import { Skeleton } from '@ui/skeleton'
+import { Alert, AlertDescription } from '@ui/alert'
+import { Button } from '@ui/button'
 
 export default function UsagePage() {
-    const { data: usage, isLoading: isStatsLoading } = useUsageStats()
-    const { data: history, isLoading: isHistoryLoading } = useUsageHistory()
+    const { 
+        data: usage, 
+        isLoading: isStatsLoading, 
+        error: statsError, 
+        refetch: refetchStats 
+    } = useUsageStats()
+    
+    const { 
+        data: historyPages, 
+        isLoading: isHistoryLoading, 
+        error: historyError,
+        fetchNextPage,
+        hasNextPage,
+        isFetchingNextPage
+    } = useUsageHistory()
 
+    // Handle loading states
     if (isStatsLoading || isHistoryLoading) {
         return <UsageSkeleton />
     }
 
-    if (!usage || !history) return null
+    // Handle authentication errors
+    if (statsError?.message.includes('Authentication required') || 
+        historyError?.message.includes('Authentication required')) {
+        return (
+            <div className="space-y-8">
+                <Alert variant="destructive">
+                    <AlertCircle className="h-4 w-4" />
+                    <AlertDescription>
+                        Please log in to view your usage statistics.
+                    </AlertDescription>
+                </Alert>
+            </div>
+        )
+    }
 
-    const usagePercentage = usage.currentPeriod.enhancementsLimit === Infinity
-        ? 0
-        : (usage.currentPeriod.enhancementsUsed / usage.currentPeriod.enhancementsLimit) * 100
+    // Handle other errors with retry option
+    if (statsError || historyError) {
+        return (
+            <div className="space-y-8">
+                <Alert variant="destructive">
+                    <AlertCircle className="h-4 w-4" />
+                    <AlertDescription className="flex items-center justify-between">
+                        <span>
+                            Failed to load usage data: {statsError?.message || historyError?.message}
+                        </span>
+                        <Button 
+                            variant="outline" 
+                            size="sm" 
+                            onClick={() => refetchStats()}
+                        >
+                            Retry
+                        </Button>
+                    </AlertDescription>
+                </Alert>
+            </div>
+        )
+    }
+
+    if (!usage) return null
+
+    // Calculate usage percentage and days remaining
+    const totalCredits = usage.credits_used + usage.credits_remaining
+    const usagePercentage = totalCredits > 0 ? (usage.credits_used / totalCredits) * 100 : 0
+    
+    // Calculate days remaining until reset (if reset_date exists)
+    const daysRemaining = usage.reset_date 
+        ? Math.max(0, Math.ceil((new Date(usage.reset_date).getTime() - Date.now()) / (1000 * 60 * 60 * 24)))
+        : null
+
+    // Transform history data for chart
+    const chartData = historyPages?.pages.flatMap((page: any) => 
+        page.data.map((log: any) => ({
+            date: log.created_at,
+            count: log.credits_consumed,
+        }))
+    ) ?? []
 
     return (
         <div className="space-y-8">
@@ -32,35 +99,46 @@ export default function UsagePage() {
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                 <StatsCard
                     title="Total Enhancements"
-                    value={usage.currentPeriod.enhancementsUsed}
+                    value={usage.total_enhancements}
                     icon={Zap}
-                    description="This billing period"
+                    description="All time"
                 />
                 <StatsCard
-                    title="Usage Limit"
-                    value={usage.currentPeriod.enhancementsLimit === Infinity ? "∞" : usage.currentPeriod.enhancementsLimit}
+                    title="Credits Used"
+                    value={usage.credits_used}
                     icon={Activity}
-                    description={`${usagePercentage.toFixed(1)}% used`}
+                    description={`${usagePercentage.toFixed(1)}% of ${totalCredits}`}
                 />
                 <StatsCard
-                    title="Avg. Daily Usage"
-                    value={Math.round(usage.currentPeriod.enhancementsUsed / 30)}
+                    title="Weekly Usage"
+                    value={usage.weekly_usage}
                     icon={BarChart3}
-                    description="Last 30 days"
+                    description="Last 7 days"
                 />
                 <StatsCard
                     title="Days Remaining"
-                    value={12} // Mock value
+                    value={daysRemaining ?? "∞"}
                     icon={Clock}
-                    description="In current period"
+                    description={usage.reset_date ? "Until reset" : "No reset scheduled"}
                 />
             </div>
 
             <div className="grid gap-4">
-                <UsageChart data={history.map(log => ({
-                    date: log.created_at,
-                    count: log.tokens_used // Using tokens as proxy for count in this view
-                }))} />
+                <div className="space-y-4">
+                    <UsageChart data={chartData} />
+                    
+                    {hasNextPage && (
+                        <div className="flex justify-center">
+                            <Button 
+                                variant="outline" 
+                                onClick={() => fetchNextPage()}
+                                disabled={isFetchingNextPage}
+                            >
+                                {isFetchingNextPage ? 'Loading...' : 'Load More History'}
+                            </Button>
+                        </div>
+                    )}
+                </div>
             </div>
         </div>
     )

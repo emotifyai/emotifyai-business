@@ -165,7 +165,7 @@ export function watchStorage<K extends keyof StorageSchema>(
     key: K,
     callback: (newValue: StorageSchema[K] | null, oldValue: StorageSchema[K] | null) => void
 ): () => void {
-    const listener = (changes: { [key: string]: browser.storage.StorageChange }, areaName: string) => {
+    const listener = (changes: { [key: string]: any }, areaName: string) => {
         if (areaName === 'local' && changes[key]) {
             callback(changes[key].newValue || null, changes[key].oldValue || null);
         }

@@ -1,5 +1,5 @@
 import { test, expect } from './fixtures/extension.ts';
-import { PopupPage, ContentPage, clearExtensionStorage } from './helpers/page-objects.ts';
+import { ContentPage, clearExtensionStorage } from './helpers/page-objects.ts';
 import path from 'path';
 import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
@@ -241,7 +241,7 @@ test.describe('Error Scenarios', () => {
         await page.waitForTimeout(2000);
 
         // Error should appear
-        let errorToast = page.locator('.toast--error');
+        const errorToast = page.locator('.toast--error');
         await expect(errorToast).toBeVisible();
 
         // Retry (should succeed)

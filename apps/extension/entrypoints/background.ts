@@ -3,7 +3,7 @@ import { checkLimit } from '@/services/api/subscription';
 import { getAuthToken, incrementUsage, watchStorage } from '@/utils/storage';
 import { logger } from '@/utils/logger';
 import { SubscriptionError, LanguageNotSupportedError, AuthenticationError } from '@/utils/errors';
-import type { EnhanceTextMessage, EnhanceTextResponse, MessageType } from '@/types';
+import type { EnhanceTextMessage, EnhanceTextResponse } from '@/types';
 import {browser} from "wxt/browser";
 
 export default defineBackground(() => {
@@ -145,7 +145,7 @@ async function handleEnhanceText(text: string, tabId?: number): Promise<void> {
 }
 
 // Handle messages
-async function handleMessage(message: any, sender: browser.Runtime.MessageSender): Promise<any> {
+async function handleMessage(message: any, _sender: any): Promise<any> {
   const { type, payload } = message;
 
   switch (type) {

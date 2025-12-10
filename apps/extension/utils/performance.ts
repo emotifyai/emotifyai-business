@@ -89,7 +89,6 @@ class PerformanceMonitor {
         if (!metric.duration) return;
 
         const duration = metric.duration.toFixed(2);
-        const style = this.getLogStyle(metric.duration);
 
         console.log(
             `%c⏱️ ${metric.name}`,

@@ -2,27 +2,77 @@
 
 import { useUser } from '@/lib/hooks/use-auth'
 import { useSubscription } from '@/lib/hooks/use-subscription'
-import { useUsageStats } from '@/lib/hooks/use-usage'
+import { useUsageStats, useUsageHistory } from '@/lib/hooks/use-usage'
 import { StatsCard } from '@/components/dashboard/stats-card'
 import { UsageChart } from '@/components/dashboard/usage-chart'
 import { SubscriptionCard } from '@/components/dashboard/subscription-card'
-import { BarChart3, Zap, CreditCard, Activity } from 'lucide-react'
+import { BarChart3, Zap, CreditCard, Activity, AlertCircle } from 'lucide-react'
 import { Skeleton } from '@ui/skeleton'
+import { Alert, AlertDescription } from '@ui/alert'
+import { Button } from '@ui/button'
 
 export default function DashboardPage() {
-    const { data: user, isLoading: isUserLoading } = useUser()
-    const { data: subscription, isLoading: isSubLoading } = useSubscription()
-    const { data: usage, isLoading: isUsageLoading } = useUsageStats()
+    const { data: user, isLoading: isUserLoading, error: userError } = useUser()
+    const { data: subscription, isLoading: isSubLoading, error: subError } = useSubscription()
+    const { data: usage, isLoading: isUsageLoading, error: usageError, refetch: refetchUsage } = useUsageStats()
+    const { data: historyPages } = useUsageHistory(30)
 
+    // Handle loading states
     if (isUserLoading || isSubLoading || isUsageLoading) {
         return <DashboardSkeleton />
     }
 
+    // Handle authentication errors
+    if (userError?.message.includes('Authentication required') || 
+        usageError?.message.includes('Authentication required')) {
+        return (
+            <div className="space-y-8">
+                <Alert variant="destructive">
+                    <AlertCircle className="h-4 w-4" />
+                    <AlertDescription>
+                        Please log in to view your dashboard.
+                    </AlertDescription>
+                </Alert>
+            </div>
+        )
+    }
+
+    // Handle other errors with retry option
+    if (usageError || subError) {
+        return (
+            <div className="space-y-8">
+                <Alert variant="destructive">
+                    <AlertCircle className="h-4 w-4" />
+                    <AlertDescription className="flex items-center justify-between">
+                        <span>
+                            Failed to load dashboard data: {usageError?.message || subError?.message}
+                        </span>
+                        <Button 
+                            variant="outline" 
+                            size="sm" 
+                            onClick={() => refetchUsage()}
+                        >
+                            Retry
+                        </Button>
+                    </AlertDescription>
+                </Alert>
+            </div>
+        )
+    }
+
     if (!user || !subscription || !usage) return null
 
-    const usagePercentage = usage.currentPeriod.enhancementsLimit === Infinity
-        ? 0
-        : (usage.currentPeriod.enhancementsUsed / usage.currentPeriod.enhancementsLimit) * 100
+    // Calculate usage percentage
+    const totalCredits = usage.credits_used + usage.credits_remaining
+    const usagePercentage = totalCredits > 0 ? (usage.credits_used / totalCredits) * 100 : 0
+
+    // Transform history data for chart
+    const chartData = historyPages?.pages.flatMap((page: any) => 
+        page.data.map((log: any) => ({
+            date: log.created_at,
+            count: log.credits_consumed,
+        }))
+    ) ?? []
 
     return (
         <div className="space-y-8">
@@ -36,15 +86,15 @@ export default function DashboardPage() {
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                 <StatsCard
                     title="Total Enhancements"
-                    value={usage.currentPeriod.enhancementsUsed}
+                    value={usage.total_enhancements}
                     icon={Zap}
-                    description="This billing period"
+                    description="All time"
                 />
                 <StatsCard
-                    title="Usage Limit"
-                    value={usage.currentPeriod.enhancementsLimit === Infinity ? "∞" : usage.currentPeriod.enhancementsLimit}
+                    title="Credits Used"
+                    value={usage.credits_used}
                     icon={Activity}
-                    description={`${usagePercentage.toFixed(1)}% used`}
+                    description={`${usage.credits_remaining} remaining`}
                 />
                 <StatsCard
                     title="Current Plan"
@@ -53,16 +103,16 @@ export default function DashboardPage() {
                     description={subscription.status}
                 />
                 <StatsCard
-                    title="Avg. Daily Usage"
-                    value={Math.round(usage.currentPeriod.enhancementsUsed / 30)}
+                    title="Daily Usage"
+                    value={usage.daily_usage}
                     icon={BarChart3}
-                    description="Last 30 days"
+                    description="Last 24 hours"
                 />
             </div>
 
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
                 <div className="col-span-4">
-                    <UsageChart data={usage.history} />
+                    <UsageChart data={chartData} />
                 </div>
                 <div className="col-span-3">
                     <SubscriptionCard
@@ -70,8 +120,8 @@ export default function DashboardPage() {
                         status={subscription.status}
                         currentPeriodEnd={new Date(subscription.current_period_end)}
                         usage={{
-                            used: usage.currentPeriod.enhancementsUsed,
-                            limit: usage.currentPeriod.enhancementsLimit === Infinity ? 1000 : usage.currentPeriod.enhancementsLimit,
+                            used: usage.credits_used,
+                            limit: totalCredits,
                             percentage: usagePercentage
                         }}
                     />
