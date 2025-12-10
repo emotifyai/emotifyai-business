@@ -44,7 +44,8 @@ export async function GET(request: NextRequest) {
                         credits_remaining: 50,
                         credits_reset_date: null,
                         validity_days: 10,
-                        tier_name: 'Free Plan'
+                        tier_name: 'Free Plan',
+                        current_period_end: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000).toISOString() // 10 days from now
                     }
                 })
             }
@@ -78,7 +79,8 @@ export async function GET(request: NextRequest) {
                 credits_remaining: creditsRemaining,
                 credits_reset_date: subscription.credits_reset_date,
                 validity_days: subscription.validity_days,
-                tier_name: tierNames[subscription.tier] || subscription.tier_name || 'Unknown Plan'
+                tier_name: tierNames[subscription.tier as SubscriptionTier] || subscription.tier_name || 'Unknown Plan',
+                current_period_end: subscription.current_period_end
             }
         })
 

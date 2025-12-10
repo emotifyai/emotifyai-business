@@ -3,9 +3,9 @@
 import * as React from 'react'
 import { useRouter } from 'next/navigation'
 import { useSignup } from '@/lib/hooks/use-auth'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
+import { Button } from '@ui/button'
+import { Input } from '@ui/input'
+import { Label } from '@ui/label'
 import { OAuthButtons } from './oauth-buttons'
 import { toast } from 'sonner'
 

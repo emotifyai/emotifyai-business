@@ -1,9 +1,9 @@
 'use client'
 
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Progress } from '@/components/ui/progress'
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@ui/card'
+import { Button } from '@ui/button'
+import { Badge } from '@ui/badge'
+import { Progress } from '@ui/progress'
 import { Check } from 'lucide-react'
 import { SubscriptionTier } from '@/types/database'
 import { formatDate } from '@/lib/utils'
@@ -21,7 +21,7 @@ interface SubscriptionCardProps {
 
 export function SubscriptionCard({ tier, status, currentPeriodEnd, usage }: SubscriptionCardProps) {
     const isPro = tier !== SubscriptionTier.TRIAL
-    const isLifetime = tier === SubscriptionTier.LIFETIME
+    const isLifetime = tier === SubscriptionTier.LIFETIME_LAUNCH
 
     return (
         <Card className={isPro ? "border-primary/50" : ""}>

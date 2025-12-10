@@ -4,7 +4,7 @@ import { useUsageStats, useUsageHistory } from '@/lib/hooks/use-usage'
 import { UsageChart } from '@/components/dashboard/usage-chart'
 import { StatsCard } from '@/components/dashboard/stats-card'
 import { Zap, Activity, Clock, BarChart3 } from 'lucide-react'
-import { Skeleton } from '@/components/ui/skeleton'
+import { Skeleton } from '@ui/skeleton'
 
 export default function UsagePage() {
     const { data: usage, isLoading: isStatsLoading } = useUsageStats()

@@ -2,11 +2,11 @@
 
 import { useSubscription, useCreateCheckout, useCustomerPortal } from '@/lib/hooks/use-subscription'
 import { SubscriptionCard } from '@/components/dashboard/subscription-card'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
+import { Button } from '@ui/button'
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@ui/card'
 import { Check } from 'lucide-react'
 import { SubscriptionTier } from '@/types/database'
-import { Skeleton } from '@/components/ui/skeleton'
+import { Skeleton } from '@ui/skeleton'
 
 export default function SubscriptionPage() {
     const { data: subscription, isLoading } = useSubscription()
@@ -24,7 +24,7 @@ export default function SubscriptionPage() {
             name: 'Monthly Pro',
             price: '$9.99',
             period: '/month',
-            tier: SubscriptionTier.MONTHLY,
+            tier: SubscriptionTier.PRO_MONTHLY,
             features: [
                 'Unlimited AI enhancements',
                 'All languages supported',
@@ -36,7 +36,7 @@ export default function SubscriptionPage() {
             name: 'Lifetime',
             price: '$99.99',
             period: 'one-time',
-            tier: SubscriptionTier.LIFETIME,
+            tier: SubscriptionTier.LIFETIME_LAUNCH,
             features: [
                 'Unlimited AI enhancements forever',
                 'All languages supported',

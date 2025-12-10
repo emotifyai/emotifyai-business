@@ -1,4 +1,4 @@
-import { PageLoading } from '@/components/ui/page-loading'
+import { PageLoading } from '@ui/page-loading'
 
 export default function AuthLoading() {
     return (

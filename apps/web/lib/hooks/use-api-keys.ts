@@ -10,10 +10,12 @@ import { useState, useEffect } from 'react'
 
 export interface ApiKey {
     id: string
+    user_id: string
+    created_at: string
+    key_hash: string
     name: string
-    key: string
-    createdAt: string
-    lastUsed?: string
+    last_used_at: string | null
+    revoked: boolean
 }
 
 export function useApiKeys() {
@@ -26,5 +28,46 @@ export function useApiKeys() {
         setLoading(false)
     }, [])
 
-    return { apiKeys, loading, error }
+    return { 
+        data: apiKeys, 
+        isLoading: loading, 
+        error,
+        // Legacy properties for backward compatibility
+        apiKeys, 
+        loading 
+    }
+}
+
+/**
+ * Hook to create API key (placeholder implementation)
+ */
+export function useCreateApiKey() {
+    return {
+        mutateAsync: async (params: { name: string }) => {
+            // TODO: Implement API key creation
+            console.log('Creating API key:', params.name)
+            return {
+                key: 'ak_test_' + Math.random().toString(36).substring(7),
+                name: params.name,
+                id: Math.random().toString(36).substring(7)
+            }
+        },
+        isLoading: false,
+        isPending: false
+    }
+}
+
+/**
+ * Hook to revoke API key (placeholder implementation)
+ */
+export function useRevokeApiKey() {
+    return {
+        mutateAsync: async (params: { id: string }) => {
+            // TODO: Implement API key revocation
+            console.log('Revoking API key:', params.id)
+            return { success: true }
+        },
+        isLoading: false,
+        isPending: false
+    }
 }

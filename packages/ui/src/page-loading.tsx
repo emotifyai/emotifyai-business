@@ -1,4 +1,4 @@
-import { LoadingSpinner } from '@/components/ui/loading-spinner'
+import { LoadingSpinner } from './loading-spinner'
 
 interface PageLoadingProps {
     message?: string

@@ -19,3 +19,42 @@ export function useUsage() {
 
     return { usage, loading }
 }
+
+/**
+ * Hook for usage statistics (placeholder implementation)
+ */
+export function useUsageStats() {
+    return {
+        data: {
+            currentPeriod: {
+                enhancementsUsed: 0,
+                enhancementsLimit: 50
+            },
+            history: []
+        },
+        isLoading: false,
+        error: null
+    }
+}
+
+/**
+ * Hook for usage history (placeholder implementation)
+ */
+export function useUsageHistory() {
+    return {
+        data: [
+            {
+                created_at: new Date().toISOString(),
+                tokens_used: 10,
+                input_text: 'Sample text',
+                output_text: 'Enhanced sample text',
+                language: 'en',
+                mode: 'enhance'
+            }
+        ],
+        isLoading: false,
+        error: null,
+        hasNextPage: false,
+        fetchNextPage: () => Promise.resolve()
+    }
+}

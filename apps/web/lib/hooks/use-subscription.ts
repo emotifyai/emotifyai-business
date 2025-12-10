@@ -12,6 +12,7 @@ export interface SubscriptionData {
     credits_reset_date: string | null
     validity_days: number | null
     tier_name: string
+    current_period_end: string
 }
 
 /**
@@ -44,6 +45,42 @@ export function useSubscription() {
         retry: false,
         staleTime: 5 * 60 * 1000, // 5 minutes
     })
+}
+
+/**
+ * Hook to create checkout session (placeholder implementation)
+ */
+export function useCreateCheckout() {
+    return {
+        mutate: (tier: SubscriptionTier) => {
+            // TODO: Implement checkout creation
+            console.log('Creating checkout for tier:', tier)
+        },
+        mutateAsync: async (tier: SubscriptionTier) => {
+            // TODO: Implement checkout creation
+            console.log('Creating checkout for tier:', tier)
+            throw new Error('Checkout creation not implemented yet')
+        },
+        isLoading: false
+    }
+}
+
+/**
+ * Hook to access customer portal (placeholder implementation)
+ */
+export function useCustomerPortal() {
+    return {
+        mutate: () => {
+            // TODO: Implement customer portal access
+            console.log('Accessing customer portal')
+        },
+        mutateAsync: async () => {
+            // TODO: Implement customer portal access
+            console.log('Accessing customer portal')
+            throw new Error('Customer portal access not implemented yet')
+        },
+        isLoading: false
+    }
 }
 
 /**

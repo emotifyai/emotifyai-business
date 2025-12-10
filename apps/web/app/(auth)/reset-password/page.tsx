@@ -1,8 +1,8 @@
 import { Metadata } from 'next'
 import Link from 'next/link'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
+import { Button } from '@ui/button'
+import { Input } from '@ui/input'
+import { Label } from '@ui/label'
 
 export const metadata: Metadata = {
     title: 'Reset Password - Verba',

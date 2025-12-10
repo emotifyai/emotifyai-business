@@ -7,7 +7,7 @@ import { StatsCard } from '@/components/dashboard/stats-card'
 import { UsageChart } from '@/components/dashboard/usage-chart'
 import { SubscriptionCard } from '@/components/dashboard/subscription-card'
 import { BarChart3, Zap, CreditCard, Activity } from 'lucide-react'
-import { Skeleton } from '@/components/ui/skeleton'
+import { Skeleton } from '@ui/skeleton'
 
 export default function DashboardPage() {
     const { data: user, isLoading: isUserLoading } = useUser()

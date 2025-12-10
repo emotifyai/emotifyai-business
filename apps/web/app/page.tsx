@@ -1,8 +1,8 @@
 import { Header } from '@/components/layout/header'
 import { Footer } from '@/components/layout/footer'
-import { Button } from '@/components/ui/button'
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
+import { Button } from '@ui/button'
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@ui/card'
+import { Badge } from '@ui/badge'
 import { Sparkles, Zap, Globe, Shield } from 'lucide-react'
 import Link from 'next/link'
 

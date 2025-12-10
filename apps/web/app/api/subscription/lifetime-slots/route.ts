@@ -31,17 +31,26 @@ export async function GET(request: NextRequest) {
             )
         }
 
+        // Type assertion for the database function result
+        const lifetimeData = data as {
+            total_slots: number
+            used_slots: number
+            remaining_slots: number
+            is_available: boolean
+            show_urgency: boolean
+        }
+
         // Return the lifetime offer status
         return NextResponse.json({
             success: true,
             data: {
-                total_slots: data.total_slots,
-                used_slots: data.used_slots,
-                remaining_slots: data.remaining_slots,
-                is_available: data.is_available,
-                show_urgency: data.show_urgency,
-                percentage_taken: data.used_slots > 0 ? 
-                    Math.round((data.used_slots / data.total_slots) * 100) : 0
+                total_slots: lifetimeData.total_slots,
+                used_slots: lifetimeData.used_slots,
+                remaining_slots: lifetimeData.remaining_slots,
+                is_available: lifetimeData.is_available,
+                show_urgency: lifetimeData.show_urgency,
+                percentage_taken: lifetimeData.used_slots > 0 ? 
+                    Math.round((lifetimeData.used_slots / lifetimeData.total_slots) * 100) : 0
             }
         })
 

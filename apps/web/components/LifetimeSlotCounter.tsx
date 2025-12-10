@@ -1,8 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Progress } from '@/components/ui/progress';
-import { Badge } from '@/components/ui/badge';
+import { Progress } from '@ui/progress';
+import { Badge } from '@ui/badge';
 import { AlertCircle, TrendingUp, Zap } from 'lucide-react';
 
 interface LifetimeSlotInfo {
@@ -165,7 +165,6 @@ export function LifetimeSlotCounter({
                         <Progress
                             value={slotInfo.percentage_taken}
                             className="h-2"
-                            indicatorClassName={getProgressColor()}
                         />
                         <p className="text-xs text-muted-foreground text-right">
                             {slotInfo.percentage_taken.toFixed(1)}% claimed

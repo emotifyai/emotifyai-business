@@ -1,12 +1,12 @@
 'use client'
 
 import { useUser } from '@/lib/hooks/use-auth'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Switch } from '@/components/ui/switch'
-import { Skeleton } from '@/components/ui/skeleton'
+import { Button } from '@ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@ui/card'
+import { Input } from '@ui/input'
+import { Label } from '@ui/label'
+import { Switch } from '@ui/switch'
+import { Skeleton } from '@ui/skeleton'
 import { toast } from 'sonner'
 import React from "react";
 

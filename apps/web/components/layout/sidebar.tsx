@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
-import { Button } from '@/components/ui/button'
+import { Button } from '@ui/button'
 import {
     LayoutDashboard,
     BarChart3,
@@ -15,7 +15,7 @@ import {
 } from 'lucide-react'
 import { useLogout } from '@/lib/hooks/use-auth'
 import { useRouter } from 'next/navigation'
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
+import { Sheet, SheetContent, SheetTrigger } from '@ui/sheet'
 import { useState } from 'react'
 
 const sidebarItems = [
