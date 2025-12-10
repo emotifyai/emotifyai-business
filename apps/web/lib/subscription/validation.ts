@@ -5,11 +5,7 @@ import {
     type SubscriptionStatus,
     type UsageQuota,
     getTierConfig,
-    isTrialTier,
-    isSubscriptionActive,
-    isTrialExpired,
-    isQuotaExceeded,
-    calculateQuotaPercentage
+    isSubscriptionActive
 } from './types'
 
 /**
@@ -260,8 +256,7 @@ export async function getLifetimeOfferStatus() {
 /**
  * Validate subscription tier has access to a feature
  */
-export function hasFeatureAccess(tier: SubscriptionTier, feature: string): boolean {
-    const config = getTierConfig(tier)
+export function hasFeatureAccess(_tier: SubscriptionTier, _feature: string): boolean {
     // For now, all tiers have access to basic features
     // This can be expanded based on specific feature requirements
     return true

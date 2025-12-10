@@ -126,48 +126,7 @@ export async function enhanceText(options: EnhanceOptions): Promise<EnhanceResul
     throw new Error('MAX_RETRIES_EXCEEDED')
 }
 
-/**
- * Build the system prompt based on language and tone
- */
-function buildSystemPrompt(
-    language: string,
-    tone: EnhanceOptions['tone']
-): string {
-    const languageNames: Record<string, string> = {
-        en: 'English',
-        ar: 'Arabic',
-        fr: 'French',
-    }
 
-    const languageName = languageNames[language] || 'English'
-
-    const basePrompt = `You are an expert writing assistant specializing in ${languageName} text enhancement. Your task is to improve the user's text while maintaining their original meaning and intent.`
-
-    const enhanceInstructions = `Improve the text by:
-- Correcting grammar and spelling errors
-- Enhancing clarity and readability
-- Improving word choice and vocabulary
-- Maintaining the original tone and style
-- Keeping the same length (approximately)`
-
-    const toneInstructions: Record<NonNullable<EnhanceOptions['tone']>, string> = {
-        formal: 'Use formal language, proper grammar, and professional vocabulary.',
-        casual: 'Use conversational language that feels natural and friendly.',
-        professional: 'Use clear, professional language suitable for business contexts.',
-    }
-
-    const toneInstruction = tone ? `\nTone: ${toneInstructions[tone]}` : ''
-
-    return `${basePrompt}
-
-${enhanceInstructions}${toneInstruction}
-
-IMPORTANT:
-- Output ONLY the enhanced text, no explanations or meta-commentary
-- Preserve the original language (${languageName})
-- If the input quality is poor or the language is not ${languageName}, still do your best
-- Do not add greetings, signatures, or formatting unless present in the original`
-}
 
 /**
  * Mock enhancement for development/testing

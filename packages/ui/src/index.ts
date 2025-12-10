@@ -1,5 +1,4 @@
 // Components
-export { ToastProvider, useToast } from './Toast'
 export { Progress } from './progress'
 export { Button } from './button'
 export { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from './card'

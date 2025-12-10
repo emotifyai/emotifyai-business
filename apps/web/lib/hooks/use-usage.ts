@@ -5,7 +5,7 @@
 
 import { useQuery, useInfiniteQuery } from '@tanstack/react-query'
 import { createClient } from '@/lib/supabase/client'
-import { UsageLog } from '@/types/database'
+
 
 // Types for usage statistics
 export interface UsageStats {

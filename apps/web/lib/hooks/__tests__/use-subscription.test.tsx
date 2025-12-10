@@ -3,7 +3,8 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { useSubscription } from '../use-subscription'
 
 // Mock fetch
-global.fetch = jest.fn()
+const mockFetch = jest.fn()
+global.fetch = mockFetch as any
 
 beforeEach(() => {
     jest.clearAllMocks()
@@ -36,10 +37,10 @@ describe('useSubscription', () => {
             current_period_end: '2024-02-01T00:00:00Z'
         }
 
-        ;(global.fetch as jest.Mock).mockResolvedValue({
+        mockFetch.mockResolvedValue({
             ok: true,
             json: async () => ({ success: true, data: mockSubscription })
-        })
+        } as Response)
 
         const { result } = renderHook(() => useSubscription(), {
             wrapper: createWrapper()
@@ -54,11 +55,11 @@ describe('useSubscription', () => {
     })
 
     it('should handle unauthenticated user', async () => {
-        ;(global.fetch as jest.Mock).mockResolvedValue({
+        mockFetch.mockResolvedValue({
             ok: false,
             status: 401,
             json: async () => ({ success: false, error: { code: 'UNAUTHORIZED', message: 'Not authenticated' } })
-        })
+        } as Response)
 
         const { result } = renderHook(() => useSubscription(), {
             wrapper: createWrapper()
@@ -73,11 +74,11 @@ describe('useSubscription', () => {
     })
 
     it('should handle subscription not found', async () => {
-        ;(global.fetch as jest.Mock).mockResolvedValue({
+        mockFetch.mockResolvedValue({
             ok: false,
             status: 404,
             json: async () => ({ success: false, error: { code: 'NOT_FOUND', message: 'No subscription found' } })
-        })
+        } as Response)
 
         const { result } = renderHook(() => useSubscription(), {
             wrapper: createWrapper()

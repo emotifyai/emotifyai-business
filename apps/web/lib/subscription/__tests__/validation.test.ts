@@ -152,7 +152,7 @@ describe('Subscription Validation', () => {
 
     describe('hasFeatureAccess', () => {
         it('should grant access to all tiers for basic features', () => {
-            expect(hasFeatureAccess('free', 'text_enhancement')).toBe(true)
+            expect(hasFeatureAccess('trial', 'text_enhancement')).toBe(true)
             expect(hasFeatureAccess('basic_monthly', 'text_enhancement')).toBe(true)
             expect(hasFeatureAccess('lifetime_launch', 'text_enhancement')).toBe(true)
         })
