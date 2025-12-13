@@ -7,6 +7,7 @@ import { Button } from '@ui/button'
 import { Input } from '@ui/input'
 import { Label } from '@ui/label'
 import { OAuthButtons } from './oauth-buttons'
+import { LoadingSpinner } from '@ui/loading-spinner'
 import { toast } from 'sonner'
 
 export function SignupForm() {
@@ -22,7 +23,7 @@ export function SignupForm() {
         try {
             await signup.mutateAsync({ email, password, displayName })
             toast.success('Account created successfully! Choose your plan to get started.')
-            router.push('/pricing')
+            router.push('/pricing?from=new_user')
         } catch (error) {
             toast.error(`Failed to create account. Please try again. ${error}`)
         }
@@ -80,7 +81,7 @@ export function SignupForm() {
                     </div>
                     <Button disabled={signup.isPending} type="submit" variant="glow">
                         {signup.isPending && (
-                            <span className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-background border-t-transparent" />
+                            <LoadingSpinner className="mr-2 h-4 w-4" />
                         )}
                         Create Account
                     </Button>

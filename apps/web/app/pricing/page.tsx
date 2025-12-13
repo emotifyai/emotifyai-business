@@ -8,6 +8,7 @@ import { Check, Zap, Star, Crown } from 'lucide-react'
 import { Header } from '@/components/layout/header'
 import { Footer } from '@/components/layout/footer'
 import { LifetimeSlotCounter } from '@/components/LifetimeSlotCounter'
+import { PricingButton } from '@/components/pricing-button'
 import { SUBSCRIPTION_TIERS, getSortedTiers, calculateAnnualSavings, getMonthlyEquivalent } from '@/lib/subscription/types'
 import type { SubscriptionTier } from '@/lib/subscription/types'
 
@@ -20,7 +21,7 @@ interface PricingPageProps {
     searchParams: Promise<{ from?: string }>
 }
 
-function PricingCard({ tier, isPopular = false, fromNewUser = false }: { 
+function PricingCard({ tier, isPopular = false, fromNewUser = false }: {
     tier: SubscriptionTier
     isPopular?: boolean
     fromNewUser?: boolean
@@ -29,7 +30,7 @@ function PricingCard({ tier, isPopular = false, fromNewUser = false }: {
     const isLifetime = tier === 'lifetime_launch'
     const isAnnual = tier.includes('annual')
     const isFree = tier === 'trial'
-    
+
     const monthlyPrice = isAnnual ? getMonthlyEquivalent(tier) : config.price
     const annualSavings = isAnnual ? calculateAnnualSavings(tier) : 0
 
@@ -69,7 +70,7 @@ function PricingCard({ tier, isPopular = false, fromNewUser = false }: {
                     {getIcon()}
                     <CardTitle className="text-xl">{config.name}</CardTitle>
                 </div>
-                
+
                 <div className="space-y-1">
                     <div className="flex items-baseline justify-center gap-1">
                         <span className="text-4xl font-bold">${config.price}</span>
@@ -82,7 +83,7 @@ function PricingCard({ tier, isPopular = false, fromNewUser = false }: {
                             <span className="text-muted-foreground text-sm">one-time</span>
                         )}
                     </div>
-                    
+
                     {isAnnual && (
                         <div className="text-sm text-muted-foreground">
                             ${monthlyPrice}/month • Save ${annualSavings}/year
@@ -97,9 +98,9 @@ function PricingCard({ tier, isPopular = false, fromNewUser = false }: {
                         {config.generations.toLocaleString()} credits
                     </div>
                     <div className="text-sm text-muted-foreground">
-                        {config.duration === 'trial' ? 'for 10 days' : 
-                         config.duration === 'lifetime' ? 'per month, forever' :
-                         `per ${config.duration}`}
+                        {config.duration === 'trial' ? 'for 10 days' :
+                            config.duration === 'lifetime' ? 'per month, forever' :
+                                `per ${config.duration}`}
                     </div>
                 </div>
 
@@ -114,15 +115,14 @@ function PricingCard({ tier, isPopular = false, fromNewUser = false }: {
             </CardContent>
 
             <CardFooter>
-                <Button 
-                    className="w-full" 
+                <PricingButton
+                    tier={tier}
+                    fromNewUser={fromNewUser}
+                    isFree={isFree}
+                    isLifetime={isLifetime}
+                    buttonText={getButtonText()}
                     variant={getButtonVariant()}
-                    asChild
-                >
-                    <Link href={`/signup?plan=${tier}${fromNewUser ? '&from=new_user' : ''}`}>
-                        {getButtonText()}
-                    </Link>
-                </Button>
+                />
             </CardFooter>
         </Card>
     )
@@ -142,10 +142,10 @@ export default async function PricingPage({ searchParams }: PricingPageProps) {
                             Choose Your Plan
                         </h1>
                         <p className="text-xl text-muted-foreground mb-8">
-                            Flexible credit-based pricing that scales with your needs. 
+                            Flexible credit-based pricing that scales with your needs.
                             All plans include our powerful browser extension.
                         </p>
-                        
+
                         {fromNewUser && (
                             <div className="bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-8">
                                 <p className="text-blue-800 dark:text-blue-200 font-medium">
@@ -166,7 +166,7 @@ export default async function PricingPage({ searchParams }: PricingPageProps) {
                                     Get lifetime access for a one-time payment. Only 500 spots available!
                                 </p>
                             </div>
-                            
+
                             <Suspense fallback={
                                 <div className="flex justify-center">
                                     <div className="animate-pulse bg-gray-200 dark:bg-gray-700 h-20 w-80 rounded-lg" />
@@ -180,21 +180,21 @@ export default async function PricingPage({ searchParams }: PricingPageProps) {
                     {/* Pricing Grid */}
                     <div className="grid gap-8 lg:grid-cols-3 xl:grid-cols-3 max-w-7xl mx-auto">
                         {/* Free Plan */}
-                        <PricingCard 
-                            tier="trial" 
+                        <PricingCard
+                            tier="trial"
                             fromNewUser={fromNewUser}
                         />
 
                         {/* Lifetime Launch Offer */}
-                        <PricingCard 
-                            tier="lifetime_launch" 
+                        <PricingCard
+                            tier="lifetime_launch"
                             isPopular={true}
                             fromNewUser={fromNewUser}
                         />
 
                         {/* Pro Monthly (Most Popular) */}
-                        <PricingCard 
-                            tier="pro_monthly" 
+                        <PricingCard
+                            tier="pro_monthly"
                             isPopular={false}
                             fromNewUser={fromNewUser}
                         />
@@ -208,7 +208,7 @@ export default async function PricingPage({ searchParams }: PricingPageProps) {
                             <PricingCard tier="business_monthly" fromNewUser={fromNewUser} />
                             <PricingCard tier="pro_annual" fromNewUser={fromNewUser} />
                         </div>
-                        
+
                         <div className="grid gap-6 md:grid-cols-2 mt-6 max-w-2xl mx-auto">
                             <PricingCard tier="basic_annual" fromNewUser={fromNewUser} />
                             <PricingCard tier="business_annual" fromNewUser={fromNewUser} />
@@ -222,23 +222,23 @@ export default async function PricingPage({ searchParams }: PricingPageProps) {
                             <div className="border rounded-lg p-6">
                                 <h4 className="font-semibold mb-2">What are credits?</h4>
                                 <p className="text-muted-foreground">
-                                    Credits are used for AI text enhancements. Each enhancement typically uses 1 credit. 
+                                    Credits are used for AI text enhancements. Each enhancement typically uses 1 credit.
                                     Credits reset monthly for subscription plans.
                                 </p>
                             </div>
-                            
+
                             <div className="border rounded-lg p-6">
                                 <h4 className="font-semibold mb-2">What happens when I run out of credits?</h4>
                                 <p className="text-muted-foreground">
-                                    You can upgrade your plan anytime or wait for your credits to reset next month. 
+                                    You can upgrade your plan anytime or wait for your credits to reset next month.
                                     The lifetime plan gives you 500 credits every month forever.
                                 </p>
                             </div>
-                            
+
                             <div className="border rounded-lg p-6">
                                 <h4 className="font-semibold mb-2">Can I change plans later?</h4>
                                 <p className="text-muted-foreground">
-                                    Yes! You can upgrade or downgrade your plan at any time. 
+                                    Yes! You can upgrade or downgrade your plan at any time.
                                     Changes take effect at your next billing cycle.
                                 </p>
                             </div>
