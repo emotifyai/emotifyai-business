@@ -7,6 +7,7 @@ import {
     parseCacheUsage,
     calculateCacheSavings
 } from './prompt-cache';
+import { completePurification } from './output-purifier';
 
 // Initialize Anthropic client
 const anthropic = new Anthropic({
@@ -31,6 +32,11 @@ export interface EnhanceResult {
     cacheStats?: {
         tokensSaved: number
         percentageSaved: number
+    }
+    purification?: {
+        wasImpure: boolean
+        issues: string[]
+        confidence: 'high' | 'medium' | 'low'
     }
 }
 
@@ -65,11 +71,17 @@ export async function enhanceText(options: EnhanceOptions): Promise<EnhanceResul
                 ],
             })
 
-            // Extract the text from the response
-            const enhancedText = message.content
+            // Extract the raw text from the response
+            const rawText = message.content
                 .filter((block) => block.type === 'text')
                 .map((block) => (block as Anthropic.TextBlock).text)
                 .join('\n')
+
+            // PURIFICATION: Clean the AI output
+            const purificationResult = completePurification(rawText, detectedLanguage);
+            
+            // Use purified text as the final result
+            const enhancedText = purificationResult.cleanText;
 
             // Parse cache usage
             const cacheUsage = parseCacheUsage(message);
@@ -90,6 +102,16 @@ export async function enhanceText(options: EnhanceOptions): Promise<EnhanceResul
                 cacheStats.logStats();
             }
 
+            // Log purification results in development
+            if (process.env.NODE_ENV === 'development' && purificationResult.wasImpure) {
+                console.log('[Purification] Cleaned impure output:', {
+                    issues: purificationResult.issues,
+                    confidence: purificationResult.confidence,
+                    originalLength: rawText.length,
+                    cleanedLength: enhancedText.length
+                });
+            }
+
             return {
                 enhancedText,
                 tokensUsed,
@@ -98,6 +120,11 @@ export async function enhanceText(options: EnhanceOptions): Promise<EnhanceResul
                 cacheStats: {
                     tokensSaved: savings.tokensSaved,
                     percentageSaved: savings.percentageSaved
+                },
+                purification: {
+                    wasImpure: purificationResult.wasImpure,
+                    issues: purificationResult.issues,
+                    confidence: purificationResult.confidence
                 }
             }
         } catch (error) {

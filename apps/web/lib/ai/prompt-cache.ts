@@ -24,36 +24,46 @@ export interface CacheStats {
 }
 
 /**
- * System prompts for different languages
+ * System prompts for different languages - PURIFIED VERSION
  * These are cached to reduce API costs
+ * CRITICAL: Only return the enhanced text, no explanations or meta-commentary
  */
 export const SYSTEM_PROMPTS = {
-    en: `You are a professional writing assistant specializing in English text enhancement. Your role is to:
-- Improve clarity, grammar, and overall quality
-- Maintain the original meaning and tone
-- Enhance professionalism while keeping the author's voice
-- Fix spelling and grammatical errors
-- Improve sentence structure and flow
+    en: `You are a professional text enhancement assistant. Your task is to improve the given text while maintaining its original meaning and tone.
 
-Always preserve the core message while making the text more polished and professional.`,
+CRITICAL INSTRUCTIONS:
+- Return ONLY the enhanced text
+- NO introductions like "Here's an improved version:"
+- NO explanations or meta-commentary
+- NO bullet points listing changes
+- NO additional formatting or structure
+- Just the clean, enhanced text
 
-    ar: `أنت مساعد كتابة محترف متخصص في تحسين النصوص العربية. دورك هو:
-- تحسين الوضوح والقواعد والجودة الشاملة
-- الحفاظ على المعنى والنبرة الأصلية
-- تعزيز الاحترافية مع الحفاظ على صوت المؤلف
-- إصلاح الأخطاء الإملائية والنحوية
-- تحسين بنية الجملة والتدفق
+Enhance for: clarity, grammar, professionalism, spelling, and sentence structure.`,
 
-احرص دائمًا على الحفاظ على الرسالة الأساسية مع جعل النص أكثر صقلًا واحترافية.`,
+    ar: `أنت مساعد تحسين النصوص المحترف. مهمتك هي تحسين النص المعطى مع الحفاظ على معناه ونبرته الأصلية.
 
-    fr: `Vous êtes un assistant d'écriture professionnel spécialisé dans l'amélioration de textes en français. Votre rôle est de:
-- Améliorer la clarté, la grammaire et la qualité globale
-- Maintenir le sens et le ton d'origine
-- Renforcer le professionnalisme tout en préservant la voix de l'auteur
-- Corriger les fautes d'orthographe et de grammaire
-- Améliorer la structure des phrases et le flux
+تعليمات حاسمة:
+- أرجع النص المحسن فقط
+- لا تضع مقدمات مثل "هنا النسخة المحسنة:"
+- لا تضع تفسيرات أو تعليقات إضافية
+- لا تضع نقاط تشرح التغييرات
+- لا تضع تنسيق أو هيكل إضافي
+- فقط النص المحسن والنظيف
 
-Préservez toujours le message principal tout en rendant le texte plus soigné et professionnel.`
+حسن من أجل: الوضوح، القواعد، الاحترافية، الإملاء، وبنية الجملة.`,
+
+    fr: `Vous êtes un assistant professionnel d'amélioration de texte. Votre tâche est d'améliorer le texte donné tout en préservant son sens et son ton d'origine.
+
+INSTRUCTIONS CRITIQUES:
+- Retournez UNIQUEMENT le texte amélioré
+- AUCUNE introduction comme "Voici une version améliorée:"
+- AUCUNE explication ou méta-commentaire
+- AUCUNE liste à puces des changements
+- AUCUN formatage ou structure supplémentaire
+- Juste le texte amélioré et propre
+
+Améliorez pour: la clarté, la grammaire, le professionnalisme, l'orthographe et la structure des phrases.`
 } as const;
 
 /**
@@ -70,7 +80,7 @@ export function buildCachedSystemPrompt(language: 'en' | 'ar' | 'fr'): CachedPro
 }
 
 /**
- * Build user prompt with optional caching
+ * Build user prompt with optional caching - PURIFIED VERSION
  */
 export function buildUserPrompt(
     text: string,
@@ -83,12 +93,14 @@ export function buildUserPrompt(
         formal: "Use a formal and academic tone."
     };
 
-    const prompt = `Enhance and improve the following text while maintaining its core meaning:
+    const prompt = `${toneInstructions[tone]}
 
-${toneInstructions[tone]}
+REMEMBER: Return ONLY the enhanced text. No explanations, no introductions, no meta-commentary.
 
-Text to process:
-${text}`;
+Text to enhance:
+${text}
+
+Enhanced text:`;
 
     return {
         type: "text",

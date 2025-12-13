@@ -12,6 +12,8 @@
     "test:coverage": "jest --coverage",
     "type-check": "tsc --noEmit",
     "find-claude-models": "bun run scripts/find-claude-models.ts",
+    "claude-demo": "bun run scripts/claude-demo.ts",
+    "claude-simple": "bun run scripts/claude-simple-demo.ts",
     "generate:assets": "bun run scripts/generate-assets.ts"
   },
   "dependencies": {
