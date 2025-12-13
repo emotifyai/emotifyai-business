@@ -11,6 +11,15 @@ import Anthropic from '@anthropic-ai/sdk'
 jest.mock('@anthropic-ai/sdk')
 const MockAnthropic = Anthropic as jest.MockedClass<typeof Anthropic>
 
+// Mock the claude module to reset the client
+jest.mock('../claude', () => {
+  const originalModule = jest.requireActual('../claude')
+  return {
+    ...originalModule,
+    // We'll override the client in tests
+  }
+})
+
 // Mock environment variables
 const originalEnv = process.env
 beforeEach(() => {
@@ -29,17 +38,18 @@ afterEach(() => {
 })
 
 describe('Claude AI Integration', () => {
-  describe('enhanceText', () => {
-    let mockMessages: jest.Mock
+  let mockMessages: jest.Mock
 
-    beforeEach(() => {
-      mockMessages = jest.fn()
-      MockAnthropic.mockImplementation(() => ({
-        messages: {
-          create: mockMessages
-        }
-      }) as any)
-    })
+  beforeEach(() => {
+    mockMessages = jest.fn()
+    MockAnthropic.mockImplementation(() => ({
+      messages: {
+        create: mockMessages
+      }
+    }) as any)
+  })
+
+  describe('enhanceText', () => {
 
     it('should enhance text successfully with English', async () => {
       const mockResponse = {
@@ -191,9 +201,10 @@ describe('Claude AI Integration', () => {
 
     it('should handle rate limiting with exponential backoff', async () => {
       const rateLimitError = new Anthropic.APIError(
-        'Rate limit exceeded',
+        429,
         { status: 429 } as any,
-        'Rate limit exceeded'
+        'Rate limit exceeded',
+        {} as any
       )
 
       const mockResponse = {
@@ -221,9 +232,10 @@ describe('Claude AI Integration', () => {
 
     it('should throw error after max retries exceeded', async () => {
       const rateLimitError = new Anthropic.APIError(
-        'Rate limit exceeded',
+        429,
         { status: 429 } as any,
-        'Rate limit exceeded'
+        'Rate limit exceeded',
+        {} as any
       )
 
       mockMessages.mockRejectedValue(rateLimitError)
@@ -238,9 +250,10 @@ describe('Claude AI Integration', () => {
 
     it('should handle API errors correctly', async () => {
       const apiError = new Anthropic.APIError(
-        'Invalid request',
+        400,
         { status: 400 } as any,
-        'Invalid request'
+        'Invalid request',
+        {} as any
       )
 
       mockMessages.mockRejectedValue(apiError)

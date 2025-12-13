@@ -5,14 +5,13 @@ import { cleanup } from '@testing-library/react'
 import '@anthropic-ai/sdk/shims/node'
 
 // Mock fetch API for test environment
-global.fetch = jest.fn(() =>
-  Promise.resolve({
+global.fetch = jest.fn(() => Promise.resolve({
     ok: true,
     status: 200,
     json: () => Promise.resolve({}),
     text: () => Promise.resolve(''),
-  })
-) as jest.Mock
+})
+) as unknown as jest.MockedFunction<typeof fetch>
 
 // Mock Request and Response for Next.js API tests
 global.Request = class MockRequest {

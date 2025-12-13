@@ -96,8 +96,10 @@ describe('OAuth Authentication', () => {
     it('should use production redirect URL in production environment', async () => {
       // Mock production environment
       const originalLocation = window.location
-      delete (window as any).location
-      window.location = { ...originalLocation, origin: 'https://emotifyai.com' }
+      Object.defineProperty(window, 'location', {
+        value: { ...originalLocation, origin: 'https://emotifyai.com' },
+        writable: true
+      })
       
       const mockOAuthResponse = {
         data: { url: 'https://accounts.google.com/oauth/authorize?...' },
@@ -122,7 +124,10 @@ describe('OAuth Authentication', () => {
       })
       
       // Restore original location
-      window.location = originalLocation
+      Object.defineProperty(window, 'location', {
+        value: originalLocation,
+        writable: true
+      })
     })
   })
   

@@ -7,7 +7,7 @@ import { POST } from '../route'
 import { NextRequest } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { canMakeEnhancement, consumeCredits } from '@/lib/subscription/validation'
-import { enhanceText, mockEnhanceText } from '@/lib/ai/claude'
+import { enhanceText, mockEnhanceText as mockEnhanceTextFn } from '@/lib/ai/claude'
 import { detectLanguage, validateOutputQuality, isLanguageSupported } from '@/lib/ai/language-detection'
 import { ApiErrorCode } from '@/types/api'
 
@@ -21,7 +21,7 @@ const mockCreateClient = createClient as jest.MockedFunction<typeof createClient
 const mockCanMakeEnhancement = canMakeEnhancement as jest.MockedFunction<typeof canMakeEnhancement>
 const mockConsumeCredits = consumeCredits as jest.MockedFunction<typeof consumeCredits>
 const mockEnhanceText = enhanceText as jest.MockedFunction<typeof enhanceText>
-const mockMockEnhanceText = mockMockEnhanceText as jest.MockedFunction<typeof mockEnhanceText>
+const mockMockEnhanceText = mockEnhanceTextFn as jest.MockedFunction<typeof mockEnhanceTextFn>
 const mockDetectLanguage = detectLanguage as jest.MockedFunction<typeof detectLanguage>
 const mockValidateOutputQuality = validateOutputQuality as jest.MockedFunction<typeof validateOutputQuality>
 const mockIsLanguageSupported = isLanguageSupported as jest.MockedFunction<typeof isLanguageSupported>
@@ -47,6 +47,13 @@ function createMockRequest(body: any, headers: Record<string, string> = {}): Nex
 // Helper to parse JSON response
 async function parseResponse(response: Response) {
   return JSON.parse(await response.text())
+}
+
+// Helper to assert response is defined and return it
+function assertResponse(response: any): Response {
+  expect(response).toBeDefined()
+  expect(response).toBeInstanceOf(Response)
+  return response as Response
 }
 
 describe('/api/enhance POST', () => {
@@ -75,7 +82,8 @@ describe('/api/enhance POST', () => {
         mode: 'enhance'
       })
 
-      const response = await POST(request)
+      const rawResponse = await POST(request)
+      const response = assertResponse(rawResponse)
       const data = await parseResponse(response)
 
       expect(response.status).toBe(401)
@@ -107,7 +115,7 @@ describe('/api/enhance POST', () => {
         mode: 'enhance'
       })
 
-      const response = await POST(request)
+      const rawResponse = await POST(request); const response = assertResponse(rawResponse)
       expect(response.status).toBe(200)
     })
   })
@@ -127,7 +135,7 @@ describe('/api/enhance POST', () => {
         invalidField: 'value'
       })
 
-      const response = await POST(request)
+      const rawResponse = await POST(request); const response = assertResponse(rawResponse)
       const data = await parseResponse(response)
 
       expect(response.status).toBe(400)
@@ -146,7 +154,7 @@ describe('/api/enhance POST', () => {
         mode: 'enhance'
       })
 
-      const response = await POST(request)
+      const rawResponse = await POST(request); const response = assertResponse(rawResponse)
       const data = await parseResponse(response)
 
       expect(response.status).toBe(400)
@@ -159,7 +167,7 @@ describe('/api/enhance POST', () => {
         mode: 'enhance'
       })
 
-      const response = await POST(request)
+      const rawResponse = await POST(request); const response = assertResponse(rawResponse)
       const data = await parseResponse(response)
 
       expect(response.status).toBe(400)
@@ -181,7 +189,7 @@ describe('/api/enhance POST', () => {
         tone: 'professional'
       })
 
-      const response = await POST(request)
+      const rawResponse = await POST(request); const response = assertResponse(rawResponse)
       expect(response.status).toBe(200)
     })
 
@@ -198,7 +206,7 @@ describe('/api/enhance POST', () => {
         mode: 'enhance'
       })
 
-      const response = await POST(request)
+      const rawResponse = await POST(request); const response = assertResponse(rawResponse)
       expect(response.status).toBe(200)
     })
   })
@@ -260,7 +268,7 @@ describe('/api/enhance POST', () => {
         language: 'es'
       })
 
-      const response = await POST(request)
+      const rawResponse = await POST(request); const response = assertResponse(rawResponse)
       const data = await parseResponse(response)
 
       expect(response.status).toBe(400)
@@ -304,7 +312,7 @@ describe('/api/enhance POST', () => {
         mode: 'enhance'
       })
 
-      const response = await POST(request)
+      const rawResponse = await POST(request); const response = assertResponse(rawResponse)
       const data = await parseResponse(response)
 
       expect(response.status).toBe(403)
@@ -328,7 +336,7 @@ describe('/api/enhance POST', () => {
         mode: 'enhance'
       })
 
-      const response = await POST(request)
+      const rawResponse = await POST(request); const response = assertResponse(rawResponse)
       const data = await parseResponse(response)
 
       expect(response.status).toBe(403)
@@ -348,7 +356,7 @@ describe('/api/enhance POST', () => {
         mode: 'enhance'
       })
 
-      const response = await POST(request)
+      const rawResponse = await POST(request); const response = assertResponse(rawResponse)
       expect(response.status).toBe(200)
     })
   })
@@ -378,7 +386,7 @@ describe('/api/enhance POST', () => {
         tone: 'professional'
       })
 
-      const response = await POST(request)
+      const rawResponse = await POST(request); const response = assertResponse(rawResponse)
       const data = await parseResponse(response)
 
       expect(mockEnhanceText).toHaveBeenCalledWith({
@@ -405,7 +413,7 @@ describe('/api/enhance POST', () => {
         mode: 'enhance'
       })
 
-      const response = await POST(request)
+      const rawResponse = await POST(request); const response = assertResponse(rawResponse)
       const data = await parseResponse(response)
 
       expect(mockMockEnhanceText).toHaveBeenCalledWith({
@@ -469,7 +477,7 @@ describe('/api/enhance POST', () => {
         mode: 'enhance'
       })
 
-      const response = await POST(request)
+      const rawResponse = await POST(request); const response = assertResponse(rawResponse)
       const data = await parseResponse(response)
 
       expect(response.status).toBe(500)
@@ -498,7 +506,7 @@ describe('/api/enhance POST', () => {
         mode: 'enhance'
       })
 
-      const response = await POST(request)
+      const rawResponse = await POST(request); const response = assertResponse(rawResponse)
       const data = await parseResponse(response)
 
       expect(response.status).toBe(200)
@@ -558,7 +566,7 @@ describe('/api/enhance POST', () => {
         mode: 'enhance'
       })
 
-      const response = await POST(request)
+      const rawResponse = await POST(request); const response = assertResponse(rawResponse)
       const data = await parseResponse(response)
 
       expect(response.status).toBe(200)
@@ -584,7 +592,7 @@ describe('/api/enhance POST', () => {
         mode: 'enhance'
       })
 
-      const response = await POST(request)
+      const rawResponse = await POST(request); const response = assertResponse(rawResponse)
       const data = await parseResponse(response)
 
       expect(response.status).toBe(500)
@@ -603,7 +611,7 @@ describe('/api/enhance POST', () => {
         headers: new Headers()
       } as any
 
-      const response = await POST(request)
+      const rawResponse = await POST(request); const response = assertResponse(rawResponse)
       const data = await parseResponse(response)
 
       expect(response.status).toBe(500)
@@ -618,7 +626,7 @@ describe('/api/enhance POST', () => {
         mode: 'enhance'
       })
 
-      const response = await POST(request)
+      const rawResponse = await POST(request); const response = assertResponse(rawResponse)
       const data = await parseResponse(response)
 
       expect(response.status).toBe(500)
@@ -648,7 +656,7 @@ describe('/api/enhance POST', () => {
         mode: 'enhance'
       })
 
-      const response = await POST(request)
+      const rawResponse = await POST(request); const response = assertResponse(rawResponse)
       const data = await parseResponse(response)
 
       expect(data).toEqual({
@@ -672,7 +680,7 @@ describe('/api/enhance POST', () => {
         mode: 'enhance'
       })
 
-      const response = await POST(request)
+      const rawResponse = await POST(request); const response = assertResponse(rawResponse)
       const data = await parseResponse(response)
 
       expect(data).toEqual({
