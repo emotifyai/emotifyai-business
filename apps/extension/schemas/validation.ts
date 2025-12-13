@@ -33,6 +33,7 @@ export const RewriteResponseSchema = z.object({
     enhancedText: z.string(),
     detectedLanguage: z.string(),
     confidence: z.number().min(0).max(1),
+    tokensUsed: z.number().int().positive(),
 });
 
 // API Error Schema

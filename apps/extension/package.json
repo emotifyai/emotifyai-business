@@ -24,6 +24,9 @@
     "test:e2e:headed": "playwright test --headed",
     "test:e2e:report": "playwright show-report",
     "generate:assets": "bun run scripts/generate-assets.ts",
+    "test:integration": "bun run scripts/test-integration.ts",
+    "test:integration:mock": "bun run scripts/test-integration.ts mock",
+    "test:integration:auth": "bun run scripts/test-with-auth.ts",
     "postinstall": "wxt prepare"
   },
   "dependencies": {

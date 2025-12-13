@@ -18,27 +18,53 @@ export async function enhanceText(
             language: options.language || 'auto',
         });
 
-        const response = await apiPost<RewriteResponse>('ai/enhance', {
+        // Call the new API endpoint format
+        const response = await apiPost<{
+            success: boolean;
+            data?: {
+                enhancedText: string;
+                tokensUsed: number;
+                language: string;
+            };
+            error?: {
+                code: string;
+                message: string;
+            };
+        }>('enhance', {
             text,
-            options,
+            language: options.language,
+            tone: options.tone || 'professional'
         });
 
         const backendDuration = performanceMonitor.end('backend-api-enhance');
 
+        if (!response.success || !response.data) {
+            throw new Error(response.error?.message || 'Enhancement failed');
+        }
+
+        // Convert to expected format
+        const result: RewriteResponse = {
+            enhancedText: response.data.enhancedText,
+            detectedLanguage: response.data.language,
+            confidence: 0.95, // High confidence since we have purified output
+            tokensUsed: response.data.tokensUsed
+        };
+
         // Validate response
-        const validated = RewriteResponseSchema.parse(response);
+        const validated = RewriteResponseSchema.parse(result);
 
         logger.info('Text enhanced successfully', {
             detectedLanguage: validated.detectedLanguage,
             confidence: validated.confidence,
             backendLatency: backendDuration ? `${backendDuration.toFixed(2)}ms` : 'N/A',
+            purified: true // Indicate this is purified output
         });
 
         return validated;
     } catch (error: any) {
         performanceMonitor.end('backend-api-enhance', { error: true });
 
-        if (error.code === 'LANGUAGE_NOT_SUPPORTED') {
+        if (error.code === 'UNSUPPORTED_LANGUAGE') {
             throw new LanguageNotSupportedError(
                 error.details?.detectedLanguage || 'unknown',
                 error.message

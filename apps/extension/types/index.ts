@@ -61,6 +61,7 @@ export interface RewriteResponse {
     enhancedText: string;
     detectedLanguage: string;
     confidence: number;
+    tokensUsed: number;
 }
 
 export interface APIError {

@@ -47,7 +47,7 @@ async function createContextMenu(): Promise<void> {
 
     browser.contextMenus.create({
       id: 'enhance-text',
-      title: 'Enhance with EmotifyAI',
+      title: '✨ Enhance with Verba',
       contexts: ['selection'],
       enabled: isAuthenticated,
     });
@@ -70,75 +70,40 @@ async function updateContextMenuState(isAuthenticated: boolean): Promise<void> {
   }
 }
 
-// Handle text enhancement
+// Handle text enhancement from context menu
 async function handleEnhanceText(text: string, tabId?: number): Promise<void> {
-  // Track total enhancement time (extension code + backend)
-  const enhancementStart = performance.now();
-
   try {
-    logger.info('Enhancing text from context menu', { textLength: text.length });
+    logger.info('Showing enhancement popup from context menu', { textLength: text.length });
 
-    // Check authentication
+    // Check authentication first
     const token = await getAuthToken();
     if (!token) {
-      throw new AuthenticationError('Please log in to use EmotifyAI');
-    }
-
-    // Check usage limits
-    await checkLimit();
-
-    // Show loading state in content script
-    if (tabId) {
-      await browser.tabs.sendMessage(tabId, {
-        type: 'SHOW_LOADING',
-        payload: {},
-      });
-    }
-
-    // Enhance text (backend API call is tracked inside enhanceText)
-    const result = await enhanceText(text, { language: 'auto' });
-
-    // Increment usage
-    await incrementUsage();
-
-    // Send enhanced text to content script
-    if (tabId) {
-      await browser.tabs.sendMessage(tabId, {
-        type: 'REPLACE_TEXT',
-        payload: {
-          originalText: text,
-          enhancedText: result.enhancedText,
-        },
-      });
-    }
-
-    // Log total enhancement time
-    const totalDuration = performance.now() - enhancementStart;
-    logger.info('Text enhanced successfully', {
-      totalDuration: `${totalDuration.toFixed(2)}ms`,
-    });
-  } catch (error) {
-    const totalDuration = performance.now() - enhancementStart;
-    logger.error('Text enhancement failed', {
-      error,
-      totalDuration: `${totalDuration.toFixed(2)}ms`,
-    });
-
-    // Send error to content script
-    if (tabId) {
-      let errorMessage = 'Enhancement failed. Please try again.';
-
-      if (error instanceof AuthenticationError) {
-        errorMessage = 'Please log in to use EmotifyAI';
-      } else if (error instanceof SubscriptionError) {
-        errorMessage = error.message;
-      } else if (error instanceof LanguageNotSupportedError) {
-        errorMessage = error.message;
+      if (tabId) {
+        await browser.tabs.sendMessage(tabId, {
+          type: 'SHOW_ERROR',
+          payload: { error: 'Please log in to use Verba' },
+        });
       }
+      return;
+    }
 
+    // Show enhancement popup in content script
+    if (tabId) {
+      await browser.tabs.sendMessage(tabId, {
+        type: 'SHOW_ENHANCEMENT_POPUP',
+        payload: { text },
+      });
+    }
+
+    logger.info('Enhancement popup shown successfully');
+  } catch (error) {
+    logger.error('Failed to show enhancement popup', error);
+
+    // Fallback to error message
+    if (tabId) {
       await browser.tabs.sendMessage(tabId, {
         type: 'SHOW_ERROR',
-        payload: { error: errorMessage },
+        payload: { error: 'Failed to open enhancement popup' },
       });
     }
   }
