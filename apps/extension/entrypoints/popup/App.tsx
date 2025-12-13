@@ -35,31 +35,7 @@ function App() {
     }
   };
 
-  // Check for authentication when popup opens (in case user authenticated in web app)
-  useEffect(() => {
-    if (!isAuthenticated && !isLoading) {
-      const checkAuth = async () => {
-        try {
-          const session = await validateSession();
-          if (session.valid && session.user) {
-            // User is authenticated in web app, update extension state
-            await setUserProfile(session.user);
-            // Force re-render by triggering storage change
-            window.location.reload();
-          }
-        } catch (error) {
-          // Ignore errors - user is not authenticated
-        }
-      };
-      
-      // Check immediately and then every 2 seconds for 10 seconds
-      checkAuth();
-      const interval = setInterval(checkAuth, 2000);
-      setTimeout(() => clearInterval(interval), 10000);
-      
-      return () => clearInterval(interval);
-    }
-  }, [isAuthenticated, isLoading]);
+
 
   const handleLogout = async () => {
     await logout();

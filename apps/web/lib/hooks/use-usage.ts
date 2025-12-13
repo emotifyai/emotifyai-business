@@ -59,25 +59,22 @@ export function useUsageStats() {
                 throw new Error('Authentication required to fetch usage statistics')
             }
 
-            // Get user's current subscription and credit status
-            const { data: subscription, error: subError } = await supabase
-                .from('subscriptions')
-                .select('credits_limit, credits_used, credits_reset_date, tier_name')
-                .eq('user_id', user.id)
-                .eq('status', 'active')
-                .order('created_at', { ascending: false })
-                .limit(1)
-                .single()
-
-            if (subError && subError.code !== 'PGRST116') { // PGRST116 = no rows returned
-                throw new Error(`Failed to fetch subscription: ${subError.message}`)
+            // Get user's current subscription and credit status via API
+            const response = await fetch('/api/subscription')
+            if (!response.ok) {
+                throw new Error(`Failed to fetch subscription: ${response.statusText}`)
+            }
+            
+            const subscriptionData = await response.json()
+            if (!subscriptionData.success) {
+                throw new Error(`Failed to fetch subscription: ${subscriptionData.error?.message}`)
             }
 
-            // Default to free plan if no subscription found
-            const credits_limit = subscription?.credits_limit ?? 50
-            const credits_used = subscription?.credits_used ?? 0
-            const credits_remaining = Math.max(0, credits_limit - credits_used)
-            const reset_date = subscription?.credits_reset_date ?? null
+            // Extract data from API response
+            const credits_limit = subscriptionData.data?.credits_limit ?? 50
+            const credits_used = subscriptionData.data?.credits_used ?? 0
+            const credits_remaining = subscriptionData.data?.credits_remaining ?? credits_limit - credits_used
+            const reset_date = subscriptionData.data?.credits_reset_date ?? null
 
             // Calculate usage breakdowns from usage_logs
             const now = new Date()
