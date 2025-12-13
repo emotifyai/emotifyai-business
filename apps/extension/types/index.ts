@@ -13,6 +13,7 @@ export interface User {
  */
 export type SubscriptionTier =
     | 'trial'
+    | 'free'
     | 'lifetime_launch'
     | 'basic_monthly'
     | 'pro_monthly'
@@ -36,13 +37,13 @@ export interface Subscription {
     endDate?: string;
     usageLimit: number; // generations per month
     currentUsage: number; // current month usage
-    resetDate?: string; // when quota resets
+    resetDate?: string | null; // when quota resets
 }
 
 export interface UsageStats {
     used: number;
     limit: number;
-    resetDate?: string;
+    resetDate?: string | null;
     lastUsed?: string;
 }
 
@@ -50,6 +51,7 @@ export interface UsageStats {
 export interface EnhanceOptions {
     language?: 'en' | 'ar' | 'fr' | 'auto';
     context?: string;
+    tone?: 'professional' | 'casual' | 'formal' | 'friendly';
 }
 
 export interface RewriteRequest {

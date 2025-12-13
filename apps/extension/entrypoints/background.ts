@@ -110,7 +110,7 @@ async function handleEnhanceText(text: string, tabId?: number): Promise<void> {
 }
 
 // Handle messages
-async function handleMessage(message: any, _sender: any): Promise<any> {
+async function handleMessage(message: any, sender: any): Promise<any> {
   const { type, payload } = message;
 
   switch (type) {
@@ -129,6 +129,35 @@ async function handleMessage(message: any, _sender: any): Promise<any> {
     case 'GET_AUTH_STATUS': {
       const token = await getAuthToken();
       return { authenticated: !!token };
+    }
+
+    case 'EMOTIFYAI_AUTH_SUCCESS': {
+      // Handle authentication success from web app
+      try {
+        logger.info('Received auth success notification from web app', { user: payload?.user });
+        
+        // The web app has authenticated the user, but we still need to validate
+        // and get the proper auth token through our API
+        const { validateSession } = await import('@/services/api/auth');
+        const { setUserProfile } = await import('@/utils/storage');
+        
+        const session = await validateSession();
+        if (session.valid && session.user) {
+          await setUserProfile(session.user);
+          logger.info('Extension authentication updated from web app notification');
+          
+          // Update context menu state
+          await updateContextMenuState(true);
+          
+          return { success: true, message: 'Authentication updated' };
+        } else {
+          logger.warn('Web app auth notification received but session validation failed');
+          return { success: false, error: 'Session validation failed' };
+        }
+      } catch (error: any) {
+        logger.error('Failed to handle auth success notification', error);
+        return { success: false, error: error.message };
+      }
     }
 
     default:

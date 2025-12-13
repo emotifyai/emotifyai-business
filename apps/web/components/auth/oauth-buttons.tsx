@@ -2,12 +2,24 @@
 
 import { Button } from '@ui/button'
 import { useOAuthLogin } from '@/lib/hooks/use-auth'
+import { useSearchParams } from 'next/navigation'
 
 export function OAuthButtons() {
+    const searchParams = useSearchParams()
     const oauthLogin = useOAuthLogin()
 
     const handleLogin = (provider: 'google') => {
-        oauthLogin.mutate({ provider })
+        // Get URL parameters for extension flow
+        const source = searchParams.get('source')
+        const plan = searchParams.get('plan')
+        const redirectTo = searchParams.get('redirect_to')
+
+        oauthLogin.mutate({ 
+            provider,
+            source: source || undefined,
+            plan: plan || undefined,
+            redirectTo: redirectTo || undefined
+        })
     }
 
     return (

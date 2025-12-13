@@ -32,6 +32,8 @@ type WindowMessage = {
   payload?: {
     message?: string;
     error?: string;
+    originalText?: string;
+    enhancedText?: string;
   };
 };
 

@@ -50,7 +50,7 @@ vi.mock('@/utils/logger', () => ({
 }))
 
 // Set up global browser mock
-global.browser = mockBrowser as any
+(globalThis as any).browser = mockBrowser
 
 describe('Extension OAuth Integration', () => {
   beforeEach(() => {

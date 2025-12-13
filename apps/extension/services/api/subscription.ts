@@ -7,10 +7,30 @@ import { SubscriptionSchema, UsageStatsSchema } from '@/schemas/validation';
 
 export async function getSubscription(): Promise<Subscription> {
     try {
-        const response = await apiGet<{ subscription: Subscription }>('subscription');
+        const response = await apiGet<{ 
+            data: {
+                tier: string;
+                status: string;
+                credits_limit: number;
+                credits_used: number;
+                credits_reset_date?: string;
+                current_period_end?: string;
+            }
+        }>('subscription');
+
+        // Map API response to extension Subscription format
+        const subscription: Subscription = {
+            tier: response.data.tier as SubscriptionTier,
+            status: response.data.status as SubscriptionStatus,
+            startDate: new Date().toISOString(), // We don't have this from API, use current date
+            endDate: response.data.current_period_end,
+            usageLimit: response.data.credits_limit,
+            currentUsage: response.data.credits_used,
+            resetDate: response.data.credits_reset_date
+        };
 
         // Validate and store
-        const validated = SubscriptionSchema.parse(response.subscription);
+        const validated = SubscriptionSchema.parse(subscription);
         await setSubscription(validated);
 
         return validated;
@@ -22,10 +42,18 @@ export async function getSubscription(): Promise<Subscription> {
 
 export async function getUsage(): Promise<UsageStats> {
     try {
-        const response = await apiGet<{ usage: UsageStats }>('usage');
+        // Get usage data from subscription endpoint
+        const subscription = await getSubscription();
+        
+        // Convert subscription data to usage stats format
+        const usage: UsageStats = {
+            used: subscription.currentUsage || 0,
+            limit: subscription.usageLimit || 10,
+            resetDate: subscription.resetDate || null
+        };
 
         // Validate and store
-        const validated = UsageStatsSchema.parse(response.usage);
+        const validated = UsageStatsSchema.parse(usage);
         await updateUsageStats(validated);
 
         return validated;

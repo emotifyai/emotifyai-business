@@ -1,7 +1,7 @@
 'use client'
 
 import * as React from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useSignup } from '@/lib/hooks/use-auth'
 import { Button } from '@ui/button'
 import { Input } from '@ui/input'
@@ -12,6 +12,7 @@ import { toast } from 'sonner'
 
 export function SignupForm() {
     const router = useRouter()
+    const searchParams = useSearchParams()
     const signup = useSignup()
     const [email, setEmail] = React.useState('')
     const [password, setPassword] = React.useState('')
@@ -22,8 +23,18 @@ export function SignupForm() {
 
         try {
             await signup.mutateAsync({ email, password, displayName })
-            toast.success('Account created successfully! Choose your plan to get started.')
-            router.push('/pricing?from=new_user')
+            
+            // Check if this is from extension
+            const source = searchParams.get('source')
+            const redirectTo = searchParams.get('redirect_to')
+            
+            if (source === 'extension' && redirectTo) {
+                toast.success('Account created successfully! Setting up your extension...')
+                router.push(redirectTo)
+            } else {
+                toast.success('Account created successfully! Choose your plan to get started.')
+                router.push('/pricing?from=new_user')
+            }
         } catch (error) {
             toast.error(`Failed to create account. Please try again. ${error}`)
         }

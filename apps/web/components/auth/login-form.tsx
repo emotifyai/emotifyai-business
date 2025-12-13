@@ -1,7 +1,7 @@
 'use client'
 
 import * as React from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useLogin } from '@/lib/hooks/use-auth'
 import { Button } from '@ui/button'
 import { Input } from '@ui/input'
@@ -12,6 +12,7 @@ import Link from 'next/link'
 
 export function LoginForm() {
     const router = useRouter()
+    const searchParams = useSearchParams()
     const login = useLogin()
     const [email, setEmail] = React.useState('')
     const [password, setPassword] = React.useState('')
@@ -21,8 +22,18 @@ export function LoginForm() {
 
         try {
             await login.mutateAsync({ email, password })
-            toast.success('Logged in successfully')
-            router.push('/dashboard')
+            
+            // Check if this is from extension
+            const source = searchParams.get('source')
+            const redirectTo = searchParams.get('redirect_to')
+            
+            if (source === 'extension' && redirectTo) {
+                toast.success('Logged in successfully! Connecting to extension...')
+                router.push(redirectTo)
+            } else {
+                toast.success('Logged in successfully')
+                router.push('/dashboard')
+            }
         } catch (error) {
             toast.error(`Failed to login. Please check your credentials. ${error}`)
         }

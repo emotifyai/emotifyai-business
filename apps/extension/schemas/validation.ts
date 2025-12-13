@@ -11,20 +11,20 @@ export const UserSchema = z.object({
 
 // Subscription Schema
 export const SubscriptionSchema = z.object({
-    tier: z.enum(['trial', 'lifetime_launch', 'basic_monthly', 'pro_monthly', 'business_monthly', 'basic_annual', 'pro_annual', 'business_annual']),
+    tier: z.enum(['trial', 'free', 'lifetime_launch', 'basic_monthly', 'pro_monthly', 'business_monthly', 'basic_annual', 'pro_annual', 'business_annual']),
     status: z.enum(['active', 'cancelled', 'expired', 'past_due', 'paused', 'trial']),
     startDate: z.string().datetime(),
     endDate: z.string().datetime().optional(),
     usageLimit: z.number().int().positive(),
     currentUsage: z.number().int().nonnegative(),
-    resetDate: z.string().datetime().optional(),
+    resetDate: z.string().datetime().nullable().optional(),
 });
 
 // Usage Stats Schema
 export const UsageStatsSchema = z.object({
     used: z.number().int().nonnegative(),
     limit: z.number().int().positive(),
-    resetDate: z.string().datetime().optional(),
+    resetDate: z.string().datetime().nullable().optional(),
     lastUsed: z.string().datetime().optional(),
 });
 

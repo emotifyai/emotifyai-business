@@ -5,7 +5,6 @@ import type { UserConfig } from 'vite';
 // See https://wxt.dev/api/config.html
 export default defineConfig({
   modules: ['@wxt-dev/module-react'],
-  // @ts-expect-error - Vite version conflict between main deps and vitest bundled vite
   vite: (): UserConfig => ({
     plugins: [tailwindcss()],
     build: {

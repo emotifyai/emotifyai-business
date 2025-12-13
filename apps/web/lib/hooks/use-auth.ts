@@ -99,12 +99,29 @@ export function useSignup() {
  */
 export function useOAuthLogin() {
     return useMutation({
-        mutationFn: async ({ provider }: { provider: 'google' }) => {
+        mutationFn: async ({ 
+            provider, 
+            source, 
+            plan, 
+            redirectTo 
+        }: { 
+            provider: 'google'
+            source?: string
+            plan?: string
+            redirectTo?: string
+        }) => {
             const supabase = createClient()
+            
+            // Build callback URL with parameters
+            const callbackUrl = new URL('/auth/callback', window.location.origin)
+            if (source) callbackUrl.searchParams.set('source', source)
+            if (plan) callbackUrl.searchParams.set('plan', plan)
+            if (redirectTo) callbackUrl.searchParams.set('redirect_to', redirectTo)
+            
             const { data, error } = await supabase.auth.signInWithOAuth({
                 provider,
                 options: {
-                    redirectTo: `${window.location.origin}/auth/callback`,
+                    redirectTo: callbackUrl.toString(),
                 },
             })
             if (error) throw error

@@ -1,13 +1,14 @@
 import { Metadata } from 'next'
 import Link from 'next/link'
 import { LoginForm } from '@/components/auth/login-form'
+import { Suspense } from 'react'
 
 export const metadata: Metadata = {
     title: 'Login - Verba',
     description: 'Login to your Verba account',
 }
 
-export default function LoginPage() {
+function LoginContent() {
     return (
         <>
             <div className="flex flex-col space-y-2 text-center">
@@ -15,7 +16,7 @@ export default function LoginPage() {
                     Welcome back
                 </h1>
                 <p className="text-sm text-muted-foreground">
-                    Enter your email to sign in to your account
+                    Sign in to continue using your Verba extension
                 </p>
             </div>
             <LoginForm />
@@ -29,5 +30,13 @@ export default function LoginPage() {
                 </Link>
             </p>
         </>
+    )
+}
+
+export default function LoginPage() {
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <LoginContent />
+        </Suspense>
     )
 }

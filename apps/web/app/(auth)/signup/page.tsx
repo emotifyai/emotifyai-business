@@ -1,13 +1,14 @@
 import { Metadata } from 'next'
 import Link from 'next/link'
 import { SignupForm } from '@/components/auth/signup-form'
+import { Suspense } from 'react'
 
 export const metadata: Metadata = {
     title: 'Sign Up - Verba',
     description: 'Create a new Verba account',
 }
 
-export default function SignupPage() {
+function SignupContent() {
     return (
         <>
             <div className="flex flex-col space-y-2 text-center">
@@ -15,7 +16,7 @@ export default function SignupPage() {
                     Create an account
                 </h1>
                 <p className="text-sm text-muted-foreground">
-                    Enter your email below to create your account
+                    Get started with your free trial - 10 enhancements included
                 </p>
             </div>
             <SignupForm />
@@ -46,5 +47,13 @@ export default function SignupPage() {
                 </Link>
             </p>
         </>
+    )
+}
+
+export default function SignupPage() {
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <SignupContent />
+        </Suspense>
     )
 }
