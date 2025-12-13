@@ -4,7 +4,6 @@
  */
 
 import { useQuery, useInfiniteQuery } from '@tanstack/react-query'
-import { createClient } from '@/lib/supabase/client'
 
 
 // Types for usage statistics
@@ -47,97 +46,20 @@ export interface LegacyUsageData {
  * Refreshes every 30 seconds and handles authentication errors
  */
 export function useUsageStats() {
-    const supabase = createClient()
-
     return useQuery({
         queryKey: ['usage-stats'],
         queryFn: async (): Promise<UsageStats> => {
-            // Check authentication first
-            const { data: { user }, error: authError } = await supabase.auth.getUser()
-            
-            if (authError || !user) {
-                throw new Error('Authentication required to fetch usage statistics')
-            }
-
-            // Get user's current subscription and credit status via API
-            const response = await fetch('/api/subscription')
+            const response = await fetch('/api/usage?type=stats')
             if (!response.ok) {
-                throw new Error(`Failed to fetch subscription: ${response.statusText}`)
+                throw new Error(`Failed to fetch usage stats: ${response.statusText}`)
             }
             
-            const subscriptionData = await response.json()
-            if (!subscriptionData.success) {
-                throw new Error(`Failed to fetch subscription: ${subscriptionData.error?.message}`)
+            const data = await response.json()
+            if (!data.success) {
+                throw new Error(`Failed to fetch usage stats: ${data.error?.message}`)
             }
 
-            // Extract data from API response
-            const credits_limit = subscriptionData.data?.credits_limit ?? 50
-            const credits_used = subscriptionData.data?.credits_used ?? 0
-            const credits_remaining = subscriptionData.data?.credits_remaining ?? credits_limit - credits_used
-            const reset_date = subscriptionData.data?.credits_reset_date ?? null
-
-            // Calculate usage breakdowns from usage_logs
-            const now = new Date()
-            const oneDayAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000)
-            const oneWeekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
-            const oneMonthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000)
-
-            // Get daily usage
-            const { count: daily_usage, error: dailyError } = await supabase
-                .from('usage_logs')
-                .select('*', { count: 'exact', head: true })
-                .eq('user_id', user.id)
-                .eq('success', true)
-                .gte('created_at', oneDayAgo.toISOString())
-
-            if (dailyError) {
-                throw new Error(`Failed to fetch daily usage: ${dailyError.message}`)
-            }
-
-            // Get weekly usage
-            const { count: weekly_usage, error: weeklyError } = await supabase
-                .from('usage_logs')
-                .select('*', { count: 'exact', head: true })
-                .eq('user_id', user.id)
-                .eq('success', true)
-                .gte('created_at', oneWeekAgo.toISOString())
-
-            if (weeklyError) {
-                throw new Error(`Failed to fetch weekly usage: ${weeklyError.message}`)
-            }
-
-            // Get monthly usage
-            const { count: monthly_usage, error: monthlyError } = await supabase
-                .from('usage_logs')
-                .select('*', { count: 'exact', head: true })
-                .eq('user_id', user.id)
-                .eq('success', true)
-                .gte('created_at', oneMonthAgo.toISOString())
-
-            if (monthlyError) {
-                throw new Error(`Failed to fetch monthly usage: ${monthlyError.message}`)
-            }
-
-            // Get total enhancements (all time)
-            const { count: total_enhancements, error: totalError } = await supabase
-                .from('usage_logs')
-                .select('*', { count: 'exact', head: true })
-                .eq('user_id', user.id)
-                .eq('success', true)
-
-            if (totalError) {
-                throw new Error(`Failed to fetch total usage: ${totalError.message}`)
-            }
-
-            return {
-                total_enhancements: total_enhancements ?? 0,
-                credits_used,
-                credits_remaining,
-                reset_date,
-                daily_usage: daily_usage ?? 0,
-                weekly_usage: weekly_usage ?? 0,
-                monthly_usage: monthly_usage ?? 0,
-            }
+            return data.data
         },
         refetchInterval: 30 * 1000, // Refresh every 30 seconds
         retry: (failureCount, error) => {
@@ -157,8 +79,6 @@ export function useUsageStats() {
  * Provides detailed enhancement activity tracking
  */
 export function useUsageHistory(pageSize: number = 20) {
-    const supabase = createClient()
-
     return useInfiniteQuery({
         queryKey: ['usage-history', pageSize],
         initialPageParam: 0,
@@ -167,55 +87,20 @@ export function useUsageHistory(pageSize: number = 20) {
             nextPage: number | null
             hasMore: boolean
         }> => {
-            // Check authentication first
-            const { data: { user }, error: authError } = await supabase.auth.getUser()
+            const response = await fetch(`/api/usage?type=history&page=${pageParam}&pageSize=${pageSize}`)
+            if (!response.ok) {
+                throw new Error(`Failed to fetch usage history: ${response.statusText}`)
+            }
             
-            if (authError || !user) {
-                throw new Error('Authentication required to fetch usage history')
+            const result = await response.json()
+            if (!result.success) {
+                throw new Error(`Failed to fetch usage history: ${result.error?.message}`)
             }
-
-            const from = pageParam * pageSize
-            const to = from + pageSize - 1
-
-            const { data: logs, error, count } = await supabase
-                .from('usage_logs')
-                .select(`
-                    id,
-                    created_at,
-                    input_text,
-                    output_text,
-                    language,
-                    mode,
-                    tokens_used,
-                    credits_consumed,
-                    success
-                `, { count: 'exact' })
-                .eq('user_id', user.id)
-                .order('created_at', { ascending: false })
-                .range(from, to)
-
-            if (error) {
-                throw new Error(`Failed to fetch usage history: ${error.message}`)
-            }
-
-            const totalCount = count ?? 0
-            const hasMore = to < totalCount - 1
-            const nextPage = hasMore ? pageParam + 1 : null
 
             return {
-                data: logs?.map(log => ({
-                    id: log.id,
-                    created_at: log.created_at,
-                    input_text: log.input_text,
-                    output_text: log.output_text,
-                    language: log.language,
-                    mode: log.mode,
-                    tokens_used: log.tokens_used,
-                    credits_consumed: log.credits_consumed,
-                    success: log.success,
-                })) ?? [],
-                nextPage,
-                hasMore,
+                data: result.data.logs,
+                nextPage: result.data.pagination.nextPage,
+                hasMore: result.data.pagination.hasMore,
             }
         },
         getNextPageParam: (lastPage: { nextPage: number | null }) => lastPage.nextPage,
