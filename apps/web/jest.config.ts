@@ -16,6 +16,14 @@ const config: Config = {
         // Handle module aliases (this will be automatically configured for you soon)
         '^@/(.*)$': '<rootDir>/$1',
     },
+    // Transform ESM modules
+    transformIgnorePatterns: [
+        'node_modules/(?!(@anthropic-ai/sdk|node-fetch)/)'
+    ],
+    // Set test environment to Node for API tests
+    testEnvironmentOptions: {
+        customExportConditions: ['node', 'node-addons'],
+    },
 }
 
 // createJestConfig is exported this way to ensure that next/jest can load the Next.js config which is async

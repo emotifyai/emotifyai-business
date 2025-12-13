@@ -1,3 +1,4 @@
+import '@anthropic-ai/sdk/shims/node';
 import Anthropic from '@anthropic-ai/sdk';
 import {
     buildCachedSystemPrompt,
@@ -10,6 +11,7 @@ import {
 // Initialize Anthropic client
 const anthropic = new Anthropic({
     apiKey: process.env.ANTHROPIC_API_KEY || '',
+    dangerouslyAllowBrowser: process.env.NODE_ENV === 'test', // Allow in test environment
 })
 
 const MODEL = process.env.ANTHROPIC_MODEL || 'claude-3-5-sonnet-20241022'

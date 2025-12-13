@@ -184,6 +184,14 @@ export function parseCacheUsage(response: unknown): {
     cacheReadTokens: number;
     inputTokens: number;
 } {
+    if (!response || typeof response !== 'object') {
+        return {
+            cacheCreationTokens: 0,
+            cacheReadTokens: 0,
+            inputTokens: 0
+        };
+    }
+
     // @ts-ignore
     const usage = response.usage || {};
 
