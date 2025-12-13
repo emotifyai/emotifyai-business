@@ -53,7 +53,7 @@ Verba is an **AI-powered text enhancement platform** that seamlessly integrates 
 ### Monorepo Structure
 
 ```
-verba-monorepo/
+emotifyai-monorepo/
 ├── apps/
 │   ├── extension/              # Browser Extension (WXT)
 │   │   ├── entrypoints/        # Extension entry points

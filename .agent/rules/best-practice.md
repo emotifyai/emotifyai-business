@@ -120,7 +120,7 @@ permissions: [
 ],
 host_permissions: [
   'http://localhost/*',
-  'https://*.verba.app/*',
+  'https://*.emotifyai.app/*',
 ],
 
 // ❌ Bad - Overly broad

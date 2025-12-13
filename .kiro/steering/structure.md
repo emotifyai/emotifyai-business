@@ -3,7 +3,7 @@
 ## Monorepo Layout
 
 ```
-verba/
+emotifyai/
 ├── apps/
 │   ├── extension/          # Browser extension (WXT + React)
 │   └── web/                # Web application (Next.js)

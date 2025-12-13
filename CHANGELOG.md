@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-- Shared UI package (`@verba/ui`) with theme tokens and Toast component
+- Shared UI package (`@emotifyai/ui`) with theme tokens and Toast component
 - ESLint configuration for extension
 - Comprehensive documentation (deployment, environment variables, submission guides)
 - Enhanced middleware with rate limiting, logging, and security headers
@@ -121,5 +121,5 @@ The `/api/enhance` endpoint no longer accepts `mode` parameter:
 
 ---
 
-[Unreleased]: https://github.com/yourusername/verba/compare/v0.1.0...HEAD
-[0.1.0]: https://github.com/yourusername/verba/releases/tag/v0.1.0
+[Unreleased]: https://github.com/yourusername/emotifyai/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/yourusername/emotifyai/releases/tag/v0.1.0

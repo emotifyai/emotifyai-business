@@ -9,7 +9,7 @@ Verba uses a **type-safe environment configuration system** with runtime validat
 ### Architecture
 
 ```
-verba/
+emotifyai/
 ├── .env.example                    # Root template (optional, for reference)
 ├── apps/
 │   ├── extension/
