@@ -56,6 +56,8 @@ A Next.js 16 web platform that provides:
 
 ```bash
 # Start both extension and web app in development mode
+# Web App: http://localhost:3000
+# Extension: http://localhost:4250
 bun dev
 
 # Build both applications

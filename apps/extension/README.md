@@ -67,10 +67,10 @@ apps/extension/
 # Install dependencies
 bun install
 
-# Start development mode (Chrome)
+# Start development mode (Chrome) - Runs on port 4250
 bun run dev
 
-# Start development mode (Firefox)
+# Start development mode (Firefox) - Runs on port 4250
 bun run dev:firefox
 ```
 

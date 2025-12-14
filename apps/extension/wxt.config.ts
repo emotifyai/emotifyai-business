@@ -1,14 +1,41 @@
 import { defineConfig } from 'wxt';
 import tailwindcss from '@tailwindcss/vite';
 import type { UserConfig } from 'vite';
+import path from 'path';
 
 // See https://wxt.dev/api/config.html
 export default defineConfig({
   modules: ['@wxt-dev/module-react'],
-  vite: (): UserConfig => ({
-    plugins: [tailwindcss()],
+  dev: {
     server: {
       port: 4250,
+    },
+  },
+  vite: (): UserConfig => ({
+    plugins: [tailwindcss()],
+    resolve: {
+      alias: {
+        '@': path.resolve(__dirname, '.'),
+      },
+    },
+    test: {
+      environment: 'happy-dom',
+      globals: true,
+      setupFiles: ['./tests/setup.ts'],
+      exclude: [
+        '**/node_modules/**',
+        '**/tests/e2e/**',
+      ],
+      coverage: {
+        provider: 'v8',
+        reporter: ['text', 'json', 'html'],
+        exclude: [
+          'node_modules/',
+          'tests/e2e/',
+          '**/*.test.ts',
+          '**/*.test.tsx',
+        ],
+      },
     },
     build: {
       // Increase chunk size warning limit for extension context

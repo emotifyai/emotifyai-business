@@ -25,7 +25,7 @@ const testCases = [
     options: { tone: 'professional' as const, language: 'en' as const }
   },
   {
-    name: 'Casual Message', 
+    name: 'Casual Message',
     text: 'thanks for helping me out yesterday!',
     options: { tone: 'casual' as const, language: 'en' as const }
   }
@@ -34,7 +34,7 @@ const testCases = [
 async function createTestUser(apiUrl: string): Promise<string | null> {
   try {
     console.log('👤 Creating test user...');
-    
+
     // Try to sign up
     const signupResponse = await ky.post(`${apiUrl}/auth/v1/signup`, {
       json: {
@@ -47,25 +47,25 @@ async function createTestUser(apiUrl: string): Promise<string | null> {
         }
       }
     }).json<any>();
-    
+
     console.log('✅ Test user created');
     return signupResponse.access_token;
-    
+
   } catch (error: any) {
     // User might already exist, try to sign in
     try {
       console.log('👤 Test user exists, signing in...');
-      
+
       const signinResponse = await ky.post(`${apiUrl}/auth/v1/token?grant_type=password`, {
         json: {
           email: testUser.email,
           password: testUser.password
         }
       }).json<any>();
-      
+
       console.log('✅ Signed in successfully');
       return signinResponse.access_token;
-      
+
     } catch (signinError) {
       console.log('❌ Failed to authenticate test user');
       return null;
@@ -76,10 +76,11 @@ async function createTestUser(apiUrl: string): Promise<string | null> {
 async function testWithAuthentication() {
   console.log('🧪 Starting Authenticated Integration Test');
   console.log('==========================================');
-  
+
+  // Web app always runs on port 3000
   const apiUrl = process.env.VITE_API_BASE_URL || 'http://localhost:3000';
   console.log(`🌐 API URL: ${apiUrl}`);
-  
+
   // Check if server is running
   try {
     await ky.get(`${apiUrl}/api/health`).json();
@@ -90,7 +91,7 @@ async function testWithAuthentication() {
     console.log('   cd apps/web && bun run dev');
     process.exit(1);
   }
-  
+
   // Get authentication token
   const token = await createTestUser(apiUrl);
   if (!token) {
@@ -98,21 +99,21 @@ async function testWithAuthentication() {
     console.log('💡 Using test endpoint instead...');
     return testWithoutAuth(apiUrl);
   }
-  
+
   testUser.token = token;
   console.log('🔑 Authentication successful');
-  
+
   let passedTests = 0;
   let totalTests = testCases.length;
-  
+
   for (let i = 0; i < testCases.length; i++) {
     const testCase = testCases[i];
     console.log(`\n📝 Test ${i + 1}/${totalTests}: ${testCase.name}`);
     console.log(`Original: "${testCase.text}"`);
-    
+
     try {
       const startTime = Date.now();
-      
+
       const response = await ky.post(`${apiUrl}/api/enhance`, {
         json: {
           text: testCase.text,
@@ -135,20 +136,20 @@ async function testWithAuthentication() {
           message: string;
         };
       }>();
-      
+
       const duration = Date.now() - startTime;
-      
+
       if (response.success && response.data) {
         console.log(`✨ Enhanced: "${response.data.enhancedText}"`);
         console.log(`📊 Stats: ${response.data.tokensUsed} tokens, ${duration}ms, ${response.data.language}`);
-        
+
         // Validate purification
         const text = response.data.enhancedText.toLowerCase();
         const isPurified = !text.includes('here') &&
-                          !text.includes('improved') &&
-                          !text.includes('enhanced') &&
-                          !text.includes('version');
-        
+          !text.includes('improved') &&
+          !text.includes('enhanced') &&
+          !text.includes('version');
+
         if (isPurified) {
           console.log('✅ Output is properly purified');
           passedTests++;
@@ -158,7 +159,7 @@ async function testWithAuthentication() {
       } else {
         console.log(`❌ API Error: ${response.error?.message || 'Unknown error'}`);
       }
-      
+
     } catch (error: any) {
       if (error.response) {
         const errorData = await error.response.json().catch(() => ({}));
@@ -168,28 +169,28 @@ async function testWithAuthentication() {
       }
     }
   }
-  
+
   console.log('\n==========================================');
   console.log(`🎯 Results: ${passedTests}/${totalTests} tests passed`);
-  
+
   return passedTests === totalTests;
 }
 
 async function testWithoutAuth(apiUrl: string) {
   console.log('\n🧪 Fallback: Testing without authentication');
   console.log('============================================');
-  
+
   let passedTests = 0;
   let totalTests = testCases.length;
-  
+
   for (let i = 0; i < testCases.length; i++) {
     const testCase = testCases[i];
     console.log(`\n📝 Test ${i + 1}/${totalTests}: ${testCase.name}`);
     console.log(`Original: "${testCase.text}"`);
-    
+
     try {
       const startTime = Date.now();
-      
+
       const response = await ky.post(`${apiUrl}/api/test-enhance`, {
         json: {
           text: testCase.text,
@@ -208,20 +209,20 @@ async function testWithoutAuth(apiUrl: string) {
           message: string;
         };
       }>();
-      
+
       const duration = Date.now() - startTime;
-      
+
       if (response.success && response.data) {
         console.log(`✨ Enhanced: "${response.data.enhancedText}"`);
         console.log(`📊 Stats: ${response.data.tokensUsed} tokens, ${duration}ms, ${response.data.language}`);
-        
+
         // Validate purification
         const text = response.data.enhancedText.toLowerCase();
         const isPurified = !text.includes('here') &&
-                          !text.includes('improved') &&
-                          !text.includes('enhanced') &&
-                          !text.includes('version');
-        
+          !text.includes('improved') &&
+          !text.includes('enhanced') &&
+          !text.includes('version');
+
         if (isPurified) {
           console.log('✅ Output is properly purified');
           passedTests++;
@@ -231,7 +232,7 @@ async function testWithoutAuth(apiUrl: string) {
       } else {
         console.log(`❌ API Error: ${response.error?.message || 'Unknown error'}`);
       }
-      
+
     } catch (error: any) {
       if (error.response) {
         const errorData = await error.response.json().catch(() => ({}));
@@ -241,10 +242,10 @@ async function testWithoutAuth(apiUrl: string) {
       }
     }
   }
-  
+
   console.log('\n============================================');
   console.log(`🎯 Results: ${passedTests}/${totalTests} tests passed`);
-  
+
   return passedTests === totalTests;
 }
 
