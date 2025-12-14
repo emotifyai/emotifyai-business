@@ -9,9 +9,9 @@ export async function GET(request: NextRequest) {
     try {
         const supabase = await createClient()
 
-        const { data: { user }, error } = await supabase.auth.getUser()
+        const { data: { user, session }, error } = await supabase.auth.getUser()
 
-        if (error || !user) {
+        if (error || !user || !session) {
             return NextResponse.json({
                 valid: false,
             })
@@ -32,6 +32,7 @@ export async function GET(request: NextRequest) {
                 name: profile?.full_name || user.email?.split('@')[0] || 'User',
                 avatar: profile?.avatar_url || user.user_metadata?.avatar_url || null,
             },
+            token: session.access_token,
         })
     } catch (error) {
         console.error('Session validation error:', error)

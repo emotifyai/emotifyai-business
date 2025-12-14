@@ -31,8 +31,8 @@ async function testDirectAPI() {
   console.log('=======================================');
   
   // Check if web server is running
-  const apiUrl =  'http://localhost:3001';
-  // for now we use 3001 
+  const apiUrl =  'http://localhost:3000';
+  // for now we use 3000 
   // const apiUrl = process.env.VITE_API_BASE_URL || 'http://localhost:3000';
   console.log(`🌐 API URL: ${apiUrl}`);
   

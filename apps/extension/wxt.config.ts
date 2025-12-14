@@ -28,6 +28,12 @@ export default defineConfig({
       'http://localhost/*',
       'https://emotifyai.com/*',
     ],
+    externally_connectable: {
+      matches: [
+        'http://localhost:3000/*',
+        'https://emotifyai.com/*',
+      ],
+    },
     icons: {
       16: '/icon/16.png',
       32: '/icon/32.png',

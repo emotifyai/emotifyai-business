@@ -2,12 +2,13 @@ import { apiGet } from './client';
 import { setSubscription, updateUsageStats } from '@/utils/storage';
 import { logger } from '@/utils/logger';
 import { SubscriptionError } from '@/utils/errors';
-import type { Subscription, UsageStats } from '@/types';
+import type { Subscription, UsageStats, SubscriptionTier, SubscriptionStatus } from '@/types';
 import { SubscriptionSchema, UsageStatsSchema } from '@/schemas/validation';
 
 export async function getSubscription(): Promise<Subscription> {
     try {
         const response = await apiGet<{ 
+            success: boolean;
             data: {
                 tier: string;
                 status: string;
@@ -16,7 +17,7 @@ export async function getSubscription(): Promise<Subscription> {
                 credits_reset_date?: string;
                 current_period_end?: string;
             }
-        }>('subscription');
+        }>('extension/subscription');
 
         // Map API response to extension Subscription format
         const subscription: Subscription = {

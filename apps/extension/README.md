@@ -82,7 +82,7 @@ Create a `.env` file in the extension directory:
 VITE_API_BASE_URL=http://localhost:3000/api
 VITE_MOCK_API_ENABLED=true
 VITE_OAUTH_CLIENT_ID=your_client_id
-VITE_WEB_APP_URL=http://localhost:3001
+VITE_WEB_APP_URL=http://localhost:3000
 VITE_EXTENSION_ID=your_extension_id
 VITE_LOG_LEVEL=debug
 ```

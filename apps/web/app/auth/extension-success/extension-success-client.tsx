@@ -11,25 +11,34 @@ export function ExtensionSuccessClient() {
         // Try to notify extension directly (production) and via postMessage (development fallback)
         const notifyExtension = async () => {
             try {
-                // Get current session data
+                // Get current session data with token
                 const response = await fetch('/api/auth/session')
                 if (response.ok) {
                     const data = await response.json()
-                    if (data.success && data.user) {
+                    if (data.valid && data.user) {
                         
                         // Method 1: Direct extension communication (production with fixed extension ID)
                         const productionExtensionId = process.env.NEXT_PUBLIC_EXTENSION_ID
                         if (productionExtensionId && (window as any).chrome?.runtime) {
                             try {
-                                await new Promise((resolve, reject) => {
+                                console.log('🔄 Attempting to notify extension:', productionExtensionId)
+                                const response = await new Promise((resolve, reject) => {
+                                    const timeout: ReturnType<typeof setTimeout> = setTimeout(() => {
+                                        reject(new Error('Extension communication timeout'))
+                                    }, 5000)
+
                                     (window as any).chrome.runtime.sendMessage(
                                         productionExtensionId,
                                         {
                                             type: 'EMOTIFYAI_AUTH_SUCCESS',
-                                            user: data.user,
+                                            payload: {
+                                                user: data.user,
+                                                token: data.token
+                                            },
                                             source: 'web_app'
                                         },
                                         (response: any) => {
+                                            clearTimeout(timeout)
                                             if ((window as any).chrome.runtime.lastError) {
                                                 reject((window as any).chrome.runtime.lastError)
                                             } else {
@@ -38,7 +47,7 @@ export function ExtensionSuccessClient() {
                                         }
                                     )
                                 })
-                                console.log('✅ Extension notified directly')
+                                console.log('✅ Extension notified directly:', response)
                                 setNotificationSent(true)
                                 return // Success, no need for fallback
                             } catch (error) {
@@ -49,7 +58,10 @@ export function ExtensionSuccessClient() {
                         // Method 2: PostMessage fallback (development)
                         window.postMessage({
                             type: 'EMOTIFYAI_AUTH_SUCCESS',
-                            user: data.user,
+                            payload: {
+                                user: data.user,
+                                token: data.token
+                            },
                             source: 'web_app'
                         }, '*')
                         console.log('📡 Fallback notification sent via postMessage')

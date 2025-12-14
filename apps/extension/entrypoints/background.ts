@@ -8,6 +8,9 @@ import {browser} from "wxt/browser";
 
 export default defineBackground(() => {
   logger.info('Background script initialized');
+  
+  // Log extension ID for debugging
+  logger.info('Extension ID:', browser.runtime.id);
 
   // Create context menu on installation
   browser.runtime.onInstalled.addListener(async () => {
@@ -32,6 +35,32 @@ export default defineBackground(() => {
       .then(sendResponse)
       .catch((error) => {
         logger.error('Message handling failed', error);
+        sendResponse({ success: false, error: error.message });
+      });
+    return true; // Keep channel open for async response
+  });
+
+  // Handle external messages from web app
+  browser.runtime.onMessageExternal.addListener((message, sender, sendResponse) => {
+    logger.info('Received external message', { message, sender: sender.url });
+    
+    // Only accept messages from allowed origins
+    const allowedOrigins = [
+      'http://localhost:3000',
+      'https://emotifyai.com'
+    ];
+    
+    const senderOrigin = sender.url ? new URL(sender.url).origin : '';
+    if (!allowedOrigins.includes(senderOrigin)) {
+      logger.warn('Rejected message from unauthorized origin', { origin: senderOrigin });
+      sendResponse({ success: false, error: 'Unauthorized origin' });
+      return;
+    }
+
+    handleMessage(message, sender)
+      .then(sendResponse)
+      .catch((error) => {
+        logger.error('External message handling failed', error);
         sendResponse({ success: false, error: error.message });
       });
     return true; // Keep channel open for async response
@@ -136,24 +165,24 @@ async function handleMessage(message: any, sender: any): Promise<any> {
       try {
         logger.info('Received auth success notification from web app', { user: payload?.user });
         
-        // The web app has authenticated the user, but we still need to validate
-        // and get the proper auth token through our API
-        const { validateSession } = await import('@/services/api/auth');
-        const { setUserProfile } = await import('@/utils/storage');
-        
-        const session = await validateSession();
-        if (session.valid && session.user) {
-          await setUserProfile(session.user);
-          logger.info('Extension authentication updated from web app notification');
-          
-          // Update context menu state
-          await updateContextMenuState(true);
-          
-          return { success: true, message: 'Authentication updated' };
-        } else {
-          logger.warn('Web app auth notification received but session validation failed');
-          return { success: false, error: 'Session validation failed' };
+        if (!payload?.user || !payload?.token) {
+          logger.error('Missing user data or token in auth success message');
+          return { success: false, error: 'Missing user data or token' };
         }
+
+        // Import storage utilities
+        const { setUserProfile, setAuthToken } = await import('@/utils/storage');
+        
+        // Store the user profile and real Supabase token from the web app
+        await setUserProfile(payload.user);
+        await setAuthToken(payload.token);
+        
+        logger.info('Extension authentication updated from web app notification');
+        
+        // Update context menu state
+        await updateContextMenuState(true);
+        
+        return { success: true, message: 'Authentication updated' };
       } catch (error: any) {
         logger.error('Failed to handle auth success notification', error);
         return { success: false, error: error.message };
