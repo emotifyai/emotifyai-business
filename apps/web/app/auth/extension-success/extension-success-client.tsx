@@ -11,17 +11,31 @@ export function ExtensionSuccessClient() {
         // Try to notify extension directly (production) and via postMessage (development fallback)
         const notifyExtension = async () => {
             try {
+                console.log('🦆 DUCK: Starting extension notification process')
+                
                 // Get current session data with token
+                console.log('🦆 DUCK: Fetching session data from /api/auth/session')
                 const response = await fetch('/api/auth/session')
+                console.log('🦆 DUCK: Session response status:', response.status)
+                
                 if (response.ok) {
                     const data = await response.json()
+                    console.log('🦆 DUCK: Session data received:', data)
+                    
                     if (data.valid && data.user) {
+                        console.log('🦆 DUCK: Valid session found, user:', data.user)
+                        console.log('🦆 DUCK: Token available:', !!data.token)
                         
                         // Method 1: Direct extension communication (production with fixed extension ID)
                         const productionExtensionId = process.env.NEXT_PUBLIC_EXTENSION_ID
+                        console.log('🦆 DUCK: Extension ID from env:', productionExtensionId)
+                        console.log('🦆 DUCK: Chrome runtime available:', !!(window as any).chrome?.runtime)
+                        
                         if (productionExtensionId && (window as any).chrome?.runtime) {
                             try {
-                                console.log('🔄 Attempting to notify extension:', productionExtensionId)
+                                console.log('🦆 DUCK: Attempting direct extension communication to:', productionExtensionId)
+                                console.log('🦆 DUCK: Sending message with user:', data.user)
+                                console.log('🦆 DUCK: Sending message with token:', data.token ? 'YES' : 'NO')
                                 const response = await new Promise((resolve, reject) => {
                                     const timeout: ReturnType<typeof setTimeout> = setTimeout(() => {
                                         reject(new Error('Extension communication timeout'))
@@ -47,29 +61,36 @@ export function ExtensionSuccessClient() {
                                         }
                                     )
                                 })
-                                console.log('✅ Extension notified directly:', response)
+                                console.log('🦆 DUCK: ✅ Extension notified directly, response:', response)
                                 setNotificationSent(true)
                                 return // Success, no need for fallback
                             } catch (error) {
-                                console.log('❌ Direct extension communication failed:', error)
+                                console.log('🦆 DUCK: ❌ Direct extension communication failed:', error)
                             }
                         }
 
                         // Method 2: PostMessage fallback (development)
-                        window.postMessage({
+                        console.log('🦆 DUCK: Using postMessage fallback')
+                        const fallbackMessage = {
                             type: 'EMOTIFYAI_AUTH_SUCCESS',
                             payload: {
                                 user: data.user,
                                 token: data.token
                             },
                             source: 'web_app'
-                        }, '*')
-                        console.log('📡 Fallback notification sent via postMessage')
+                        }
+                        console.log('🦆 DUCK: Sending fallback message:', fallbackMessage)
+                        window.postMessage(fallbackMessage, '*')
+                        console.log('🦆 DUCK: 📡 Fallback notification sent via postMessage')
                         setNotificationSent(true)
+                    } else {
+                        console.log('🦆 DUCK: ❌ Invalid session data:', data)
                     }
+                } else {
+                    console.log('🦆 DUCK: ❌ Session fetch failed, status:', response.status)
                 }
             } catch (error) {
-                console.log('Could not notify extension:', error)
+                console.log('🦆 DUCK: ❌ Extension notification error:', error)
             }
         }
 

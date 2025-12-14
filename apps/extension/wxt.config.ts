@@ -7,6 +7,9 @@ export default defineConfig({
   modules: ['@wxt-dev/module-react'],
   vite: (): UserConfig => ({
     plugins: [tailwindcss()],
+    server: {
+      port: 4250,
+    },
     build: {
       // Increase chunk size warning limit for extension context
       // Extensions don't have the same performance constraints as websites

@@ -18,16 +18,24 @@ const createAPIClient = (): KyInstance => {
         hooks: {
             beforeRequest: [
                 async (request) => {
+                    console.log('🦆 DUCK: Making API request to:', request.url);
+                    
                     // Add auth token if available
                     const token = await getAuthToken();
+                    console.log('🦆 DUCK: Auth token available:', !!token);
+                    console.log('🦆 DUCK: Auth token (first 20 chars):', token ? token.substring(0, 20) + '...' : 'none');
+                    
                     if (token) {
                         request.headers.set('Authorization', `Bearer ${token}`);
+                        console.log('🦆 DUCK: Authorization header set');
                     }
 
                     // Add extension ID for backend verification
                     const extensionId = import.meta.env.VITE_EXTENSION_ID;
+                    console.log('🦆 DUCK: Extension ID:', extensionId);
                     if (extensionId) {
                         request.headers.set('X-Extension-ID', extensionId);
+                        console.log('🦆 DUCK: X-Extension-ID header set');
                     }
 
                     logger.debug(`API Request: ${request.method} ${request.url}`);

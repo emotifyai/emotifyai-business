@@ -7,6 +7,7 @@ import { SubscriptionSchema, UsageStatsSchema } from '@/schemas/validation';
 
 export async function getSubscription(): Promise<Subscription> {
     try {
+        console.log('🦆 DUCK: Extension calling subscription API');
         const response = await apiGet<{ 
             success: boolean;
             data: {
@@ -18,6 +19,7 @@ export async function getSubscription(): Promise<Subscription> {
                 current_period_end?: string;
             }
         }>('extension/subscription');
+        console.log('🦆 DUCK: Subscription API response:', response);
 
         // Map API response to extension Subscription format
         const subscription: Subscription = {

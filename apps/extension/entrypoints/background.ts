@@ -42,20 +42,29 @@ export default defineBackground(() => {
 
   // Handle external messages from web app
   browser.runtime.onMessageExternal.addListener((message, sender, sendResponse) => {
+    console.log('🦆 DUCK: External message received in background script');
+    console.log('🦆 DUCK: Message:', message);
+    console.log('🦆 DUCK: Sender URL:', sender.url);
     logger.info('Received external message', { message, sender: sender.url });
     
     // Only accept messages from allowed origins
     const allowedOrigins = [
-      'http://localhost:3000',
+      'http://localhost:3001',
       'https://emotifyai.com'
     ];
     
     const senderOrigin = sender.url ? new URL(sender.url).origin : '';
+    console.log('🦆 DUCK: Sender origin:', senderOrigin);
+    console.log('🦆 DUCK: Allowed origins:', allowedOrigins);
+    
     if (!allowedOrigins.includes(senderOrigin)) {
+      console.log('🦆 DUCK: ❌ Rejected message from unauthorized origin');
       logger.warn('Rejected message from unauthorized origin', { origin: senderOrigin });
       sendResponse({ success: false, error: 'Unauthorized origin' });
       return;
     }
+    
+    console.log('🦆 DUCK: ✅ Origin authorized, processing message');
 
     handleMessage(message, sender)
       .then(sendResponse)
@@ -163,27 +172,38 @@ async function handleMessage(message: any, sender: any): Promise<any> {
     case 'EMOTIFYAI_AUTH_SUCCESS': {
       // Handle authentication success from web app
       try {
+        console.log('🦆 DUCK: Processing EMOTIFYAI_AUTH_SUCCESS message');
+        console.log('🦆 DUCK: Payload received:', payload);
+        console.log('🦆 DUCK: User data:', payload?.user);
+        console.log('🦆 DUCK: Token present:', !!payload?.token);
         logger.info('Received auth success notification from web app', { user: payload?.user });
         
         if (!payload?.user || !payload?.token) {
+          console.log('🦆 DUCK: ❌ Missing user data or token');
           logger.error('Missing user data or token in auth success message');
           return { success: false, error: 'Missing user data or token' };
         }
 
+        console.log('🦆 DUCK: Importing storage utilities');
         // Import storage utilities
         const { setUserProfile, setAuthToken } = await import('@/utils/storage');
         
+        console.log('🦆 DUCK: Storing user profile and token');
         // Store the user profile and real Supabase token from the web app
         await setUserProfile(payload.user);
         await setAuthToken(payload.token);
         
+        console.log('🦆 DUCK: ✅ Authentication data stored successfully');
         logger.info('Extension authentication updated from web app notification');
         
         // Update context menu state
+        console.log('🦆 DUCK: Updating context menu state');
         await updateContextMenuState(true);
         
+        console.log('🦆 DUCK: ✅ Auth success handling complete');
         return { success: true, message: 'Authentication updated' };
       } catch (error: any) {
+        console.log('🦆 DUCK: ❌ Error handling auth success:', error);
         logger.error('Failed to handle auth success notification', error);
         return { success: false, error: error.message };
       }
