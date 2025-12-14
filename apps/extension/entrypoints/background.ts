@@ -49,7 +49,7 @@ export default defineBackground(() => {
     
     // Only accept messages from allowed origins
     const allowedOrigins = [
-      'http://localhost:3001',
+      'http://localhost:3000',
       'https://emotifyai.com'
     ];
     
