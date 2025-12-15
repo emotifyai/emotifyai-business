@@ -18,7 +18,7 @@ export async function updateSession(request: NextRequest) {
                 getAll() {
                     return request.cookies.getAll()
                 },
-                setAll(cookiesToSet) {
+                setAll(cookiesToSet: Array<{ name: string; value: string; options?: any }>) {
                     cookiesToSet.forEach(({ name, value, options }) => {
                         request.cookies.set(name, value)
                     })
@@ -64,7 +64,19 @@ export async function updateSession(request: NextRequest) {
     // Redirect authenticated users away from auth pages
     if (isAuthPath && user) {
         const url = request.nextUrl.clone()
-        url.pathname = '/dashboard'
+        
+        // Special handling for extension signup flow
+        if (request.nextUrl.searchParams.get('source') === 'extension') {
+            url.pathname = '/auth/extension-success'
+            // Preserve the redirect_to parameter if it exists
+            const redirectTo = request.nextUrl.searchParams.get('redirect_to')
+            if (redirectTo) {
+                url.searchParams.set('redirect_to', redirectTo)
+            }
+        } else {
+            url.pathname = '/dashboard'
+        }
+        
         return NextResponse.redirect(url)
     }
 

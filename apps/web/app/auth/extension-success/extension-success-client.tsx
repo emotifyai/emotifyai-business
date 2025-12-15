@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react'
 export function ExtensionSuccessClient() {
     const [countdown, setCountdown] = useState(30)
     const [notificationSent, setNotificationSent] = useState(false)
+    const [showCloseInstructions, setShowCloseInstructions] = useState(false)
 
     useEffect(() => {
         // Try to notify extension directly (production) and via postMessage (development fallback)
@@ -30,12 +31,21 @@ export function ExtensionSuccessClient() {
                         const productionExtensionId = process.env.NEXT_PUBLIC_EXTENSION_ID
                         console.log('🦆 DUCK: Extension ID from env:', productionExtensionId)
                         console.log('🦆 DUCK: Chrome runtime available:', !!(window as any).chrome?.runtime)
+                        console.log('🦆 DUCK: Chrome runtime sendMessage available:', !!(window as any).chrome?.runtime?.sendMessage)
                         
                         if (productionExtensionId && (window as any).chrome?.runtime) {
                             try {
                                 console.log('🦆 DUCK: Attempting direct extension communication to:', productionExtensionId)
                                 console.log('🦆 DUCK: Sending message with user:', data.user)
                                 console.log('🦆 DUCK: Sending message with token:', data.token ? 'YES' : 'NO')
+                                console.log('🦆 DUCK: Message payload:', {
+                                    type: 'EMOTIFYAI_AUTH_SUCCESS',
+                                    payload: {
+                                        user: data.user,
+                                        token: data.token
+                                    },
+                                    source: 'web_app'
+                                })
                                 const response = await new Promise((resolve, reject) => {
                                     const timeout: ReturnType<typeof setTimeout> = setTimeout(() => {
                                         reject(new Error('Extension communication timeout'))
@@ -66,6 +76,9 @@ export function ExtensionSuccessClient() {
                                 return // Success, no need for fallback
                             } catch (error) {
                                 console.log('🦆 DUCK: ❌ Direct extension communication failed:', error)
+                                console.log('🦆 DUCK: Error type:', typeof error)
+                                console.log('🦆 DUCK: Error message:', error instanceof Error ? error.message : String(error))
+                                console.log('🦆 DUCK: Chrome runtime lastError:', (window as any).chrome?.runtime?.lastError)
                             }
                         }
 
@@ -80,8 +93,17 @@ export function ExtensionSuccessClient() {
                             source: 'web_app'
                         }
                         console.log('🦆 DUCK: Sending fallback message:', fallbackMessage)
+                        
+                        // Try both postMessage and direct window communication
                         window.postMessage(fallbackMessage, '*')
-                        console.log('🦆 DUCK: 📡 Fallback notification sent via postMessage')
+                        
+                        // Also try dispatching a custom event
+                        const customEvent = new CustomEvent('emotifyai-auth-success', {
+                            detail: fallbackMessage
+                        })
+                        window.dispatchEvent(customEvent)
+                        
+                        console.log('🦆 DUCK: 📡 Fallback notification sent via postMessage and custom event')
                         setNotificationSent(true)
                     } else {
                         console.log('🦆 DUCK: ❌ Invalid session data:', data)
@@ -96,10 +118,11 @@ export function ExtensionSuccessClient() {
 
         notifyExtension()
 
+        // Only run countdown timer, don't try to auto-close
         const timer = setInterval(() => {
             setCountdown((prev) => {
                 if (prev <= 1) {
-                    window.close()
+                    // Don't auto-close, just stop the countdown
                     return 0
                 }
                 return prev - 1
@@ -110,7 +133,13 @@ export function ExtensionSuccessClient() {
     }, [])
 
     const handleClose = () => {
-        window.close()
+        // Try to close the window
+        const closed = window.close()
+        
+        // If window.close() returns undefined or doesn't work, show instructions
+        setTimeout(() => {
+            setShowCloseInstructions(true)
+        }, 500)
     }
 
     const handleOpenDashboard = () => {
@@ -194,10 +223,23 @@ export function ExtensionSuccessClient() {
                     </button>
                 </div>
 
-                {/* Auto-close notice */}
-                <p className="text-xs text-gray-400 mt-4">
-                    This tab will close automatically in {countdown} seconds
-                </p>
+                {/* Close instructions or countdown */}
+                {showCloseInstructions ? (
+                    <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 mt-4">
+                        <p className="text-sm text-yellow-800">
+                            <strong>To close this tab:</strong><br />
+                            Press <kbd className="px-1 py-0.5 bg-yellow-100 rounded text-xs">Ctrl+W</kbd> (Windows/Linux) or <kbd className="px-1 py-0.5 bg-yellow-100 rounded text-xs">Cmd+W</kbd> (Mac)
+                        </p>
+                    </div>
+                ) : countdown > 0 ? (
+                    <p className="text-xs text-gray-400 mt-4">
+                        Auto-close countdown: {countdown} seconds
+                    </p>
+                ) : (
+                    <p className="text-xs text-gray-400 mt-4">
+                        You can now close this tab manually
+                    </p>
+                )}
             </div>
         </div>
     )

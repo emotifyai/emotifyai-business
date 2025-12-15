@@ -15,15 +15,31 @@ export async function GET(request: NextRequest) {
         
         const supabase = await createClient()
 
-        const { data: { user, session }, error } = await supabase.auth.getUser()
-        console.log('🦆 DUCK: Supabase getUser result - user:', !!user, 'session:', !!session, 'error:', error)
+        // Get user first
+        const { data: { user }, error: userError } = await supabase.auth.getUser()
+        console.log('🦆 DUCK: Supabase getUser result - user:', !!user, 'error:', userError)
         
-        if (error) {
-            console.log('🦆 DUCK: Supabase error details:', error)
+        if (userError || !user) {
+            console.log('🦆 DUCK: User validation failed:', userError)
+            return NextResponse.json({
+                valid: false,
+            })
         }
 
-        if (error || !user || !session) {
-            console.log('🦆 DUCK: Session validation failed - returning invalid')
+        // Get session to access the token
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession()
+        console.log('🦆 DUCK: Supabase getSession result - session:', !!session, 'error:', sessionError)
+        
+        if (sessionError) {
+            console.log('🦆 DUCK: Session error details:', sessionError)
+        }
+        
+        if (session) {
+            console.log('🦆 DUCK: Session details - access_token:', !!session.access_token, 'expires_at:', session.expires_at, 'user_id:', session.user?.id)
+        }
+        
+        if (sessionError || !session) {
+            console.log('🦆 DUCK: Session validation failed:', sessionError)
             return NextResponse.json({
                 valid: false,
             })

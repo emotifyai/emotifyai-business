@@ -4,6 +4,7 @@ import { createRoot } from 'react-dom/client';
 import UIOverlay from './content/ui-overlay';
 import EnhancementPopup from './content/enhancement-popup';
 import type { Root } from 'react-dom/client';
+import { browser } from 'wxt/browser';
 
 // ============================================================================
 // Types
@@ -518,6 +519,19 @@ class WindowMessageHandler {
           this.enhancementPopupManager.hidePopup();
         }
         break;
+
+      case 'EMOTIFYAI_AUTH_SUCCESS':
+        console.log('🦆 DUCK: Content script received auth success message');
+        console.log('🦆 DUCK: Payload:', event.data.payload);
+        // Forward the auth success message to the background script
+        browser.runtime.sendMessage({
+          type: 'EMOTIFYAI_AUTH_SUCCESS',
+          payload: event.data.payload,
+          source: 'content_script'
+        }).catch(error => {
+          console.log('🦆 DUCK: Failed to forward auth message to background:', error);
+        });
+        break;
     }
   }
 }
@@ -620,6 +634,20 @@ export default defineContentScript({
 
     window.addEventListener('message', (event: MessageEvent<WindowMessage>) => {
       windowMessageHandler.handle(event);
+    });
+
+    // Also listen for custom events as a fallback
+    window.addEventListener('emotifyai-auth-success', (event: CustomEvent) => {
+      console.log('🦆 DUCK: Content script received custom auth success event');
+      console.log('🦆 DUCK: Event detail:', event.detail);
+      // Forward to background script
+      browser.runtime.sendMessage({
+        type: 'EMOTIFYAI_AUTH_SUCCESS',
+        payload: event.detail.payload,
+        source: 'content_script_custom_event'
+      }).catch(error => {
+        console.log('🦆 DUCK: Failed to forward custom event auth message:', error);
+      });
     });
 
     document.addEventListener('keydown', (event: KeyboardEvent) => {
