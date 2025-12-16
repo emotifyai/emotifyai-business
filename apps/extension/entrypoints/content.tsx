@@ -440,17 +440,37 @@ class TextReplacementManager {
   }
 
   replace(originalText: string, enhancedText: string): boolean {
-    const range = this.selectionManager.getRange();
+    console.log('🦆 DUCK: TextReplacementManager.replace called');
+    console.log('🦆 DUCK: Original text:', originalText.substring(0, 50) + '...');
+    console.log('🦆 DUCK: Enhanced text:', enhancedText.substring(0, 50) + '...');
+    
+    // Try to get current selection first
+    let range = this.selectionManager.getRange();
+    console.log('🦆 DUCK: Current selection range:', !!range);
+    
+    // If no current selection, try to find the text in the DOM
     if (!range) {
-      logger.warn('No selection found');
-      return false;
+      console.log('🦆 DUCK: No current selection, searching for text in DOM');
+      range = this.findTextInDOM(originalText);
+      if (!range) {
+        logger.warn('Could not find text in DOM');
+        this.messageSender.showError('Could not locate the text to replace. Please try selecting the text again.');
+        return false;
+      }
+      console.log('🦆 DUCK: ✅ Found text in DOM');
     }
 
-    // Verify selection matches
-    if (!this.selectionManager.validateSelection(originalText)) {
-      logger.warn('Selected text does not match original text');
-      this.messageSender.showError('Selection changed. Please try again.');
-      return false;
+    // Verify selection matches (if we have a current selection)
+    const currentSelection = this.selectionManager.getSelectedText();
+    if (currentSelection && currentSelection !== originalText) {
+      console.log('🦆 DUCK: Current selection does not match original text');
+      // Try to find the text in DOM as fallback
+      range = this.findTextInDOM(originalText);
+      if (!range) {
+        logger.warn('Selected text does not match original text and could not find in DOM');
+        this.messageSender.showError('Selection changed. Please try again.');
+        return false;
+      }
     }
 
     // Save to undo stack
@@ -466,6 +486,192 @@ class TextReplacementManager {
     return true;
   }
 
+  private findTextInDOM(text: string): Range | null {
+    console.log('🦆 DUCK: Searching for text in DOM:', text.substring(0, 30) + '...');
+    
+    // First try simple search in text nodes
+    const simpleRange = this.findTextInTextNodes(text);
+    if (simpleRange) {
+      console.log('🦆 DUCK: ✅ Found text in single text node');
+      return simpleRange;
+    }
+
+    // If not found, try more advanced search across multiple nodes
+    console.log('🦆 DUCK: Trying advanced search across multiple nodes');
+    const advancedRange = this.findTextAcrossNodes(text);
+    if (advancedRange) {
+      console.log('🦆 DUCK: ✅ Found text across multiple nodes');
+      return advancedRange;
+    }
+
+    // Last resort: try fuzzy matching (allowing for slight differences)
+    console.log('🦆 DUCK: Trying fuzzy text matching');
+    const fuzzyRange = this.findTextFuzzy(text);
+    if (fuzzyRange) {
+      console.log('🦆 DUCK: ✅ Found text with fuzzy matching');
+      return fuzzyRange;
+    }
+
+    // Final fallback: search in input fields and textareas
+    console.log('🦆 DUCK: Trying search in input fields');
+    const inputRange = this.findTextInInputs(text);
+    if (inputRange) {
+      console.log('🦆 DUCK: ✅ Found text in input field');
+      return inputRange;
+    }
+
+    console.log('🦆 DUCK: ❌ Text not found in DOM with any method');
+    return null;
+  }
+
+  private findTextInTextNodes(text: string): Range | null {
+    const walker = document.createTreeWalker(
+      document.body,
+      NodeFilter.SHOW_TEXT,
+      null
+    );
+
+    let node: Node | null;
+    while (node = walker.nextNode()) {
+      const textContent = node.textContent || '';
+      const index = textContent.indexOf(text);
+      
+      if (index !== -1) {
+        const range = document.createRange();
+        range.setStart(node, index);
+        range.setEnd(node, index + text.length);
+        return range;
+      }
+    }
+    return null;
+  }
+
+  private findTextAcrossNodes(text: string): Range | null {
+    // Get all text content and build a map of positions to nodes
+    const walker = document.createTreeWalker(
+      document.body,
+      NodeFilter.SHOW_TEXT,
+      null
+    );
+
+    const textNodes: { node: Node; text: string; start: number }[] = [];
+    let totalText = '';
+    let node: Node | null;
+
+    while (node = walker.nextNode()) {
+      const nodeText = node.textContent || '';
+      if (nodeText.trim()) {
+        textNodes.push({
+          node,
+          text: nodeText,
+          start: totalText.length
+        });
+        totalText += nodeText;
+      }
+    }
+
+    const index = totalText.indexOf(text);
+    if (index === -1) return null;
+
+    // Find which nodes contain the start and end of our text
+    const startPos = index;
+    const endPos = index + text.length;
+
+    let startNode: Node | null = null;
+    let startOffset = 0;
+    let endNode: Node | null = null;
+    let endOffset = 0;
+
+    for (const textNode of textNodes) {
+      const nodeEnd = textNode.start + textNode.text.length;
+      
+      if (startNode === null && startPos >= textNode.start && startPos < nodeEnd) {
+        startNode = textNode.node;
+        startOffset = startPos - textNode.start;
+      }
+      
+      if (endPos >= textNode.start && endPos <= nodeEnd) {
+        endNode = textNode.node;
+        endOffset = endPos - textNode.start;
+        break;
+      }
+    }
+
+    if (startNode && endNode) {
+      const range = document.createRange();
+      range.setStart(startNode, startOffset);
+      range.setEnd(endNode, endOffset);
+      return range;
+    }
+
+    return null;
+  }
+
+  private findTextFuzzy(text: string): Range | null {
+    // Try to find text with normalized whitespace
+    const normalizedText = text.replace(/\s+/g, ' ').trim();
+    
+    const walker = document.createTreeWalker(
+      document.body,
+      NodeFilter.SHOW_TEXT,
+      null
+    );
+
+    let node: Node | null;
+    while (node = walker.nextNode()) {
+      const textContent = (node.textContent || '').replace(/\s+/g, ' ').trim();
+      const index = textContent.indexOf(normalizedText);
+      
+      if (index !== -1) {
+        // Try to map back to original text positions
+        const range = document.createRange();
+        range.setStart(node, 0);
+        range.setEnd(node, node.textContent?.length || 0);
+        return range;
+      }
+    }
+    return null;
+  }
+
+  private findTextInInputs(text: string): Range | null {
+    // Search in input fields and textareas
+    const inputs = document.querySelectorAll('input[type="text"], input[type="search"], textarea, [contenteditable="true"]');
+    
+    for (const input of inputs) {
+      const element = input as HTMLInputElement | HTMLTextAreaElement | HTMLElement;
+      let value = '';
+      
+      if (element instanceof HTMLInputElement || element instanceof HTMLTextAreaElement) {
+        value = element.value;
+      } else {
+        value = element.textContent || element.innerText || '';
+      }
+      
+      if (value.includes(text)) {
+        console.log('🦆 DUCK: Found text in input element:', element);
+        
+        // For input fields, we need to handle replacement differently
+        // Create a range that covers the input element
+        const range = document.createRange();
+        
+        if (element.firstChild) {
+          range.setStart(element.firstChild, 0);
+          range.setEnd(element.firstChild, element.firstChild.textContent?.length || 0);
+        } else {
+          range.selectNode(element);
+        }
+        
+        // Store reference to the input element for special handling
+        (range as any)._inputElement = element;
+        (range as any)._inputText = text;
+        
+        return range;
+      }
+    }
+    
+    return null;
+  }
+
   private saveToUndoStack(range: Range, text: string): void {
     this.undoStack.push({
       node: range.startContainer,
@@ -475,13 +681,53 @@ class TextReplacementManager {
   }
 
   private performReplacement(range: Range, newText: string): void {
-    range.deleteContents();
-    const newTextNode = document.createTextNode(newText);
-    range.insertNode(newTextNode);
+    // Check if this is an input element (special handling needed)
+    const inputElement = (range as any)._inputElement;
+    const inputText = (range as any)._inputText;
+    
+    if (inputElement && inputText) {
+      console.log('🦆 DUCK: Performing replacement in input element');
+      
+      if (inputElement instanceof HTMLInputElement || inputElement instanceof HTMLTextAreaElement) {
+        // Handle input/textarea elements
+        const currentValue = inputElement.value;
+        const newValue = currentValue.replace(inputText, newText);
+        inputElement.value = newValue;
+        
+        // Focus and set cursor position
+        inputElement.focus();
+        const cursorPos = newValue.indexOf(newText) + newText.length;
+        inputElement.setSelectionRange(cursorPos, cursorPos);
+      } else {
+        // Handle contenteditable elements
+        const currentContent = inputElement.textContent || inputElement.innerText || '';
+        const newContent = currentContent.replace(inputText, newText);
+        inputElement.textContent = newContent;
+        
+        // Set cursor after the replaced text
+        const textNode = inputElement.firstChild;
+        if (textNode) {
+          const selection = window.getSelection();
+          const range = document.createRange();
+          const cursorPos = newContent.indexOf(newText) + newText.length;
+          range.setStart(textNode, Math.min(cursorPos, textNode.textContent?.length || 0));
+          range.collapse(true);
+          selection?.removeAllRanges();
+          selection?.addRange(range);
+        }
+        
+        inputElement.focus();
+      }
+    } else {
+      // Normal DOM text replacement
+      range.deleteContents();
+      const newTextNode = document.createTextNode(newText);
+      range.insertNode(newTextNode);
 
-    // Clear selection and place cursor
-    this.selectionManager.clearSelection();
-    this.selectionManager.setCaretAfter(newTextNode);
+      // Clear selection and place cursor
+      this.selectionManager.clearSelection();
+      this.selectionManager.setCaretAfter(newTextNode);
+    }
   }
 
   undo(): boolean {
@@ -585,12 +831,32 @@ class RuntimeMessageHandler {
     console.log('🦆 DUCK: Selection:', selection);
     console.log('🦆 DUCK: Selection range count:', selection?.rangeCount);
     
+    // Try to use current selection, but if not available, create a mock selection for positioning
     if (selection && selection.rangeCount > 0) {
       console.log('🦆 DUCK: ✅ Valid selection, showing popup');
       this.enhancementPopupManager.showPopup(payload.text, selection);
     } else {
-      console.log('🦆 DUCK: ❌ No valid selection');
-      this.messageSender.showError('Please select some text first');
+      console.log('🦆 DUCK: No current selection, but showing popup anyway (text was captured from context menu)');
+      // Create a mock selection for positioning - center of viewport
+      const mockSelection = {
+        toString: () => payload.text,
+        rangeCount: 1,
+        getRangeAt: () => {
+          const range = document.createRange();
+          // Position popup in center of viewport
+          const rect = {
+            left: window.innerWidth / 2 - 200,
+            top: window.innerHeight / 2 - 200,
+            width: 0,
+            height: 0,
+            bottom: window.innerHeight / 2 - 200
+          };
+          (range as any).getBoundingClientRect = () => rect;
+          return range;
+        }
+      } as unknown as Selection;
+      
+      this.enhancementPopupManager.showPopup(payload.text, mockSelection);
     }
   }
 
