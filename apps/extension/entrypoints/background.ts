@@ -187,13 +187,32 @@ async function handleMessage(message: any, sender: any): Promise<any> {
 
   switch (type) {
     case 'ENHANCE_TEXT': {
+      console.log('🦆 DUCK: ENHANCE_TEXT message received');
+      console.log('🦆 DUCK: Payload:', payload);
+      
       const { text, options } = payload as EnhanceTextMessage;
+      console.log('🦆 DUCK: Text to enhance:', text?.substring(0, 50) + '...');
+      console.log('🦆 DUCK: Options:', options);
+      
       try {
+        console.log('🦆 DUCK: Checking usage limits...');
         await checkLimit();
+        console.log('🦆 DUCK: ✅ Usage limit check passed');
+        
+        console.log('🦆 DUCK: Calling enhanceText API...');
         const result = await enhanceText(text, options);
+        console.log('🦆 DUCK: ✅ Enhancement API successful');
+        console.log('🦆 DUCK: Enhanced text:', result.enhancedText?.substring(0, 50) + '...');
+        
+        console.log('🦆 DUCK: Incrementing usage...');
         await incrementUsage();
+        console.log('🦆 DUCK: ✅ Usage incremented');
+        
         return { success: true, enhancedText: result.enhancedText } as EnhanceTextResponse;
       } catch (error: any) {
+        console.log('🦆 DUCK: ❌ Enhancement failed:', error);
+        console.log('🦆 DUCK: Error message:', error.message);
+        console.log('🦆 DUCK: Error stack:', error.stack);
         return { success: false, error: error.message } as EnhanceTextResponse;
       }
     }

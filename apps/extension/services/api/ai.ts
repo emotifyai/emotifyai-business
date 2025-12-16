@@ -10,6 +10,10 @@ export async function enhanceText(
     options: EnhanceOptions = {}
 ): Promise<RewriteResponse> {
     try {
+        console.log('🦆 DUCK: enhanceText called');
+        console.log('🦆 DUCK: Text:', text?.substring(0, 50) + '...');
+        console.log('🦆 DUCK: Options:', options);
+        
         logger.info('Enhancing text...', { textLength: text.length, options });
 
         // Track backend API performance
@@ -17,6 +21,16 @@ export async function enhanceText(
             textLength: text.length,
             language: options.language || 'auto',
         });
+
+        const requestData = {
+            text,
+            mode: 'enhance' as const,
+            language: options.language,
+            tone: options.tone || 'professional'
+        };
+        
+        console.log('🦆 DUCK: API request data:', requestData);
+        console.log('🦆 DUCK: Making POST request to /api/enhance');
 
         // Call the new API endpoint format
         const response = await apiPost<{
@@ -30,11 +44,9 @@ export async function enhanceText(
                 code: string;
                 message: string;
             };
-        }>('enhance', {
-            text,
-            language: options.language,
-            tone: options.tone || 'professional'
-        });
+        }>('enhance', requestData);
+        
+        console.log('🦆 DUCK: API response:', response);
 
         const backendDuration = performanceMonitor.end('backend-api-enhance');
 

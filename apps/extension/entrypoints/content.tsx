@@ -298,10 +298,13 @@ function EnhancementPopupComponent({ manager }: { manager: EnhancementPopupManag
   };
 
   const handleRetry = async (options: any) => {
+    console.log('🦆 DUCK: Enhancement retry called with options:', options);
+    console.log('🦆 DUCK: Original text:', state.originalText);
+    
     setState(prev => ({ ...prev, isLoading: true, error: undefined }));
     
     try {
-      const response = await browser.runtime.sendMessage({
+      const message = {
         type: 'ENHANCE_TEXT',
         payload: { 
           text: state.originalText, 
@@ -310,15 +313,23 @@ function EnhancementPopupComponent({ manager }: { manager: EnhancementPopupManag
             tone: options.tone
           }
         }
-      });
+      };
+      
+      console.log('🦆 DUCK: Sending message to background script:', message);
+      
+      const response = await browser.runtime.sendMessage(message);
+      
+      console.log('🦆 DUCK: Background script response:', response);
 
       if (response.success) {
+        console.log('🦆 DUCK: ✅ Enhancement successful');
         setState(prev => ({ 
           ...prev, 
           enhancedText: response.enhancedText, 
           isLoading: false 
         }));
       } else {
+        console.log('🦆 DUCK: ❌ Enhancement failed:', response.error);
         setState(prev => ({ 
           ...prev, 
           error: response.error || 'Enhancement failed', 
@@ -326,6 +337,7 @@ function EnhancementPopupComponent({ manager }: { manager: EnhancementPopupManag
         }));
       }
     } catch (error: any) {
+      console.log('🦆 DUCK: ❌ Enhancement error:', error);
       setState(prev => ({ 
         ...prev, 
         error: error.message || 'Enhancement failed', 
