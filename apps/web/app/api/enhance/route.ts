@@ -84,11 +84,54 @@ export async function POST(request: NextRequest) {
         console.log('🦆 DUCK: Usage limit check result:', canEnhance);
         
         if (!canEnhance.allowed) {
-            console.log('🦆 DUCK: ❌ Usage limit exceeded');
-            return createErrorResponse({
-                code: ApiErrorCode.USAGE_LIMIT_EXCEEDED,
-                message: 'Usage limit exceeded'
-            }, 403)
+            // If the reason is expired subscription, try to create a new free trial
+            if (canEnhance.reason === 'SUBSCRIPTION_EXPIRED' || canEnhance.reason === 'NO_SUBSCRIPTION') {
+                console.log('🦆 DUCK: Subscription expired/missing, creating new free trial...');
+                
+                try {
+                    // Create a new free trial subscription
+                    const now = new Date()
+                    const freeEnd = new Date(now.getTime() + 10 * 24 * 60 * 60 * 1000) // 10 days
+                    // @ts-ignore
+                    const { error: createError } = await supabase
+                        .from('subscriptions')
+                        .insert({
+                            user_id: user.id,
+                            lemon_squeezy_id: `free_${user.id}_${Date.now()}`, // Make it unique
+                            status: 'trial',
+                            tier: 'trial',
+                            tier_name: 'free',
+                            credits_limit: 10,
+                            credits_used: 0,
+                            validity_days: 10,
+                            current_period_start: now.toISOString(),
+                            current_period_end: freeEnd.toISOString(),
+                        })
+                    
+                    if (createError) {
+                        console.error('🦆 DUCK: Error creating new free trial:', createError)
+                        return createErrorResponse({
+                            code: ApiErrorCode.USAGE_LIMIT_EXCEEDED,
+                            message: 'Unable to create free trial'
+                        }, 403)
+                    }
+                    
+                    console.log('🦆 DUCK: ✅ New free trial created successfully')
+                    // Continue with the enhancement since we just created a fresh trial
+                } catch (error) {
+                    console.error('🦆 DUCK: Error in free trial creation:', error)
+                    return createErrorResponse({
+                        code: ApiErrorCode.USAGE_LIMIT_EXCEEDED,
+                        message: 'Usage limit exceeded'
+                    }, 403)
+                }
+            } else {
+                console.log('🦆 DUCK: ❌ Usage limit exceeded');
+                return createErrorResponse({
+                    code: ApiErrorCode.USAGE_LIMIT_EXCEEDED,
+                    message: 'Usage limit exceeded'
+                }, 403)
+            }
         }
 
         console.log('🦆 DUCK: ✅ Usage limit check passed');
@@ -112,6 +155,20 @@ export async function POST(request: NextRequest) {
         }
 
         console.log('🦆 DUCK: ✅ Quality check passed');
+
+        console.log('🦆 DUCK: Consuming credits...');
+        
+        // Use database function to consume credits
+        const { data: creditConsumed, error: consumeError } = await (supabase as any)
+            .rpc('consume_credits', { user_uuid: user.id, credits_to_consume: 1 })
+            .single()
+        
+        if (consumeError || !creditConsumed) {
+            console.log('🦆 DUCK: ⚠️ Failed to consume credits:', consumeError?.message || 'Unknown error')
+            // Continue anyway - we don't want to fail the request if credit consumption fails
+        } else {
+            console.log('🦆 DUCK: ✅ Credits consumed successfully')
+        }
 
         console.log('🦆 DUCK: Logging usage to database...');
         
