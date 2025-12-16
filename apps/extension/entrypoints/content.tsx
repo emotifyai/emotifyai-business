@@ -91,12 +91,14 @@ class EnhancementPopupManager {
   initialize(): void {
     if (this.container) return;
 
+    console.log('🦆 DUCK: Initializing EnhancementPopupManager');
     this.container = document.createElement('div');
     this.container.id = 'emotifyai-popup-root';
     document.body.appendChild(this.container);
 
     this.root = createRoot(this.container);
     this.renderPopup();
+    console.log('🦆 DUCK: EnhancementPopupManager initialized');
   }
 
   private renderPopup(): void {
@@ -114,13 +116,29 @@ class EnhancementPopupManager {
     console.log('🦆 DUCK: Text:', text.substring(0, 50) + '...');
     console.log('🦆 DUCK: Selection:', selection);
     
-    this.initialize();
-    console.log('🦆 DUCK: Popup initialized, sending window message');
+    // Don't initialize here - should already be initialized
+    console.log('🦆 DUCK: Popup should already be initialized, sending window message');
+    
+    // Extract serializable data from selection
+    const range = selection.getRangeAt(0);
+    const rect = range.getBoundingClientRect();
+    const selectionData = {
+      text: selection.toString(),
+      rangeCount: selection.rangeCount,
+      position: {
+        x: rect.left + window.scrollX,
+        y: rect.top + window.scrollY,
+        width: rect.width,
+        height: rect.height
+      }
+    };
+    
+    console.log('🦆 DUCK: Selection data prepared:', selectionData);
     
     // Trigger popup show via state management
     window.postMessage({
       type: 'EMOTIFYAI_SHOW_POPUP',
-      payload: { text, selection }
+      payload: { text, selection: selectionData }
     }, '*');
     
     console.log('🦆 DUCK: Window message sent');
@@ -135,6 +153,8 @@ class EnhancementPopupManager {
 
 // Enhancement Popup Component with hooks
 function EnhancementPopupComponent({ manager }: { manager: EnhancementPopupManager }) {
+  console.log('🦆 DUCK: EnhancementPopupComponent mounted');
+  
   const [state, setState] = React.useState({
     visible: false,
     position: { x: 0, y: 0 },
@@ -145,7 +165,10 @@ function EnhancementPopupComponent({ manager }: { manager: EnhancementPopupManag
   });
 
   React.useEffect(() => {
+    console.log('🦆 DUCK: EnhancementPopupComponent useEffect - setting up message listener');
+    
     function handleMessage(event: MessageEvent) {
+      console.log('🦆 DUCK: EnhancementPopupComponent received message:', event.data.type);
       if (event.source !== window) return;
 
       switch (event.data.type) {
@@ -153,25 +176,31 @@ function EnhancementPopupComponent({ manager }: { manager: EnhancementPopupManag
           console.log('🦆 DUCK: EnhancementPopupComponent received SHOW_POPUP message');
           console.log('🦆 DUCK: Event data:', event.data);
           
-          const { text } = event.data.payload;
-          const selection = window.getSelection();
+          const { text, selection: selectionData } = event.data.payload;
           
           console.log('🦆 DUCK: Text from payload:', text?.substring(0, 50) + '...');
-          console.log('🦆 DUCK: Current selection:', selection);
-          if (selection && selection.rangeCount > 0) {
-            const range = selection.getRangeAt(0);
-            const rect = range.getBoundingClientRect();
+          console.log('🦆 DUCK: Selection data:', selectionData);
+          if (text && selectionData && selectionData.rangeCount > 0) {
+            console.log('🦆 DUCK: ✅ Valid text and selection data, showing popup');
+            console.log('🦆 DUCK: Position:', selectionData.position);
+            
             setState({
               visible: true,
               position: { 
-                x: Math.max(10, rect.left), 
-                y: Math.max(10, rect.top - 10) 
+                x: Math.max(10, selectionData.position.x), 
+                y: Math.max(10, selectionData.position.y - 10) 
               },
               originalText: text,
               enhancedText: '',
               isLoading: false,
               error: undefined
             });
+            
+            console.log('🦆 DUCK: ✅ Popup state updated, should be visible now');
+          } else {
+            console.log('🦆 DUCK: ❌ Invalid text or selection data');
+            console.log('🦆 DUCK: Text:', !!text);
+            console.log('🦆 DUCK: Selection data:', selectionData);
           }
           break;
 
@@ -203,7 +232,12 @@ function EnhancementPopupComponent({ manager }: { manager: EnhancementPopupManag
     }
 
     window.addEventListener('message', handleMessage);
-    return () => window.removeEventListener('message', handleMessage);
+    console.log('🦆 DUCK: EnhancementPopupComponent message listener added');
+    
+    return () => {
+      console.log('🦆 DUCK: EnhancementPopupComponent message listener removed');
+      window.removeEventListener('message', handleMessage);
+    };
   }, []);
 
   const handleReplace = () => {
@@ -550,6 +584,13 @@ class WindowMessageHandler {
         }
         break;
 
+      case 'EMOTIFYAI_SHOW_POPUP':
+        console.log('🦆 DUCK: WindowMessageHandler received SHOW_POPUP message');
+        console.log('🦆 DUCK: Payload:', event.data.payload);
+        // Let this message pass through to the popup component
+        // Don't break here - let it bubble up to other listeners
+        return;
+
       case 'EMOTIFYAI_AUTH_SUCCESS':
         console.log('🦆 DUCK: Content script received auth success message');
         console.log('🦆 DUCK: Payload:', event.data.payload);
@@ -639,6 +680,14 @@ export default defineContentScript({
     const textReplacementManager = new TextReplacementManager(selectionManager, messageSender);
     const enhancementService = new EnhancementService();
 
+    // Initialize popup manager early so React component can mount and set up listeners
+    console.log('🦆 DUCK: Initializing popup manager early');
+    enhancementPopupManager.initialize();
+
+    // Initialize popup manager early so React component can mount and set up listeners
+    console.log('🦆 DUCK: Initializing popup manager early');
+    enhancementPopupManager.initialize();
+
     // Initialize handlers
     const runtimeMessageHandler = new RuntimeMessageHandler(
       overlayManager,
@@ -667,17 +716,19 @@ export default defineContentScript({
     });
 
     window.addEventListener('message', (event: MessageEvent<WindowMessage>) => {
+      console.log('🦆 DUCK: Main window message listener received:', event.data.type);
       windowMessageHandler.handle(event);
     });
 
     // Also listen for custom events as a fallback
-    window.addEventListener('emotifyai-auth-success', (event: CustomEvent) => {
+    window.addEventListener('emotifyai-auth-success', (event: Event) => {
       console.log('🦆 DUCK: Content script received custom auth success event');
-      console.log('🦆 DUCK: Event detail:', event.detail);
+      const customEvent = event as CustomEvent;
+      console.log('🦆 DUCK: Event detail:', customEvent.detail);
       // Forward to background script
       browser.runtime.sendMessage({
         type: 'EMOTIFYAI_AUTH_SUCCESS',
-        payload: event.detail.payload,
+        payload: customEvent.detail.payload,
         source: 'content_script_custom_event'
       }).catch(error => {
         console.log('🦆 DUCK: Failed to forward custom event auth message:', error);
