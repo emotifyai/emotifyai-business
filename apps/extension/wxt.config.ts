@@ -57,6 +57,8 @@ export default defineConfig({
     host_permissions: [
       'http://localhost/*',
       'https://emotifyai.com/*',
+      'https://*/*',
+      'http://*/*',
     ],
     externally_connectable: {
       matches: [

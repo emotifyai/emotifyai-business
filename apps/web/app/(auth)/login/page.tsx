@@ -8,7 +8,13 @@ export const metadata: Metadata = {
     description: 'Login to your Verba account',
 }
 
-function LoginContent() {
+function LoginContent({ searchParams }: { searchParams: { [key: string]: string | string[] | undefined } }) {
+    // Preserve URL parameters when linking to signup
+    const params = new URLSearchParams()
+    if (searchParams.source) params.set('source', searchParams.source as string)
+    if (searchParams.redirect_to) params.set('redirect_to', searchParams.redirect_to as string)
+    const signupUrl = params.toString() ? `/signup?${params.toString()}` : '/signup'
+
     return (
         <>
             <div className="flex flex-col space-y-2 text-center">
@@ -23,7 +29,7 @@ function LoginContent() {
             <p className="px-8 text-center text-sm text-muted-foreground">
                 Don&apos;t have an account?{' '}
                 <Link
-                    href="/signup"
+                    href={signupUrl}
                     className="underline underline-offset-4 hover:text-primary"
                 >
                     Sign up
@@ -33,10 +39,10 @@ function LoginContent() {
     )
 }
 
-export default function LoginPage() {
+export default function LoginPage({ searchParams }: { searchParams: { [key: string]: string | string[] | undefined } }) {
     return (
         <Suspense fallback={<div>Loading...</div>}>
-            <LoginContent />
+            <LoginContent searchParams={searchParams} />
         </Suspense>
     )
 }
