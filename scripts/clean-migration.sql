@@ -440,3 +440,50 @@ CREATE POLICY "Users can update own subscriptions" ON public.subscriptions
 
 CREATE POLICY "Service role can manage subscriptions" ON public.subscriptions
     FOR ALL USING (auth.role() = 'service_role');
+
+-- Add missing database functions
+
+-- Function to get lifetime subscriber count
+CREATE OR REPLACE FUNCTION public.get_lifetime_subscriber_count()
+RETURNS INTEGER AS $$
+BEGIN
+    RETURN (SELECT COUNT(*) FROM public.lifetime_subscribers);
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- Function to get remaining lifetime slots
+CREATE OR REPLACE FUNCTION public.get_remaining_lifetime_slots()
+RETURNS INTEGER AS $$
+DECLARE
+    total_slots INTEGER := 500;
+    used_slots INTEGER;
+BEGIN
+    SELECT COUNT(*) INTO used_slots FROM public.lifetime_subscribers;
+    RETURN GREATEST(0, total_slots - used_slots);
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- Function to get lifetime offer status
+CREATE OR REPLACE FUNCTION public.get_lifetime_offer_status()
+RETURNS TABLE (
+    total_slots INTEGER,
+    used_slots INTEGER,
+    remaining_slots INTEGER,
+    is_available BOOLEAN,
+    show_urgency BOOLEAN
+) AS $$
+DECLARE
+    used_count INTEGER;
+    remaining_count INTEGER;
+BEGIN
+    SELECT public.get_lifetime_subscriber_count() INTO used_count;
+    SELECT public.get_remaining_lifetime_slots() INTO remaining_count;
+    
+    RETURN QUERY SELECT
+        500 as total_slots,
+        used_count as used_slots,
+        remaining_count as remaining_slots,
+        (remaining_count > 0) as is_available,
+        (remaining_count < 50 AND remaining_count > 0) as show_urgency;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;

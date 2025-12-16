@@ -70,18 +70,27 @@ export async function GET(request: NextRequest) {
         if (subscriptionError) {
             // If no subscription found, return default trial plan
             if (subscriptionError.code === 'PGRST116') {
+                const now = new Date()
+                const endDate = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+                
                 return NextResponse.json({
                     success: true,
                     data: {
                         tier: SubscriptionTier.TRIAL,
                         status: SubscriptionStatus.ACTIVE,
+                        startDate: now.toISOString(),
+                        endDate: endDate.toISOString(),
+                        usageLimit: 10,
+                        currentUsage: 0,
+                        resetDate: null,
+                        // Legacy fields for backward compatibility
                         credits_limit: 10,
                         credits_used: 0,
                         credits_remaining: 10,
                         credits_reset_date: null,
                         validity_days: 30,
                         tier_name: 'Trial',
-                        current_period_end: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
+                        current_period_end: endDate.toISOString()
                     }
                 })
             }
@@ -110,6 +119,12 @@ export async function GET(request: NextRequest) {
             data: {
                 tier: subscription.tier,
                 status: subscription.status,
+                startDate: subscription.current_period_start,
+                endDate: subscription.current_period_end,
+                usageLimit: subscription.credits_limit,
+                currentUsage: subscription.credits_used,
+                resetDate: subscription.credits_reset_date,
+                // Legacy fields for backward compatibility
                 credits_limit: subscription.credits_limit,
                 credits_used: subscription.credits_used,
                 credits_remaining: creditsRemaining,

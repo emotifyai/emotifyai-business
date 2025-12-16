@@ -5,7 +5,7 @@ import { ExternalIcon } from "@shopify/polaris-icons";
 export default function Index() {
   return (
     <Page>
-      <TitleBar title="Verba - AI Text Enhancer" />
+      <TitleBar title="EmotifyAI - AI Text Enhancer" />
       <BlockStack gap="500">
         <Layout>
           <Layout.Section>
@@ -13,10 +13,10 @@ export default function Index() {
               <BlockStack gap="500">
                 <BlockStack gap="200">
                   <Text as="h2" variant="headingMd">
-                    Welcome to Verba! 🎉
+                    Welcome to EmotifyAI! 🎉
                   </Text>
                   <Text as="p" variant="bodyMd">
-                    Verba is an AI-powered text enhancement platform that seamlessly integrates into your workflow.
+                    EmotifyAI is an AI-powered text enhancement platform that seamlessly integrates into your workflow.
                     To get started, please install our browser extension.
                   </Text>
                 </BlockStack>
@@ -49,7 +49,7 @@ export default function Index() {
                     Step 2: Pin the Extension
                   </Text>
                   <Text as="p" variant="bodyMd">
-                    Click the puzzle piece icon in your browser toolbar and pin Verba for easy access.
+                    Click the puzzle piece icon in your browser toolbar and pin EmotifyAI for easy access.
                   </Text>
                 </BlockStack>
 
@@ -59,7 +59,7 @@ export default function Index() {
                   </Text>
                   <List type="bullet">
                     <List.Item>Select any text on a webpage</List.Item>
-                    <List.Item>Right-click and choose "Enhance with Verba"</List.Item>
+                    <List.Item>Right-click and choose "Enhance with EmotifyAI"</List.Item>
                     <List.Item>Or use the shortcut: Ctrl+Shift+E</List.Item>
                   </List>
                 </BlockStack>
