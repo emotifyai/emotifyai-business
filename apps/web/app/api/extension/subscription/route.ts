@@ -60,12 +60,18 @@ export async function GET(request: NextRequest) {
         
         console.log('🦆 DUCK: ✅ Token verified, user ID:', user.id);
 
-        // Get user's subscription
+        // Get user's most recent active subscription
         const { data: subscription, error: subscriptionError } = await supabase
             .from('subscriptions')
             .select('*')
             .eq('user_id', user.id)
+            .in('status', ['active', 'trial'])
+            .order('created_at', { ascending: false })
+            .limit(1)
             .single()
+
+        console.log('🦆 DUCK: Raw subscription data:', subscription)
+        console.log('🦆 DUCK: Subscription error:', subscriptionError)
 
         if (subscriptionError) {
             // If no subscription found, return default trial plan
@@ -114,24 +120,38 @@ export async function GET(request: NextRequest) {
             [SubscriptionTier.BUSINESS_ANNUAL]: 'Business Annual',
         }
 
+        // Ensure dates are valid ISO strings
+        const now = new Date()
+        const startDate = subscription.current_period_start 
+            ? new Date(subscription.current_period_start).toISOString()
+            : now.toISOString()
+        
+        const endDate = subscription.current_period_end 
+            ? new Date(subscription.current_period_end).toISOString()
+            : new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000).toISOString()
+        
+        const resetDate = subscription.credits_reset_date 
+            ? new Date(subscription.credits_reset_date).toISOString()
+            : null
+
         return NextResponse.json({
             success: true,
             data: {
                 tier: subscription.tier,
                 status: subscription.status,
-                startDate: subscription.current_period_start,
-                endDate: subscription.current_period_end,
+                startDate: startDate,
+                endDate: endDate,
                 usageLimit: subscription.credits_limit,
                 currentUsage: subscription.credits_used,
-                resetDate: subscription.credits_reset_date,
+                resetDate: resetDate,
                 // Legacy fields for backward compatibility
                 credits_limit: subscription.credits_limit,
                 credits_used: subscription.credits_used,
                 credits_remaining: creditsRemaining,
-                credits_reset_date: subscription.credits_reset_date,
+                credits_reset_date: resetDate,
                 validity_days: subscription.validity_days,
                 tier_name: tierNames[subscription.tier as SubscriptionTier] || subscription.tier_name || 'Unknown Plan',
-                current_period_end: subscription.current_period_end
+                current_period_end: endDate
             }
         })
 
