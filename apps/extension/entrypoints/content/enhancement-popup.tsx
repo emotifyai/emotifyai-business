@@ -53,18 +53,40 @@ function calculatePosition(selection: Selection): Position {
   const range = selection.getRangeAt(0);
   const rect = range.getBoundingClientRect();
   
-  // Position popup above selection with some padding
-  const x = Math.max(10, rect.left);
-  const y = Math.max(10, rect.top - 10);
+  const POPUP_WIDTH = 384; // w-96 = 384px
+  const POPUP_HEIGHT = 400; // estimated popup height
+  const MARGIN = 10; // minimum margin from viewport edges
   
-  // Ensure popup doesn't go off-screen
-  const maxX = window.innerWidth - 400; // Popup width
-  const maxY = window.innerHeight - 300; // Popup height
+  let x = rect.left;
+  let y = rect.top;
   
-  return {
-    x: Math.min(x, maxX),
-    y: Math.min(y, maxY)
-  };
+  // Adjust horizontal position if popup would go off-screen
+  if (x + POPUP_WIDTH > window.innerWidth) {
+    x = window.innerWidth - POPUP_WIDTH - MARGIN;
+  }
+  if (x < MARGIN) {
+    x = MARGIN;
+  }
+  
+  // Smart vertical positioning
+  const spaceAbove = rect.top;
+  const spaceBelow = window.innerHeight - rect.bottom;
+  
+  if (spaceAbove >= POPUP_HEIGHT || spaceAbove > spaceBelow) {
+    // Position above selection
+    y = rect.top - POPUP_HEIGHT - MARGIN;
+    if (y < MARGIN) {
+      y = MARGIN;
+    }
+  } else {
+    // Position below selection
+    y = rect.bottom + MARGIN;
+    if (y + POPUP_HEIGHT > window.innerHeight) {
+      y = window.innerHeight - POPUP_HEIGHT - MARGIN;
+    }
+  }
+  
+  return { x, y };
 }
 
 function truncateText(text: string, maxLength: number = 100): string {
@@ -79,23 +101,23 @@ function truncateText(text: string, maxLength: number = 100): string {
 function LoadingSpinner() {
   return (
     <div className="flex items-center justify-center p-8">
-      <div className="w-6 h-6 border-2 border-blue-500/30 border-t-blue-500 rounded-full animate-spin" />
-      <span className="ml-3 text-gray-600">Enhancing text...</span>
+      <div className="w-6 h-6 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
+      <span className="ml-3 text-muted-foreground">Enhancing text...</span>
     </div>
   );
 }
 
 function ErrorMessage({ error, onRetry }: { error: string; onRetry: () => void }) {
   return (
-    <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
+    <div className="p-4 bg-destructive/10 border border-destructive/20 rounded-lg">
       <div className="flex items-center mb-2">
-        <span className="text-red-500 text-lg">⚠️</span>
-        <span className="ml-2 font-medium text-red-800">Enhancement Failed</span>
+        <span className="text-destructive text-lg">⚠️</span>
+        <span className="ml-2 font-medium text-destructive">Enhancement Failed</span>
       </div>
-      <p className="text-red-700 text-sm mb-3">{error}</p>
+      <p className="text-destructive text-sm mb-3">{error}</p>
       <button
         onClick={onRetry}
-        className="px-3 py-1.5 bg-red-500 text-white text-sm rounded hover:bg-red-600 transition-colors"
+        className="px-3 py-1.5 bg-destructive text-destructive-foreground text-sm rounded hover:bg-destructive/90 transition-colors"
       >
         Try Again
       </button>
@@ -112,7 +134,7 @@ function ToneSelector({
 }) {
   return (
     <div className="mb-4">
-      <label className="block text-sm font-medium text-gray-700 mb-2">Tone</label>
+      <label className="block text-sm font-medium text-foreground mb-2">Tone</label>
       <div className="grid grid-cols-1 gap-2">
         {TONE_OPTIONS.map((option) => (
           <button
@@ -120,12 +142,12 @@ function ToneSelector({
             onClick={() => onChange(option.value)}
             className={`p-2 text-left rounded-lg border transition-colors ${
               value === option.value
-                ? 'border-blue-500 bg-blue-50 text-blue-700'
-                : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+                ? 'border-primary bg-primary/10 text-primary'
+                : 'border-border hover:border-border hover:bg-secondary'
             }`}
           >
             <div className="font-medium text-sm">{option.label}</div>
-            <div className="text-xs text-gray-500">{option.description}</div>
+            <div className="text-xs text-muted-foreground">{option.description}</div>
           </button>
         ))}
       </div>
@@ -142,14 +164,14 @@ function LanguageSelector({
 }) {
   return (
     <div className="mb-4">
-      <label className="block text-sm font-medium text-gray-700 mb-2">Language</label>
+      <label className="block text-sm font-medium text-foreground mb-2">Language</label>
       <select
         value={value}
         onChange={(e) => onChange(e.target.value as EnhancementOptions['language'])}
-        className="w-full p-2 border border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:outline-none"
+        className="w-full p-2 border border-border rounded-lg text-sm bg-background text-foreground focus:border-primary focus:outline-none"
       >
         {LANGUAGE_OPTIONS.map((option) => (
-          <option key={option.value} value={option.value}>
+          <option key={option.value} value={option.value} className="bg-background text-foreground">
             {option.label}
           </option>
         ))}
@@ -162,15 +184,15 @@ function TextComparison({ originalText, enhancedText }: { originalText: string; 
   return (
     <div className="mb-4">
       <div className="mb-3">
-        <label className="block text-sm font-medium text-gray-700 mb-1">Original</label>
-        <div className="p-3 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-700">
+        <label className="block text-sm font-medium text-foreground mb-1">Original</label>
+        <div className="p-3 bg-secondary border border-border rounded-lg text-sm text-muted-foreground">
           {truncateText(originalText)}
         </div>
       </div>
       
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Enhanced</label>
-        <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg text-sm text-blue-800">
+        <label className="block text-sm font-medium text-foreground mb-1">Enhanced</label>
+        <div className="p-3 bg-primary/10 border border-primary/20 rounded-lg text-sm text-primary">
           {truncateText(enhancedText)}
         </div>
       </div>
@@ -193,20 +215,20 @@ function ActionButtons({
     <div className="flex gap-2">
       <button
         onClick={onReplace}
-        className="flex-1 px-4 py-2 bg-blue-500 text-white text-sm font-medium rounded-lg hover:bg-blue-600 transition-colors"
+        className="flex-1 px-4 py-2 bg-primary text-primary-foreground text-sm font-medium rounded-lg hover:bg-primary/90 transition-colors"
       >
         Replace Text
       </button>
       <button
         onClick={onCancel}
-        className="px-4 py-2 bg-gray-200 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-300 transition-colors"
+        className="px-4 py-2 bg-secondary text-secondary-foreground text-sm font-medium rounded-lg hover:bg-secondary/80 transition-colors"
       >
         Cancel
       </button>
       {showUndo && (
         <button
           onClick={onUndo}
-          className="px-4 py-2 bg-orange-500 text-white text-sm font-medium rounded-lg hover:bg-orange-600 transition-colors"
+          className="px-4 py-2 bg-destructive text-destructive-foreground text-sm font-medium rounded-lg hover:bg-destructive/90 transition-colors"
         >
           Undo
         </button>
@@ -285,21 +307,21 @@ export default function EnhancementPopup({
   return (
     <div
       ref={popupRef}
-      className="fixed z-[999999] w-96 bg-white border border-gray-200 rounded-xl shadow-2xl"
+      className="fixed z-[999999] w-96 bg-background border border-border rounded-xl shadow-2xl text-foreground"
       style={{
         left: `${position.x}px`,
         top: `${position.y}px`,
-        maxHeight: '80vh',
+        maxHeight: `${Math.min(400, window.innerHeight - position.y - 20)}px`,
         overflow: 'auto'
       }}
     >
       {/* Header */}
-      <div className="p-4 border-b border-gray-100">
+      <div className="p-4 border-b border-border">
         <div className="flex items-center justify-between">
-          <h3 className="font-semibold text-gray-800">✨ Text Enhancement</h3>
+          <h3 className="font-semibold text-foreground">✨ Text Enhancement</h3>
           <button
             onClick={onCancel}
-            className="text-gray-400 hover:text-gray-600 text-xl leading-none"
+            className="text-muted-foreground hover:text-foreground text-xl leading-none"
           >
             ×
           </button>
@@ -325,8 +347,8 @@ export default function EnhancementPopup({
         ) : (
           <>
             <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-1">Selected Text</label>
-              <div className="p-3 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-700">
+              <label className="block text-sm font-medium text-foreground mb-1">Selected Text</label>
+              <div className="p-3 bg-secondary border border-border rounded-lg text-sm text-muted-foreground">
                 {truncateText(originalText)}
               </div>
             </div>
@@ -343,7 +365,7 @@ export default function EnhancementPopup({
             
             <button
               onClick={handleRetry}
-              className="w-full px-4 py-2 bg-blue-500 text-white text-sm font-medium rounded-lg hover:bg-blue-600 transition-colors"
+              className="w-full px-4 py-2 bg-primary text-primary-foreground text-sm font-medium rounded-lg hover:bg-primary/90 transition-colors"
             >
               Enhance Text
             </button>

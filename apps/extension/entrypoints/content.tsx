@@ -119,15 +119,58 @@ class EnhancementPopupManager {
     // Don't initialize here - should already be initialized
     console.log('🦆 DUCK: Popup should already be initialized, sending window message');
     
-    // Extract serializable data from selection
+    // Extract serializable data from selection with smart positioning
     const range = selection.getRangeAt(0);
     const rect = range.getBoundingClientRect();
+    
+    // Smart positioning logic
+    const POPUP_WIDTH = 384; // w-96 = 384px
+    const POPUP_HEIGHT = 400; // estimated popup height
+    const MARGIN = 10; // minimum margin from viewport edges
+    
+    let x = rect.left + window.scrollX;
+    let y = rect.top + window.scrollY;
+    
+    // Adjust horizontal position if popup would go off-screen
+    if (x + POPUP_WIDTH > window.innerWidth) {
+      x = window.innerWidth - POPUP_WIDTH - MARGIN;
+    }
+    if (x < MARGIN) {
+      x = MARGIN;
+    }
+    
+    // Smart vertical positioning
+    const spaceAbove = rect.top;
+    const spaceBelow = window.innerHeight - rect.bottom;
+    
+    if (spaceAbove >= POPUP_HEIGHT || spaceAbove > spaceBelow) {
+      // Position above selection
+      y = rect.top + window.scrollY - POPUP_HEIGHT - MARGIN;
+      if (y < window.scrollY + MARGIN) {
+        y = window.scrollY + MARGIN;
+      }
+    } else {
+      // Position below selection
+      y = rect.bottom + window.scrollY + MARGIN;
+      if (y + POPUP_HEIGHT > window.scrollY + window.innerHeight) {
+        y = window.scrollY + window.innerHeight - POPUP_HEIGHT - MARGIN;
+      }
+    }
+    
+    console.log('🦆 DUCK: Smart positioning calculated:', {
+      original: { x: rect.left, y: rect.top },
+      adjusted: { x, y },
+      viewport: { width: window.innerWidth, height: window.innerHeight },
+      spaceAbove,
+      spaceBelow
+    });
+    
     const selectionData = {
       text: selection.toString(),
       rangeCount: selection.rangeCount,
       position: {
-        x: rect.left + window.scrollX,
-        y: rect.top + window.scrollY,
+        x,
+        y,
         width: rect.width,
         height: rect.height
       }
@@ -679,6 +722,15 @@ export default defineContentScript({
     const selectionManager = new SelectionManager();
     const textReplacementManager = new TextReplacementManager(selectionManager, messageSender);
     const enhancementService = new EnhancementService();
+
+    // Initialize theme system for content script
+    console.log('🦆 DUCK: Initializing theme system for content script');
+    import('@/utils/theme').then(({ initializeTheme, setupSystemThemeListener }) => {
+      initializeTheme().then(() => {
+        setupSystemThemeListener();
+        console.log('🦆 DUCK: ✅ Theme system initialized for content script');
+      });
+    });
 
     // Initialize popup manager early so React component can mount and set up listeners
     console.log('🦆 DUCK: Initializing popup manager early');
