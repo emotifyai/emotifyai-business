@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation'
 import { Button } from '@ui/button'
 import { useUser } from '@/lib/hooks/use-auth'
 import { NavbarUserMenu } from './navbar-user-menu'
+import { ThemeToggle } from './theme-toggle'
 
 export function Header() {
     const { data: user, isLoading } = useUser()
@@ -51,6 +52,7 @@ export function Header() {
 
                 {/* Auth Actions */}
                 <div className="flex items-center space-x-4">
+                    <ThemeToggle />
                     {isLoading ? (
                         <div className="h-9 w-24 animate-pulse rounded-md bg-muted" />
                     ) : user ? (

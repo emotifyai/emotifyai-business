@@ -7,9 +7,11 @@ import type { EnhanceTextMessage, EnhanceTextResponse } from '@/types';
 import {browser} from "wxt/browser";
 
 export default defineBackground(() => {
+  console.log('🦆 DUCK: Background script starting');
   logger.info('Background script initialized');
   
   // Log extension ID for debugging
+  console.log('🦆 DUCK: Extension ID:', browser.runtime.id);
   logger.info('Extension ID:', browser.runtime.id);
 
   // Create context menu on installation
@@ -24,8 +26,16 @@ export default defineBackground(() => {
 
   // Handle context menu clicks
   browser.contextMenus.onClicked.addListener(async (info, tab) => {
+    console.log('🦆 DUCK: Context menu clicked');
+    console.log('🦆 DUCK: Menu item ID:', info.menuItemId);
+    console.log('🦆 DUCK: Selection text:', info.selectionText?.substring(0, 50) + '...');
+    console.log('🦆 DUCK: Tab info:', { id: tab?.id, url: tab?.url });
+    
     if (info.menuItemId === 'enhance-text' && info.selectionText) {
+      console.log('🦆 DUCK: ✅ Valid context menu click, calling handleEnhanceText');
       await handleEnhanceText(info.selectionText, tab?.id);
+    } else {
+      console.log('🦆 DUCK: ❌ Invalid context menu click or no selection');
     }
   });
 
@@ -79,9 +89,11 @@ export default defineBackground(() => {
 // Create context menu
 async function createContextMenu(): Promise<void> {
   try {
+    console.log('🦆 DUCK: Creating context menu');
     await browser.contextMenus.removeAll();
 
     const isAuthenticated = !!(await getAuthToken());
+    console.log('🦆 DUCK: Is authenticated:', isAuthenticated);
 
     browser.contextMenus.create({
       id: 'enhance-text',
@@ -90,6 +102,7 @@ async function createContextMenu(): Promise<void> {
       enabled: isAuthenticated,
     });
 
+    console.log('🦆 DUCK: ✅ Context menu created successfully');
     logger.debug('Context menu created', { enabled: isAuthenticated });
   } catch (error) {
     logger.error('Failed to create context menu', error);
@@ -99,9 +112,14 @@ async function createContextMenu(): Promise<void> {
 // Update context menu state
 async function updateContextMenuState(isAuthenticated: boolean): Promise<void> {
   try {
+    console.log('🦆 DUCK: Updating context menu state');
+    console.log('🦆 DUCK: Is authenticated:', isAuthenticated);
+    
     await browser.contextMenus.update('enhance-text', {
       enabled: isAuthenticated,
     });
+    
+    console.log('🦆 DUCK: ✅ Context menu state updated');
     logger.debug('Context menu updated', { enabled: isAuthenticated });
   } catch (error) {
     logger.error('Failed to update context menu', error);
@@ -111,11 +129,18 @@ async function updateContextMenuState(isAuthenticated: boolean): Promise<void> {
 // Handle text enhancement from context menu
 async function handleEnhanceText(text: string, tabId?: number): Promise<void> {
   try {
+    console.log('🦆 DUCK: handleEnhanceText called');
+    console.log('🦆 DUCK: Text:', text.substring(0, 50) + '...');
+    console.log('🦆 DUCK: Tab ID:', tabId);
+    
     logger.info('Showing enhancement popup from context menu', { textLength: text.length });
 
     // Check authentication first
     const token = await getAuthToken();
+    console.log('🦆 DUCK: Auth token available:', !!token);
+    
     if (!token) {
+      console.log('🦆 DUCK: ❌ No auth token, showing error');
       if (tabId) {
         await browser.tabs.sendMessage(tabId, {
           type: 'SHOW_ERROR',
@@ -125,12 +150,21 @@ async function handleEnhanceText(text: string, tabId?: number): Promise<void> {
       return;
     }
 
+    console.log('🦆 DUCK: ✅ Auth token found, sending SHOW_ENHANCEMENT_POPUP message');
+    
     // Show enhancement popup in content script
     if (tabId) {
-      await browser.tabs.sendMessage(tabId, {
+      console.log('🦆 DUCK: Sending message to tab:', tabId);
+      const message = {
         type: 'SHOW_ENHANCEMENT_POPUP',
         payload: { text },
-      });
+      };
+      console.log('🦆 DUCK: Message:', message);
+      
+      await browser.tabs.sendMessage(tabId, message);
+      console.log('🦆 DUCK: ✅ Message sent successfully');
+    } else {
+      console.log('🦆 DUCK: ❌ No tab ID available');
     }
 
     logger.info('Enhancement popup shown successfully');

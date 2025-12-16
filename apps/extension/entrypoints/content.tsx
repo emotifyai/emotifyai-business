@@ -110,12 +110,20 @@ class EnhancementPopupManager {
   }
 
   showPopup(text: string, selection: Selection): void {
+    console.log('🦆 DUCK: EnhancementPopupManager.showPopup called');
+    console.log('🦆 DUCK: Text:', text.substring(0, 50) + '...');
+    console.log('🦆 DUCK: Selection:', selection);
+    
     this.initialize();
+    console.log('🦆 DUCK: Popup initialized, sending window message');
+    
     // Trigger popup show via state management
     window.postMessage({
       type: 'EMOTIFYAI_SHOW_POPUP',
       payload: { text, selection }
     }, '*');
+    
+    console.log('🦆 DUCK: Window message sent');
   }
 
   hidePopup(): void {
@@ -142,8 +150,14 @@ function EnhancementPopupComponent({ manager }: { manager: EnhancementPopupManag
 
       switch (event.data.type) {
         case 'EMOTIFYAI_SHOW_POPUP':
+          console.log('🦆 DUCK: EnhancementPopupComponent received SHOW_POPUP message');
+          console.log('🦆 DUCK: Event data:', event.data);
+          
           const { text } = event.data.payload;
           const selection = window.getSelection();
+          
+          console.log('🦆 DUCK: Text from payload:', text?.substring(0, 50) + '...');
+          console.log('🦆 DUCK: Current selection:', selection);
           if (selection && selection.rangeCount > 0) {
             const range = selection.getRangeAt(0);
             const rect = range.getBoundingClientRect();
@@ -437,10 +451,15 @@ class RuntimeMessageHandler {
   ) {}
 
   handle(message: RuntimeMessage): void {
+    console.log('🦆 DUCK: RuntimeMessageHandler.handle called');
+    console.log('🦆 DUCK: Message type:', message.type);
+    console.log('🦆 DUCK: Message payload:', message.payload);
+    
     const { type, payload } = message;
 
     switch (type) {
       case 'SHOW_ENHANCEMENT_POPUP':
+        console.log('🦆 DUCK: Handling SHOW_ENHANCEMENT_POPUP');
         this.handleShowEnhancementPopup(payload);
         break;
 
@@ -462,15 +481,26 @@ class RuntimeMessageHandler {
   }
 
   private handleShowEnhancementPopup(payload?: RuntimeMessage['payload']): void {
+    console.log('🦆 DUCK: handleShowEnhancementPopup called');
+    console.log('🦆 DUCK: Payload:', payload);
+    
     if (!payload?.text) {
+      console.log('🦆 DUCK: ❌ Missing text in payload');
       logger.error('Missing text in SHOW_ENHANCEMENT_POPUP message');
       return;
     }
 
+    console.log('🦆 DUCK: Text to enhance:', payload.text.substring(0, 50) + '...');
+    
     const selection = this.selectionManager.getSelection();
+    console.log('🦆 DUCK: Selection:', selection);
+    console.log('🦆 DUCK: Selection range count:', selection?.rangeCount);
+    
     if (selection && selection.rangeCount > 0) {
+      console.log('🦆 DUCK: ✅ Valid selection, showing popup');
       this.enhancementPopupManager.showPopup(payload.text, selection);
     } else {
+      console.log('🦆 DUCK: ❌ No valid selection');
       this.messageSender.showError('Please select some text first');
     }
   }
@@ -597,6 +627,8 @@ class KeyboardShortcutHandler {
 export default defineContentScript({
   matches: ['<all_urls>'],
   main() {
+    console.log('🦆 DUCK: Content script main() called');
+    console.log('🦆 DUCK: Current URL:', window.location.href);
     logger.info('Content script loaded');
 
     // Initialize managers
@@ -629,6 +661,8 @@ export default defineContentScript({
 
     // Setup listeners
     browser.runtime.onMessage.addListener((message: RuntimeMessage) => {
+      console.log('🦆 DUCK: Content script received runtime message');
+      console.log('🦆 DUCK: Message:', message);
       runtimeMessageHandler.handle(message);
     });
 
@@ -654,6 +688,11 @@ export default defineContentScript({
       keyboardShortcutHandler.handle(event);
     });
 
+    console.log('🦆 DUCK: ✅ Content script fully initialized');
+    console.log('🦆 DUCK: Runtime message listener:', !!browser.runtime.onMessage);
+    console.log('🦆 DUCK: Window message listener added');
+    console.log('🦆 DUCK: Keyboard listener added');
+    
     logger.info('Content script initialized');
   },
 });

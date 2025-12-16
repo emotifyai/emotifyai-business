@@ -20,7 +20,7 @@ function Dashboard({ user, subscription, usage, onLogout, onOpenSettings }: Dash
     };
 
     return (
-        <div className="p-5">
+        <div className="p-5 bg-background text-foreground min-h-[500px]">
             {/* Header */}
             <div className="flex justify-between items-start mb-6">
                 <div className="flex gap-3 items-center">
@@ -28,18 +28,18 @@ function Dashboard({ user, subscription, usage, onLogout, onOpenSettings }: Dash
                         {user.avatarUrl ? (
                             <img src={user.avatarUrl} alt={user.name} />
                         ) : (
-                            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#667eea] to-[#764ba2] flex items-center justify-center text-white text-xl font-bold">
+                            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground text-xl font-bold">
                                 {user.name.charAt(0).toUpperCase()}
                             </div>
                         )}
                     </div>
                     <div className="flex-1">
-                        <h2 className="text-lg font-semibold m-0 text-gray-800">{user.name}</h2>
-                        <p className="text-xs text-gray-500 mt-0.5">{user.email}</p>
+                        <h2 className="text-lg font-semibold m-0 text-foreground">{user.name}</h2>
+                        <p className="text-xs text-muted-foreground mt-0.5">{user.email}</p>
                     </div>
                 </div>
                 <button
-                    className="p-2 border-none bg-transparent text-xl cursor-pointer rounded-lg transition-colors hover:bg-gray-100"
+                    className="p-2 border-none bg-transparent text-xl cursor-pointer rounded-lg transition-colors hover:bg-secondary"
                     onClick={onOpenSettings}
                     title="Settings"
                 >
@@ -49,8 +49,8 @@ function Dashboard({ user, subscription, usage, onLogout, onOpenSettings }: Dash
 
             {/* Subscription Status */}
             <div className="mb-6">
-                <h3 className="text-sm font-semibold text-gray-500 mb-3 uppercase tracking-wide">Subscription</h3>
-                <div className="p-4 rounded-xl bg-gradient-to-br from-[#667eea] to-[#764ba2]">
+                <h3 className="text-sm font-semibold text-muted-foreground mb-3 uppercase tracking-wide">Subscription</h3>
+                <div className="p-4 rounded-xl bg-gradient-to-br from-primary to-primary/80">
                     <div className="flex justify-between items-center mb-3">
                         <span className="text-base font-semibold text-white">
                             {subscription?.tier === 'trial' && '🎯 Trial'}
@@ -99,46 +99,46 @@ function Dashboard({ user, subscription, usage, onLogout, onOpenSettings }: Dash
 
             {/* Usage Stats */}
             <div className="mb-6">
-                <h3 className="text-sm font-semibold text-gray-500 mb-3 uppercase tracking-wide">Usage</h3>
+                <h3 className="text-sm font-semibold text-muted-foreground mb-3 uppercase tracking-wide">Usage</h3>
 
                 {/* Empty State for New Users */}
                 {!hasUsage ? (
-                    <div className="text-center py-8 px-4 bg-gray-50 rounded-xl">
+                    <div className="text-center py-8 px-4 bg-card border border-border rounded-xl">
                         <div className="text-5xl mb-4">✨</div>
-                        <h4 className="text-lg font-semibold text-gray-800 mb-2">Ready to enhance your text!</h4>
-                        <p className="text-sm text-gray-500 mb-4 leading-relaxed">
+                        <h4 className="text-lg font-semibold text-card-foreground mb-2">Ready to enhance your text!</h4>
+                        <p className="text-sm text-muted-foreground mb-4 leading-relaxed">
                             Select any text on a webpage, right-click, and choose "Enhance with EmotifyAI" to get started.
                         </p>
-                        <div className="pt-4 border-t border-gray-200">
-                            <p className="text-xs text-gray-600 m-0">💡 <strong>Tip:</strong> Use <kbd className="px-1.5 py-0.5 bg-white border border-gray-300 rounded text-[11px] font-mono">Ctrl+Shift+E</kbd> for quick access</p>
+                        <div className="pt-4 border-t border-border">
+                            <p className="text-xs text-muted-foreground m-0">💡 <strong>Tip:</strong> Use <kbd className="px-1.5 py-0.5 bg-secondary border border-border rounded text-[11px] font-mono">Ctrl+Shift+E</kbd> for quick access</p>
                         </div>
                     </div>
                 ) : (
-                    <div className="p-4 rounded-xl bg-gray-50">
+                    <div className="p-4 rounded-xl bg-card border border-border">
                         <div className="flex gap-4 mb-3">
                             <div className="flex-1 flex flex-col gap-1">
-                                <span className="text-xs text-gray-500 font-medium">Used</span>
-                                <span className="text-2xl font-bold text-[#667eea]">{usage.used}</span>
+                                <span className="text-xs text-muted-foreground font-medium">Used</span>
+                                <span className="text-2xl font-bold text-primary">{usage.used}</span>
                             </div>
                             <div className="flex-1 flex flex-col gap-1">
-                                <span className="text-xs text-gray-500 font-medium">Limit</span>
-                                <span className="text-2xl font-bold text-[#667eea]">
+                                <span className="text-xs text-muted-foreground font-medium">Limit</span>
+                                <span className="text-2xl font-bold text-primary">
                                     {usage.limit === -1 ? '∞' : usage.limit}
                                 </span>
                             </div>
                         </div>
 
                         {usage.limit !== -1 && (
-                            <div className="h-2 bg-gray-200 rounded-full overflow-hidden mb-2">
+                            <div className="h-2 bg-secondary rounded-full overflow-hidden mb-2">
                                 <div
-                                    className="h-full bg-gradient-to-r from-[#667eea] to-[#764ba2] transition-all duration-300 ease-out"
+                                    className="h-full bg-gradient-to-r from-primary to-primary/80 transition-all duration-300 ease-out"
                                     style={{ width: `${Math.min((usage.used / usage.limit) * 100, 100)}%` }}
                                 />
                             </div>
                         )}
 
                         {usage.lastUsed && (
-                            <p className="m-0 text-xs text-gray-400">
+                            <p className="m-0 text-xs text-muted-foreground">
                                 Last used: {new Date(usage.lastUsed).toLocaleDateString()}
                             </p>
                         )}
@@ -161,17 +161,17 @@ function Dashboard({ user, subscription, usage, onLogout, onOpenSettings }: Dash
 
             {/* Quick Actions */}
             <div className="mb-6">
-                <h3 className="text-sm font-semibold text-gray-500 mb-3 uppercase tracking-wide">Quick Actions</h3>
+                <h3 className="text-sm font-semibold text-muted-foreground mb-3 uppercase tracking-wide">Quick Actions</h3>
                 <div className="flex flex-col gap-2">
                     <button
-                        className="flex items-center gap-3 p-3 border border-gray-200 bg-white rounded-lg text-sm font-medium text-gray-600 cursor-pointer transition-all hover:bg-gray-50 hover:border-gray-300"
+                        className="flex items-center gap-3 p-3 border border-border bg-card rounded-lg text-sm font-medium text-card-foreground cursor-pointer transition-all hover:bg-accent hover:border-accent-foreground/20"
                         onClick={() => openWebApp('/dashboard')}
                     >
                         <span className="text-xl">📊</span>
                         <span className="flex-1 text-left">View Full Dashboard</span>
                     </button>
                     <button
-                        className="flex items-center gap-3 p-3 border border-gray-200 bg-white rounded-lg text-sm font-medium text-gray-600 cursor-pointer transition-all hover:bg-gray-50 hover:border-gray-300"
+                        className="flex items-center gap-3 p-3 border border-border bg-card rounded-lg text-sm font-medium text-card-foreground cursor-pointer transition-all hover:bg-accent hover:border-accent-foreground/20"
                         onClick={() => openWebApp('/help')}
                     >
                         <span className="text-xl">❓</span>
@@ -181,8 +181,8 @@ function Dashboard({ user, subscription, usage, onLogout, onOpenSettings }: Dash
             </div>
 
             {/* Logout */}
-            <div className="pt-4 border-t border-gray-200">
-                <button className="w-full p-2.5 border border-gray-200 bg-white text-gray-500 rounded-lg text-sm font-semibold cursor-pointer transition-all hover:bg-gray-50 hover:text-red-500 hover:border-red-200" onClick={onLogout}>
+            <div className="pt-4 border-t border-border">
+                <button className="w-full p-2.5 border border-border bg-card text-muted-foreground rounded-lg text-sm font-semibold cursor-pointer transition-all hover:bg-destructive/10 hover:text-destructive hover:border-destructive/20" onClick={onLogout}>
                     Logout
                 </button>
             </div>

@@ -44,25 +44,25 @@ function App() {
 
   if (isLoading) {
     return (
-      <div className="w-[380px] min-h-[500px] bg-white text-gray-800 flex items-center justify-center">
-        <div className="w-10 h-10 border-[3px] border-gray-200 border-t-[#667eea] rounded-full animate-spin" />
+      <div className="w-[380px] min-h-[500px] bg-background text-foreground flex items-center justify-center">
+        <div className="w-10 h-10 border-[3px] border-border border-t-primary rounded-full animate-spin" />
       </div>
     );
   }
 
   if (!isAuthenticated) {
     return (
-      <div className="w-[380px] min-h-[500px] bg-white text-gray-800">
+      <div className="w-[380px] min-h-[500px] bg-background text-foreground">
         <AuthView onLogin={handleLogin} />
       </div>
     );
   }
 
   return (
-    <div className="w-[380px] min-h-[500px] bg-white text-gray-800">
+    <div className="w-[380px] min-h-[500px] bg-background text-foreground">
       <Suspense fallback={
-        <div className="w-[380px] min-h-[500px] bg-white text-gray-800 flex items-center justify-center">
-          <div className="w-10 h-10 border-[3px] border-gray-200 border-t-[#667eea] rounded-full animate-spin" />
+        <div className="w-[380px] min-h-[500px] bg-background text-foreground flex items-center justify-center">
+          <div className="w-10 h-10 border-[3px] border-border border-t-primary rounded-full animate-spin" />
         </div>
       }>
         {currentView === 'dashboard' && user && (
