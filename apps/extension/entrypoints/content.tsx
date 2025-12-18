@@ -608,8 +608,23 @@ class TextReplacementManager {
   }
 
   private findTextFuzzy(text: string): Range | null {
-    // Try to find text with normalized whitespace
-    const normalizedText = text.replace(/\s+/g, ' ').trim();
+    // Try multiple normalization strategies
+    const strategies = [
+      // Original text
+      text,
+      // Normalized whitespace
+      text.replace(/\s+/g, ' ').trim(),
+      // Replace bullet points with different variations
+      text.replace(/•/g, '*').replace(/\s+/g, ' ').trim(),
+      text.replace(/•/g, '-').replace(/\s+/g, ' ').trim(),
+      text.replace(/•/g, '').replace(/\s+/g, ' ').trim(),
+      // Remove special characters
+      text.replace(/[^\w\s]/g, '').replace(/\s+/g, ' ').trim(),
+      // First 50 characters (partial match)
+      text.substring(0, 50).trim(),
+      // First 30 characters (shorter partial match)
+      text.substring(0, 30).trim()
+    ];
     
     const walker = document.createTreeWalker(
       document.body,
@@ -617,19 +632,39 @@ class TextReplacementManager {
       null
     );
 
-    let node: Node | null;
-    while (node = walker.nextNode()) {
-      const textContent = (node.textContent || '').replace(/\s+/g, ' ').trim();
-      const index = textContent.indexOf(normalizedText);
+    for (const searchText of strategies) {
+      if (searchText.length < 10) continue; // Skip very short searches
       
-      if (index !== -1) {
-        // Try to map back to original text positions
-        const range = document.createRange();
-        range.setStart(node, 0);
-        range.setEnd(node, node.textContent?.length || 0);
-        return range;
+      walker.currentNode = document.body;
+      let node: Node | null;
+      
+      while (node = walker.nextNode()) {
+        const textContent = node.textContent || '';
+        
+        // Try exact match
+        let index = textContent.indexOf(searchText);
+        if (index !== -1) {
+          console.log('🦆 DUCK: ✅ Found exact match with strategy:', searchText.substring(0, 30));
+          const range = document.createRange();
+          range.setStart(node, index);
+          range.setEnd(node, index + searchText.length);
+          return range;
+        }
+        
+        // Try normalized match
+        const normalizedContent = textContent.replace(/\s+/g, ' ').trim();
+        const normalizedSearch = searchText.replace(/\s+/g, ' ').trim();
+        index = normalizedContent.indexOf(normalizedSearch);
+        if (index !== -1) {
+          console.log('🦆 DUCK: ✅ Found normalized match with strategy:', normalizedSearch.substring(0, 30));
+          const range = document.createRange();
+          range.setStart(node, 0);
+          range.setEnd(node, node.textContent?.length || 0);
+          return range;
+        }
       }
     }
+    
     return null;
   }
 
