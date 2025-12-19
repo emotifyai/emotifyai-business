@@ -115,7 +115,7 @@ export async function POST(request: NextRequest) {
         }
 
         // Try to reserve a lifetime slot
-        const { data: subscriberNumber, error } = await supabase
+        const { data: subscriberNumber, error } = await (supabase as any)
             .rpc('reserve_lifetime_subscriber_slot', { user_uuid: user.id })
             .single()
 

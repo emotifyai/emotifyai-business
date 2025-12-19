@@ -58,7 +58,7 @@ export async function hasActiveSubscription(userId: string): Promise<boolean> {
 export async function getUserCreditStatus(userId: string): Promise<CreditStatus | null> {
     const supabase = await createClient()
 
-    const { data, error } = await supabase
+    const { data, error } = await (supabase as any)
         .rpc('get_user_credit_status', { user_uuid: userId })
         .single()
 
@@ -99,7 +99,7 @@ export async function canMakeEnhancement(userId: string): Promise<{
     const supabase = await createClient()
 
     // Use database function to check if user can use credits
-    const { data: canUse, error } = await supabase
+    const { data: canUse, error } = await (supabase as any)
         .rpc('can_use_credits', { user_uuid: userId })
         .single()
 
@@ -159,7 +159,7 @@ export async function createFreeSubscription(userId: string): Promise<void> {
     const now = new Date()
     const freeEnd = new Date(now.getTime() + 10 * 24 * 60 * 60 * 1000) // 10 days
 
-    await supabase.from('subscriptions').insert({
+    await (supabase.from('subscriptions') as any).insert({
         user_id: userId,
         lemon_squeezy_id: `free_${userId}`,
         status: 'trial' as SubscriptionStatus,
@@ -179,7 +179,7 @@ export async function createFreeSubscription(userId: string): Promise<void> {
 export async function consumeCredits(userId: string, creditsToConsume: number = 1): Promise<boolean> {
     const supabase = await createClient()
 
-    const { data: success, error } = await supabase
+    const { data: success, error } = await (supabase as any)
         .rpc('consume_credits', { 
             user_uuid: userId, 
             credits_to_consume: creditsToConsume 
@@ -201,7 +201,7 @@ export async function reserveLifetimeSlot(userId: string): Promise<number | null
     const supabase = await createClient()
 
     try {
-        const { data: subscriberNumber, error } = await supabase
+        const { data: subscriberNumber, error } = await (supabase as any)
             .rpc('reserve_lifetime_subscriber_slot', { user_uuid: userId })
             .single()
 

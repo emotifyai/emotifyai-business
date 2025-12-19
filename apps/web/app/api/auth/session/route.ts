@@ -57,8 +57,8 @@ export async function GET(request: NextRequest) {
             user: {
                 id: user.id,
                 email: user.email!,
-                name: profile?.full_name || user.email?.split('@')[0] || 'User',
-                avatar: profile?.avatar_url || user.user_metadata?.avatar_url || null,
+                name: (profile as any)?.display_name || user.email?.split('@')[0] || 'User',
+                avatar: (profile as any)?.avatar_url || user.user_metadata?.avatar_url || null,
             },
             token: session.access_token,
         }

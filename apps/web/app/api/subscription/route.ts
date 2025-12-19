@@ -54,7 +54,7 @@ export async function GET(request: NextRequest) {
         }
 
         // Calculate remaining credits
-        const creditsRemaining = Math.max(0, subscription.credits_limit - subscription.credits_used)
+        const creditsRemaining = Math.max(0, (subscription as any).credits_limit - (subscription as any).credits_used)
 
         // Format tier name for display
         const tierNames: Record<SubscriptionTier, string> = {
@@ -72,15 +72,15 @@ export async function GET(request: NextRequest) {
         return NextResponse.json({
             success: true,
             data: {
-                tier: subscription.tier,
-                status: subscription.status,
-                credits_limit: subscription.credits_limit,
-                credits_used: subscription.credits_used,
+                tier: (subscription as any).tier,
+                status: (subscription as any).status,
+                credits_limit: (subscription as any).credits_limit,
+                credits_used: (subscription as any).credits_used,
                 credits_remaining: creditsRemaining,
-                credits_reset_date: subscription.credits_reset_date,
-                validity_days: subscription.validity_days,
-                tier_name: tierNames[subscription.tier as SubscriptionTier] || subscription.tier_name || 'Unknown Plan',
-                current_period_end: subscription.current_period_end
+                credits_reset_date: (subscription as any).credits_reset_date,
+                validity_days: (subscription as any).validity_days,
+                tier_name: tierNames[(subscription as any).tier as SubscriptionTier] || (subscription as any).tier_name || 'Unknown Plan',
+                current_period_end: (subscription as any).current_period_end
             }
         })
 

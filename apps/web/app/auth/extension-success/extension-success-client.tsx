@@ -47,9 +47,9 @@ export function ExtensionSuccessClient() {
                                     source: 'web_app'
                                 })
                                 const response = await new Promise((resolve, reject) => {
-                                    const timeout: ReturnType<typeof setTimeout> = setTimeout(() => {
+                                    const timeout = setTimeout(() => {
                                         reject(new Error('Extension communication timeout'))
-                                    }, 5000)
+                                    }, 5000) as any
 
                                     (window as any).chrome.runtime.sendMessage(
                                         productionExtensionId,

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { z } from 'zod'
+import type { ProfileInsert } from '@/types/database'
 
 const LoginSchema = z.object({
     token: z.string().min(1, 'OAuth token is required'),
@@ -44,14 +45,16 @@ export async function POST(request: NextRequest) {
 
         // Create profile if it doesn't exist
         if (!profile) {
-            const { data: newProfile, error: createError } = await supabase
-                .from('profiles')
-                .insert({
-                    id: user.id,
-                    email: user.email!,
-                    full_name: user.user_metadata?.full_name || user.email?.split('@')[0] || 'User',
-                    avatar_url: user.user_metadata?.avatar_url || null,
-                })
+            const profileData: ProfileInsert = {
+                id: user.id,
+                email: user.email!,
+                display_name: user.user_metadata?.full_name || user.email?.split('@')[0] || 'User',
+                avatar_url: user.user_metadata?.avatar_url || null,
+            }
+            
+            const { data: newProfile, error: createError } = await (supabase
+                .from('profiles') as any)
+                .insert(profileData)
                 .select()
                 .single()
 
@@ -73,10 +76,11 @@ export async function POST(request: NextRequest) {
 
         // If no subscription, create trial
         if (!subscription) {
-            const { data: newSubscription, error: subError } = await supabase
-                .from('subscriptions')
+            const { data: newSubscription, error: subError } = await (supabase
+                .from('subscriptions') as any)
                 .insert({
                     user_id: user.id,
+                    lemon_squeezy_id: `trial-${user.id}`,
                     tier: 'trial',
                     status: 'active',
                     current_period_start: new Date().toISOString(),
@@ -107,11 +111,11 @@ export async function POST(request: NextRequest) {
         }
 
         // Get usage count
-        const { count: usageCount } = await supabase
-            .from('usage_logs')
+        const { count: usageCount } = await (supabase
+            .from('usage_logs') as any)
             .select('*', { count: 'exact', head: true })
             .eq('user_id', user.id)
-            .gte('created_at', subscription.current_period_start)
+            .gte('created_at', (subscription as any).current_period_start)
 
         return NextResponse.json({
             token,
@@ -122,10 +126,10 @@ export async function POST(request: NextRequest) {
                 avatar: user.user_metadata?.avatar_url || null,
             },
             subscription: {
-                tier: subscription.tier,
-                status: subscription.status,
+                tier: (subscription as any).tier,
+                status: (subscription as any).status,
                 usage: usageCount || 0,
-                limit: subscription.tier === 'trial' ? 10 : -1,
+                limit: (subscription as any).tier === 'trial' ? 10 : -1,
             },
         })
     } catch (error) {

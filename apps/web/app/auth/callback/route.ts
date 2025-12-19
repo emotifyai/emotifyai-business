@@ -28,10 +28,10 @@ export async function GET(request: Request) {
 
                 if (!profile) {
                     // Create user profile
-                    await supabase.from('profiles').insert({
+                    await (supabase.from('profiles') as any).insert({
                         id: data.user.id,
                         email: data.user.email!,
-                        full_name: data.user.user_metadata?.full_name || data.user.email?.split('@')[0] || 'User',
+                        display_name: data.user.user_metadata?.full_name || data.user.email?.split('@')[0] || 'User',
                         avatar_url: data.user.user_metadata?.avatar_url || null,
                     })
                 }
@@ -48,8 +48,9 @@ export async function GET(request: Request) {
                     const trialEndDate = new Date()
                     trialEndDate.setDate(trialEndDate.getDate() + 30) // 30 days trial
 
-                    await supabase.from('subscriptions').insert({
+                    await (supabase.from('subscriptions') as any).insert({
                         user_id: data.user.id,
+                        lemon_squeezy_id: `trial-${data.user.id}`,
                         tier: 'trial',
                         status: 'active',
                         credits_limit: parseInt(process.env.TRIAL_ENHANCEMENT_LIMIT || '10'),

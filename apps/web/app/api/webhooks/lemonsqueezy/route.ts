@@ -143,7 +143,7 @@ export async function POST(request: NextRequest) {
                 }
 
                 const subscriptionData = {
-                    user_id: profile.id,
+                    user_id: (profile as any).id,
                     lemon_squeezy_id: payload.data.id,
                     status: mapSubscriptionStatus(attrs.status),
                     tier: tier,
@@ -163,8 +163,8 @@ export async function POST(request: NextRequest) {
                 // For lifetime subscriptions, reserve a slot
                 if (tier === SubscriptionTier.LIFETIME_LAUNCH && eventName === 'subscription_created') {
                     try {
-                        const { data: subscriberNumber, error: slotError } = await supabase
-                            .rpc('reserve_lifetime_subscriber_slot', { user_uuid: profile.id })
+                        const { data: subscriberNumber, error: slotError } = await (supabase as any)
+                            .rpc('reserve_lifetime_subscriber_slot', { user_uuid: (profile as any).id })
                             .single()
 
                         if (slotError) {
@@ -172,7 +172,7 @@ export async function POST(request: NextRequest) {
                             return NextResponse.json({ error: 'Lifetime slots exhausted' }, { status: 400 })
                         }
 
-                        console.log(`Reserved lifetime slot #${subscriberNumber} for user ${profile.id}`)
+                        console.log(`Reserved lifetime slot #${subscriberNumber} for user ${(profile as any).id}`)
                     } catch (error) {
                         console.error('Error reserving lifetime slot:', error)
                         return NextResponse.json({ error: 'Lifetime slots exhausted' }, { status: 400 })
@@ -180,8 +180,8 @@ export async function POST(request: NextRequest) {
                 }
 
                 // Upsert subscription
-                const { error } = await supabase
-                    .from('subscriptions')
+                const { error } = await (supabase
+                    .from('subscriptions') as any)
                     .upsert(subscriptionData, {
                         onConflict: 'lemon_squeezy_id',
                     })
@@ -198,8 +198,8 @@ export async function POST(request: NextRequest) {
                 const attrs = payload.data.attributes as any
 
                 // Update subscription status
-                const { error } = await supabase
-                    .from('subscriptions')
+                const { error } = await (supabase
+                    .from('subscriptions') as any)
                     .update({
                         status: SubscriptionStatus.CANCELLED,
                         cancel_at: attrs.ends_at,
@@ -218,8 +218,8 @@ export async function POST(request: NextRequest) {
                 const attrs = payload.data.attributes as any
 
                 // Update subscription status
-                const { error } = await supabase
-                    .from('subscriptions')
+                const { error } = await (supabase
+                    .from('subscriptions') as any)
                     .update({
                         status: SubscriptionStatus.ACTIVE,
                         cancel_at: null,
@@ -237,8 +237,8 @@ export async function POST(request: NextRequest) {
 
             case 'subscription_expired': {
                 // Update subscription status
-                const { error } = await supabase
-                    .from('subscriptions')
+                const { error } = await (supabase
+                    .from('subscriptions') as any)
                     .update({
                         status: SubscriptionStatus.EXPIRED,
                     })
@@ -258,8 +258,8 @@ export async function POST(request: NextRequest) {
                     ? SubscriptionStatus.PAUSED
                     : SubscriptionStatus.ACTIVE
 
-                const { error } = await supabase
-                    .from('subscriptions')
+                const { error } = await (supabase
+                    .from('subscriptions') as any)
                     .update({ status })
                     .eq('lemon_squeezy_id', payload.data.id)
 

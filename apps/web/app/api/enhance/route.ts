@@ -92,9 +92,8 @@ export async function POST(request: NextRequest) {
                     // Create a new free trial subscription
                     const now = new Date()
                     const freeEnd = new Date(now.getTime() + 10 * 24 * 60 * 60 * 1000) // 10 days
-                    // @ts-ignore
-                    const { error: createError } = await supabase
-                        .from('subscriptions')
+                    const { error: createError } = await (supabase
+                        .from('subscriptions') as any)
                         .insert({
                             user_id: user.id,
                             lemon_squeezy_id: `free_${user.id}_${Date.now()}`, // Make it unique

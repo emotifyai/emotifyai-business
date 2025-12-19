@@ -26,8 +26,8 @@ export function useUser() {
             return {
                 id: user.id,
                 email: user.email!,
-                display_name: profile?.full_name || user.user_metadata?.full_name || user.email?.split('@')[0] || 'User',
-                avatar_url: profile?.avatar_url || user.user_metadata?.avatar_url || null,
+                display_name: (profile as any)?.display_name || user.user_metadata?.full_name || user.email?.split('@')[0] || 'User',
+                avatar_url: (profile as any)?.avatar_url || user.user_metadata?.avatar_url || null,
             }
         },
         retry: false,
