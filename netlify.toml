@@ -5,6 +5,14 @@
   command = "bun run build"
   publish = ".next"
 
+# Next.js Runtime Configuration
+[functions]
+  node_bundler = "esbuild"
+
+# Enable Next.js runtime
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+
 [build.environment]
   NODE_VERSION = "20"
   BUN_VERSION = "1.2.21"
