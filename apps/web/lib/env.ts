@@ -83,28 +83,23 @@ export const env = createEnv({
         DEBUG: z
             .string()
             .optional()
-            .transform((val) => val === 'true')
-            .pipe(z.boolean().optional()),
+            .transform((val) => val === 'true' ? true : val === 'false' ? false : undefined),
         SKIP_AUTH: z
             .string()
             .optional()
-            .transform((val) => val === 'true')
-            .pipe(z.boolean().optional()),
+            .transform((val) => val === 'true' ? true : val === 'false' ? false : undefined),
         MOCK_AI_RESPONSES: z
             .string()
             .optional()
-            .transform((val) => val === 'true')
-            .pipe(z.boolean().optional()),
+            .transform((val) => val === 'true' ? true : val === 'false' ? false : undefined),
         DISABLE_RATE_LIMIT: z
             .string()
             .optional()
-            .transform((val) => val === 'true')
-            .pipe(z.boolean().optional()),
+            .transform((val) => val === 'true' ? true : val === 'false' ? false : undefined),
         LOG_SQL_QUERIES: z
             .string()
             .optional()
-            .transform((val) => val === 'true')
-            .pipe(z.boolean().optional()),
+            .transform((val) => val === 'true' ? true : val === 'false' ? false : undefined),
     },
 
     /**
@@ -129,8 +124,7 @@ export const env = createEnv({
         NEXT_PUBLIC_ENABLE_SHOPIFY_APP: z
             .string()
             .optional()
-            .transform((val) => val === 'true')
-            .pipe(z.boolean().optional()),
+            .transform((val) => val === 'true' ? true : val === 'false' ? false : undefined),
     },
 
     /**

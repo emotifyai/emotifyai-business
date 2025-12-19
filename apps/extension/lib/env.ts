@@ -16,8 +16,7 @@ const envSchema = z.object({
 
     VITE_MOCK_API_ENABLED: z
         .string()
-        .transform((val) => val === 'true')
-        .pipe(z.boolean()),
+        .transform((val) => val === 'true'),
 
     // OAuth Configuration
     VITE_OAUTH_CLIENT_ID: z.string().min(1, {
@@ -38,20 +37,17 @@ const envSchema = z.object({
     VITE_ENABLE_EXPERIMENTAL_FEATURES: z
         .string()
         .optional()
-        .transform((val) => val === 'true')
-        .pipe(z.boolean().optional()),
+        .transform((val) => val === 'true' ? true : val === 'false' ? false : undefined),
 
     VITE_ENABLE_ANALYTICS: z
         .string()
         .optional()
-        .transform((val) => val === 'true')
-        .pipe(z.boolean().optional()),
+        .transform((val) => val === 'true' ? true : val === 'false' ? false : undefined),
 
     VITE_ENABLE_ERROR_REPORTING: z
         .string()
         .optional()
-        .transform((val) => val === 'true')
-        .pipe(z.boolean().optional()),
+        .transform((val) => val === 'true' ? true : val === 'false' ? false : undefined),
 
     VITE_SENTRY_DSN: z.string().url().optional(),
 
@@ -59,14 +55,12 @@ const envSchema = z.object({
     VITE_SKIP_AUTH: z
         .string()
         .optional()
-        .transform((val) => val === 'true')
-        .pipe(z.boolean().optional()),
+        .transform((val) => val === 'true' ? true : val === 'false' ? false : undefined),
 
     VITE_DEBUG: z
         .string()
         .optional()
-        .transform((val) => val === 'true')
-        .pipe(z.boolean().optional()),
+        .transform((val) => val === 'true' ? true : val === 'false' ? false : undefined),
 });
 
 /**
@@ -80,7 +74,7 @@ function validateEnv() {
         return envSchema.parse(import.meta.env);
     } catch (error) {
         if (error instanceof z.ZodError) {
-            const errorMessages = error.errors
+            const errorMessages = error.issues
                 .map((err) => `  - ${err.path.join('.')}: ${err.message}`)
                 .join('\n');
 
