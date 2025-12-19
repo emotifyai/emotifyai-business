@@ -3,16 +3,21 @@
 [build]
   base = "apps/web"
   command = "bun run build"
-  publish = "apps/web/.next"
+  publish = ".next"
 
 [build.environment]
   NODE_VERSION = "20"
   BUN_VERSION = "1.2.21"
+  # Non-sensitive environment variables
+  DEBUG = "false"
+  SKIP_AUTH = "false"
+  MOCK_AI_RESPONSES = "false"
+  DISABLE_RATE_LIMIT = "false"
+  LOG_SQL_QUERIES = "false"
+  NEXT_PUBLIC_ENABLE_SHOPIFY_APP = "false"
 
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
+# Next.js handles routing internally
+# No redirects needed for server-side rendering
 
 [[headers]]
   for = "/*"
