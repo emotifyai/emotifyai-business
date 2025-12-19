@@ -1,4 +1,3 @@
-import '@anthropic-ai/sdk/shims/node';
 import Anthropic from '@anthropic-ai/sdk';
 import {
     buildCachedSystemPrompt,
