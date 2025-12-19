@@ -34,11 +34,6 @@ export function Footer() {
                                     Documentation
                                 </Link>
                             </li>
-                            <li>
-                                <Link href="/changelog" className="text-muted-foreground hover:text-primary transition-colors">
-                                    Changelog
-                                </Link>
-                            </li>
                         </ul>
                     </div>
 
