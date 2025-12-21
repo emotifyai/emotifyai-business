@@ -222,9 +222,12 @@ export default function TermsPage() {
                         <Card>
                             <CardContent className="pt-6">
                                 <div className="prose prose-zinc dark:prose-invert max-w-none">
-                                    <h2 className="text-2xl font-bold mb-4">Governing Law</h2>
+                                    <h2 className="text-2xl font-bold mb-4">Governing Law and Jurisdiction</h2>
                                     <p>
-                                        These Terms are governed by the laws of [Your Jurisdiction]. Any disputes shall be resolved in the courts of [Your Jurisdiction].
+                                        These Terms of Service are governed by and construed in accordance with the laws of the Hashemite Kingdom of Jordan. Any disputes, claims, or legal proceedings arising out of or relating to these Terms or the use of EmotifyAI services shall be subject to the exclusive jurisdiction of the courts of Jordan.
+                                    </p>
+                                    <p>
+                                        By using our Service, you consent to the jurisdiction and venue of the Jordanian courts for the resolution of any disputes.
                                     </p>
                                 </div>
                             </CardContent>

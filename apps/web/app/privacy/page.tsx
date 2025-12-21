@@ -194,6 +194,21 @@ export default function PrivacyPage() {
                             </CardContent>
                         </Card>
 
+                        {/* Governing Law */}
+                        <Card>
+                            <CardContent className="pt-6">
+                                <div className="prose prose-zinc dark:prose-invert max-w-none">
+                                    <h2 className="text-2xl font-bold mb-4">Governing Law and Jurisdiction</h2>
+                                    <p>
+                                        This Privacy Policy is governed by and construed in accordance with the laws of the Hashemite Kingdom of Jordan. Any disputes, claims, or legal proceedings arising out of or relating to this Privacy Policy or our data practices shall be subject to the exclusive jurisdiction of the courts of Jordan.
+                                    </p>
+                                    <p>
+                                        By using our Service, you consent to the jurisdiction and venue of the Jordanian courts for the resolution of any privacy-related disputes.
+                                    </p>
+                                </div>
+                            </CardContent>
+                        </Card>
+
                         {/* Contact */}
                         <Card className="border-primary/20 bg-primary/5">
                             <CardContent className="pt-6">
