@@ -7,7 +7,7 @@ export default function ApiKeysPage() {
             <div>
                 <h2 className="text-3xl font-bold tracking-tight">API Keys</h2>
                 <p className="text-muted-foreground">
-                    Manage API keys for accessing Verba from the browser extension
+                    Manage API keys for accessing EmotifAI from the browser extension
                 </p>
             </div>
 
@@ -16,7 +16,7 @@ export default function ApiKeysPage() {
                     <CardHeader>
                         <CardTitle>Extension Authentication</CardTitle>
                         <CardDescription>
-                            Create API keys to authenticate the Verba browser extension.
+                            Create API keys to authenticate the EmotifAI browser extension.
                             Never share your API keys with anyone.
                         </CardDescription>
                     </CardHeader>

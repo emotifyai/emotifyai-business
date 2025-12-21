@@ -4,8 +4,8 @@ import { SignupForm } from '@/components/auth/signup-form'
 import { Suspense } from 'react'
 
 export const metadata: Metadata = {
-    title: 'Sign Up - Verba',
-    description: 'Create a new Verba account',
+    title: 'Sign Up - EmotifAI',
+    description: 'Create a new EmotifAI account',
 }
 
 function SignupContent() {

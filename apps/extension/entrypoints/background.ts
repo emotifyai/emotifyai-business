@@ -97,7 +97,7 @@ async function createContextMenu(): Promise<void> {
 
     browser.contextMenus.create({
       id: 'enhance-text',
-      title: '✨ Enhance with Verba',
+      title: '✨ Enhance with EmotifAI',
       contexts: ['selection'],
       enabled: isAuthenticated,
     });
@@ -144,7 +144,7 @@ async function handleEnhanceText(text: string, tabId?: number): Promise<void> {
       if (tabId) {
         await browser.tabs.sendMessage(tabId, {
           type: 'SHOW_ERROR',
-          payload: { error: 'Please log in to use Verba' },
+          payload: { error: 'Please log in to use EmotifAI' },
         });
       }
       return;

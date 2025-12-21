@@ -5,8 +5,8 @@ import { Input } from '@ui/input'
 import { Label } from '@ui/label'
 
 export const metadata: Metadata = {
-    title: 'Reset Password - Verba',
-    description: 'Reset your Verba account password',
+    title: 'Reset Password - EmotifAI',
+    description: 'Reset your EmotifAI account password',
 }
 
 export default function ResetPasswordPage() {

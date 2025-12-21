@@ -2,7 +2,7 @@
 
 ## Overview
 
-End-to-end tests for the Verba extension using Playwright. Tests cover all critical user flows including enhancement, subscription limits, authentication, and error scenarios.
+End-to-end tests for the EmotifAI extension using Playwright. Tests cover all critical user flows including enhancement, subscription limits, authentication, and error scenarios.
 
 ## Test Suites
 

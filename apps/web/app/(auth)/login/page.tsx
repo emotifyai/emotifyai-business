@@ -4,8 +4,8 @@ import { LoginForm } from '@/components/auth/login-form'
 import { Suspense } from 'react'
 
 export const metadata: Metadata = {
-    title: 'Login - Verba',
-    description: 'Login to your Verba account',
+    title: 'Login - EmotifAI',
+    description: 'Login to your EmotifAI account',
 }
 
 function LoginContent({ searchParams }: { searchParams: { [key: string]: string | string[] | undefined } }) {
@@ -22,7 +22,7 @@ function LoginContent({ searchParams }: { searchParams: { [key: string]: string 
                     Welcome back
                 </h1>
                 <p className="text-sm text-muted-foreground">
-                    Sign in to continue using your Verba extension
+                    Sign in to continue using your EmotifAI extension
                 </p>
             </div>
             <LoginForm />

@@ -1,6 +1,6 @@
 # API Setup & Token Guide
 
-This guide explains how to obtain the necessary API tokens and configuration values for the Verba project.
+This guide explains how to obtain the necessary API tokens and configuration values for the EmotifAI project.
 
 ---
 
@@ -69,12 +69,12 @@ This guide explains how to obtain the necessary API tokens and configuration val
    - Go to **Products** → **Create Product**
    
    **Monthly Subscription**:
-   - Name: "Verba Monthly"
+   - Name: "EmotifAI Monthly"
    - Price: $9.99/month
    - After creation, copy the **Variant ID** → `LEMONSQUEEZY_MONTHLY_VARIANT_ID`
    
    **Lifetime License**:
-   - Name: "Verba Lifetime"
+   - Name: "EmotifAI Lifetime"
    - Price: $99.99 (one-time)
    - After creation, copy the **Variant ID** → `LEMONSQUEEZY_LIFETIME_VARIANT_ID`
 
@@ -249,7 +249,7 @@ bun run dev
 - **Supabase Docs**: https://supabase.com/docs
 - **Lemon Squeezy Docs**: https://docs.lemonsqueezy.com
 - **Anthropic Docs**: https://docs.anthropic.com
-- **Verba Docs**: See `docs/` folder in this repository
+- **EmotifAI Docs**: See `docs/` folder in this repository
 
 ---
 

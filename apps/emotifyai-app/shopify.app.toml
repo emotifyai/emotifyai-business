@@ -2,7 +2,7 @@
 
 client_id = "f0d3528920f19a2fa243df47294cc347"
 name = "emotifyai-app"
-application_url = "https://verba-app.com"
+application_url = "https://emotifyai-app.com"
 embedded = true
 
 [build]

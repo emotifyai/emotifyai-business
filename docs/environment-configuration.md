@@ -1,10 +1,10 @@
 # Environment Configuration Guide
 
-This guide explains how to configure environment variables for the Verba monorepo, covering both the browser extension and web application.
+This guide explains how to configure environment variables for the EmotifAI monorepo, covering both the browser extension and web application.
 
 ## Overview
 
-Verba uses a **type-safe environment configuration system** with runtime validation to catch configuration errors early. Each package manages its own environment variables independently.
+EmotifAI uses a **type-safe environment configuration system** with runtime validation to catch configuration errors early. Each package manages its own environment variables independently.
 
 ### Architecture
 

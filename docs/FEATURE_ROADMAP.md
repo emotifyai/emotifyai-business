@@ -1,4 +1,4 @@
-# Verba Platform - Feature Roadmap
+# EmotifAI Platform - Feature Roadmap
 
 ## Planned Features (Linked to "Unused" Hooks)
 

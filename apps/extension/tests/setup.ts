@@ -3,7 +3,7 @@ import { vi, beforeEach } from 'vitest';
 
 
 /**
- * Test Setup for Verba Extension
+ * Test Setup for EmotifAI Extension
  * 
  * Configures:
  * - Browser API mocks (chrome.storage, chrome.contextMenus, etc.)

@@ -2,7 +2,7 @@
 
 ## Overview
 
-This guide explains all environment variables used across the Verba platform.
+This guide explains all environment variables used across the EmotifAI platform.
 
 ## Extension Environment Variables
 
