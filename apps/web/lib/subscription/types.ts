@@ -43,7 +43,7 @@ export const SUBSCRIPTION_TIERS: Record<SubscriptionTier, SubscriptionTierConfig
         id: 'trial',
         name: 'Free Trial',
         price: 0,
-        generations: 50,
+        generations: 10,
         duration: 'trial',
         durationDays: 10,
         features: [
