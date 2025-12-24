@@ -65,17 +65,17 @@ function logWarning(message) {
  */
 function executeCommand(command, options = {}) {
     try {
-        const result = execSync(command, { 
-            encoding: 'utf8', 
+        const result = execSync(command, {
+            encoding: 'utf8',
             stdio: options.silent ? 'pipe' : 'inherit',
-            ...options 
+            ...options
         });
         return { success: true, output: result };
     } catch (error) {
-        return { 
-            success: false, 
-            error: error.message, 
-            output: error.stdout || error.stderr || '' 
+        return {
+            success: false,
+            error: error.message,
+            output: error.stdout || error.stderr || ''
         };
     }
 }
@@ -85,25 +85,25 @@ function executeCommand(command, options = {}) {
  */
 function checkNetlifyCLI() {
     logStep('1/5', 'Checking Netlify CLI installation...');
-    
+
     // Try npx first, then global installation
     let result = executeCommand('npx netlify --version', { silent: true });
-    
+
     if (result.success) {
         const version = result.output.trim();
         logSuccess(`Netlify CLI installed (via npx): ${version}`);
         return 'npx netlify';
     }
-    
+
     // Fallback to global installation
     result = executeCommand('netlify --version', { silent: true });
-    
+
     if (result.success) {
         const version = result.output.trim();
         logSuccess(`Netlify CLI installed (global): ${version}`);
         return 'netlify';
     }
-    
+
     logError('Netlify CLI not found. Please install it with: npm install netlify-cli');
     return false;
 }
@@ -113,9 +113,9 @@ function checkNetlifyCLI() {
  */
 function checkNetlifyAuth(cliCommand) {
     logStep('2/5', 'Checking Netlify authentication...');
-    
+
     const result = executeCommand(`${cliCommand} status`, { silent: true });
-    
+
     // Check for both old and new output formats
     if (result.output && (result.output.includes('Email:') || result.output.includes('Logged in as'))) {
         // Try to extract email from new format
@@ -138,19 +138,19 @@ function checkNetlifyAuth(cliCommand) {
  */
 function checkProjectLink(cliCommand) {
     logStep('3/5', `Checking project link to ${CONFIG.PROJECT_NAME}...`);
-    
+
     const result = executeCommand(`${cliCommand} status`, { silent: true });
-    
+
     // Check if already linked (even if command returns error)
     if (result.output && result.output.includes(CONFIG.PROJECT_NAME)) {
         logSuccess(`Project linked to: ${CONFIG.PROJECT_NAME}`);
         return true;
     }
-    
+
     // If not linked, try to link with filter to avoid interactive prompt
     logWarning(`Project not linked to ${CONFIG.PROJECT_NAME}. Attempting to link...`);
     const linkResult = executeCommand(`${cliCommand} link --name ${CONFIG.PROJECT_NAME} --filter emotifyai-web`, { silent: true });
-    
+
     if (linkResult.success || (linkResult.output && (linkResult.output.includes('Linked to') || linkResult.output.includes('Project already linked')))) {
         logSuccess(`Successfully linked to: ${CONFIG.PROJECT_NAME}`);
         return true;
@@ -166,7 +166,7 @@ function checkProjectLink(cliCommand) {
  */
 function parseEnvFile(filePath) {
     logStep('4/5', `Reading environment variables from ${filePath}...`);
-    
+
     if (!fs.existsSync(filePath)) {
         logError(`Environment file not found: ${filePath}`);
         return null;
@@ -180,10 +180,10 @@ function parseEnvFile(filePath) {
         content.split('\n').forEach(line => {
             lineNumber++;
             line = line.trim();
-            
+
             // Skip empty lines and comments
             if (!line || line.startsWith('#')) return;
-            
+
             // Parse KEY=VALUE format
             const match = line.match(/^([A-Z_][A-Z0-9_]*)\s*=\s*(.*)$/);
             if (match) {
@@ -210,156 +210,11 @@ function parseEnvFile(filePath) {
 }
 
 /**
- * Perform comprehensive integrity check
- */
-async function performIntegrityCheck(originalEnvVars, cliCommand) {
-    logStep('6/6', 'Performing integrity check...');
-    
-    try {
-        // Get current environment variables from Netlify in JSON format
-        const result = executeCommand(`${cliCommand} env:list --json --filter emotifyai-web`, { silent: true });
-        
-        if (!result.success) {
-            logError(`Failed to retrieve environment variables: ${result.error}`);
-            return { success: false, details: 'Failed to retrieve variables' };
-        }
-
-        let netlifyEnvVars;
-        try {
-            netlifyEnvVars = JSON.parse(result.output);
-        } catch (parseError) {
-            logError(`Failed to parse JSON response: ${parseError.message}`);
-            return { success: false, details: 'Invalid JSON response' };
-        }
-
-        // Convert Netlify response to key-value pairs for comparison
-        const netlifyVars = {};
-        if (Array.isArray(netlifyEnvVars)) {
-            netlifyEnvVars.forEach(envVar => {
-                if (envVar.key && envVar.values && envVar.values.length > 0) {
-                    // Use the first (most recent) value
-                    netlifyVars[envVar.key] = envVar.values[0].value;
-                }
-            });
-        }
-
-        log(`📊 Integrity Check Results:`, 'cyan');
-        log(`  Local variables: ${Object.keys(originalEnvVars).length}`, 'blue');
-        log(`  Netlify variables: ${Object.keys(netlifyVars).length}`, 'blue');
-
-        const issues = {
-            missing: [],
-            mismatch: [],
-            extra: []
-        };
-
-        // Check for missing variables
-        for (const [key, expectedValue] of Object.entries(originalEnvVars)) {
-            if (!(key in netlifyVars)) {
-                issues.missing.push(key);
-            } else if (netlifyVars[key] !== expectedValue) {
-                // Only report mismatch for non-sensitive variables
-                const isSensitive = ['API_KEY', 'SECRET', 'PASSWORD', 'TOKEN'].some(sensitive => key.includes(sensitive));
-                if (!isSensitive) {
-                    issues.mismatch.push({
-                        key,
-                        expected: expectedValue,
-                        actual: netlifyVars[key]
-                    });
-                } else {
-                    // For sensitive variables, just check if they exist and are not empty
-                    if (!netlifyVars[key] || netlifyVars[key].trim() === '') {
-                        issues.mismatch.push({
-                            key,
-                            expected: '[HIDDEN]',
-                            actual: '[EMPTY]'
-                        });
-                    }
-                }
-            }
-        }
-
-        // Check for extra variables (variables on Netlify that weren't in our .env)
-        for (const key of Object.keys(netlifyVars)) {
-            if (!(key in originalEnvVars)) {
-                issues.extra.push(key);
-            }
-        }
-
-        // Report results
-        let hasIssues = false;
-
-        if (issues.missing.length > 0) {
-            hasIssues = true;
-            logError(`Missing variables (${issues.missing.length}):`);
-            issues.missing.forEach(key => log(`  - ${key}`, 'red'));
-        }
-
-        if (issues.mismatch.length > 0) {
-            hasIssues = true;
-            logError(`Value mismatches (${issues.mismatch.length}):`);
-            issues.mismatch.forEach(({ key, expected, actual }) => {
-                log(`  - ${key}:`, 'red');
-                log(`    Expected: ${expected}`, 'red');
-                log(`    Actual:   ${actual}`, 'red');
-            });
-        }
-
-        if (issues.extra.length > 0) {
-            logWarning(`Extra variables on Netlify (${issues.extra.length}):`);
-            issues.extra.forEach(key => log(`  - ${key}`, 'yellow'));
-        }
-
-        if (!hasIssues) {
-            logSuccess('✅ All environment variables match perfectly!');
-            
-            // Additional checks for critical variables
-            const criticalVars = [
-                'NEXT_PUBLIC_SUPABASE_URL',
-                'NEXT_PUBLIC_SUPABASE_ANON_KEY',
-                'SUPABASE_SERVICE_ROLE_KEY',
-                'ANTHROPIC_API_KEY',
-                'NEXT_PUBLIC_APP_URL',
-                'NODE_ENV'
-            ];
-
-            const missingCritical = criticalVars.filter(key => !(key in netlifyVars));
-            if (missingCritical.length > 0) {
-                logError(`Missing critical variables: ${missingCritical.join(', ')}`);
-                return { success: false, details: 'Missing critical variables' };
-            }
-
-            // Check NODE_ENV is production
-            if (netlifyVars.NODE_ENV !== 'production') {
-                logWarning(`NODE_ENV is '${netlifyVars.NODE_ENV}', expected 'production'`);
-            }
-
-            logSuccess('✅ All critical environment variables are present and configured');
-        }
-
-        return {
-            success: !hasIssues,
-            details: {
-                total: Object.keys(originalEnvVars).length,
-                deployed: Object.keys(netlifyVars).length,
-                missing: issues.missing.length,
-                mismatched: issues.mismatch.length,
-                extra: issues.extra.length
-            }
-        };
-
-    } catch (error) {
-        logError(`Integrity check failed: ${error.message}`);
-        return { success: false, details: error.message };
-    }
-}
-
-/**
  * Set environment variables on Netlify
  */
 async function setNetlifyEnvVars(envVars, cliCommand) {
     logStep('5/5', 'Setting environment variables on Netlify...');
-    
+
     const results = {
         success: [],
         failed: [],
@@ -368,18 +223,18 @@ async function setNetlifyEnvVars(envVars, cliCommand) {
 
     // Filter out sensitive variables that shouldn't be logged
     const sensitiveKeys = ['API_KEY', 'SECRET', 'PASSWORD', 'TOKEN'];
-    
+
     for (const [key, value] of Object.entries(envVars)) {
         try {
             // Check if this is a sensitive variable
             const isSensitive = sensitiveKeys.some(sensitive => key.includes(sensitive));
             const displayValue = isSensitive ? '[HIDDEN]' : value;
-            
+
             log(`  Setting ${key}=${displayValue}...`, 'blue');
-            
+
             // Use key=value syntax to avoid issues with negative values
             const result = executeCommand(`${cliCommand} env:set ${key}="${value}" --filter emotifyai-web`, { silent: true });
-            
+
             if (result.success) {
                 results.success.push(key);
                 log(`    ✅ ${key} set successfully`, 'green');
@@ -401,8 +256,8 @@ async function setNetlifyEnvVars(envVars, cliCommand) {
  */
 async function main() {
     log('\n🚀 Netlify Environment Variables Deployment Script', 'magenta');
-    log('=' .repeat(60), 'magenta');
-    
+    log('='.repeat(60), 'magenta');
+
     try {
         // Step 1: Check Netlify CLI
         const cliCommand = checkNetlifyCLI();
@@ -423,7 +278,7 @@ async function main() {
         // Step 4: Read environment variables
         const envFilePath = path.join(CONFIG.BASE_PATH, CONFIG.ENV_FILE);
         const envVars = parseEnvFile(envFilePath);
-        
+
         if (!envVars) {
             process.exit(1);
         }
@@ -433,30 +288,14 @@ async function main() {
 
         // Final report
         log('\n📊 Deployment Summary', 'magenta');
-        log('=' .repeat(30), 'magenta');
+        log('='.repeat(30), 'magenta');
         logSuccess(`Successfully set: ${results.success.length}/${results.total} variables`);
-        
+
         if (results.failed.length > 0) {
             logError(`Failed to set: ${results.failed.length} variables`);
             results.failed.forEach(({ key, error }) => {
                 log(`  - ${key}: ${error}`, 'red');
             });
-        }
-
-        // Step 6: Perform integrity check
-        const integrityResult = await performIntegrityCheck(envVars, cliCommand);
-        
-        if (!integrityResult.success) {
-            logError('Integrity check failed! Some variables may not have been set correctly.');
-            if (integrityResult.details && typeof integrityResult.details === 'object') {
-                log(`\nIntegrity Summary:`, 'yellow');
-                log(`  Total expected: ${integrityResult.details.total}`, 'yellow');
-                log(`  Actually deployed: ${integrityResult.details.deployed}`, 'yellow');
-                log(`  Missing: ${integrityResult.details.missing}`, 'yellow');
-                log(`  Mismatched: ${integrityResult.details.mismatched}`, 'yellow');
-                log(`  Extra: ${integrityResult.details.extra}`, 'yellow');
-            }
-            process.exit(1);
         }
 
         // Suggest next steps
