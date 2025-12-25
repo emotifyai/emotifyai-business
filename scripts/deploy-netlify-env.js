@@ -23,7 +23,7 @@ const __dirname = path.dirname(__filename);
 
 // Configuration
 const CONFIG = {
-    PROJECT_NAME: 'bright-marzipan-1b48f4',
+    PROJECT_NAME: 'precious-cat-ad61fe',
     ENV_FILE: '.env', // Can be changed to '.env.production' later
     BASE_PATH: path.join(__dirname, '..', 'apps', 'web'),
     REQUIRED_NODE_ENV: 'production'
