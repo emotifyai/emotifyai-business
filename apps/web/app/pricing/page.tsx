@@ -1,7 +1,5 @@
 import { Metadata } from 'next'
-import Link from 'next/link'
 import { Suspense } from 'react'
-import { Button } from '@ui/button'
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@ui/card'
 import { Badge } from '@ui/badge'
 import { Check, Zap, Star, Crown } from 'lucide-react'
@@ -10,6 +8,7 @@ import { Footer } from '@/components/layout/footer'
 import { LifetimeSlotCounter } from '@/components/LifetimeSlotCounter'
 import { PricingButton } from '@/components/pricing-button'
 import { SUBSCRIPTION_TIERS, getSortedTiers, calculateAnnualSavings, getMonthlyEquivalent } from '@/lib/subscription/types'
+import { getLifetimeSlotInfo } from '@/lib/subscription/lifetime-slots'
 import type { SubscriptionTier } from '@/lib/subscription/types'
 
 export const metadata: Metadata = {
@@ -21,10 +20,11 @@ interface PricingPageProps {
     searchParams: Promise<{ from?: string }>
 }
 
-function PricingCard({ tier, isPopular = false, fromNewUser = false }: {
+function PricingCard({ tier, isPopular = false, fromNewUser = false, soldOut = false }: {
     tier: SubscriptionTier
     isPopular?: boolean
     fromNewUser?: boolean
+    soldOut?: boolean
 }) {
     const config = SUBSCRIPTION_TIERS[tier]
     const isLifetime = tier === 'lifetime_launch'
@@ -122,6 +122,7 @@ function PricingCard({ tier, isPopular = false, fromNewUser = false }: {
                     isLifetime={isLifetime}
                     buttonText={getButtonText()}
                     variant={getButtonVariant()}
+                    soldOut={soldOut}
                 />
             </CardFooter>
         </Card>
@@ -131,6 +132,10 @@ function PricingCard({ tier, isPopular = false, fromNewUser = false }: {
 export default async function PricingPage({ searchParams }: PricingPageProps) {
     const params = await searchParams
     const fromNewUser = params.from === 'new_user'
+
+    // Check lifetime slot availability
+    const lifetimeSlotInfo = await getLifetimeSlotInfo()
+    const lifetimeSoldOut = !lifetimeSlotInfo.available
 
     return (
         <div className="flex min-h-screen flex-col">
@@ -190,6 +195,7 @@ export default async function PricingPage({ searchParams }: PricingPageProps) {
                             tier="lifetime_launch"
                             isPopular={true}
                             fromNewUser={fromNewUser}
+                            soldOut={lifetimeSoldOut}
                         />
 
                         {/* Pro Monthly (Most Popular) */}

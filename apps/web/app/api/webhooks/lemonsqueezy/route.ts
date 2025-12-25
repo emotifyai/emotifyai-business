@@ -120,14 +120,14 @@ export async function POST(request: NextRequest) {
                 }
 
                 const tier = getSubscriptionTier(variantId)
-                
+
                 // Get credit limits based on tier
                 const getCreditLimit = (tier: SubscriptionTier): number => {
                     switch (tier) {
                         case SubscriptionTier.FREE:
                             return 50
                         case SubscriptionTier.LIFETIME_LAUNCH:
-                            return 500
+                            return 1000
                         case SubscriptionTier.BASIC_MONTHLY:
                         case SubscriptionTier.BASIC_ANNUAL:
                             return 350
@@ -153,8 +153,8 @@ export async function POST(request: NextRequest) {
                     cancel_at: attrs.ends_at || null,
                     credits_limit: getCreditLimit(tier),
                     credits_used: 0,
-                    credits_reset_date: tier === SubscriptionTier.FREE ? null : 
-                        (tier.includes('annual') ? 
+                    credits_reset_date: tier === SubscriptionTier.FREE ? null :
+                        (tier.includes('annual') ?
                             new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString() :
                             new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()),
                     validity_days: tier === SubscriptionTier.FREE ? 10 : null,
@@ -173,6 +173,21 @@ export async function POST(request: NextRequest) {
                         }
 
                         console.log(`Reserved lifetime slot #${subscriberNumber} for user ${(profile as any).id}`)
+
+                        // Check if we've hit the limit (500 subscribers)
+                        // Import the product manager at the top of the file
+                        const { disableLifetimeProduct } = await import('@/lib/lemonsqueezy/product-manager')
+
+                        if (subscriberNumber >= 500) {
+                            console.log('[Lifetime Slots] SOLD OUT! Disabling lifetime product in Lemon Squeezy...')
+                            const disabled = await disableLifetimeProduct()
+
+                            if (disabled) {
+                                console.log('[Lifetime Slots] Successfully disabled lifetime product')
+                            } else {
+                                console.error('[Lifetime Slots] Failed to disable lifetime product - manual intervention required!')
+                            }
+                        }
                     } catch (error) {
                         console.error('Error reserving lifetime slot:', error)
                         return NextResponse.json({ error: 'Lifetime slots exhausted' }, { status: 400 })

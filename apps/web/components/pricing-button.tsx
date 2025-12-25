@@ -15,6 +15,7 @@ interface PricingButtonProps {
     isLifetime: boolean
     buttonText: string
     variant: 'default' | 'outline' | 'glow' | 'destructive' | 'secondary' | 'ghost' | 'link'
+    soldOut?: boolean
 }
 
 export function PricingButton({
@@ -23,7 +24,8 @@ export function PricingButton({
     isFree,
     isLifetime,
     buttonText,
-    variant
+    variant,
+    soldOut = false
 }: PricingButtonProps) {
     const router = useRouter()
     const [isLoading, setIsLoading] = useState(false)
@@ -58,6 +60,15 @@ export function PricingButton({
             console.error(error)
             setIsLoading(false)
         }
+    }
+
+    // Show SOLD OUT for lifetime if no slots available
+    if (soldOut && isLifetime) {
+        return (
+            <Button className="w-full" variant="destructive" disabled>
+                SOLD OUT
+            </Button>
+        )
     }
 
     // Logic for Free Plan

@@ -59,11 +59,11 @@ export const SUBSCRIPTION_TIERS: Record<SubscriptionTier, SubscriptionTierConfig
         id: 'lifetime_launch',
         name: 'Lifetime Launch Offer',
         price: 97,
-        generations: 500,
+        generations: 1000,
         duration: 'lifetime',
         maxSubscribers: 500,
         features: [
-            '500 generations per month',
+            '1000 generations per month',
             'Lifetime access',
             'All languages',
             'Priority support',

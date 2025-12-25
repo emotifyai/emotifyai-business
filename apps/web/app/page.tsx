@@ -15,9 +15,6 @@ export default function Home() {
         {/* Hero Section */}
         <section className="container py-24 md:py-32">
           <div className="mx-auto max-w-3xl text-center">
-            <Badge className="mb-4" variant="secondary">
-              Powered by Claude 3.5 Sonnet
-            </Badge>
             <h1 className="mb-6 text-4xl font-bold tracking-tight sm:text-6xl">
               Enhance Your Writing with{' '}
               <span className="text-gradient-brand">AI Power</span>
