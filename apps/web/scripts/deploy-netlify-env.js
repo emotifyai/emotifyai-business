@@ -188,8 +188,18 @@ function parseEnvFile(filePath) {
             const match = line.match(/^([A-Z_][A-Z0-9_]*)\s*=\s*(.*)$/);
             if (match) {
                 const [, key, value] = match;
+
+                // Remove trailing comments (after #) if not inside quotes
+                let cleanValue = value;
+                if (!value.startsWith('"') && !value.startsWith("'") && value.includes('#')) {
+                    cleanValue = value.split('#')[0].trim();
+                } else {
+                    cleanValue = value.trim();
+                }
+
                 // Remove quotes if present
-                const cleanValue = value.replace(/^["']|["']$/g, '');
+                cleanValue = cleanValue.replace(/^["']|["']$/g, '');
+
                 envVars[key] = cleanValue;
             }
         });
@@ -228,24 +238,28 @@ async function setNetlifyEnvVars(envVars, cliCommand) {
         try {
             // Check if this is a sensitive variable
             const isSensitive = sensitiveKeys.some(sensitive => key.includes(sensitive));
-            const displayValue = isSensitive ? '[HIDDEN]' : value;
+            const displayValue = isSensitive ? `****${value.slice(-4)}` : value;
 
-            log(`  Setting ${key}=${displayValue}...`, 'blue');
+            log(`🦆 DUCK: Setting ${key}=${displayValue}...`, 'blue');
 
-            // Use key=value syntax to avoid issues with negative values
-            // --force flag is required to overwrite existing variables
-            const result = executeCommand(`${cliCommand} env:set ${key}="${value}" --filter emotifyai-web --force`, { silent: true });
+            // Use single quotes for the value in the command to prevent shell interpolation
+            // and escape any single quotes in the value itself
+            const safeValue = value.replace(/'/g, "'\\''");
+            const command = `${cliCommand} env:set ${key} '${safeValue}' --filter emotifyai-web --force`;
+
+            const result = executeCommand(command, { silent: true });
 
             if (result.success) {
                 results.success.push(key);
-                log(`    ✅ ${key} set successfully`, 'green');
+                log(`    ✅ 🦆 DUCK: ${key} set successfully`, 'green');
             } else {
                 results.failed.push({ key, error: result.error });
-                log(`    ❌ Failed to set ${key}: ${result.error}`, 'red');
+                log(`    ❌ 🦆 DUCK: Failed to set ${key}: ${result.error}`, 'red');
+                if (result.output) log(`       Output: ${result.output}`, 'red');
             }
         } catch (error) {
             results.failed.push({ key, error: error.message });
-            log(`    ❌ Failed to set ${key}: ${error.message}`, 'red');
+            log(`    ❌ 🦆 DUCK: Exception setting ${key}: ${error.message}`, 'red');
         }
     }
 
