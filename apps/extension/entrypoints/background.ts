@@ -4,12 +4,12 @@ import { getAuthToken, incrementUsage, watchStorage } from '@/utils/storage';
 import { logger } from '@/utils/logger';
 import { SubscriptionError, LanguageNotSupportedError, AuthenticationError } from '@/utils/errors';
 import type { EnhanceTextMessage, EnhanceTextResponse } from '@/types';
-import {browser} from "wxt/browser";
+import { browser } from "wxt/browser";
 
 export default defineBackground(() => {
   console.log('🦆 DUCK: Background script starting');
   logger.info('Background script initialized');
-  
+
   // Log extension ID for debugging
   console.log('🦆 DUCK: Extension ID:', browser.runtime.id);
   logger.info('Extension ID:', browser.runtime.id);
@@ -30,7 +30,7 @@ export default defineBackground(() => {
     console.log('🦆 DUCK: Menu item ID:', info.menuItemId);
     console.log('🦆 DUCK: Selection text:', info.selectionText?.substring(0, 50) + '...');
     console.log('🦆 DUCK: Tab info:', { id: tab?.id, url: tab?.url });
-    
+
     if (info.menuItemId === 'enhance-text' && info.selectionText) {
       console.log('🦆 DUCK: ✅ Valid context menu click, calling handleEnhanceText');
       await handleEnhanceText(info.selectionText, tab?.id);
@@ -51,39 +51,43 @@ export default defineBackground(() => {
   });
 
   // Handle external messages from web app
-  browser.runtime.onMessageExternal.addListener((message, sender, sendResponse) => {
-    console.log('🦆 DUCK: External message received in background script');
-    console.log('🦆 DUCK: Message:', message);
-    console.log('🦆 DUCK: Sender URL:', sender.url);
-    logger.info('Received external message', { message, sender: sender.url });
-    
-    // Only accept messages from allowed origins
-    const allowedOrigins = [
-      'http://localhost:3000',
-      'https://emotifyai.com'
-    ];
-    
-    const senderOrigin = sender.url ? new URL(sender.url).origin : '';
-    console.log('🦆 DUCK: Sender origin:', senderOrigin);
-    console.log('🦆 DUCK: Allowed origins:', allowedOrigins);
-    
-    if (!allowedOrigins.includes(senderOrigin)) {
-      console.log('🦆 DUCK: ❌ Rejected message from unauthorized origin');
-      logger.warn('Rejected message from unauthorized origin', { origin: senderOrigin });
-      sendResponse({ success: false, error: 'Unauthorized origin' });
-      return;
-    }
-    
-    console.log('🦆 DUCK: ✅ Origin authorized, processing message');
+  if (browser.runtime.onMessageExternal) {
+    browser.runtime.onMessageExternal.addListener((message, sender, sendResponse) => {
+      console.log('🦆 DUCK: External message received in background script');
+      console.log('🦆 DUCK: Message:', message);
+      console.log('🦆 DUCK: Sender URL:', sender.url);
+      logger.info('Received external message', { message, sender: sender.url });
 
-    handleMessage(message, sender)
-      .then(sendResponse)
-      .catch((error) => {
-        logger.error('External message handling failed', error);
-        sendResponse({ success: false, error: error.message });
-      });
-    return true; // Keep channel open for async response
-  });
+      // Only accept messages from allowed origins
+      const allowedOrigins = [
+        'http://localhost:3000',
+        'https://emotifyai.com',
+        'https://emotifyai.netlify.app',
+        'https://bright-marzipan-1b48f4.netlify.app'
+      ];
+
+      const senderOrigin = sender.url ? new URL(sender.url).origin : '';
+      console.log('🦆 DUCK: Sender origin:', senderOrigin);
+      console.log('🦆 DUCK: Allowed origins:', allowedOrigins);
+
+      if (!allowedOrigins.includes(senderOrigin)) {
+        console.log('🦆 DUCK: ❌ Rejected message from unauthorized origin');
+        logger.warn('Rejected message from unauthorized origin', { origin: senderOrigin });
+        sendResponse({ success: false, error: 'Unauthorized origin' });
+        return;
+      }
+
+      console.log('🦆 DUCK: ✅ Origin authorized, processing message');
+
+      handleMessage(message, sender)
+        .then(sendResponse)
+        .catch((error) => {
+          logger.error('External message handling failed', error);
+          sendResponse({ success: false, error: error.message });
+        });
+      return true; // Keep channel open for async response
+    });
+  }
 });
 
 // Create context menu
@@ -114,11 +118,11 @@ async function updateContextMenuState(isAuthenticated: boolean): Promise<void> {
   try {
     console.log('🦆 DUCK: Updating context menu state');
     console.log('🦆 DUCK: Is authenticated:', isAuthenticated);
-    
+
     await browser.contextMenus.update('enhance-text', {
       enabled: isAuthenticated,
     });
-    
+
     console.log('🦆 DUCK: ✅ Context menu state updated');
     logger.debug('Context menu updated', { enabled: isAuthenticated });
   } catch (error) {
@@ -132,13 +136,13 @@ async function handleEnhanceText(text: string, tabId?: number): Promise<void> {
     console.log('🦆 DUCK: handleEnhanceText called');
     console.log('🦆 DUCK: Text:', text.substring(0, 50) + '...');
     console.log('🦆 DUCK: Tab ID:', tabId);
-    
+
     logger.info('Showing enhancement popup from context menu', { textLength: text.length });
 
     // Check authentication first
     const token = await getAuthToken();
     console.log('🦆 DUCK: Auth token available:', !!token);
-    
+
     if (!token) {
       console.log('🦆 DUCK: ❌ No auth token, showing error');
       if (tabId) {
@@ -151,7 +155,7 @@ async function handleEnhanceText(text: string, tabId?: number): Promise<void> {
     }
 
     console.log('🦆 DUCK: ✅ Auth token found, sending SHOW_ENHANCEMENT_POPUP message');
-    
+
     // Show enhancement popup in content script
     if (tabId) {
       console.log('🦆 DUCK: Sending message to tab:', tabId);
@@ -160,7 +164,7 @@ async function handleEnhanceText(text: string, tabId?: number): Promise<void> {
         payload: { text },
       };
       console.log('🦆 DUCK: Message:', message);
-      
+
       await browser.tabs.sendMessage(tabId, message);
       console.log('🦆 DUCK: ✅ Message sent successfully');
     } else {
@@ -189,25 +193,25 @@ async function handleMessage(message: any, sender: any): Promise<any> {
     case 'ENHANCE_TEXT': {
       console.log('🦆 DUCK: ENHANCE_TEXT message received');
       console.log('🦆 DUCK: Payload:', payload);
-      
+
       const { text, options } = payload as EnhanceTextMessage;
       console.log('🦆 DUCK: Text to enhance:', text?.substring(0, 50) + '...');
       console.log('🦆 DUCK: Options:', options);
-      
+
       try {
         console.log('🦆 DUCK: Checking usage limits...');
         await checkLimit();
         console.log('🦆 DUCK: ✅ Usage limit check passed');
-        
+
         console.log('🦆 DUCK: Calling enhanceText API...');
         const result = await enhanceText(text, options);
         console.log('🦆 DUCK: ✅ Enhancement API successful');
         console.log('🦆 DUCK: Enhanced text:', result.enhancedText?.substring(0, 50) + '...');
-        
+
         console.log('🦆 DUCK: Incrementing usage...');
         await incrementUsage();
         console.log('🦆 DUCK: ✅ Usage incremented');
-        
+
         return { success: true, enhancedText: result.enhancedText } as EnhanceTextResponse;
       } catch (error: any) {
         console.log('🦆 DUCK: ❌ Enhancement failed:', error);
@@ -230,7 +234,7 @@ async function handleMessage(message: any, sender: any): Promise<any> {
         console.log('🦆 DUCK: User data:', payload?.user);
         console.log('🦆 DUCK: Token present:', !!payload?.token);
         logger.info('Received auth success notification from web app', { user: payload?.user });
-        
+
         if (!payload?.user || !payload?.token) {
           console.log('🦆 DUCK: ❌ Missing user data or token');
           logger.error('Missing user data or token in auth success message');
@@ -240,19 +244,19 @@ async function handleMessage(message: any, sender: any): Promise<any> {
         console.log('🦆 DUCK: Importing storage utilities');
         // Import storage utilities
         const { setUserProfile, setAuthToken } = await import('@/utils/storage');
-        
+
         console.log('🦆 DUCK: Storing user profile and token');
         // Store the user profile and real Supabase token from the web app
         await setUserProfile(payload.user);
         await setAuthToken(payload.token);
-        
+
         console.log('🦆 DUCK: ✅ Authentication data stored successfully');
         logger.info('Extension authentication updated from web app notification');
-        
+
         // Update context menu state
         console.log('🦆 DUCK: Updating context menu state');
         await updateContextMenuState(true);
-        
+
         console.log('🦆 DUCK: ✅ Auth success handling complete');
         return { success: true, message: 'Authentication updated' };
       } catch (error: any) {

@@ -5,13 +5,16 @@ import path from 'path';
 
 // See https://wxt.dev/api/config.html
 export default defineConfig({
+  // @ts-ignore
   modules: ['@wxt-dev/module-react'],
   dev: {
     server: {
       port: 4250,
     },
   },
+  // @ts-ignore
   vite: (): UserConfig => ({
+    // @ts-ignore
     plugins: [tailwindcss()],
     resolve: {
       alias: {
@@ -64,6 +67,8 @@ export default defineConfig({
       matches: [
         'http://localhost:3000/*',
         'https://emotifyai.com/*',
+        'https://emotifyai.netlify.app/*',
+        'https://bright-marzipan-1b48f4.netlify.app/*',
       ],
     },
     icons: {

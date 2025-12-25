@@ -34,11 +34,11 @@ const sidebarItems = [
         href: '/dashboard/subscription',
         icon: CreditCard,
     },
-    {
-        title: 'API Keys',
-        href: '/dashboard/api-keys',
-        icon: Key,
-    },
+    // {
+    //     title: 'API Keys',
+    //     href: '/dashboard/api-keys',
+    //     icon: Key,
+    // },
     {
         title: 'Settings',
         href: '/dashboard/settings',
