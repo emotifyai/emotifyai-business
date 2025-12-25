@@ -14,7 +14,8 @@
     "find-claude-models": "bun run scripts/find-claude-models.ts",
     "claude-demo": "bun run scripts/claude-demo.ts",
     "claude-simple": "bun run scripts/claude-simple-demo.ts",
-    "generate:assets": "bun run scripts/generate-assets.ts"
+    "generate:assets": "bun run scripts/generate-assets.ts",
+    "deploy:netlify-env": "node scripts/deploy-netlify-env.js"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.71.2",

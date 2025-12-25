@@ -23,9 +23,9 @@ const __dirname = path.dirname(__filename);
 
 // Configuration
 const CONFIG = {
-    PROJECT_NAME: 'precious-cat-ad61fe',
+    PROJECT_NAME: 'emotifyai',
     ENV_FILE: '.env', // Can be changed to '.env.production' later
-    BASE_PATH: path.join(__dirname, '..', 'apps', 'web'),
+    BASE_PATH: path.join(__dirname, '..'), // Go up from scripts/ to apps/web/
     REQUIRED_NODE_ENV: 'production'
 };
 
@@ -233,7 +233,8 @@ async function setNetlifyEnvVars(envVars, cliCommand) {
             log(`  Setting ${key}=${displayValue}...`, 'blue');
 
             // Use key=value syntax to avoid issues with negative values
-            const result = executeCommand(`${cliCommand} env:set ${key}="${value}" --filter emotifyai-web`, { silent: true });
+            // --force flag is required to overwrite existing variables
+            const result = executeCommand(`${cliCommand} env:set ${key}="${value}" --filter emotifyai-web --force`, { silent: true });
 
             if (result.success) {
                 results.success.push(key);

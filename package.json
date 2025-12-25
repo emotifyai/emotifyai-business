@@ -25,8 +25,7 @@
     "test:web:coverage": "cd apps/web && bun run test:coverage",
     "install:all": "bun install",
     "zip:ext": "cd apps/extension && bun run zip",
-    "zip:ext:firefox": "cd apps/extension && bun run zip:firefox",
-    "deploy:netlify-env": "node scripts/deploy-netlify-env.js"
+    "zip:ext:firefox": "cd apps/extension && bun run zip:firefox"
   },
   "devDependencies": {
     "@types/bun": "latest",
