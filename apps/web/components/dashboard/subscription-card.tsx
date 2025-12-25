@@ -1,5 +1,7 @@
 'use client'
 
+import { useState } from 'react'
+import Link from 'next/link'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@ui/card'
 import { Button } from '@ui/button'
 import { Badge } from '@ui/badge'
@@ -22,6 +24,28 @@ interface SubscriptionCardProps {
 export function SubscriptionCard({ tier, status, currentPeriodEnd, usage }: SubscriptionCardProps) {
     const isPro = tier !== SubscriptionTier.TRIAL
     const isLifetime = tier === SubscriptionTier.LIFETIME_LAUNCH
+
+    const [isLoading, setIsLoading] = useState(false)
+
+    const handleManageSubscription = async () => {
+        try {
+            setIsLoading(true)
+            const response = await fetch('/api/billing/portal', {
+                method: 'POST',
+            })
+            const data = await response.json()
+
+            if (data.url) {
+                window.location.href = data.url
+            } else {
+                console.error('Failed to get portal URL:', data.error)
+            }
+        } catch (error) {
+            console.error('Error opening billing portal:', error)
+        } finally {
+            setIsLoading(false)
+        }
+    }
 
     return (
         <Card className={isPro ? "border-primary/50" : ""}>
@@ -67,8 +91,20 @@ export function SubscriptionCard({ tier, status, currentPeriodEnd, usage }: Subs
             </CardContent>
             <CardFooter>
                 {!isLifetime && (
-                    <Button className="w-full" variant={isPro ? "outline" : "glow"}>
-                        {isPro ? "Manage Subscription" : "Upgrade to Pro"}
+                    <Button
+                        className="w-full"
+                        variant={isPro ? "outline" : "glow"}
+                        asChild={!isPro}
+                        onClick={isPro ? handleManageSubscription : undefined}
+                        disabled={isLoading}
+                    >
+                        {isPro ? (
+                            isLoading ? "Loading..." : "Manage Subscription"
+                        ) : (
+                            <Link href="/pricing">
+                                Upgrade to Pro
+                            </Link>
+                        )}
                     </Button>
                 )}
             </CardFooter>
