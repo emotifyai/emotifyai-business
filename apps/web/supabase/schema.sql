@@ -642,3 +642,33 @@ Key Features:
 -- =============================================================================
 -- END OF SCHEMA
 -- =============================================================================
+
+-- Create the missing function that matches what the TypeScript code expects
+CREATE OR REPLACE FUNCTION public.get_lifetime_slot_info()
+RETURNS TABLE (
+    total INTEGER,
+    used INTEGER,
+    remaining INTEGER,
+    percentage INTEGER
+) AS $$
+DECLARE
+    used_count INTEGER;
+    remaining_count INTEGER;
+BEGIN
+    SELECT COUNT(*) INTO used_count FROM public.lifetime_subscribers;
+    remaining_count := GREATEST(0, 500 - used_count);
+    
+    RETURN QUERY SELECT
+        500 as total,
+        used_count as used,
+        remaining_count as remaining,
+        CASE 
+            WHEN used_count > 0 THEN ROUND((used_count::NUMERIC / 500) * 100)::INTEGER
+            ELSE 0
+        END as percentage;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- Grant execute permission
+GRANT EXECUTE ON FUNCTION public.get_lifetime_slot_info() TO authenticated;
+GRANT EXECUTE ON FUNCTION public.get_lifetime_slot_info() TO anon;
