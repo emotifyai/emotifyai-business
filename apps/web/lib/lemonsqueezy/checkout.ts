@@ -1,13 +1,10 @@
 import { createCheckout } from '@lemonsqueezy/lemonsqueezy.js'
 import { getVariantId, LEMONSQUEEZY_CONFIG } from './config'
 import { SubscriptionTier } from '@/lib/subscription/types'
-import { lemonSqueezySetup } from './client'
+import { configureLemonSqueezy } from './client'
 
 // Ensure Lemon Squeezy is initialized
-lemonSqueezySetup({
-    apiKey: LEMONSQUEEZY_CONFIG.apiKey,
-    onError: (error) => console.error('Lemon Squeezy Error:', error),
-})
+configureLemonSqueezy()
 
 interface CreateCheckoutOptions {
     tier: SubscriptionTier
