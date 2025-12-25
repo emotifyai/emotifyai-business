@@ -6,6 +6,7 @@ import { useUsageStats, useUsageHistory } from '@/lib/hooks/use-usage'
 import { StatsCard } from '@/components/dashboard/stats-card'
 import { UsageChart } from '@/components/dashboard/usage-chart'
 import { SubscriptionCard } from '@/components/dashboard/subscription-card'
+import { PlanHandler } from './components/plan-handler'
 import { BarChart3, Zap, CreditCard, Activity, AlertCircle } from 'lucide-react'
 import { Skeleton } from '@ui/skeleton'
 import { Alert, AlertDescription } from '@ui/alert'
@@ -23,7 +24,7 @@ export default function DashboardPage() {
     }
 
     // Handle authentication errors
-    if (userError?.message.includes('Authentication required') || 
+    if (userError?.message.includes('Authentication required') ||
         usageError?.message.includes('Authentication required')) {
         return (
             <div className="space-y-8">
@@ -47,9 +48,9 @@ export default function DashboardPage() {
                         <span>
                             Failed to load dashboard data: {usageError?.message || subError?.message}
                         </span>
-                        <Button 
-                            variant="outline" 
-                            size="sm" 
+                        <Button
+                            variant="outline"
+                            size="sm"
                             onClick={() => refetchUsage()}
                         >
                             Retry
@@ -67,7 +68,7 @@ export default function DashboardPage() {
     const usagePercentage = totalCredits > 0 ? (usage.credits_used / totalCredits) * 100 : 0
 
     // Transform history data for chart
-    const chartData = historyPages?.pages.flatMap((page: any) => 
+    const chartData = historyPages?.pages.flatMap((page: any) =>
         page.data.map((log: any) => ({
             date: log.created_at,
             count: log.credits_consumed,
@@ -76,6 +77,7 @@ export default function DashboardPage() {
 
     return (
         <div className="space-y-8">
+            <PlanHandler />
             <div>
                 <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
                 <p className="text-muted-foreground">

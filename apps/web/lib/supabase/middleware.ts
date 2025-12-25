@@ -64,7 +64,7 @@ export async function updateSession(request: NextRequest) {
     // Redirect authenticated users away from auth pages
     if (isAuthPath && user) {
         const url = request.nextUrl.clone()
-        
+
         // Special handling for extension signup flow
         if (request.nextUrl.searchParams.get('source') === 'extension') {
             url.pathname = '/auth/extension-success'
@@ -74,9 +74,14 @@ export async function updateSession(request: NextRequest) {
                 url.searchParams.set('redirect_to', redirectTo)
             }
         } else {
+            // Preserve plan parameter if coming from signup
+            const plan = request.nextUrl.searchParams.get('plan')
             url.pathname = '/dashboard'
+            if (plan) {
+                url.searchParams.set('plan', plan)
+            }
         }
-        
+
         return NextResponse.redirect(url)
     }
 

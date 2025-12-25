@@ -9,6 +9,7 @@ import { LifetimeSlotCounter } from '@/components/LifetimeSlotCounter'
 import { PricingButton } from '@/components/pricing-button'
 import { SUBSCRIPTION_TIERS, getSortedTiers, calculateAnnualSavings, getMonthlyEquivalent } from '@/lib/subscription/types'
 import { getLifetimeSlotInfo } from '@/lib/subscription/lifetime-slots'
+import { createClient } from '@/lib/supabase/server'
 import type { SubscriptionTier } from '@/lib/subscription/types'
 
 export const metadata: Metadata = {
@@ -20,11 +21,12 @@ interface PricingPageProps {
     searchParams: Promise<{ from?: string }>
 }
 
-function PricingCard({ tier, isPopular = false, fromNewUser = false, soldOut = false }: {
+function PricingCard({ tier, isPopular = false, fromNewUser = false, soldOut = false, isAuthenticated = false }: {
     tier: SubscriptionTier
     isPopular?: boolean
     fromNewUser?: boolean
     soldOut?: boolean
+    isAuthenticated?: boolean
 }) {
     const config = SUBSCRIPTION_TIERS[tier]
     const isLifetime = tier === 'lifetime_launch'
@@ -123,6 +125,7 @@ function PricingCard({ tier, isPopular = false, fromNewUser = false, soldOut = f
                     buttonText={getButtonText()}
                     variant={getButtonVariant()}
                     soldOut={soldOut}
+                    isAuthenticated={isAuthenticated}
                 />
             </CardFooter>
         </Card>
@@ -132,6 +135,11 @@ function PricingCard({ tier, isPopular = false, fromNewUser = false, soldOut = f
 export default async function PricingPage({ searchParams }: PricingPageProps) {
     const params = await searchParams
     const fromNewUser = params.from === 'new_user'
+
+    // Check authentication
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    const isAuthenticated = !!user
 
     // Check lifetime slot availability
     const lifetimeSlotInfo = await getLifetimeSlotInfo()
@@ -188,6 +196,7 @@ export default async function PricingPage({ searchParams }: PricingPageProps) {
                         <PricingCard
                             tier="trial"
                             fromNewUser={fromNewUser}
+                            isAuthenticated={isAuthenticated}
                         />
 
                         {/* Lifetime Launch Offer */}
@@ -196,6 +205,7 @@ export default async function PricingPage({ searchParams }: PricingPageProps) {
                             isPopular={true}
                             fromNewUser={fromNewUser}
                             soldOut={lifetimeSoldOut}
+                            isAuthenticated={isAuthenticated}
                         />
 
                         {/* Pro Monthly (Most Popular) */}
@@ -203,6 +213,7 @@ export default async function PricingPage({ searchParams }: PricingPageProps) {
                             tier="pro_monthly"
                             isPopular={false}
                             fromNewUser={fromNewUser}
+                            isAuthenticated={isAuthenticated}
                         />
                     </div>
 
@@ -210,14 +221,14 @@ export default async function PricingPage({ searchParams }: PricingPageProps) {
                     <div className="mt-16 max-w-7xl mx-auto">
                         <h3 className="text-2xl font-bold text-center mb-8">More Options</h3>
                         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                            <PricingCard tier="basic_monthly" fromNewUser={fromNewUser} />
-                            <PricingCard tier="business_monthly" fromNewUser={fromNewUser} />
-                            <PricingCard tier="pro_annual" fromNewUser={fromNewUser} />
+                            <PricingCard tier="basic_monthly" fromNewUser={fromNewUser} isAuthenticated={isAuthenticated} />
+                            <PricingCard tier="business_monthly" fromNewUser={fromNewUser} isAuthenticated={isAuthenticated} />
+                            <PricingCard tier="pro_annual" fromNewUser={fromNewUser} isAuthenticated={isAuthenticated} />
                         </div>
 
                         <div className="grid gap-6 md:grid-cols-2 mt-6 max-w-2xl mx-auto">
-                            <PricingCard tier="basic_annual" fromNewUser={fromNewUser} />
-                            <PricingCard tier="business_annual" fromNewUser={fromNewUser} />
+                            <PricingCard tier="basic_annual" fromNewUser={fromNewUser} isAuthenticated={isAuthenticated} />
+                            <PricingCard tier="business_annual" fromNewUser={fromNewUser} isAuthenticated={isAuthenticated} />
                         </div>
                     </div>
 

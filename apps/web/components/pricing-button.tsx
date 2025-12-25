@@ -16,6 +16,7 @@ interface PricingButtonProps {
     buttonText: string
     variant: 'default' | 'outline' | 'glow' | 'destructive' | 'secondary' | 'ghost' | 'link'
     soldOut?: boolean
+    isAuthenticated?: boolean
 }
 
 export function PricingButton({
@@ -25,7 +26,8 @@ export function PricingButton({
     isLifetime,
     buttonText,
     variant,
-    soldOut = false
+    soldOut = false,
+    isAuthenticated = false
 }: PricingButtonProps) {
     const router = useRouter()
     const [isLoading, setIsLoading] = useState(false)
@@ -73,7 +75,7 @@ export function PricingButton({
 
     // Logic for Free Plan
     if (isFree) {
-        if (fromNewUser) {
+        if (fromNewUser || isAuthenticated) {
             return (
                 <Button className="w-full" variant={variant} asChild>
                     <Link href="/dashboard">
@@ -92,6 +94,22 @@ export function PricingButton({
     }
 
     // Logic for Paid Plans
+    // If user is authenticated (and not from new_user flow), trigger checkout directly
+    if (isAuthenticated && !fromNewUser) {
+        return (
+            <Button
+                className="w-full"
+                variant={variant}
+                onClick={handleCheckout}
+                disabled={isLoading}
+            >
+                {isLoading && <LoadingSpinner className="mr-2 h-4 w-4" />}
+                {buttonText}
+            </Button>
+        )
+    }
+
+    // If from new user (just signed up), trigger checkout
     if (fromNewUser) {
         return (
             <Button
@@ -106,7 +124,7 @@ export function PricingButton({
         )
     }
 
-    // Default: Not logged in / Not from new user -> Go to signup
+    // Default: Not logged in -> Go to signup with plan parameter
     return (
         <Button className="w-full" variant={variant} asChild>
             <Link href={`/signup?plan=${tier}`}>
