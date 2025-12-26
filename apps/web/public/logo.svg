@@ -13,9 +13,6 @@
     </filter>
   </defs>
   
-  <!-- Background -->
-  <rect width="512" height="512" rx="120" fill="#030712" />
-  
   <!-- The "E" Logo - Geometric and Modern -->
   <path 
     d="M140 140 H380 V195 H205 V240 H350 V290 H205 V335 H380 V390 H140 Z" 
