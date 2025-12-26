@@ -109,7 +109,8 @@ export async function POST(request: NextRequest) {
         webhookLog.info(`Processing Lemon Squeezy webhook: ${eventName}`, {
             eventName,
             dataId: payload.data.id,
-            dataType: payload.data.type
+            dataType: payload.data.type,
+            fullPayload: payload
         })
 
         // Get admin Supabase client (bypasses RLS)
@@ -119,10 +120,13 @@ export async function POST(request: NextRequest) {
         switch (eventName) {
             case 'subscription_created':
             case 'subscription_updated': {
-                const attrs = payload.data.attributes as any
+                // @ts-ignore
+                const attrs = payload.data.attributes
 
                 // Extract user ID from custom data or email
+                // @ts-ignore
                 const userEmail = attrs.user_email
+                // @ts-ignore
                 const variantId = attrs.variant_id.toString()
 
                 console.log(`Processing ${eventName} for email: ${userEmail}, variant: ${variantId}`)
@@ -133,23 +137,37 @@ export async function POST(request: NextRequest) {
                     eventName: eventName
                 })
 
-                // Find the user by email
+                // Find the user by email (case-insensitive)
+                // @ts-ignore
                 const { data: profile, error: profileError } = await supabase
                     .from('profiles')
                     .select('id, email')
-                    .eq('email', userEmail)
+                    .ilike('email', userEmail as string)
                     .single()
 
                 if (!profile || profileError) {
+                    // Try to get all profiles for debugging
+                    // @ts-ignore
+                    const { data: allProfiles } = await supabase
+                        .from('profiles')
+                        .select('id, email')
+                        .limit(10)
+
                     webhookLog.error(`User not found for email: ${userEmail}`, {
                         email: userEmail,
                         error: profileError?.message,
-                        availableProfiles: ['oshakaloosha72@gmail.com', 'sds@gmail.com', 'ahmedmuhmmed239@gmail.com']
+                        // @ts-ignore
+                        allProfiles: allProfiles?.map(p => ({ id: p.id, email: p.email })) || [],
+                        searchedEmail: userEmail,
+                        emailLength: (userEmail as string)?.length,
+                        emailTrimmed: (userEmail as string)?.trim()
                     })
                     return NextResponse.json({ 
                         error: 'User not found', 
                         details: `Please ensure user ${userEmail} has signed up and has a profile in the system`,
-                        userEmail 
+                        userEmail,
+                        // @ts-ignore
+                        availableEmails: allProfiles?.map(p => p.email) || []
                     }, { status: 404 })
                 }
 
@@ -177,13 +195,18 @@ export async function POST(request: NextRequest) {
                 }
 
                 const subscriptionData = {
-                    user_id: (profile as any).id,
+                    // @ts-ignore
+                    user_id: profile.id,
                     lemon_squeezy_id: payload.data.id,
+                    // @ts-ignore
                     status: mapSubscriptionStatus(attrs.status),
                     tier: tier,
                     tier_name: tier,
+                    // @ts-ignore
                     current_period_start: attrs.renews_at || new Date().toISOString(),
+                    // @ts-ignore
                     current_period_end: attrs.ends_at || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+                    // @ts-ignore
                     cancel_at: attrs.ends_at || null,
                     credits_limit: getCreditLimit(tier),
                     credits_used: 0,
@@ -197,8 +220,10 @@ export async function POST(request: NextRequest) {
                 // For lifetime subscriptions, reserve a slot
                 if (tier === SubscriptionTier.LIFETIME_LAUNCH && eventName === 'subscription_created') {
                     try {
-                        const { data: subscriberNumber, error: slotError } = await (supabase as any)
-                            .rpc('reserve_lifetime_subscriber_slot', { user_uuid: (profile as any).id })
+                        // @ts-ignore
+                        const { data: subscriberNumber, error: slotError } = await supabase
+                            // @ts-ignore
+                            .rpc('reserve_lifetime_subscriber_slot', { user_uuid: profile.id })
                             .single()
 
                         if (slotError) {
@@ -206,7 +231,8 @@ export async function POST(request: NextRequest) {
                             return NextResponse.json({ error: 'Lifetime slots exhausted' }, { status: 400 })
                         }
 
-                        console.log(`Reserved lifetime slot #${subscriberNumber} for user ${(profile as any).id}`)
+                        // @ts-ignore
+                        console.log(`Reserved lifetime slot #${subscriberNumber} for user ${profile.id}`)
 
                         // Check if we've hit the limit (500 subscribers)
                         // Import the product manager at the top of the file
@@ -229,8 +255,10 @@ export async function POST(request: NextRequest) {
                 }
 
                 // Upsert subscription
-                const { error } = await (supabase
-                    .from('subscriptions') as any)
+                // @ts-ignore
+                const { error } = await supabase
+                    .from('subscriptions')
+                    // @ts-ignore
                     .upsert(subscriptionData, {
                         onConflict: 'lemon_squeezy_id',
                     })
@@ -252,125 +280,125 @@ export async function POST(request: NextRequest) {
                 break
             }
 
-            case 'subscription_cancelled': {
-                const attrs = payload.data.attributes as any
-
-                // Update subscription status
-                const { error } = await (supabase
-                    .from('subscriptions') as any)
-                    .update({
-                        status: SubscriptionStatus.CANCELLED,
-                        cancel_at: attrs.ends_at,
-                    })
-                    .eq('lemon_squeezy_id', payload.data.id)
-
-                if (error) {
-                    console.error('Error updating subscription:', error)
-                    return NextResponse.json({ error: 'Database error' }, { status: 500 })
-                }
-
-                break
-            }
-
-            case 'subscription_resumed': {
-                const attrs = payload.data.attributes as any
-
-                // Update subscription status
-                const { error } = await (supabase
-                    .from('subscriptions') as any)
-                    .update({
-                        status: SubscriptionStatus.ACTIVE,
-                        cancel_at: null,
-                        current_period_end: attrs.renews_at,
-                    })
-                    .eq('lemon_squeezy_id', payload.data.id)
-
-                if (error) {
-                    console.error('Error updating subscription:', error)
-                    return NextResponse.json({ error: 'Database error' }, { status: 500 })
-                }
-
-                break
-            }
-
-            case 'subscription_expired': {
-                // Update subscription status
-                const { error } = await (supabase
-                    .from('subscriptions') as any)
-                    .update({
-                        status: SubscriptionStatus.EXPIRED,
-                    })
-                    .eq('lemon_squeezy_id', payload.data.id)
-
-                if (error) {
-                    console.error('Error updating subscription:', error)
-                    return NextResponse.json({ error: 'Database error' }, { status: 500 })
-                }
-
-                break
-            }
-
-            case 'subscription_paused':
-            case 'subscription_unpaused': {
-                const status = eventName === 'subscription_paused'
-                    ? SubscriptionStatus.PAUSED
-                    : SubscriptionStatus.ACTIVE
-
-                const { error } = await (supabase
-                    .from('subscriptions') as any)
-                    .update({ status })
-                    .eq('lemon_squeezy_id', payload.data.id)
-
-                if (error) {
-                    console.error('Error updating subscription:', error)
-                    return NextResponse.json({ error: 'Database error' }, { status: 500 })
-                }
-
-                break
-            }
-
             case 'order_created': {
-                const attrs = payload.data.attributes as any
+                // @ts-ignore
+                const attrs = payload.data.attributes
+                // @ts-ignore
                 const firstOrderItem = attrs.first_order_item
+                // @ts-ignore
                 const variantId = firstOrderItem?.variant_id?.toString()
-                const userEmail = attrs.user_email
+                // @ts-ignore
+                const userEmail = attrs.user_email?.trim()?.toLowerCase() // Normalize email
 
                 console.log(`Processing order_created for email: ${userEmail}, variant: ${variantId}`)
 
                 webhookLog.info('Processing order_created', {
                     email: userEmail,
+                    // @ts-ignore
+                    originalEmail: attrs.user_email,
                     variantId: variantId,
-                    isLifetime: variantId === process.env.LEMONSQUEEZY_LIFETIME_LAUNCH_VARIANT_ID
+                    expectedVariantId: process.env.LEMONSQUEEZY_LIFETIME_LAUNCH_VARIANT_ID,
+                    isLifetime: variantId === process.env.LEMONSQUEEZY_LIFETIME_LAUNCH_VARIANT_ID,
+                    variantIdType: typeof variantId,
+                    envVarType: typeof process.env.LEMONSQUEEZY_LIFETIME_LAUNCH_VARIANT_ID,
+                    orderData: {
+                        orderId: payload.data.id,
+                        // @ts-ignore
+                        status: attrs.status,
+                        // @ts-ignore
+                        total: attrs.total,
+                        // @ts-ignore
+                        currency: attrs.currency,
+                        // @ts-ignore
+                        userName: attrs.user_name
+                    }
                 })
 
                 // Only process Lifetime Launch purchases
-                if (variantId.toString() === process.env.LEMONSQUEEZY_LIFETIME_LAUNCH_VARIANT_ID) {
+                const isLifetimeVariant = variantId === process.env.LEMONSQUEEZY_LIFETIME_LAUNCH_VARIANT_ID
+                
+                if (isLifetimeVariant) {
                     webhookLog.info(`Processing Lifetime Launch order for ${userEmail}`)
 
-                    // Find the user by email
-                    const { data: profile, error: profileError } = await supabase
+                    // Find the user by email - try multiple approaches
+                    let foundProfile = null
+                    
+                    // Try case-insensitive search first
+                    // @ts-ignore
+                    const { data: profile1 } = await supabase
                         .from('profiles')
                         .select('id, email')
-                        .eq('email', userEmail)
+                        .ilike('email', userEmail as string)
                         .single()
 
-                    if (!profile || profileError) {
+                    if (profile1) {
+                        foundProfile = profile1
+                        webhookLog.info('Found user with case-insensitive search', {
+                            searchedEmail: userEmail,
+                            // @ts-ignore
+                            foundEmail: profile1.email,
+                            // @ts-ignore
+                            userId: profile1.id
+                        })
+                    } else {
+                        // Try exact match as fallback
+                        // @ts-ignore
+                        const { data: profile2 } = await supabase
+                            .from('profiles')
+                            .select('id, email')
+                            // @ts-ignore
+                            .eq('email', attrs.user_email)
+                            .single()
+
+                        if (profile2) {
+                            foundProfile = profile2
+                            webhookLog.info('Found user with exact match', {
+                                searchedEmail: userEmail,
+                                // @ts-ignore
+                                originalEmail: attrs.user_email,
+                                // @ts-ignore
+                                foundEmail: profile2.email,
+                                // @ts-ignore
+                                userId: profile2.id
+                            })
+                        }
+                    }
+
+                    if (!foundProfile) {
+                        // Try to get all profiles for debugging
+                        // @ts-ignore
+                        const { data: allProfiles } = await supabase
+                            .from('profiles')
+                            .select('id, email')
+                            .limit(10)
+
                         webhookLog.error(`User not found for lifetime order: ${userEmail}`, {
                             email: userEmail,
-                            error: profileError?.message,
-                            availableProfiles: ['oshakaloosha72@gmail.com', 'sds@gmail.com', 'ahmedmuhmmed239@gmail.com']
+                            // @ts-ignore
+                            originalEmail: attrs.user_email,
+                            // @ts-ignore
+                            allProfiles: allProfiles?.map(p => ({ id: p.id, email: p.email })) || [],
+                            searchedEmail: userEmail,
+                            emailLength: (userEmail as string)?.length,
+                            emailTrimmed: (userEmail as string)?.trim()
                         })
                         return NextResponse.json({ 
                             error: 'User not found', 
-                            details: `Please ensure user ${userEmail} has signed up and has a profile in the system`,
-                            userEmail 
+                            // @ts-ignore
+                            details: `Please ensure user ${attrs.user_email} has signed up and has a profile in the system`,
+                            // @ts-ignore
+                            userEmail: attrs.user_email,
+                            // @ts-ignore
+                            availableEmails: allProfiles?.map(p => p.email) || []
                         }, { status: 404 })
                     }
 
                     // Reserve a lifetime subscriber slot
                     try {
-                        const { data: subscriberNumber, error: slotError } = await (supabase as any)
-                            .rpc('reserve_lifetime_subscriber_slot', { user_uuid: (profile as any).id })
+                        // @ts-ignore
+                        const { data: subscriberNumber, error: slotError } = await supabase
+                            // @ts-ignore
+                            .rpc('reserve_lifetime_subscriber_slot', { user_uuid: foundProfile.id })
                             .single()
 
                         if (slotError) {
@@ -378,12 +406,14 @@ export async function POST(request: NextRequest) {
                             return NextResponse.json({ error: 'Lifetime slots exhausted' }, { status: 400 })
                         }
 
-                        console.log(`Reserved lifetime slot #${subscriberNumber} for user ${(profile as any).id}`)
+                        // @ts-ignore
+                        console.log(`Reserved lifetime slot #${subscriberNumber} for user ${foundProfile.id}`)
 
                         // Create subscription record for the lifetime purchase
                         const subscriptionData = {
-                            user_id: (profile as any).id,
-                            lemon_squeezy_id: payload.data.id, // Use order ID
+                            // @ts-ignore
+                            user_id: foundProfile.id,
+                            lemon_squeezy_id: `order_${payload.data.id}`, // Prefix to distinguish from subscription IDs
                             status: SubscriptionStatus.ACTIVE,
                             tier: SubscriptionTier.LIFETIME_LAUNCH,
                             tier_name: SubscriptionTier.LIFETIME_LAUNCH,
@@ -396,16 +426,40 @@ export async function POST(request: NextRequest) {
                             validity_days: null,
                         }
 
-                        const { error: insertError } = await (supabase
-                            .from('subscriptions') as any)
+                        webhookLog.info('Creating lifetime subscription', {
+                            // @ts-ignore
+                            userId: foundProfile.id,
+                            // @ts-ignore
+                            userEmail: foundProfile.email,
+                            subscriptionData: subscriptionData
+                        })
+
+                        // @ts-ignore
+                        const { error: insertError } = await supabase
+                            .from('subscriptions')
+                            // @ts-ignore
                             .upsert(subscriptionData, {
                                 onConflict: 'lemon_squeezy_id',
                             })
 
                         if (insertError) {
+                            webhookLog.error('Error creating lifetime subscription', {
+                                error: insertError.message,
+                                subscriptionData: subscriptionData,
+                                // @ts-ignore
+                                userId: foundProfile.id
+                            })
                             console.error('Error creating lifetime subscription:', insertError)
-                            return NextResponse.json({ error: 'Database error' }, { status: 500 })
+                            return NextResponse.json({ error: 'Database error', details: insertError.message }, { status: 500 })
                         }
+
+                        webhookLog.info('Successfully created lifetime subscription', {
+                            // @ts-ignore
+                            userId: foundProfile.id,
+                            // @ts-ignore
+                            userEmail: foundProfile.email,
+                            subscriberNumber: subscriberNumber
+                        })
 
                         // Check if we've hit the limit and disable product
                         if (subscriberNumber >= 500) {
@@ -426,24 +480,119 @@ export async function POST(request: NextRequest) {
                 } else {
                     webhookLog.info(`Ignoring non-lifetime order`, {
                         variantId: variantId,
-                        expectedLifetimeVariant: process.env.LEMONSQUEEZY_LIFETIME_LAUNCH_VARIANT_ID
+                        expectedLifetimeVariant: process.env.LEMONSQUEEZY_LIFETIME_LAUNCH_VARIANT_ID,
+                        reason: 'Variant ID does not match lifetime launch variant',
+                        userEmail: userEmail
                     })
                 }
 
                 break
             }
 
+            case 'subscription_cancelled': {
+                // @ts-ignore
+                const attrs = payload.data.attributes
+
+                // Update subscription status
+                // @ts-ignore
+                const { error } = await supabase
+                    .from('subscriptions')
+                    // @ts-ignore
+                    .update({
+                        status: SubscriptionStatus.CANCELLED,
+                        // @ts-ignore
+                        cancel_at: attrs.ends_at,
+                    })
+                    .eq('lemon_squeezy_id', payload.data.id)
+
+                if (error) {
+                    console.error('Error updating subscription:', error)
+                    return NextResponse.json({ error: 'Database error' }, { status: 500 })
+                }
+
+                break
+            }
+
+            case 'subscription_resumed': {
+                // @ts-ignore
+                const attrs = payload.data.attributes
+
+                // Update subscription status
+                // @ts-ignore
+                const { error } = await supabase
+                    .from('subscriptions')
+                    // @ts-ignore
+                    .update({
+                        status: SubscriptionStatus.ACTIVE,
+                        cancel_at: null,
+                        // @ts-ignore
+                        current_period_end: attrs.renews_at,
+                    })
+                    .eq('lemon_squeezy_id', payload.data.id)
+
+                if (error) {
+                    console.error('Error updating subscription:', error)
+                    return NextResponse.json({ error: 'Database error' }, { status: 500 })
+                }
+
+                break
+            }
+
+            case 'subscription_expired': {
+                // Update subscription status
+                // @ts-ignore
+                const { error } = await supabase
+                    .from('subscriptions')
+                    // @ts-ignore
+                    .update({
+                        status: SubscriptionStatus.EXPIRED,
+                    })
+                    .eq('lemon_squeezy_id', payload.data.id)
+
+                if (error) {
+                    console.error('Error updating subscription:', error)
+                    return NextResponse.json({ error: 'Database error' }, { status: 500 })
+                }
+
+                break
+            }
+
+            case 'subscription_paused':
+            case 'subscription_unpaused': {
+                const status = eventName === 'subscription_paused'
+                    ? SubscriptionStatus.PAUSED
+                    : SubscriptionStatus.ACTIVE
+
+                // @ts-ignore
+                const { error } = await supabase
+                    .from('subscriptions')
+                    // @ts-ignore
+                    .update({ status })
+                    .eq('lemon_squeezy_id', payload.data.id)
+
+                if (error) {
+                    console.error('Error updating subscription:', error)
+                    return NextResponse.json({ error: 'Database error' }, { status: 500 })
+                }
+
+                break
+            }
+
             case 'order_refunded': {
-                const attrs = payload.data.attributes as any
+                // @ts-ignore
+                const attrs = payload.data.attributes
                 const orderId = payload.data.id
+                // @ts-ignore
                 const refundedAmount = attrs.refunded_amount
+                // @ts-ignore
                 const totalAmount = attrs.total
 
                 console.log(`Processing refund for order ${orderId}: ${refundedAmount}/${totalAmount}`)
 
                 // Find subscription by lemon_squeezy_id (order ID)
-                const { data: subscription } = await (supabase
-                    .from('subscriptions') as any)
+                // @ts-ignore
+                const { data: subscription } = await supabase
+                    .from('subscriptions')
                     .select('*')
                     .eq('lemon_squeezy_id', orderId)
                     .single()
@@ -454,8 +603,10 @@ export async function POST(request: NextRequest) {
                 }
 
                 // Revoke access immediately
-                const { error } = await (supabase
-                    .from('subscriptions') as any)
+                // @ts-ignore
+                const { error } = await supabase
+                    .from('subscriptions')
+                    // @ts-ignore
                     .update({
                         status: SubscriptionStatus.EXPIRED,
                         cancel_at: new Date().toISOString(),
@@ -472,15 +623,18 @@ export async function POST(request: NextRequest) {
             }
 
             case 'subscription_payment_failed': {
-                const attrs = payload.data.attributes as any
+                // @ts-ignore
+                const attrs = payload.data.attributes
                 const subscriptionId = payload.data.id
 
                 console.log(`Payment failed for subscription ${subscriptionId}`)
 
                 // Update subscription to PAST_DUE status
                 // Don't immediately revoke access - give grace period for payment retry
-                const { error } = await (supabase
-                    .from('subscriptions') as any)
+                // @ts-ignore
+                const { error } = await supabase
+                    .from('subscriptions')
+                    // @ts-ignore
                     .update({
                         status: SubscriptionStatus.PAST_DUE,
                     })
@@ -496,14 +650,16 @@ export async function POST(request: NextRequest) {
             }
 
             case 'subscription_payment_success': {
-                const attrs = payload.data.attributes as any
+                // @ts-ignore
+                const attrs = payload.data.attributes
                 const subscriptionId = payload.data.id
 
                 console.log(`Payment successful for subscription ${subscriptionId}`)
 
                 // Get the subscription to determine tier
-                const { data: subscription } = await (supabase
-                    .from('subscriptions') as any)
+                // @ts-ignore
+                const { data: subscription } = await supabase
+                    .from('subscriptions')
                     .select('tier')
                     .eq('lemon_squeezy_id', subscriptionId)
                     .single()
@@ -514,12 +670,15 @@ export async function POST(request: NextRequest) {
                 }
 
                 // Reset credits for the new billing cycle
+                // @ts-ignore
                 const tier = subscription.tier as SubscriptionTier
                 const isAnnual = tier.includes('annual')
                 const nextResetDate = new Date(Date.now() + (isAnnual ? 365 : 30) * 24 * 60 * 60 * 1000).toISOString()
 
-                const { error } = await (supabase
-                    .from('subscriptions') as any)
+                // @ts-ignore
+                const { error } = await supabase
+                    .from('subscriptions')
+                    // @ts-ignore
                     .update({
                         status: SubscriptionStatus.ACTIVE,
                         credits_used: 0,
