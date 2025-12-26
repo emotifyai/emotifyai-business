@@ -23,6 +23,7 @@ interface StreamMessage {
 export default function DevLogsPage() {
     const [logs, setLogs] = useState<LogEntry[]>([])
     const [isConnected, setIsConnected] = useState(false)
+    const [connectionError, setConnectionError] = useState<string>('')
     const [autoScroll, setAutoScroll] = useState(true)
     const [filter, setFilter] = useState<string>('')
     const [levelFilter, setLevelFilter] = useState<string>('all')
@@ -32,11 +33,14 @@ export default function DevLogsPage() {
         
         eventSource.onopen = () => {
             setIsConnected(true)
+            setConnectionError('')
+            console.log('EventSource connected')
         }
 
         eventSource.onmessage = (event) => {
             try {
                 const data: StreamMessage = JSON.parse(event.data)
+                console.log('Received message:', data)
                 
                 if (data.type === 'connected') {
                     console.log('Connected to debug log stream:', data.message)
@@ -60,14 +64,18 @@ export default function DevLogsPage() {
                             }
                         }, 100)
                     }
+                } else if (data.type === 'heartbeat') {
+                    console.log('Heartbeat received')
                 }
             } catch (error) {
-                console.error('Error parsing log message:', error)
+                console.error('Error parsing log message:', error, event.data)
             }
         }
 
-        eventSource.onerror = () => {
+        eventSource.onerror = (error) => {
+            console.error('EventSource error:', error)
             setIsConnected(false)
+            setConnectionError('Connection failed or lost')
         }
 
         return () => {
@@ -132,6 +140,9 @@ export default function DevLogsPage() {
                         <span className="text-sm text-gray-400">
                             {isConnected ? 'Connected' : 'Disconnected'}
                         </span>
+                        {connectionError && (
+                            <span className="text-xs text-red-400">({connectionError})</span>
+                        )}
                     </div>
                 </div>
 
@@ -182,6 +193,19 @@ export default function DevLogsPage() {
                             className="bg-red-600 hover:bg-red-700 px-3 py-1 rounded text-sm"
                         >
                             Clear Logs
+                        </button>
+                        
+                        <button
+                            onClick={async () => {
+                                try {
+                                    await fetch('/api/debug/test')
+                                } catch (error) {
+                                    console.error('Test failed:', error)
+                                }
+                            }}
+                            className="bg-green-600 hover:bg-green-700 px-3 py-1 rounded text-sm"
+                        >
+                            Test Logs
                         </button>
                         
                         <div className="text-sm text-gray-400">

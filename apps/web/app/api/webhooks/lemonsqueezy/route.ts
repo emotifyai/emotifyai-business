@@ -344,7 +344,7 @@ export async function POST(request: NextRequest) {
                 })
 
                 // Only process Lifetime Launch purchases
-                if (variantId === process.env.LEMONSQUEEZY_LIFETIME_LAUNCH_VARIANT_ID) {
+                if (variantId.toString() === process.env.LEMONSQUEEZY_LIFETIME_LAUNCH_VARIANT_ID) {
                     webhookLog.info(`Processing Lifetime Launch order for ${userEmail}`)
 
                     // Find the user by email
