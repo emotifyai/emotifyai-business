@@ -3,6 +3,7 @@ import crypto from 'crypto'
 import { createAdminClient } from '@/lib/supabase/server'
 import { SubscriptionStatus, SubscriptionTier } from '@/types/database'
 import type { LemonSqueezyWebhookPayload } from '@/types/api'
+import { webhookLog } from '@/lib/debug-logger'
 
 /**
  * Verify webhook signature from Lemon Squeezy
@@ -11,7 +12,7 @@ function verifySignature(payload: string, signature: string): boolean {
     const secret = process.env.LEMONSQUEEZY_WEBHOOK_SECRET
 
     if (!secret) {
-        console.error('LEMONSQUEEZY_WEBHOOK_SECRET is not set')
+        webhookLog.error('LEMONSQUEEZY_WEBHOOK_SECRET is not set')
         return false
     }
 
@@ -84,14 +85,20 @@ export async function POST(request: NextRequest) {
             timestamp: new Date().toISOString()
         })
 
+        webhookLog.info('Lemon Squeezy webhook received', {
+            hasSignature: !!signature,
+            bodyLength: rawBody.length,
+            timestamp: new Date().toISOString()
+        })
+
         if (!signature) {
-            console.error('Missing webhook signature')
+            webhookLog.error('Missing webhook signature')
             return NextResponse.json({ error: 'Missing signature' }, { status: 401 })
         }
 
         // Verify the webhook signature
         if (!verifySignature(rawBody, signature)) {
-            console.error('Invalid webhook signature')
+            webhookLog.error('Invalid webhook signature')
             return NextResponse.json({ error: 'Invalid signature' }, { status: 401 })
         }
 
@@ -99,7 +106,7 @@ export async function POST(request: NextRequest) {
         const payload: LemonSqueezyWebhookPayload = JSON.parse(rawBody)
         const eventName = payload.meta.event_name
 
-        console.log(`Processing Lemon Squeezy webhook: ${eventName}`, {
+        webhookLog.info(`Processing Lemon Squeezy webhook: ${eventName}`, {
             eventName,
             dataId: payload.data.id,
             dataType: payload.data.type
@@ -120,6 +127,12 @@ export async function POST(request: NextRequest) {
 
                 console.log(`Processing ${eventName} for email: ${userEmail}, variant: ${variantId}`)
 
+                webhookLog.info(`Processing ${eventName}`, {
+                    email: userEmail,
+                    variantId: variantId,
+                    eventName: eventName
+                })
+
                 // Find the user by email
                 const { data: profile, error: profileError } = await supabase
                     .from('profiles')
@@ -128,7 +141,11 @@ export async function POST(request: NextRequest) {
                     .single()
 
                 if (!profile || profileError) {
-                    console.error(`User not found for email: ${userEmail}`, profileError)
+                    webhookLog.error(`User not found for email: ${userEmail}`, {
+                        email: userEmail,
+                        error: profileError?.message,
+                        availableProfiles: ['oshakaloosha72@gmail.com', 'sds@gmail.com', 'ahmedmuhmmed239@gmail.com']
+                    })
                     return NextResponse.json({ 
                         error: 'User not found', 
                         details: `Please ensure user ${userEmail} has signed up and has a profile in the system`,
@@ -219,9 +236,18 @@ export async function POST(request: NextRequest) {
                     })
 
                 if (error) {
-                    console.error('Error upserting subscription:', error)
+                    webhookLog.error('Error upserting subscription', {
+                        error: error.message,
+                        subscriptionData: subscriptionData
+                    })
                     return NextResponse.json({ error: 'Database error' }, { status: 500 })
                 }
+
+                webhookLog.info(`Successfully processed ${eventName}`, {
+                    email: userEmail,
+                    tier: tier,
+                    creditsLimit: subscriptionData.credits_limit
+                })
 
                 break
             }
@@ -311,9 +337,15 @@ export async function POST(request: NextRequest) {
 
                 console.log(`Processing order_created for email: ${userEmail}, variant: ${variantId}`)
 
+                webhookLog.info('Processing order_created', {
+                    email: userEmail,
+                    variantId: variantId,
+                    isLifetime: variantId === process.env.LEMONSQUEEZY_LIFETIME_LAUNCH_VARIANT_ID
+                })
+
                 // Only process Lifetime Launch purchases
                 if (variantId === process.env.LEMONSQUEEZY_LIFETIME_LAUNCH_VARIANT_ID) {
-                    console.log(`Processing Lifetime Launch order for ${userEmail}`)
+                    webhookLog.info(`Processing Lifetime Launch order for ${userEmail}`)
 
                     // Find the user by email
                     const { data: profile, error: profileError } = await supabase
@@ -323,7 +355,11 @@ export async function POST(request: NextRequest) {
                         .single()
 
                     if (!profile || profileError) {
-                        console.error(`User not found for email: ${userEmail}`, profileError)
+                        webhookLog.error(`User not found for lifetime order: ${userEmail}`, {
+                            email: userEmail,
+                            error: profileError?.message,
+                            availableProfiles: ['oshakaloosha72@gmail.com', 'sds@gmail.com', 'ahmedmuhmmed239@gmail.com']
+                        })
                         return NextResponse.json({ 
                             error: 'User not found', 
                             details: `Please ensure user ${userEmail} has signed up and has a profile in the system`,
@@ -388,7 +424,10 @@ export async function POST(request: NextRequest) {
                         return NextResponse.json({ error: 'Failed to process order' }, { status: 500 })
                     }
                 } else {
-                    console.log(`Ignoring non-lifetime order with variant ID: ${variantId}`)
+                    webhookLog.info(`Ignoring non-lifetime order`, {
+                        variantId: variantId,
+                        expectedLifetimeVariant: process.env.LEMONSQUEEZY_LIFETIME_LAUNCH_VARIANT_ID
+                    })
                 }
 
                 break
@@ -500,13 +539,17 @@ export async function POST(request: NextRequest) {
             }
 
             default:
-                console.log(`Unhandled webhook event: ${eventName}`)
+                webhookLog.info(`Unhandled webhook event: ${eventName}`)
         }
 
         // Return 200 to acknowledge receipt
+        webhookLog.info('Webhook processed successfully')
         return NextResponse.json({ received: true })
     } catch (error) {
-        console.error('Webhook processing error:', error)
+        webhookLog.error('Webhook processing error', {
+            error: error instanceof Error ? error.message : 'Unknown error',
+            stack: error instanceof Error ? error.stack : undefined
+        })
         return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
     }
 }
