@@ -78,7 +78,14 @@ export async function POST(request: NextRequest) {
         const rawBody = await request.text()
         const signature = request.headers.get('x-signature')
 
+        console.log('Webhook received:', {
+            hasSignature: !!signature,
+            bodyLength: rawBody.length,
+            timestamp: new Date().toISOString()
+        })
+
         if (!signature) {
+            console.error('Missing webhook signature')
             return NextResponse.json({ error: 'Missing signature' }, { status: 401 })
         }
 
@@ -92,7 +99,11 @@ export async function POST(request: NextRequest) {
         const payload: LemonSqueezyWebhookPayload = JSON.parse(rawBody)
         const eventName = payload.meta.event_name
 
-        console.log(`Received Lemon Squeezy webhook: ${eventName}`)
+        console.log(`Processing Lemon Squeezy webhook: ${eventName}`, {
+            eventName,
+            dataId: payload.data.id,
+            dataType: payload.data.type
+        })
 
         // Get admin Supabase client (bypasses RLS)
         const supabase = await createAdminClient()
@@ -107,16 +118,22 @@ export async function POST(request: NextRequest) {
                 const userEmail = attrs.user_email
                 const variantId = attrs.variant_id.toString()
 
+                console.log(`Processing ${eventName} for email: ${userEmail}, variant: ${variantId}`)
+
                 // Find the user by email
-                const { data: profile } = await supabase
+                const { data: profile, error: profileError } = await supabase
                     .from('profiles')
-                    .select('id')
+                    .select('id, email')
                     .eq('email', userEmail)
                     .single()
 
-                if (!profile) {
-                    console.error(`User not found for email: ${userEmail}`)
-                    return NextResponse.json({ error: 'User not found' }, { status: 404 })
+                if (!profile || profileError) {
+                    console.error(`User not found for email: ${userEmail}`, profileError)
+                    return NextResponse.json({ 
+                        error: 'User not found', 
+                        details: `Please ensure user ${userEmail} has signed up and has a profile in the system`,
+                        userEmail 
+                    }, { status: 404 })
                 }
 
                 const tier = getSubscriptionTier(variantId)
@@ -125,7 +142,7 @@ export async function POST(request: NextRequest) {
                 const getCreditLimit = (tier: SubscriptionTier): number => {
                     switch (tier) {
                         case SubscriptionTier.FREE:
-                            return 50
+                            return 10  // Updated to match schema
                         case SubscriptionTier.LIFETIME_LAUNCH:
                             return 1000
                         case SubscriptionTier.BASIC_MONTHLY:
@@ -138,7 +155,7 @@ export async function POST(request: NextRequest) {
                         case SubscriptionTier.BUSINESS_ANNUAL:
                             return 1500
                         default:
-                            return 50
+                            return 10  // Updated to match schema
                     }
                 }
 
@@ -292,20 +309,26 @@ export async function POST(request: NextRequest) {
                 const variantId = firstOrderItem?.variant_id?.toString()
                 const userEmail = attrs.user_email
 
+                console.log(`Processing order_created for email: ${userEmail}, variant: ${variantId}`)
+
                 // Only process Lifetime Launch purchases
                 if (variantId === process.env.LEMONSQUEEZY_LIFETIME_LAUNCH_VARIANT_ID) {
                     console.log(`Processing Lifetime Launch order for ${userEmail}`)
 
                     // Find the user by email
-                    const { data: profile } = await supabase
+                    const { data: profile, error: profileError } = await supabase
                         .from('profiles')
-                        .select('id')
+                        .select('id, email')
                         .eq('email', userEmail)
                         .single()
 
-                    if (!profile) {
-                        console.error(`User not found for email: ${userEmail}`)
-                        return NextResponse.json({ error: 'User not found' }, { status: 404 })
+                    if (!profile || profileError) {
+                        console.error(`User not found for email: ${userEmail}`, profileError)
+                        return NextResponse.json({ 
+                            error: 'User not found', 
+                            details: `Please ensure user ${userEmail} has signed up and has a profile in the system`,
+                            userEmail 
+                        }, { status: 404 })
                     }
 
                     // Reserve a lifetime subscriber slot
