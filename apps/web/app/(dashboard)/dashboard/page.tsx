@@ -1,5 +1,6 @@
 'use client'
 
+import { useState } from 'react'
 import { useUser } from '@/lib/hooks/use-auth'
 import { useSubscription } from '@/lib/hooks/use-subscription'
 import { useUsageStats, useUsageHistory } from '@/lib/hooks/use-usage'
@@ -7,16 +8,33 @@ import { StatsCard } from '@/components/dashboard/stats-card'
 import { UsageChart } from '@/components/dashboard/usage-chart'
 import { SubscriptionCard } from '@/components/dashboard/subscription-card'
 import { PlanHandler } from './components/plan-handler'
-import { BarChart3, Zap, CreditCard, Activity, AlertCircle, RefreshCw } from 'lucide-react'
+import { BarChart3, Zap, CreditCard, Activity, AlertCircle, RefreshCw, CheckCircle } from 'lucide-react'
 import { Skeleton } from '@ui/skeleton'
 import { Alert, AlertDescription } from '@ui/alert'
 import { Button } from '@ui/button'
+import { toast } from 'sonner'
 
 export default function DashboardPage() {
+    const [isRefreshing, setIsRefreshing] = useState(false)
     const { data: user, isLoading: isUserLoading, error: userError } = useUser()
     const { data: subscription, isLoading: isSubLoading, error: subError, refetch: refetchSubscription } = useSubscription()
     const { data: usage, isLoading: isUsageLoading, error: usageError, refetch: refetchUsage } = useUsageStats()
     const { data: historyPages } = useUsageHistory(30)
+
+    const handleRefresh = async () => {
+        setIsRefreshing(true)
+        try {
+            await Promise.all([
+                refetchSubscription(),
+                refetchUsage()
+            ])
+            toast.success('Dashboard data refreshed successfully!')
+        } catch (error) {
+            toast.error('Failed to refresh data. Please try again.')
+        } finally {
+            setIsRefreshing(false)
+        }
+    }
 
     // Handle loading states
     if (isUserLoading || isSubLoading || isUsageLoading) {
@@ -51,10 +69,8 @@ export default function DashboardPage() {
                         <Button
                             variant="outline"
                             size="sm"
-                            onClick={() => {
-                                refetchUsage()
-                                refetchSubscription()
-                            }}
+                            onClick={handleRefresh}
+                            disabled={isRefreshing}
                         >
                             Retry
                         </Button>
@@ -91,14 +107,12 @@ export default function DashboardPage() {
                 <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => {
-                        refetchUsage()
-                        refetchSubscription()
-                    }}
+                    onClick={handleRefresh}
+                    disabled={isRefreshing}
                     className="flex items-center gap-2"
                 >
-                    <RefreshCw className="h-4 w-4" />
-                    Refresh
+                    <RefreshCw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
+                    {isRefreshing ? 'Refreshing...' : 'Refresh'}
                 </Button>
             </div>
 

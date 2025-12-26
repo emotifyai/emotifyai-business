@@ -62,7 +62,7 @@ export default defineBackground(() => {
       const allowedOrigins = [
         'http://localhost:3000',
         'https://emotifyai.com',
-        'https://emotifyai.netlify.app',
+        'https://emotifyai-app.netlify.app',
         'https://bright-marzipan-1b48f4.netlify.app'
       ];
 

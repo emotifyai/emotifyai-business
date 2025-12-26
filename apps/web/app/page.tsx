@@ -5,34 +5,21 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@ui/c
 import { Badge } from '@ui/badge'
 import { Sparkles, Zap, Globe, Shield } from 'lucide-react'
 import Link from 'next/link'
+import { createClient } from '@/lib/supabase/server'
+import { PersonalizedHero } from '@/components/personalized-hero'
 
-export default function Home() {
+export default async function Home() {
+  // Check if user is authenticated for CTA section
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  const isAuthenticated = !!user
   return (
     <div className="flex min-h-screen flex-col">
       <Header />
 
       <main className="flex-1">
         {/* Hero Section */}
-        <section className="container py-24 md:py-32">
-          <div className="mx-auto max-w-3xl text-center">
-            <h1 className="mb-6 text-4xl font-bold tracking-tight sm:text-6xl">
-              Enhance Your Writing with{' '}
-              <span className="text-gradient-brand">AI Power</span>
-            </h1>
-            <p className="mb-8 text-lg text-muted-foreground">
-              Transform your text instantly with AI-powered rewriting. Perfect for English, Arabic, and French.
-              Right-click anywhere to enhance your writing.
-            </p>
-            <div className="flex flex-col gap-4 sm:flex-row sm:justify-center">
-              <Button size="lg" variant="glow" asChild>
-                <Link href="/signup">Get Started Free</Link>
-              </Button>
-              <Button size="lg" variant="outline" asChild>
-                <Link href="/docs">View Documentation</Link>
-              </Button>
-            </div>
-          </div>
-        </section>
+        <PersonalizedHero />
 
         {/* Features Section */}
         <section className="container py-24">
@@ -93,12 +80,19 @@ export default function Home() {
           <Card variant="glass" className="mx-auto max-w-3xl">
             <CardContent className="pt-6">
               <div className="text-center">
-                <h2 className="mb-4 text-3xl font-bold">Ready to enhance your writing?</h2>
+                <h2 className="mb-4 text-3xl font-bold">
+                  {isAuthenticated ? "Continue your writing journey" : "Ready to enhance your writing?"}
+                </h2>
                 <p className="mb-6 text-muted-foreground">
-                  Start with 10 free enhancements. No credit card required.
+                  {isAuthenticated 
+                    ? "Access your dashboard to manage your subscription and view usage analytics."
+                    : "Start with 10 free enhancements. No credit card required."
+                  }
                 </p>
                 <Button size="lg" variant="glow" asChild>
-                  <Link href="/signup">Start Free Trial</Link>
+                  <Link href={isAuthenticated ? "/dashboard" : "/signup"}>
+                    {isAuthenticated ? "Go to Dashboard" : "Start Free Trial"}
+                  </Link>
                 </Button>
               </div>
             </CardContent>

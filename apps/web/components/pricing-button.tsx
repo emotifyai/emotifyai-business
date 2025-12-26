@@ -17,6 +17,9 @@ interface PricingButtonProps {
     variant: 'default' | 'outline' | 'glow' | 'destructive' | 'secondary' | 'ghost' | 'link'
     soldOut?: boolean
     isAuthenticated?: boolean
+    disabled?: boolean
+    isCurrentPlan?: boolean
+    isDowngrade?: boolean
 }
 
 export function PricingButton({
@@ -27,7 +30,10 @@ export function PricingButton({
     buttonText,
     variant,
     soldOut = false,
-    isAuthenticated = false
+    isAuthenticated = false,
+    disabled = false,
+    isCurrentPlan = false,
+    isDowngrade = false
 }: PricingButtonProps) {
     const router = useRouter()
     const [isLoading, setIsLoading] = useState(false)
@@ -69,6 +75,33 @@ export function PricingButton({
         return (
             <Button className="w-full" variant="destructive" disabled>
                 SOLD OUT
+            </Button>
+        )
+    }
+
+    // Show Current Plan for user's active subscription
+    if (isCurrentPlan) {
+        return (
+            <Button className="w-full" variant="default" disabled>
+                ✓ Current Plan
+            </Button>
+        )
+    }
+
+    // Show Not Available for downgrades (e.g., lifetime user trying to buy monthly)
+    if (isDowngrade) {
+        return (
+            <Button className="w-full" variant="outline" disabled>
+                Not Available
+            </Button>
+        )
+    }
+
+    // Show disabled state for any other disabled scenarios
+    if (disabled) {
+        return (
+            <Button className="w-full" variant="outline" disabled>
+                {buttonText}
             </Button>
         )
     }
