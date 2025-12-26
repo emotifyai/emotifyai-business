@@ -7,14 +7,14 @@ import { StatsCard } from '@/components/dashboard/stats-card'
 import { UsageChart } from '@/components/dashboard/usage-chart'
 import { SubscriptionCard } from '@/components/dashboard/subscription-card'
 import { PlanHandler } from './components/plan-handler'
-import { BarChart3, Zap, CreditCard, Activity, AlertCircle } from 'lucide-react'
+import { BarChart3, Zap, CreditCard, Activity, AlertCircle, RefreshCw } from 'lucide-react'
 import { Skeleton } from '@ui/skeleton'
 import { Alert, AlertDescription } from '@ui/alert'
 import { Button } from '@ui/button'
 
 export default function DashboardPage() {
     const { data: user, isLoading: isUserLoading, error: userError } = useUser()
-    const { data: subscription, isLoading: isSubLoading, error: subError } = useSubscription()
+    const { data: subscription, isLoading: isSubLoading, error: subError, refetch: refetchSubscription } = useSubscription()
     const { data: usage, isLoading: isUsageLoading, error: usageError, refetch: refetchUsage } = useUsageStats()
     const { data: historyPages } = useUsageHistory(30)
 
@@ -51,7 +51,10 @@ export default function DashboardPage() {
                         <Button
                             variant="outline"
                             size="sm"
-                            onClick={() => refetchUsage()}
+                            onClick={() => {
+                                refetchUsage()
+                                refetchSubscription()
+                            }}
                         >
                             Retry
                         </Button>
@@ -78,11 +81,25 @@ export default function DashboardPage() {
     return (
         <div className="space-y-8">
             <PlanHandler />
-            <div>
-                <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
-                <p className="text-muted-foreground">
-                    Welcome back, {user.display_name || 'User'}
-                </p>
+            <div className="flex items-center justify-between">
+                <div>
+                    <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
+                    <p className="text-muted-foreground">
+                        Welcome back, {user.display_name || 'User'}
+                    </p>
+                </div>
+                <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                        refetchUsage()
+                        refetchSubscription()
+                    }}
+                    className="flex items-center gap-2"
+                >
+                    <RefreshCw className="h-4 w-4" />
+                    Refresh
+                </Button>
             </div>
 
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
