@@ -487,3 +487,82 @@ BEGIN
         (remaining_count < 50 AND remaining_count > 0) as show_urgency;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- Function to reserve a lifetime subscriber slot
+CREATE OR REPLACE FUNCTION public.reserve_lifetime_subscriber_slot(user_uuid UUID)
+RETURNS INTEGER AS $$
+DECLARE
+    current_count INTEGER;
+    new_subscriber_number INTEGER;
+BEGIN
+    -- Check current count
+    SELECT COUNT(*) INTO current_count FROM public.lifetime_subscribers;
+    
+    -- Check if slots are available
+    IF current_count >= 500 THEN
+        RAISE EXCEPTION 'All lifetime subscriber slots are taken';
+    END IF;
+    
+    -- Calculate new subscriber number
+    new_subscriber_number := current_count + 1;
+    
+    -- Insert the new lifetime subscriber
+    INSERT INTO public.lifetime_subscribers (user_id, subscriber_number)
+    VALUES (user_uuid, new_subscriber_number)
+    ON CONFLICT (user_id) DO NOTHING;
+    
+    -- Return the subscriber number
+    RETURN new_subscriber_number;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- Function to check if lifetime offer is available
+CREATE OR REPLACE FUNCTION public.is_lifetime_offer_available()
+RETURNS BOOLEAN AS $$
+DECLARE
+    used_count INTEGER;
+BEGIN
+    SELECT COUNT(*) INTO used_count FROM public.lifetime_subscribers;
+    RETURN used_count < 500;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- Create the missing function that matches what the TypeScript code expects
+CREATE OR REPLACE FUNCTION public.get_lifetime_slot_info()
+RETURNS TABLE (
+    total INTEGER,
+    used INTEGER,
+    remaining INTEGER,
+    percentage INTEGER
+) AS $$
+DECLARE
+    used_count INTEGER;
+    remaining_count INTEGER;
+BEGIN
+    SELECT COUNT(*) INTO used_count FROM public.lifetime_subscribers;
+    remaining_count := GREATEST(0, 500 - used_count);
+    
+    RETURN QUERY SELECT
+        500 as total,
+        used_count as used,
+        remaining_count as remaining,
+        CASE 
+            WHEN used_count > 0 THEN ROUND((used_count::NUMERIC / 500) * 100)::INTEGER
+            ELSE 0
+        END as percentage;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- Grant execute permissions
+GRANT EXECUTE ON FUNCTION public.get_lifetime_subscriber_count() TO authenticated;
+GRANT EXECUTE ON FUNCTION public.get_lifetime_subscriber_count() TO anon;
+GRANT EXECUTE ON FUNCTION public.get_remaining_lifetime_slots() TO authenticated;
+GRANT EXECUTE ON FUNCTION public.get_remaining_lifetime_slots() TO anon;
+GRANT EXECUTE ON FUNCTION public.get_lifetime_offer_status() TO authenticated;
+GRANT EXECUTE ON FUNCTION public.get_lifetime_offer_status() TO anon;
+GRANT EXECUTE ON FUNCTION public.reserve_lifetime_subscriber_slot(UUID) TO authenticated;
+GRANT EXECUTE ON FUNCTION public.reserve_lifetime_subscriber_slot(UUID) TO service_role;
+GRANT EXECUTE ON FUNCTION public.is_lifetime_offer_available() TO authenticated;
+GRANT EXECUTE ON FUNCTION public.is_lifetime_offer_available() TO anon;
+GRANT EXECUTE ON FUNCTION public.get_lifetime_slot_info() TO authenticated;
+GRANT EXECUTE ON FUNCTION public.get_lifetime_slot_info() TO anon;

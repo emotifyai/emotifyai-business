@@ -286,6 +286,196 @@ export async function POST(request: NextRequest) {
                 break
             }
 
+            case 'order_created': {
+                const attrs = payload.data.attributes as any
+                const firstOrderItem = attrs.first_order_item
+                const variantId = firstOrderItem?.variant_id?.toString()
+                const userEmail = attrs.user_email
+
+                // Only process Lifetime Launch purchases
+                if (variantId === process.env.LEMONSQUEEZY_LIFETIME_LAUNCH_VARIANT_ID) {
+                    console.log(`Processing Lifetime Launch order for ${userEmail}`)
+
+                    // Find the user by email
+                    const { data: profile } = await supabase
+                        .from('profiles')
+                        .select('id')
+                        .eq('email', userEmail)
+                        .single()
+
+                    if (!profile) {
+                        console.error(`User not found for email: ${userEmail}`)
+                        return NextResponse.json({ error: 'User not found' }, { status: 404 })
+                    }
+
+                    // Reserve a lifetime subscriber slot
+                    try {
+                        const { data: subscriberNumber, error: slotError } = await (supabase as any)
+                            .rpc('reserve_lifetime_subscriber_slot', { user_uuid: (profile as any).id })
+                            .single()
+
+                        if (slotError) {
+                            console.error('Error reserving lifetime slot:', slotError)
+                            return NextResponse.json({ error: 'Lifetime slots exhausted' }, { status: 400 })
+                        }
+
+                        console.log(`Reserved lifetime slot #${subscriberNumber} for user ${(profile as any).id}`)
+
+                        // Create subscription record for the lifetime purchase
+                        const subscriptionData = {
+                            user_id: (profile as any).id,
+                            lemon_squeezy_id: payload.data.id, // Use order ID
+                            status: SubscriptionStatus.ACTIVE,
+                            tier: SubscriptionTier.LIFETIME_LAUNCH,
+                            tier_name: SubscriptionTier.LIFETIME_LAUNCH,
+                            current_period_start: new Date().toISOString(),
+                            current_period_end: new Date(Date.now() + 100 * 365 * 24 * 60 * 60 * 1000).toISOString(), // 100 years
+                            cancel_at: null,
+                            credits_limit: 1000,
+                            credits_used: 0,
+                            credits_reset_date: null, // Lifetime = no reset
+                            validity_days: null,
+                        }
+
+                        const { error: insertError } = await (supabase
+                            .from('subscriptions') as any)
+                            .upsert(subscriptionData, {
+                                onConflict: 'lemon_squeezy_id',
+                            })
+
+                        if (insertError) {
+                            console.error('Error creating lifetime subscription:', insertError)
+                            return NextResponse.json({ error: 'Database error' }, { status: 500 })
+                        }
+
+                        // Check if we've hit the limit and disable product
+                        if (subscriberNumber >= 500) {
+                            console.log('[Lifetime Slots] SOLD OUT! Disabling lifetime product in Lemon Squeezy...')
+                            const { disableLifetimeProduct } = await import('@/lib/lemonsqueezy/product-manager')
+                            const disabled = await disableLifetimeProduct()
+
+                            if (disabled) {
+                                console.log('[Lifetime Slots] Successfully disabled lifetime product')
+                            } else {
+                                console.error('[Lifetime Slots] Failed to disable lifetime product - manual intervention required!')
+                            }
+                        }
+                    } catch (error) {
+                        console.error('Error processing lifetime order:', error)
+                        return NextResponse.json({ error: 'Failed to process order' }, { status: 500 })
+                    }
+                } else {
+                    console.log(`Ignoring non-lifetime order with variant ID: ${variantId}`)
+                }
+
+                break
+            }
+
+            case 'order_refunded': {
+                const attrs = payload.data.attributes as any
+                const orderId = payload.data.id
+                const refundedAmount = attrs.refunded_amount
+                const totalAmount = attrs.total
+
+                console.log(`Processing refund for order ${orderId}: ${refundedAmount}/${totalAmount}`)
+
+                // Find subscription by lemon_squeezy_id (order ID)
+                const { data: subscription } = await (supabase
+                    .from('subscriptions') as any)
+                    .select('*')
+                    .eq('lemon_squeezy_id', orderId)
+                    .single()
+
+                if (!subscription) {
+                    console.warn(`No subscription found for refunded order: ${orderId}`)
+                    return NextResponse.json({ received: true })
+                }
+
+                // Revoke access immediately
+                const { error } = await (supabase
+                    .from('subscriptions') as any)
+                    .update({
+                        status: SubscriptionStatus.EXPIRED,
+                        cancel_at: new Date().toISOString(),
+                    })
+                    .eq('lemon_squeezy_id', orderId)
+
+                if (error) {
+                    console.error('Error revoking access for refunded order:', error)
+                    return NextResponse.json({ error: 'Database error' }, { status: 500 })
+                }
+
+                console.log(`Access revoked for refunded order ${orderId}`)
+                break
+            }
+
+            case 'subscription_payment_failed': {
+                const attrs = payload.data.attributes as any
+                const subscriptionId = payload.data.id
+
+                console.log(`Payment failed for subscription ${subscriptionId}`)
+
+                // Update subscription to PAST_DUE status
+                // Don't immediately revoke access - give grace period for payment retry
+                const { error } = await (supabase
+                    .from('subscriptions') as any)
+                    .update({
+                        status: SubscriptionStatus.PAST_DUE,
+                    })
+                    .eq('lemon_squeezy_id', subscriptionId)
+
+                if (error) {
+                    console.error('Error updating subscription to PAST_DUE:', error)
+                    return NextResponse.json({ error: 'Database error' }, { status: 500 })
+                }
+
+                console.log(`Subscription ${subscriptionId} marked as PAST_DUE`)
+                break
+            }
+
+            case 'subscription_payment_success': {
+                const attrs = payload.data.attributes as any
+                const subscriptionId = payload.data.id
+
+                console.log(`Payment successful for subscription ${subscriptionId}`)
+
+                // Get the subscription to determine tier
+                const { data: subscription } = await (supabase
+                    .from('subscriptions') as any)
+                    .select('tier')
+                    .eq('lemon_squeezy_id', subscriptionId)
+                    .single()
+
+                if (!subscription) {
+                    console.warn(`No subscription found for payment success: ${subscriptionId}`)
+                    return NextResponse.json({ received: true })
+                }
+
+                // Reset credits for the new billing cycle
+                const tier = subscription.tier as SubscriptionTier
+                const isAnnual = tier.includes('annual')
+                const nextResetDate = new Date(Date.now() + (isAnnual ? 365 : 30) * 24 * 60 * 60 * 1000).toISOString()
+
+                const { error } = await (supabase
+                    .from('subscriptions') as any)
+                    .update({
+                        status: SubscriptionStatus.ACTIVE,
+                        credits_used: 0,
+                        credits_reset_date: nextResetDate,
+                        current_period_start: new Date().toISOString(),
+                        current_period_end: nextResetDate,
+                    })
+                    .eq('lemon_squeezy_id', subscriptionId)
+
+                if (error) {
+                    console.error('Error resetting credits after payment:', error)
+                    return NextResponse.json({ error: 'Database error' }, { status: 500 })
+                }
+
+                console.log(`Credits reset for subscription ${subscriptionId}`)
+                break
+            }
+
             default:
                 console.log(`Unhandled webhook event: ${eventName}`)
         }
