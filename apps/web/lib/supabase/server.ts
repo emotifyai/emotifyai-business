@@ -47,21 +47,14 @@ export async function createAdminClient() {
         throw new Error('Missing Supabase admin environment variables')
     }
 
-    const cookieStore = await cookies()
-
+    // For API routes, we don't need cookies - just create a simple client
     return createServerClient<Database>(supabaseUrl, supabaseServiceKey, {
         cookies: {
             getAll() {
-                return cookieStore.getAll()
+                return []
             },
-            setAll(cookiesToSet: any) {
-                try {
-                    cookiesToSet.forEach(({ name, value, options }: any) => {
-                        cookieStore.set(name, value, options)
-                    })
-                } catch {
-                    // Ignore errors in Server Components
-                }
+            setAll() {
+                // No-op for admin client
             },
         },
     })

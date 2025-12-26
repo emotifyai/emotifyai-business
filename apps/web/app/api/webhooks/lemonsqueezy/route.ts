@@ -116,6 +116,33 @@ export async function POST(request: NextRequest) {
         // Get admin Supabase client (bypasses RLS)
         const supabase = await createAdminClient()
 
+        // Debug: Log environment variables (without exposing sensitive data)
+        webhookLog.info('Environment check', {
+            hasSupabaseUrl: !!process.env.NEXT_PUBLIC_SUPABASE_URL,
+            hasServiceKey: !!process.env.SUPABASE_SERVICE_ROLE_KEY,
+            supabaseUrlLength: process.env.NEXT_PUBLIC_SUPABASE_URL?.length || 0,
+            serviceKeyLength: process.env.SUPABASE_SERVICE_ROLE_KEY?.length || 0
+        })
+
+        // Test Supabase connection
+        try {
+            // @ts-ignore
+            const { data: testData, error: testError } = await supabase
+                .from('profiles')
+                .select('count')
+                .limit(1)
+
+            webhookLog.info('Supabase connection test', {
+                success: !testError,
+                error: testError?.message,
+                hasData: !!testData
+            })
+        } catch (error) {
+            webhookLog.error('Supabase connection failed', {
+                error: error instanceof Error ? error.message : 'Unknown error'
+            })
+        }
+
         // Handle different webhook events
         switch (eventName) {
             case 'subscription_created':
