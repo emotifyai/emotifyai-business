@@ -13,12 +13,12 @@
     </filter>
   </defs>
   
-  <!-- Background (Optional, for preview) -->
+  <!-- Background -->
   <rect width="512" height="512" rx="120" fill="#030712" />
   
-  <!-- The "V" Logo -->
+  <!-- The "E" Logo - Geometric and Modern -->
   <path 
-    d="M120 120 L256 420 L392 120 L320 120 L256 280 L192 120 Z" 
+    d="M140 140 H380 V195 H205 V240 H350 V290 H205 V335 H380 V390 H140 Z" 
     fill="url(#emotifyai-gradient)" 
     filter="url(#glow)"
     stroke="rgba(255,255,255,0.1)"

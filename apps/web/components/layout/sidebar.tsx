@@ -29,11 +29,11 @@ const sidebarItems = [
         href: '/dashboard/usage',
         icon: BarChart3,
     },
-    {
-        title: 'Subscription',
-        href: '/dashboard/subscription',
-        icon: CreditCard,
-    },
+    // {
+    //     title: 'Subscription',
+    //     href: '/dashboard/subscription',
+    //     icon: CreditCard,
+    // },
     // {
     //     title: 'API Keys',
     //     href: '/dashboard/api-keys',
