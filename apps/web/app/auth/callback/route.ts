@@ -15,9 +15,9 @@ export async function GET(request: Request) {
     if (code) {
         const supabase = await createClient()
         const { data, error } = await supabase.auth.exchangeCodeForSession(code)
-        
-        // If this is from extension, ensure user has proper setup
-        if (source === 'extension' && data.user && !error) {
+
+        // Ensure all authenticated users have proper setup (web app AND extension)
+        if (data.user && !error) {
             try {
                 // Check if user profile exists, create if not
                 const { data: profile } = await supabase
@@ -27,13 +27,19 @@ export async function GET(request: Request) {
                     .single()
 
                 if (!profile) {
+                    console.log(`Creating profile for new user: ${data.user.email}`)
+
                     // Create user profile
-                    await (supabase.from('profiles') as any).insert({
+                    const { error: profileError } = await (supabase.from('profiles') as any).insert({
                         id: data.user.id,
                         email: data.user.email!,
                         display_name: data.user.user_metadata?.full_name || data.user.email?.split('@')[0] || 'User',
                         avatar_url: data.user.user_metadata?.avatar_url || null,
                     })
+
+                    if (profileError) {
+                        console.error('Error creating profile:', profileError)
+                    }
                 }
 
                 // Check if user has subscription, create trial if not
@@ -44,28 +50,37 @@ export async function GET(request: Request) {
                     .single()
 
                 if (!subscription) {
-                    // Create trial subscription for extension users
-                    const trialEndDate = new Date()
-                    trialEndDate.setDate(trialEndDate.getDate() + 30) // 30 days trial
+                    console.log(`Creating trial subscription for new user: ${data.user.email}`)
 
-                    await (supabase.from('subscriptions') as any).insert({
+                    // Create trial subscription for all new users
+                    const trialDays = parseInt(process.env.TRIAL_ENHANCEMENT_LIMIT || '10')
+                    const trialEndDate = new Date()
+                    trialEndDate.setDate(trialEndDate.getDate() + trialDays)
+
+                    const { error: subError } = await (supabase.from('subscriptions') as any).insert({
                         user_id: data.user.id,
-                        lemon_squeezy_id: `trial-${data.user.id}`,
-                        tier: 'trial',
-                        status: 'active',
+                        lemon_squeezy_id: `free_${data.user.id}_${Date.now()}`,
+                        tier: 'free',
+                        tier_name: 'free',
+                        status: 'trial',
                         credits_limit: parseInt(process.env.TRIAL_ENHANCEMENT_LIMIT || '10'),
                         credits_used: 0,
-                        validity_days: 30,
+                        validity_days: trialDays,
                         current_period_start: new Date().toISOString(),
                         current_period_end: trialEndDate.toISOString(),
                     })
+
+                    if (subError) {
+                        console.error('Error creating subscription:', subError)
+                    }
                 }
             } catch (err) {
-                console.error('Error setting up extension user:', err)
+                console.error('Error setting up new user:', err)
                 // Continue with redirect even if setup fails
             }
         }
     }
+
 
     if (redirectTo) {
         return NextResponse.redirect(`${origin}${redirectTo}`)
