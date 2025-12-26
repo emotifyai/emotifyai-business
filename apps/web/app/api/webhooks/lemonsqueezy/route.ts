@@ -121,7 +121,9 @@ export async function POST(request: NextRequest) {
             hasSupabaseUrl: !!process.env.NEXT_PUBLIC_SUPABASE_URL,
             hasServiceKey: !!process.env.SUPABASE_SERVICE_ROLE_KEY,
             supabaseUrlLength: process.env.NEXT_PUBLIC_SUPABASE_URL?.length || 0,
-            serviceKeyLength: process.env.SUPABASE_SERVICE_ROLE_KEY?.length || 0
+            serviceKeyLength: process.env.SUPABASE_SERVICE_ROLE_KEY?.length || 0,
+            serviceKeyPrefix: process.env.SUPABASE_SERVICE_ROLE_KEY?.substring(0, 10) || 'none',
+            urlPrefix: process.env.NEXT_PUBLIC_SUPABASE_URL?.substring(0, 20) || 'none'
         })
 
         // Test Supabase connection
@@ -132,14 +134,22 @@ export async function POST(request: NextRequest) {
                 .select('count')
                 .limit(1)
 
-            webhookLog.info('Supabase connection test', {
-                success: !testError,
-                error: testError?.message,
-                hasData: !!testData
-            })
+            if (testError) {
+                webhookLog.error('Supabase connection test failed', {
+                    error: testError.message,
+                    code: testError.code,
+                    details: testError.details,
+                    hint: testError.hint
+                })
+            } else {
+                webhookLog.info('Supabase connection test successful', {
+                    hasData: !!testData
+                })
+            }
         } catch (error) {
             webhookLog.error('Supabase connection failed', {
-                error: error instanceof Error ? error.message : 'Unknown error'
+                error: error instanceof Error ? error.message : 'Unknown error',
+                stack: error instanceof Error ? error.stack : undefined
             })
         }
 
@@ -265,6 +275,7 @@ export async function POST(request: NextRequest) {
                         // Import the product manager at the top of the file
                         const { disableLifetimeProduct } = await import('@/lib/lemonsqueezy/product-manager')
 
+                        // @ts-ignore
                         if (subscriberNumber >= 500) {
                             console.log('[Lifetime Slots] SOLD OUT! Disabling lifetime product in Lemon Squeezy...')
                             const disabled = await disableLifetimeProduct()
@@ -489,6 +500,7 @@ export async function POST(request: NextRequest) {
                         })
 
                         // Check if we've hit the limit and disable product
+                        // @ts-ignore
                         if (subscriberNumber >= 500) {
                             console.log('[Lifetime Slots] SOLD OUT! Disabling lifetime product in Lemon Squeezy...')
                             const { disableLifetimeProduct } = await import('@/lib/lemonsqueezy/product-manager')
