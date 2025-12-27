@@ -232,7 +232,7 @@ test.describe('Subscription & Usage Limits', () => {
             chrome.storage.local.set({
                 authToken: 'mock-token',
                 subscription: { tier: 'lifetime', status: 'active' },
-                usageStats: { used: 500, limit: -1, lastUsed: new Date().toISOString() }
+                usageStats: { used: 1000, limit: -1, lastUsed: new Date().toISOString() }
             });
         });
 

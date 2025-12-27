@@ -41,6 +41,7 @@ vi.mock('@/services/api/client', () => ({
 vi.mock('@/utils/storage')
 
 // Mock logger
+// @ts-ignore
 vi.mock('@/utils/logger', () => ({
   logger: {
     info: vi.fn(),
@@ -114,9 +115,9 @@ describe('Extension OAuth Integration', () => {
           tier: 'trial',
           status: 'active',
           startDate: '2024-01-01T00:00:00Z',
-          usageLimit: 50,
+          usageLimit: 10,
           currentUsage: 0,
-          creditsRemaining: 50
+          creditsRemaining: 10
         }
       })
 
@@ -150,9 +151,9 @@ describe('Extension OAuth Integration', () => {
           tier: 'trial',
           status: 'active',
           startDate: '2024-01-01T00:00:00Z',
-          usageLimit: 50,
+          usageLimit: 10,
           currentUsage: 0,
-          creditsRemaining: 50
+          creditsRemaining: 10
         }
       })
 
