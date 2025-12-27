@@ -51,8 +51,7 @@ export const SUBSCRIPTION_TIERS: Record<SubscriptionTier, SubscriptionTierConfig
             'No renewal - one-time trial',
             'All languages (EN, AR, FR)',
             'All enhancement modes',
-            'Prompt caching enabled'
-        ]
+                ]
     },
 
     lifetime_launch: {
@@ -65,9 +64,9 @@ export const SUBSCRIPTION_TIERS: Record<SubscriptionTier, SubscriptionTierConfig
         features: [
             '1000 generations per month',
             'Lifetime access',
-            'All languages',
+            'All languages (EN, AR, FR)',
             'Priority support',
-            'Prompt caching',
+            'Fast processing speed',
             'Limited to first 500 subscribers'
         ],
         popular: true,
@@ -82,9 +81,9 @@ export const SUBSCRIPTION_TIERS: Record<SubscriptionTier, SubscriptionTierConfig
         duration: 'month',
         features: [
             '350 generations per month',
-            'All languages',
+            'All languages (EN, AR, FR)',
             'All enhancement modes',
-            'Prompt caching',
+            'Fast processing speed',
             'Email support'
         ]
     },
@@ -97,11 +96,11 @@ export const SUBSCRIPTION_TIERS: Record<SubscriptionTier, SubscriptionTierConfig
         duration: 'month',
         features: [
             '700 generations per month',
-            'All languages',
+            'All languages (EN, AR, FR)',
             'All enhancement modes',
-            'Prompt caching',
+            'Fast processing speed',
             'Priority support',
-            'API access'
+            'Advanced features'
         ],
         popular: true
     },
@@ -114,11 +113,11 @@ export const SUBSCRIPTION_TIERS: Record<SubscriptionTier, SubscriptionTierConfig
         duration: 'month',
         features: [
             '1500 generations per month',
-            'All languages',
+            'All languages (EN, AR, FR)',
             'All enhancement modes',
-            'Prompt caching',
+            'Fast processing speed',
             'Dedicated support',
-            'API access',
+            'Advanced features',
             'Team features (coming soon)'
         ]
     },
@@ -132,9 +131,9 @@ export const SUBSCRIPTION_TIERS: Record<SubscriptionTier, SubscriptionTierConfig
         features: [
             '350 generations per month',
             'Save 25% vs monthly',
-            'All languages',
+            'All languages (EN, AR, FR)',
             'All enhancement modes',
-            'Prompt caching',
+            'Fast processing speed',
             'Email support'
         ]
     },
@@ -148,11 +147,11 @@ export const SUBSCRIPTION_TIERS: Record<SubscriptionTier, SubscriptionTierConfig
         features: [
             '700 generations per month',
             'Save 25% vs monthly',
-            'All languages',
+            'All languages (EN, AR, FR)',
             'All enhancement modes',
-            'Prompt caching',
+            'Fast processing speed',
             'Priority support',
-            'API access'
+            'Advanced features'
         ],
         badge: 'Best Value'
     },
@@ -166,12 +165,11 @@ export const SUBSCRIPTION_TIERS: Record<SubscriptionTier, SubscriptionTierConfig
         features: [
             '1500 generations per month',
             'Save 25% vs monthly',
-            'All languages',
+            'All languages (EN, AR, FR)',
             'All enhancement modes',
-            'Prompt caching',
+            'Fast processing speed',
             'Dedicated support',
-            'API access',
-            'Team features (coming soon)'
+            'Advanced features',
         ]
     }
 };

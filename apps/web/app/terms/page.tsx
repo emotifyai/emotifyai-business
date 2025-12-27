@@ -75,7 +75,7 @@ export default function TermsPage() {
                                             <ul>
                                                 <li>Browser extension for Chrome and Firefox</li>
                                                 <li>Web application dashboard</li>
-                                                <li>API access for text enhancement</li>
+                                                <li>Text enhancement service</li>
                                                 <li>Subscription management</li>
                                             </ul>
                                             <p>

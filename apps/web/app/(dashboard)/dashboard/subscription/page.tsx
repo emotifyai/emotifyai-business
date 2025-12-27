@@ -6,6 +6,7 @@ import { Button } from '@ui/button'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@ui/card'
 import { Check } from 'lucide-react'
 import { SubscriptionTier } from '@/types/database'
+import { SUBSCRIPTION_TIERS } from '@/lib/subscription/types'
 import { Skeleton } from '@ui/skeleton'
 
 export default function SubscriptionPage() {
@@ -22,27 +23,17 @@ export default function SubscriptionPage() {
     const plans = [
         {
             name: 'Monthly Pro',
-            price: '$9.99',
+            price: '$37',
             period: '/month',
             tier: SubscriptionTier.PRO_MONTHLY,
-            features: [
-                'Premium AI enhancements',
-                'All languages supported',
-                'Priority support',
-                'Early access to new features',
-            ],
+            features: SUBSCRIPTION_TIERS.pro_monthly.features,
         },
         {
-            name: 'Lifetime',
-            price: '$99.99',
+            name: 'Lifetime Launch',
+            price: '$97',
             period: 'one-time',
             tier: SubscriptionTier.LIFETIME_LAUNCH,
-            features: [
-                'Premium AI enhancements forever',
-                'All languages supported',
-                'Priority support',
-                'Lifetime updates included',
-            ],
+            features: SUBSCRIPTION_TIERS.lifetime_launch.features,
         },
     ]
 

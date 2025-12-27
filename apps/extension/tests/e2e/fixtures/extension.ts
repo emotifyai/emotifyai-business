@@ -8,7 +8,7 @@ const __dirname = path.dirname(__filename);
 /**
  * Extension fixture for Playwright tests
  * 
- * Loads the EmotifAI extension into a browser context for testing
+ * Loads the EmotifyAI extension into a browser context for testing
  */
 
 export type ExtensionFixtures = {

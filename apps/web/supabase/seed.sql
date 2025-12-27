@@ -241,7 +241,7 @@ INSERT INTO public.api_keys (
 ) VALUES
     ('550e8400-e29b-41d4-a716-446655440003', 'hashed_key_pro_user_001', 'Production Extension', NOW() - INTERVAL '2 hours', false, NOW() - INTERVAL '30 days'),
     ('550e8400-e29b-41d4-a716-446655440003', 'hashed_key_pro_user_002', 'Development Testing', NOW() - INTERVAL '1 day', false, NOW() - INTERVAL '15 days'),
-    ('550e8400-e29b-41d4-a716-446655440004', 'hashed_key_business_001', 'Business API Access', NOW() - INTERVAL '1 hour', false, NOW() - INTERVAL '60 days'),
+    ('550e8400-e29b-41d4-a716-446655440004', 'hashed_key_business_001', 'Business Features', NOW() - INTERVAL '1 hour', false, NOW() - INTERVAL '60 days'),
     ('550e8400-e29b-41d4-a716-446655440004', 'hashed_key_business_002', 'Legacy Key (Revoked)', NOW() - INTERVAL '30 days', true, NOW() - INTERVAL '90 days'),
     ('550e8400-e29b-41d4-a716-446655440005', 'hashed_key_lifetime_001', 'Lifetime Access Key', NOW() - INTERVAL '3 hours', false, NOW() - INTERVAL '120 days')
 ON CONFLICT DO NOTHING;

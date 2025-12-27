@@ -4,7 +4,7 @@ import { enhanceText } from '@/services/api/ai';
 import { checkLimit } from '@/services/api/subscription';
 
 /**
- * Critical Path Tests for EmotifAI Extension
+ * Critical Path Tests for EmotifyAI Extension
  * 
  * These tests cover the essential user flows and error scenarios:
  * 1. Background Script - Context menu and text enhancement

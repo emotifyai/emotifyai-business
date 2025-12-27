@@ -42,11 +42,11 @@ This creates `.output/chrome-mv3.zip`
    - Upload `.output/chrome-mv3.zip`
 
 3. **Fill Store Listing**
-   - **Name**: EmotifAI - AI Text Enhancement
+   - **Name**: EmotifyAI - AI Text Enhancement
    - **Summary**: AI-powered text enhancement and rewriting for better writing
    - **Description**: 
      ```
-     EmotifAI is your AI-powered writing assistant that enhances, rewrites, and improves your text with a single click.
+     EmotifyAI is your AI-powered writing assistant that enhances, rewrites, and improves your text with a single click.
      
      Features:
      • Right-click context menu for instant text enhancement
@@ -57,7 +57,7 @@ This creates `.output/chrome-mv3.zip`
      
      How to use:
      1. Select any text on any webpage
-     2. Right-click and choose "Enhance with EmotifAI"
+     2. Right-click and choose "Enhance with EmotifyAI"
      3. Your text is instantly improved!
      
      Subscription required after 50 free enhancements.

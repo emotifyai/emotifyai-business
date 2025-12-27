@@ -14,7 +14,7 @@ interface TestUser {
 }
 
 const testUser: TestUser = {
-  email: 'test@emotifAI.ai',
+  email: 'test@emotifyai.com',
   password: 'testpassword123'
 };
 

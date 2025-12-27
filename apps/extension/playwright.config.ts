@@ -1,7 +1,7 @@
 import { defineConfig, devices } from '@playwright/test';
 
 /**
- * Playwright configuration for EmotifAI Extension E2E tests
+ * Playwright configuration for EmotifyAI Extension E2E tests
  * 
  * Tests the extension in a real browser environment
  */
