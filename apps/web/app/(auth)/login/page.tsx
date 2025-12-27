@@ -8,12 +8,22 @@ export const metadata: Metadata = {
     description: 'Login to your EmotifyAI account',
 }
 
-function LoginContent({ searchParams }: { searchParams: { [key: string]: string | string[] | undefined } }) {
+interface LoginPageProps {
+    searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+}
+
+async function LoginContent({ searchParams }: LoginPageProps) {
+    const params = await searchParams
+    
     // Preserve URL parameters when linking to signup
-    const params = new URLSearchParams()
-    if (searchParams.source) params.set('source', searchParams.source as string)
-    if (searchParams.redirect_to) params.set('redirect_to', searchParams.redirect_to as string)
-    const signupUrl = params.toString() ? `/signup?${params.toString()}` : '/signup'
+    const urlParams = new URLSearchParams()
+    if (params.source && typeof params.source === 'string') {
+        urlParams.set('source', params.source)
+    }
+    if (params.redirect_to && typeof params.redirect_to === 'string') {
+        urlParams.set('redirect_to', params.redirect_to)
+    }
+    const signupUrl = urlParams.toString() ? `/signup?${urlParams.toString()}` : '/signup'
 
     return (
         <>
@@ -39,7 +49,7 @@ function LoginContent({ searchParams }: { searchParams: { [key: string]: string 
     )
 }
 
-export default function LoginPage({ searchParams }: { searchParams: { [key: string]: string | string[] | undefined } }) {
+export default async function LoginPage({ searchParams }: LoginPageProps) {
     return (
         <Suspense fallback={<div>Loading...</div>}>
             <LoginContent searchParams={searchParams} />

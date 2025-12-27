@@ -45,19 +45,35 @@ export default function AuthView({ onLogin }: AuthViewProps) {
     return (
         <div className="flex flex-col items-center justify-center p-8 text-center h-full bg-background text-foreground">
             <div className="mb-6 animate-float">
-                <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
-                    <circle cx="32" cy="32" r="30" fill="url(#gradient)" />
-                    <path
-                        d="M32 16L40 28H24L32 16Z M24 36L32 48L40 36H24Z"
-                        fill="white"
-                        opacity="0.9"
-                    />
+                <svg width="64" height="64" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <defs>
-                        <linearGradient id="gradient" x1="0" y1="0" x2="64" y2="64">
+                        <linearGradient id="emotifyai-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
                             <stop offset="0%" stopColor="#7C3AED" />
-                            <stop offset="100%" stopColor="#8B5CF6" />
+                            <stop offset="100%" stopColor="#06B6D4" />
                         </linearGradient>
+                        <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+                            <feGaussianBlur stdDeviation="15" result="coloredBlur"/>
+                            <feMerge>
+                                <feMergeNode in="coloredBlur"/>
+                                <feMergeNode in="SourceGraphic"/>
+                            </feMerge>
+                        </filter>
                     </defs>
+                    
+                    {/* Background */}
+                    <rect width="512" height="512" rx="120" fill="#030712" />
+                    
+                    {/* The "E" Logo - Geometric and Modern */}
+                    <path 
+                        d="M140 140 H380 V195 H205 V240 H350 V290 H205 V335 H380 V390 H140 Z" 
+                        fill="url(#emotifyai-gradient)" 
+                        filter="url(#glow)"
+                        stroke="rgba(255,255,255,0.1)"
+                        strokeWidth="2"
+                    />
+                    
+                    {/* Digital Accent Dot */}
+                    <circle cx="256" cy="80" r="15" fill="#06B6D4" filter="url(#glow)" />
                 </svg>
             </div>
 
