@@ -2,7 +2,7 @@
 
 ## Overview
 
-This guide explains all environment variables used across the EmotifAI platform.
+This guide explains all environment variables used across the EmotifyAI platform.
 
 ## Extension Environment Variables
 

@@ -2,8 +2,8 @@
 -- SUBSCRIPTION TIERS MIGRATION
 -- =============================================================================
 -- This migration adds support for the new subscription tier system:
--- - Free Trial (50 generations, 10 days)
--- - Lifetime Launch Offer (500/month, first 500 subscribers)
+-- - Free Trial (10 generations, 10 days)
+-- - Lifetime Launch Offer (1000/month, first 500 subscribers)
 -- - Basic/Pro/Business Monthly
 -- - Basic/Pro/Business Annual
 --
@@ -249,7 +249,7 @@ DECLARE
 BEGIN
   -- Set quota based on tier
   CASE tier_name
-    WHEN 'trial' THEN quota_amount := 50;
+    WHEN 'trial' THEN quota_amount := 10;
     WHEN 'basic_monthly' THEN quota_amount := 350;
     WHEN 'pro_monthly' THEN quota_amount := 700;
     WHEN 'business_monthly' THEN quota_amount := 1500;
@@ -300,9 +300,9 @@ CREATE TRIGGER update_lifetime_slots_updated_at
 UPDATE public.subscriptions
 SET 
   monthly_quota = CASE tier
-    WHEN 'trial' THEN 50
+    WHEN 'trial' THEN 10
     WHEN 'monthly' THEN 350  -- Default to basic
-    WHEN 'lifetime' THEN 500
+    WHEN 'lifetime' THEN 1000
     ELSE 0
   END,
   quota_used_this_month = 0,

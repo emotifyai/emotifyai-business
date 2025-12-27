@@ -26,7 +26,7 @@ export default function SubscriptionPage() {
             period: '/month',
             tier: SubscriptionTier.PRO_MONTHLY,
             features: [
-                'Unlimited AI enhancements',
+                'Premium AI enhancements',
                 'All languages supported',
                 'Priority support',
                 'Early access to new features',
@@ -38,7 +38,7 @@ export default function SubscriptionPage() {
             period: 'one-time',
             tier: SubscriptionTier.LIFETIME_LAUNCH,
             features: [
-                'Unlimited AI enhancements forever',
+                'Premium AI enhancements forever',
                 'All languages supported',
                 'Priority support',
                 'Lifetime updates included',

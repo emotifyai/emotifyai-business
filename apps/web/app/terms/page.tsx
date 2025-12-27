@@ -119,9 +119,20 @@ export default function TermsPage() {
                                     
                                     <h3>Subscription Tiers</h3>
                                     <ul>
-                                        <li><strong>Trial:</strong> 10 free enhancements to try the service</li>
-                                        <li><strong>Monthly:</strong> Unlimited enhancements, billed monthly</li>
-                                        <li><strong>Lifetime:</strong> One-time payment for unlimited access</li>
+                                        <li><strong>Trial:</strong> 10 free enhancements to try the service (no renewal)</li>
+                                        <li><strong>Monthly Plans:</strong> Credit-based monthly subscriptions with automatic renewal</li>
+                                        <li><strong>Lifetime:</strong> One-time payment for 1000 credits per month, forever</li>
+                                    </ul>
+
+                                    <h3>Credit System</h3>
+                                    <p>
+                                        All plans operate on a credit-based system where each text enhancement consumes credits:
+                                    </p>
+                                    <ul>
+                                        <li>Credits reset monthly for subscription plans</li>
+                                        <li>Unused credits do not roll over to the next month</li>
+                                        <li>When credits are exhausted, service is suspended until renewal or upgrade</li>
+                                        <li>Fair use policy applies to prevent abuse</li>
                                     </ul>
 
                                     <h3>Billing</h3>

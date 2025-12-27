@@ -64,9 +64,9 @@ export function Footer() {
                                 </Link>
                             </li>
                             <li>
-                                <a href="mailto:support@emotifyai.com" className="text-muted-foreground hover:text-primary transition-colors">
+                                <Link href="/support" className="text-muted-foreground hover:text-primary transition-colors">
                                     Contact Support
-                                </a>
+                                </Link>
                             </li>
                         </ul>
                     </div>

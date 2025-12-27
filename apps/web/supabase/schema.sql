@@ -34,8 +34,8 @@ CREATE TYPE subscription_status AS ENUM (
 -- Subscription tier enum (includes all new credit-based tiers)
 CREATE TYPE subscription_tier AS ENUM (
     'trial',                -- Legacy trial (mapped to 'free')
-    'free',                 -- Free plan (50 credits, 10 days)
-    'lifetime_launch',      -- Lifetime launch offer (500 credits/month, $97, limited to 500)
+    'free',                 -- Free plan (10 credits, 10 days)
+    'lifetime_launch',      -- Lifetime launch offer (1000 credits/month, $97, limited to 500)
     'basic_monthly',        -- Basic monthly (350 credits, $17/month)
     'pro_monthly',          -- Pro monthly (700 credits, $37/month)
     'business_monthly',     -- Business monthly (1500 credits, $57/month)

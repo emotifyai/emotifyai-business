@@ -383,7 +383,7 @@ export default async function PricingPage({ searchParams }: PricingPageProps) {
                                 <h4 className="font-semibold mb-2">What happens when I run out of credits?</h4>
                                 <p className="text-muted-foreground">
                                     You can upgrade your plan anytime or wait for your credits to reset next month.
-                                    The lifetime plan gives you 500 credits every month forever.
+                                    The lifetime plan gives you 1000 credits every month forever.
                                 </p>
                             </div>
 

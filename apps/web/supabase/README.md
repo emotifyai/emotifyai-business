@@ -110,7 +110,7 @@ The system supports 6 subscription tiers with different credit allocations:
 
 | Tier | Credits/Month | Price | Duration | Notes |
 |------|---------------|-------|----------|-------|
-| `free` | 50 | $0 | 10 days | One-time trial |
+| `free` | 10 | $0 | 10 days | One-time trial |
 | `basic_monthly` | 350 | $17 | 1 month | Basic plan |
 | `pro_monthly` | 700 | $37 | 1 month | Most popular |
 | `business_monthly` | 1500 | $57 | 1 month | High volume |

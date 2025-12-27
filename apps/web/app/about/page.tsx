@@ -5,8 +5,8 @@ import { Card, CardContent } from '@ui/card'
 import { Sparkles, Target, Zap, Shield, Globe, Users } from 'lucide-react'
 
 export const metadata: Metadata = {
-    title: 'About - EmotifAI',
-    description: 'Learn more about EmotifAI and our mission to elevate writing with AI',
+    title: 'About - EmotifyAI',
+    description: 'Learn more about EmotifyAI and our mission to elevate writing with AI',
 }
 
 export default function AboutPage() {
@@ -22,7 +22,7 @@ export default function AboutPage() {
                                 <Sparkles className="h-8 w-8 text-primary" />
                             </div>
                             <h1 className="text-4xl font-bold tracking-tight md:text-5xl mb-4">
-                                About EmotifAI
+                                About EmotifyAI
                             </h1>
                             <p className="text-xl text-muted-foreground">
                                 Elevating writing with the power of AI, making communication effortless for everyone.
@@ -44,7 +44,7 @@ export default function AboutPage() {
                                     <div className="flex-1">
                                         <h2 className="text-2xl font-bold mb-4">Our Mission</h2>
                                         <p className="text-lg text-muted-foreground leading-relaxed">
-                                            We believe that language shouldn&#39;t be a barrier to effective communication. Whether you&#39;re writing an important email, a technical document, or a creative piece, EmotifAI helps you find the right words instantly—in English, Arabic, or French.
+                                            We believe that language shouldn&#39;t be a barrier to effective communication. Whether you&#39;re writing an important email, a technical document, or a creative piece, EmotifyAI helps you find the right words instantly—in English, Arabic, or French.
                                         </p>
                                     </div>
                                 </div>
@@ -62,7 +62,7 @@ export default function AboutPage() {
                                         <h2 className="text-2xl font-bold mb-4">How It Works</h2>
                                         <div className="space-y-4">
                                             <p className="text-muted-foreground leading-relaxed">
-                                                EmotifAI leverages the power of <span className="font-semibold text-foreground">Claude 3.5 Sonnet</span>, one of the most advanced AI models available, to understand the context and nuance of your writing.
+                                                EmotifyAI leverages advanced AI technology to understand the context and nuance of your writing.
                                             </p>
                                             <div className="grid gap-4 md:grid-cols-2">
                                                 <div className="rounded-lg border bg-card p-4">
@@ -94,7 +94,7 @@ export default function AboutPage() {
                                     <div className="flex-1">
                                         <h2 className="text-2xl font-bold mb-4">Multi-Language Excellence</h2>
                                         <p className="text-muted-foreground leading-relaxed mb-4">
-                                            EmotifAI specializes in three languages, ensuring high-quality enhancements tailored to each language&#39;s unique characteristics:
+                                            EmotifyAI specializes in three languages, ensuring high-quality enhancements tailored to each language&#39;s unique characteristics:
                                         </p>
                                         <div className="grid gap-3 md:grid-cols-3">
                                             <div className="rounded-lg border bg-card p-4 text-center">
@@ -128,7 +128,7 @@ export default function AboutPage() {
                                     <div className="flex-1">
                                         <h2 className="text-2xl font-bold mb-4">Privacy First</h2>
                                         <p className="text-muted-foreground leading-relaxed mb-4">
-                                            We take your privacy seriously. EmotifAI is designed with a security-first approach:
+                                            We take your privacy seriously. EmotifyAI is designed with a security-first approach:
                                         </p>
                                         <ul className="space-y-2">
                                             <li className="flex items-start gap-2">
@@ -171,7 +171,7 @@ export default function AboutPage() {
                                     <div className="flex-1">
                                         <h2 className="text-2xl font-bold mb-4">Who We Serve</h2>
                                         <p className="text-muted-foreground leading-relaxed mb-4">
-                                            EmotifAI is built for anyone who writes:
+                                            EmotifyAI is built for anyone who writes:
                                         </p>
                                         <div className="grid gap-3 sm:grid-cols-2">
                                             <div className="rounded-lg border bg-card p-3">

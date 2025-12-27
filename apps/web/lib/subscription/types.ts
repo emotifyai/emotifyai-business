@@ -48,7 +48,7 @@ export const SUBSCRIPTION_TIERS: Record<SubscriptionTier, SubscriptionTierConfig
         durationDays: 10,
         features: [
             '10 text enhancements',
-            '10-day trial period',
+            'No renewal - one-time trial',
             'All languages (EN, AR, FR)',
             'All enhancement modes',
             'Prompt caching enabled'

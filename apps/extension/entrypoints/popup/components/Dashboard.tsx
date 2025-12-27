@@ -66,7 +66,7 @@ function Dashboard({ user, subscription, usage, onLogout, onOpenSettings }: Dash
                     {isTrialUser && (
                         <div className="pt-3 border-t border-white/20">
                             <p className="text-white text-sm mb-3">
-                                Unlock unlimited enhancements!
+                                Unlock premium enhancements!
                             </p>
                             <div className="flex gap-2">
                                 <button

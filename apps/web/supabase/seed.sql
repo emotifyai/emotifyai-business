@@ -116,7 +116,7 @@ INSERT INTO public.subscriptions (
     NOW()
 ) ON CONFLICT (lemon_squeezy_id) DO NOTHING;
 
--- Lifetime Launch Offer Example (500 credits/month, $97 one-time)
+-- Lifetime Launch Offer Example (1000 credits/month, $97 one-time)
 INSERT INTO public.subscriptions (
     id, user_id, lemon_squeezy_id, status, tier, tier_name,
     current_period_start, current_period_end,

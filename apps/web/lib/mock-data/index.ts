@@ -83,7 +83,7 @@ export const mockSubscriptions: Record<SubscriptionTier, Subscription> = {
         quota_reset_at: '2024-12-01T10:00:00Z',
         cache_enabled: true,
         tier_name: 'Lifetime Launch',
-        credits_limit: 500,
+        credits_limit: 1000,
         credits_used: 75,
         credits_reset_date: '2024-12-01T10:00:00Z',
         validity_days: null,

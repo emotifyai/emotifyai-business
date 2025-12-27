@@ -81,7 +81,7 @@ export function SubscriptionCard({ tier, status, currentPeriodEnd, usage }: Subs
                     </div>
                     <div className="flex items-center gap-2 text-sm">
                         <Check className="h-4 w-4 text-primary" />
-                        <span>{isPro ? "Unlimited" : "Limited"} AI Enhancements</span>
+                        <span>{isPro ? "Premium" : "Basic"} AI Enhancements</span>
                     </div>
                     <div className="flex items-center gap-2 text-sm">
                         <Check className="h-4 w-4 text-primary" />

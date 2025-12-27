@@ -62,7 +62,7 @@ export default function SettingsPage() {
                     <CardHeader>
                         <CardTitle>Preferences</CardTitle>
                         <CardDescription>
-                            Customize your EmotifAI experience
+                            Customize your EmotifyAI experience
                         </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">

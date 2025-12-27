@@ -60,7 +60,7 @@ export default function DocsPage() {
                                             </li>
                                             <li className="flex gap-3">
                                                 <span className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-primary/10 text-xs font-semibold text-primary">3</span>
-                                                <span className="text-muted-foreground">Log in with your EmotifAI account or create a new one</span>
+                                                <span className="text-muted-foreground">Log in with your EmotifyAI account or create a new one</span>
                                             </li>
                                         </ol>
                                     </CardContent>
@@ -95,9 +95,9 @@ export default function DocsPage() {
                             </div>
                         </div>
 
-                        {/* Using EmotifAI */}
+                        {/* Using EmotifyAI */}
                         <div>
-                            <h2 className="text-3xl font-bold mb-6">Using EmotifAI</h2>
+                            <h2 className="text-3xl font-bold mb-6">Using EmotifyAI</h2>
                             <div className="grid gap-6">
                                 {/* Text Enhancement */}
                                 <Card>
@@ -124,7 +124,7 @@ export default function DocsPage() {
                                                     </li>
                                                     <li className="flex gap-3">
                                                         <span className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-green-500/10 text-xs font-semibold text-green-500">3</span>
-                                                        <span className="text-muted-foreground">Hover over &#34;EmotifAI&#34; and select &#34;Enhance&#34;</span>
+                                                        <span className="text-muted-foreground">Hover over &#34;EmotifyAI&#34; and select &#34;Enhance&#34;</span>
                                                     </li>
                                                     <li className="flex gap-3">
                                                         <span className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-green-500/10 text-xs font-semibold text-green-500">4</span>
@@ -158,7 +158,7 @@ export default function DocsPage() {
                                                 <kbd className="rounded bg-muted px-2 py-1 text-xs font-semibold">Ctrl+Shift+E</kbd>
                                             </div>
                                             <div className="flex items-center justify-between rounded-lg border bg-card p-3">
-                                                <span className="text-sm text-muted-foreground">Open EmotifAI popup</span>
+                                                <span className="text-sm text-muted-foreground">Open EmotifyAI popup</span>
                                                 <kbd className="rounded bg-muted px-2 py-1 text-xs font-semibold">Ctrl+Shift+Y</kbd>
                                             </div>
                                             <p className="text-xs text-muted-foreground mt-2">
@@ -186,7 +186,7 @@ export default function DocsPage() {
                                     </CardHeader>
                                     <CardContent>
                                         <p className="text-sm text-muted-foreground mb-3">
-                                            Create API keys to integrate EmotifAI into your own applications:
+                                            Create API keys to integrate EmotifyAI into your own applications:
                                         </p>
                                         <ul className="space-y-2 text-sm">
                                             <li className="flex items-start gap-2">
@@ -222,7 +222,7 @@ export default function DocsPage() {
                                     </CardHeader>
                                     <CardContent>
                                         <p className="text-sm text-muted-foreground mb-3">
-                                            Customize EmotifAI to fit your workflow:
+                                            Customize EmotifyAI to fit your workflow:
                                         </p>
                                         <ul className="space-y-2 text-sm">
                                             <li className="flex items-start gap-2">

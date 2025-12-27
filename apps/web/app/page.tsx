@@ -37,7 +37,7 @@ export default async function Home() {
                   <Sparkles className="mb-2 h-8 w-8 text-primary" />
                   <CardTitle>AI-Powered</CardTitle>
                   <CardDescription>
-                    Claude 3.5 Sonnet delivers intelligent, context-aware rewriting
+                    Advanced AI delivers intelligent, context-aware rewriting
                   </CardDescription>
                 </CardHeader>
               </Card>
@@ -91,7 +91,7 @@ export default async function Home() {
                 </p>
                 <Button size="lg" variant="glow" asChild>
                   <Link href={isAuthenticated ? "/dashboard" : "/signup"}>
-                    {isAuthenticated ? "Go to Dashboard" : "Start Free Trial"}
+                    {isAuthenticated ? "Go to Dashboard" : "Start Free"}
                   </Link>
                 </Button>
               </div>
