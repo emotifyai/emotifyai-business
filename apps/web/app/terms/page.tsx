@@ -28,7 +28,7 @@ export default function TermsPage() {
                                 Please read these terms carefully before using EmotifyAI.
                             </p>
                             <p className="mt-4 text-sm text-muted-foreground">
-                                Last updated: November 27, 2025
+                                Last updated: December 27, 2025
                             </p>
                         </div>
                     </div>
@@ -48,10 +48,10 @@ export default function TermsPage() {
                                         <h2 className="text-2xl font-bold mb-4">Acceptance of Terms</h2>
                                         <div className="prose prose-zinc dark:prose-invert max-w-none">
                                             <p>
-                                                By accessing or using EmotifyAI's browser extension and web application ("Service"), you agree to be bound by these Terms of Service ("Terms"). If you do not agree to these Terms, please do not use our Service.
+                                                By accessing or using EmotifyAI's browser extension and web application ("Service"), you agree to be bound by these Terms of Service ("Terms"). We've designed these terms to be clear and fair. If you do not agree to these Terms, please do not use our Service.
                                             </p>
                                             <p>
-                                                We reserve the right to modify these Terms at any time. Continued use of the Service after changes constitutes acceptance of the modified Terms.
+                                                We reserve the right to modify these Terms at any time to reflect changes in our service or legal requirements. Continued use of the Service after changes constitutes acceptance of the modified Terms.
                                             </p>
                                         </div>
                                     </div>
@@ -70,16 +70,16 @@ export default function TermsPage() {
                                         <h2 className="text-2xl font-bold mb-4">Service Description</h2>
                                         <div className="prose prose-zinc dark:prose-invert max-w-none">
                                             <p>
-                                                EmotifyAI is an AI-powered text enhancement tool that helps users improve their writing. The Service includes:
+                                                EmotifyAI is an AI-powered text enhancement tool that helps users improve their writing quality, tone, and clarity. The Service includes:
                                             </p>
                                             <ul>
-                                                <li>Browser extension for Chrome and Firefox</li>
-                                                <li>Web application dashboard</li>
-                                                <li>Text enhancement service</li>
-                                                <li>Subscription management</li>
+                                                <li>Browser extension for integration with your favorite websites</li>
+                                                <li>Web application dashboard for account management</li>
+                                                <li>AI-driven text enhancement processing (powered by industry-leading models)</li>
+                                                <li>Subscription and usage tracking</li>
                                             </ul>
                                             <p>
-                                                We strive to provide reliable service but do not guarantee uninterrupted or error-free operation.
+                                                We strive to provide premium, reliable service, but because we rely on complex AI and third-party infrastructure, we do not guarantee 100% uninterrupted or error-free operation.
                                             </p>
                                         </div>
                                     </div>
@@ -94,18 +94,23 @@ export default function TermsPage() {
                                     <h2 className="text-2xl font-bold mb-4">User Accounts</h2>
                                     <h3>Account Creation</h3>
                                     <p>
-                                        To use EmotifyAI, you must create an account. You agree to:
+                                        To use EmotifyAI, you must create a secure account. You agree to:
                                     </p>
                                     <ul>
-                                        <li>Provide accurate and complete information</li>
-                                        <li>Maintain the security of your account credentials</li>
-                                        <li>Notify us immediately of any unauthorized access</li>
-                                        <li>Be responsible for all activities under your account</li>
+                                        <li>Provide accurate information (email is required for account recovery)</li>
+                                        <li>Maintain the security of your account and API keys</li>
+                                        <li>Notify us immediately of any suspected unauthorized access</li>
+                                        <li>Take responsibility for all activities occurring under your account</li>
                                     </ul>
+
+                                    <h3>Account Privacy</h3>
+                                    <p>
+                                        Your account data is managed through Supabase. We do not have access to your OAuth passwords (e.g., Google/GitHub passwords). For more details, see our <a href="/privacy">Privacy Policy</a>.
+                                    </p>
 
                                     <h3>Account Termination</h3>
                                     <p>
-                                        We reserve the right to suspend or terminate accounts that violate these Terms or engage in abusive behavior.
+                                        We reserve the right to suspend or terminate accounts that violate these Terms, engage in system abuse, or perform illegal activities.
                                     </p>
                                 </div>
                             </CardContent>
@@ -116,43 +121,41 @@ export default function TermsPage() {
                             <CardContent className="pt-6">
                                 <div className="prose prose-zinc dark:prose-invert max-w-none">
                                     <h2 className="text-2xl font-bold mb-4">Subscription and Billing</h2>
-                                    
+
                                     <h3>Subscription Tiers</h3>
                                     <ul>
-                                        <li><strong>Trial:</strong> 10 free enhancements to try the service (no renewal)</li>
-                                        <li><strong>Monthly Plans:</strong> Credit-based monthly subscriptions with automatic renewal</li>
-                                        <li><strong>Lifetime:</strong> One-time payment for 1000 credits per month, forever</li>
+                                        <li><strong>Trial:</strong> 10 free enhancements for new users (one-time use)</li>
+                                        <li><strong>Monthly Plans:</strong> Recurring subscriptions providing a fixed number of enhancements monthly</li>
+                                        <li><strong>Lifetime:</strong> A one-time purchase granting a perpetual monthly credit allowance</li>
                                     </ul>
 
-                                    <h3>Credit System</h3>
+                                    <h3>Usage Limits (Credits)</h3>
                                     <p>
-                                        All plans operate on a credit-based system where each text enhancement consumes credits:
+                                        Our Service operates on a credit-based system to ensure fair resource allocation:
                                     </p>
                                     <ul>
-                                        <li>Credits reset monthly for subscription plans</li>
+                                        <li>One enhancement action typically consumes one credit</li>
+                                        <li>Credits reset at the start of your monthly billing cycle</li>
                                         <li>Unused credits do not roll over to the next month</li>
-                                        <li>When credits are exhausted, service is suspended until renewal or upgrade</li>
-                                        <li>Fair use policy applies to prevent abuse</li>
+                                        <li>If you reach your limit, you can upgrade your plan or wait for the next cycle</li>
                                     </ul>
 
-                                    <h3>Billing</h3>
+                                    <h3>Billing & Payments</h3>
                                     <p>
-                                        Subscriptions are processed through Lemon Squeezy. By subscribing, you agree to:
+                                        All payments are securely processed through Lemon Squeezy. By subscribing, you agree to:
                                     </p>
                                     <ul>
-                                        <li>Automatic renewal for monthly subscriptions</li>
-                                        <li>Charges to your payment method on file</li>
-                                        <li>No refunds for partial months</li>
+                                        <li>Automatic renewal for monthly subscriptions until cancelled</li>
+                                        <li>Charges to your provided payment method according to your plan</li>
+                                        <li>Understanding that access depends on successful payment</li>
                                     </ul>
 
-                                    <h3>Cancellation</h3>
+                                    <h3>Cancellation & Refunds</h3>
                                     <p>
-                                        You may cancel your subscription at any time. Access continues until the end of the current billing period.
+                                        You can cancel your subscription anytime via the dashboard. Access remains active until the current period ends.
                                     </p>
-
-                                    <h3>Refund Policy</h3>
                                     <p>
-                                        We offer refunds within 14 days of purchase for monthly subscriptions. Lifetime licenses are non-refundable after 30 days.
+                                        <strong>Refunds:</strong> We offer a short-term "no questions asked" refund for your first monthly subscription payment. Lifetime licenses are non-refundable after 30 days due to the permanent nature of the access.
                                     </p>
                                 </div>
                             </CardContent>
@@ -192,7 +195,7 @@ export default function TermsPage() {
                             <CardContent className="pt-6">
                                 <div className="prose prose-zinc dark:prose-invert max-w-none">
                                     <h2 className="text-2xl font-bold mb-4">Intellectual Property</h2>
-                                    
+
                                     <h3>Our Rights</h3>
                                     <p>
                                         EmotifyAI and all related trademarks, logos, and content are owned by us or our licensors. You may not use our intellectual property without written permission.
