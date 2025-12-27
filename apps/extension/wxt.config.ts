@@ -49,7 +49,7 @@ export default defineConfig({
   manifest: {
     name: 'EmotifyAI',
     description: 'AI-powered text enhancement and rewriting',
-    version: '0.1.0',
+    version: '0.1.1',
     permissions: [
       'contextMenus',
       'storage',
