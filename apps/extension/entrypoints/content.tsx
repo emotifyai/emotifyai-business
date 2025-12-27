@@ -1022,7 +1022,8 @@ class KeyboardShortcutHandler {
 // ============================================================================
 
 export default defineContentScript({
-  matches: ['<all_urls>'],
+  // Use manual injection instead of automatic matching
+  matches: [],
   main() {
     console.log('🦆 DUCK: Content script main() called');
     console.log('🦆 DUCK: Current URL:', window.location.href);

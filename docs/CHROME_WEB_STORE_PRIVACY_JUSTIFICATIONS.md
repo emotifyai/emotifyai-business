@@ -1,21 +1,21 @@
-# Chrome Web Store Privacy Justifications
+# Chrome Web Store Privacy Justifications (Optimized Version)
 
-This document provides the required justifications for all permissions used by the EmotifyAI extension. Copy and paste these justifications into the Chrome Web Store Privacy practices tab.
+This document provides the required justifications for all permissions used by the EmotifyAI extension. This version uses **activeTab only** instead of broad host permissions to reduce review complexity.
 
 ## Single Purpose Description
 
-**Single Purpose**: AI-powered text enhancement and rewriting tool that helps users improve their writing by selecting text on any webpage and enhancing it with artificial intelligence.
+**Single Purpose**: AI-powered text enhancement and rewriting tool that helps users improve their writing by selecting text on any webpage and enhancing it with artificial intelligence through right-click context menu.
 
 ## Permission Justifications
 
 ### 1. activeTab Permission
-**Justification**: Required to access and modify selected text on the currently active webpage when users right-click and choose "Enhance with EmotifyAI" from the context menu. This permission allows the extension to read the selected text, send it for AI enhancement, and replace it with the improved version on the same page.
+**Justification**: Required to access and modify selected text on the currently active webpage when users right-click and choose "Enhance with EmotifyAI" from the context menu. This permission allows the extension to inject the content script only when needed, read the selected text, send it for AI enhancement, and replace it with the improved version on the same page. The extension only works when the user actively triggers it - no automatic background activity.
 
 ### 2. contextMenus Permission  
-**Justification**: Required to add the "Enhance with EmotifyAI" option to the browser's right-click context menu when text is selected. This provides users with an intuitive way to access the text enhancement feature directly from any webpage without opening the extension popup.
+**Justification**: Required to add the "Enhance with EmotifyAI" option to the browser's right-click context menu when text is selected. This provides users with an intuitive way to access the text enhancement feature directly from any webpage. The context menu only appears when text is selected and the user is authenticated.
 
-### 3. Host Permissions (https://*/*, http://*/*)
-**Justification**: Required to inject content scripts and access selected text on all websites where users want to enhance their writing. The extension needs to work across all websites including social media, email platforms, document editors, and any other web-based text input areas where users write content.
+### 3. ~~Host Permissions~~ (REMOVED)
+**Status**: No longer required. The extension now uses activeTab permission instead of broad host permissions, which means it only accesses the current tab when the user actively triggers the enhancement feature through the context menu.
 
 ### 4. identity Permission
 **Justification**: Required for secure user authentication using Google OAuth. This permission allows users to log into their EmotifyAI account directly from the extension without entering credentials manually, providing a seamless and secure authentication experience.
@@ -24,10 +24,22 @@ This document provides the required justifications for all permissions used by t
 **Justification**: The extension does NOT execute any remote code. All JavaScript code is bundled with the extension during build time. The extension only makes HTTPS API calls to our secure backend (emotifyai.com) to send text for AI enhancement and receive processed text responses. No executable code is downloaded, evaluated, or executed from remote sources. All dynamic imports in the codebase are for local bundled modules (React lazy loading, theme utilities) and test mocking - not remote code execution.
 
 ### 6. scripting Permission
-**Justification**: Required to inject content scripts into webpages to detect text selection, display enhancement results, and provide undo functionality. This allows the extension to seamlessly integrate with any website's text content and provide in-place text replacement without disrupting the user's workflow.
+**Justification**: Required to inject content scripts into webpages ONLY when the user actively triggers text enhancement through the context menu. This allows the extension to dynamically inject the necessary UI components and text replacement functionality only on the current active tab when needed. The extension does not run scripts automatically on all websites - scripts are only injected when the user explicitly requests text enhancement.
 
 ### 7. storage Permission
 **Justification**: Required to store user authentication tokens, usage statistics, and user preferences locally in the browser. This enables the extension to remember the user's login state, track their usage limits, and maintain their settings (like preferred language and enhancement mode) across browser sessions.
+
+## Key Security Improvements
+
+### On-Demand Script Injection
+- **No automatic content scripts**: Scripts are only injected when the user actively uses the context menu
+- **activeTab only**: Extension only accesses the current active tab, not all websites
+- **User-initiated**: All functionality requires explicit user action (right-click → select menu item)
+
+### Minimal Permissions
+- **Removed broad host permissions**: No longer requires access to all websites
+- **Reduced attack surface**: Extension cannot access websites unless user explicitly triggers it
+- **Privacy-focused**: No background monitoring or automatic data collection
 
 ## Data Usage Compliance
 
@@ -117,8 +129,20 @@ If reviewers flag the `https://*/*` permission as too broad:
 
 ## Important Notes
 
+- **Major Improvement**: This version removes broad host permissions (`https://*/*`) and uses `activeTab` only
+- **Faster Review**: Extensions with activeTab typically get approved much faster than those with broad host permissions
+- **User-Initiated Only**: All functionality requires explicit user action - no automatic background activity
+- **Privacy-Focused**: Extension only accesses websites when user explicitly triggers enhancement
 - Be specific and accurate in your justifications
 - Explain exactly why each permission is necessary for your extension's core functionality
 - Avoid generic explanations - be specific to EmotifyAI's use case
 - Ensure your privacy policy URL is accessible and matches your data practices
 - Test all functionality before submission to ensure permissions are actually needed
+
+## Client's Recommendation (Arabic)
+
+العميل محق تماماً في نصيحته:
+- إزالة Host Permissions العامة يقلل التدقيق بشكل كبير
+- الاعتماد على activeTab + scripting + contextMenus أفضل للقبول
+- الإضافة تعمل فقط عند التفعيل اليدوي (Right-click) - وهذا مثالي
+- هذا التغيير يجعل المراجعة أسرع وأسهل

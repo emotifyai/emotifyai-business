@@ -146,27 +146,51 @@ async function handleEnhanceText(text: string, tabId?: number): Promise<void> {
     if (!token) {
       console.log('🦆 DUCK: ❌ No auth token, showing error');
       if (tabId) {
-        await browser.tabs.sendMessage(tabId, {
-          type: 'SHOW_ERROR',
-          payload: { error: 'Please log in to use EmotifyAI' },
-        });
+        // Inject content script first, then show error
+        try {
+          await browser.scripting.executeScript({
+            target: { tabId },
+            files: ['content-scripts/content.js']
+          });
+          
+          await browser.tabs.sendMessage(tabId, {
+            type: 'SHOW_ERROR',
+            payload: { error: 'Please log in to use EmotifyAI' },
+          });
+        } catch (error) {
+          console.log('🦆 DUCK: Failed to inject content script or send message:', error);
+        }
       }
       return;
     }
 
-    console.log('🦆 DUCK: ✅ Auth token found, sending SHOW_ENHANCEMENT_POPUP message');
+    console.log('🦆 DUCK: ✅ Auth token found, injecting content script and sending message');
 
-    // Show enhancement popup in content script
+    // Inject content script and show enhancement popup
     if (tabId) {
-      console.log('🦆 DUCK: Sending message to tab:', tabId);
-      const message = {
-        type: 'SHOW_ENHANCEMENT_POPUP',
-        payload: { text },
-      };
-      console.log('🦆 DUCK: Message:', message);
+      try {
+        console.log('🦆 DUCK: Injecting content script into tab:', tabId);
+        
+        // Inject content script
+        await browser.scripting.executeScript({
+          target: { tabId },
+          files: ['content-scripts/content.js']
+        });
+        
+        console.log('🦆 DUCK: ✅ Content script injected, sending message');
+        
+        const message = {
+          type: 'SHOW_ENHANCEMENT_POPUP',
+          payload: { text },
+        };
+        console.log('🦆 DUCK: Message:', message);
 
-      await browser.tabs.sendMessage(tabId, message);
-      console.log('🦆 DUCK: ✅ Message sent successfully');
+        await browser.tabs.sendMessage(tabId, message);
+        console.log('🦆 DUCK: ✅ Message sent successfully');
+      } catch (error) {
+        console.log('🦆 DUCK: ❌ Failed to inject content script or send message:', error);
+        logger.error('Failed to inject content script', error);
+      }
     } else {
       console.log('🦆 DUCK: ❌ No tab ID available');
     }
@@ -177,10 +201,19 @@ async function handleEnhanceText(text: string, tabId?: number): Promise<void> {
 
     // Fallback to error message
     if (tabId) {
-      await browser.tabs.sendMessage(tabId, {
-        type: 'SHOW_ERROR',
-        payload: { error: 'Failed to open enhancement popup' },
-      });
+      try {
+        await browser.scripting.executeScript({
+          target: { tabId },
+          files: ['content-scripts/content.js']
+        });
+        
+        await browser.tabs.sendMessage(tabId, {
+          type: 'SHOW_ERROR',
+          payload: { error: 'Failed to open enhancement popup' },
+        });
+      } catch (fallbackError) {
+        console.log('🦆 DUCK: Fallback error handling also failed:', fallbackError);
+      }
     }
   }
 }

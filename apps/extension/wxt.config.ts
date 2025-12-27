@@ -57,12 +57,13 @@ export default defineConfig({
       'scripting',
       'identity',
     ],
-    host_permissions: [
-      'http://localhost/*',
-      'https://emotifyai.com/*',
-      'https://*/*',
-      'http://*/*',
-    ],
+    // Remove host_permissions - use activeTab instead
+    // host_permissions: [
+    //   'http://localhost/*',
+    //   'https://emotifyai.com/*',
+    //   'https://*/*',
+    //   'http://*/*',
+    // ],
     externally_connectable: {
       matches: [
         'http://localhost:3000/*',
