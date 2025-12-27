@@ -4,6 +4,7 @@ import type { UserConfig } from 'vite';
 import path from 'path';
 
 // See https://wxt.dev/api/config.html
+// @ts-ignore
 export default defineConfig({
   // @ts-ignore
   modules: ['@wxt-dev/module-react'],
@@ -49,7 +50,7 @@ export default defineConfig({
   manifest: {
     name: 'EmotifyAI',
     description: 'AI-powered text enhancement and rewriting',
-    version: '0.1.1',
+    version: '0.1.2',
     permissions: [
       'contextMenus',
       'storage',
@@ -66,10 +67,9 @@ export default defineConfig({
     // ],
     externally_connectable: {
       matches: [
-        'http://localhost:3000/*',
+        // 'http://localhost:3000/*',
         'https://emotifyai.com/*',
-        'https://emotifyai-app.netlify.app/*',
-        'https://bright-marzipan-1b48f4.netlify.app/*',
+        // 'https://emotifyai-app.netlify.app/*',
       ],
     },
     icons: {
