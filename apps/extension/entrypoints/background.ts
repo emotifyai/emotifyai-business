@@ -7,11 +7,9 @@ import type { EnhanceTextMessage, EnhanceTextResponse } from '@/types';
 import { browser } from "wxt/browser";
 
 export default defineBackground(() => {
-  console.log('🦆 DUCK: Background script starting');
   logger.info('Background script initialized');
 
   // Log extension ID for debugging
-  console.log('🦆 DUCK: Extension ID:', browser.runtime.id);
   logger.info('Extension ID:', browser.runtime.id);
 
   // Create context menu on installation
@@ -26,16 +24,9 @@ export default defineBackground(() => {
 
   // Handle context menu clicks
   browser.contextMenus.onClicked.addListener(async (info, tab) => {
-    console.log('🦆 DUCK: Context menu clicked');
-    console.log('🦆 DUCK: Menu item ID:', info.menuItemId);
-    console.log('🦆 DUCK: Selection text:', info.selectionText?.substring(0, 50) + '...');
-    console.log('🦆 DUCK: Tab info:', { id: tab?.id, url: tab?.url });
-
     if (info.menuItemId === 'enhance-text' && info.selectionText) {
-      console.log('🦆 DUCK: ✅ Valid context menu click, calling handleEnhanceText');
       await handleEnhanceText(info.selectionText, tab?.id);
     } else {
-      console.log('🦆 DUCK: ❌ Invalid context menu click or no selection');
     }
   });
 
@@ -53,9 +44,6 @@ export default defineBackground(() => {
   // Handle external messages from web app
   if (browser.runtime.onMessageExternal) {
     browser.runtime.onMessageExternal.addListener((message, sender, sendResponse) => {
-      console.log('🦆 DUCK: External message received in background script');
-      console.log('🦆 DUCK: Message:', message);
-      console.log('🦆 DUCK: Sender URL:', sender.url);
       logger.info('Received external message', { message, sender: sender.url });
 
       // Only accept messages from allowed origins
@@ -64,18 +52,11 @@ export default defineBackground(() => {
       ];
 
       const senderOrigin = sender.url ? new URL(sender.url).origin : '';
-      console.log('🦆 DUCK: Sender origin:', senderOrigin);
-      console.log('🦆 DUCK: Allowed origins:', allowedOrigins);
-
       if (!allowedOrigins.includes(senderOrigin)) {
-        console.log('🦆 DUCK: ❌ Rejected message from unauthorized origin');
         logger.warn('Rejected message from unauthorized origin', { origin: senderOrigin });
         sendResponse({ success: false, error: 'Unauthorized origin' });
         return;
       }
-
-      console.log('🦆 DUCK: ✅ Origin authorized, processing message');
-
       handleMessage(message, sender)
         .then(sendResponse)
         .catch((error) => {
@@ -90,20 +71,15 @@ export default defineBackground(() => {
 // Create context menu
 async function createContextMenu(): Promise<void> {
   try {
-    console.log('🦆 DUCK: Creating context menu');
     await browser.contextMenus.removeAll();
 
     const isAuthenticated = !!(await getAuthToken());
-    console.log('🦆 DUCK: Is authenticated:', isAuthenticated);
-
     browser.contextMenus.create({
       id: 'enhance-text',
       title: '✨ Enhance with EmotifyAI',
       contexts: ['selection'],
       enabled: isAuthenticated,
     });
-
-    console.log('🦆 DUCK: ✅ Context menu created successfully');
     logger.debug('Context menu created', { enabled: isAuthenticated });
   } catch (error) {
     logger.error('Failed to create context menu', error);
@@ -113,14 +89,9 @@ async function createContextMenu(): Promise<void> {
 // Update context menu state
 async function updateContextMenuState(isAuthenticated: boolean): Promise<void> {
   try {
-    console.log('🦆 DUCK: Updating context menu state');
-    console.log('🦆 DUCK: Is authenticated:', isAuthenticated);
-
     await browser.contextMenus.update('enhance-text', {
       enabled: isAuthenticated,
     });
-
-    console.log('🦆 DUCK: ✅ Context menu state updated');
     logger.debug('Context menu updated', { enabled: isAuthenticated });
   } catch (error) {
     logger.error('Failed to update context menu', error);
@@ -130,18 +101,11 @@ async function updateContextMenuState(isAuthenticated: boolean): Promise<void> {
 // Handle text enhancement from context menu
 async function handleEnhanceText(text: string, tabId?: number): Promise<void> {
   try {
-    console.log('🦆 DUCK: handleEnhanceText called');
-    console.log('🦆 DUCK: Text:', text.substring(0, 50) + '...');
-    console.log('🦆 DUCK: Tab ID:', tabId);
-
     logger.info('Showing enhancement popup from context menu', { textLength: text.length });
 
     // Check authentication first
     const token = await getAuthToken();
-    console.log('🦆 DUCK: Auth token available:', !!token);
-
     if (!token) {
-      console.log('🦆 DUCK: ❌ No auth token, showing error');
       if (tabId) {
         // Inject content script first, then show error
         try {
@@ -155,41 +119,27 @@ async function handleEnhanceText(text: string, tabId?: number): Promise<void> {
             payload: { error: 'Please log in to use EmotifyAI' },
           });
         } catch (error) {
-          console.log('🦆 DUCK: Failed to inject content script or send message:', error);
         }
       }
       return;
     }
-
-    console.log('🦆 DUCK: ✅ Auth token found, injecting content script and sending message');
-
     // Inject content script and show enhancement popup
     if (tabId) {
       try {
-        console.log('🦆 DUCK: Injecting content script into tab:', tabId);
-        
         // Inject content script
         await browser.scripting.executeScript({
           target: { tabId },
           files: ['content-scripts/content.js']
         });
-        
-        console.log('🦆 DUCK: ✅ Content script injected, sending message');
-        
         const message = {
           type: 'SHOW_ENHANCEMENT_POPUP',
           payload: { text },
         };
-        console.log('🦆 DUCK: Message:', message);
-
         await browser.tabs.sendMessage(tabId, message);
-        console.log('🦆 DUCK: ✅ Message sent successfully');
       } catch (error) {
-        console.log('🦆 DUCK: ❌ Failed to inject content script or send message:', error);
         logger.error('Failed to inject content script', error);
       }
     } else {
-      console.log('🦆 DUCK: ❌ No tab ID available');
     }
 
     logger.info('Enhancement popup shown successfully');
@@ -209,7 +159,6 @@ async function handleEnhanceText(text: string, tabId?: number): Promise<void> {
           payload: { error: 'Failed to open enhancement popup' },
         });
       } catch (fallbackError) {
-        console.log('🦆 DUCK: Fallback error handling also failed:', fallbackError);
       }
     }
   }
@@ -221,32 +170,13 @@ async function handleMessage(message: any, sender: any): Promise<any> {
 
   switch (type) {
     case 'ENHANCE_TEXT': {
-      console.log('🦆 DUCK: ENHANCE_TEXT message received');
-      console.log('🦆 DUCK: Payload:', payload);
-
       const { text, options } = payload as EnhanceTextMessage;
-      console.log('🦆 DUCK: Text to enhance:', text?.substring(0, 50) + '...');
-      console.log('🦆 DUCK: Options:', options);
-
       try {
-        console.log('🦆 DUCK: Checking usage limits...');
         await checkLimit();
-        console.log('🦆 DUCK: ✅ Usage limit check passed');
-
-        console.log('🦆 DUCK: Calling enhanceText API...');
         const result = await enhanceText(text, options);
-        console.log('🦆 DUCK: ✅ Enhancement API successful');
-        console.log('🦆 DUCK: Enhanced text:', result.enhancedText?.substring(0, 50) + '...');
-
-        console.log('🦆 DUCK: Incrementing usage...');
         await incrementUsage();
-        console.log('🦆 DUCK: ✅ Usage incremented');
-
         return { success: true, enhancedText: result.enhancedText } as EnhanceTextResponse;
       } catch (error: any) {
-        console.log('🦆 DUCK: ❌ Enhancement failed:', error);
-        console.log('🦆 DUCK: Error message:', error.message);
-        console.log('🦆 DUCK: Error stack:', error.stack);
         return { success: false, error: error.message } as EnhanceTextResponse;
       }
     }
@@ -259,38 +189,23 @@ async function handleMessage(message: any, sender: any): Promise<any> {
     case 'EMOTIFYAI_AUTH_SUCCESS': {
       // Handle authentication success from web app
       try {
-        console.log('🦆 DUCK: Processing EMOTIFYAI_AUTH_SUCCESS message');
-        console.log('🦆 DUCK: Payload received:', payload);
-        console.log('🦆 DUCK: User data:', payload?.user);
-        console.log('🦆 DUCK: Token present:', !!payload?.token);
         logger.info('Received auth success notification from web app', { user: payload?.user });
 
         if (!payload?.user || !payload?.token) {
-          console.log('🦆 DUCK: ❌ Missing user data or token');
           logger.error('Missing user data or token in auth success message');
           return { success: false, error: 'Missing user data or token' };
         }
-
-        console.log('🦆 DUCK: Importing storage utilities');
         // Import storage utilities
         const { setUserProfile, setAuthToken } = await import('@/utils/storage');
-
-        console.log('🦆 DUCK: Storing user profile and token');
         // Store the user profile and real Supabase token from the web app
         await setUserProfile(payload.user);
         await setAuthToken(payload.token);
-
-        console.log('🦆 DUCK: ✅ Authentication data stored successfully');
         logger.info('Extension authentication updated from web app notification');
 
         // Update context menu state
-        console.log('🦆 DUCK: Updating context menu state');
         await updateContextMenuState(true);
-
-        console.log('🦆 DUCK: ✅ Auth success handling complete');
         return { success: true, message: 'Authentication updated' };
       } catch (error: any) {
-        console.log('🦆 DUCK: ❌ Error handling auth success:', error);
         logger.error('Failed to handle auth success notification', error);
         return { success: false, error: error.message };
       }

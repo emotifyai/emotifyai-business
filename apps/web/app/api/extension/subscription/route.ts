@@ -10,14 +10,9 @@ import { SubscriptionTier, SubscriptionStatus } from '@/types/database'
  */
 export async function GET(request: NextRequest) {
     try {
-        console.log('🦆 DUCK: Extension subscription API called');
-        
         // Get Bearer token from Authorization header
         const authHeader = request.headers.get('Authorization')
-        console.log('🦆 DUCK: Authorization header:', authHeader ? 'present' : 'missing');
-        
         if (!authHeader || !authHeader.startsWith('Bearer ')) {
-            console.log('🦆 DUCK: ❌ No Bearer token in request');
             return NextResponse.json({
                 success: false,
                 error: {
@@ -28,8 +23,6 @@ export async function GET(request: NextRequest) {
         }
 
         const token = authHeader.substring(7) // Remove 'Bearer ' prefix
-        console.log('🦆 DUCK: Token extracted (first 20 chars):', token.substring(0, 20) + '...');
-        
         // Create Supabase client with the provided token
         const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
         const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
@@ -43,12 +36,8 @@ export async function GET(request: NextRequest) {
         })
         
         // Verify the token by getting the user
-        console.log('🦆 DUCK: Verifying token with Supabase');
         const { data: { user }, error: authError } = await supabase.auth.getUser(token)
-        console.log('🦆 DUCK: Token verification result - user:', !!user, 'error:', authError);
-        
         if (authError || !user) {
-            console.log('🦆 DUCK: ❌ Token verification failed');
             return NextResponse.json({
                 success: false,
                 error: {
@@ -57,9 +46,6 @@ export async function GET(request: NextRequest) {
                 }
             }, { status: 401 })
         }
-        
-        console.log('🦆 DUCK: ✅ Token verified, user ID:', user.id);
-
         // Get user's most recent active subscription
         const { data: subscription, error: subscriptionError } = await supabase
             .from('subscriptions')
@@ -69,10 +55,6 @@ export async function GET(request: NextRequest) {
             .order('created_at', { ascending: false })
             .limit(1)
             .single()
-
-        console.log('🦆 DUCK: Raw subscription data:', subscription)
-        console.log('🦆 DUCK: Subscription error:', subscriptionError)
-
         if (subscriptionError) {
             // If no subscription found, return default trial plan
             if (subscriptionError.code === 'PGRST116') {

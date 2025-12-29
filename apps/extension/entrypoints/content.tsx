@@ -90,15 +90,12 @@ class EnhancementPopupManager {
 
   initialize(): void {
     if (this.container) return;
-
-    console.log('🦆 DUCK: Initializing EnhancementPopupManager');
     this.container = document.createElement('div');
     this.container.id = 'emotifyai-popup-root';
     document.body.appendChild(this.container);
 
     this.root = createRoot(this.container);
     this.renderPopup();
-    console.log('🦆 DUCK: EnhancementPopupManager initialized');
   }
 
   private renderPopup(): void {
@@ -112,13 +109,7 @@ class EnhancementPopupManager {
   }
 
   showPopup(text: string, selection: Selection): void {
-    console.log('🦆 DUCK: EnhancementPopupManager.showPopup called');
-    console.log('🦆 DUCK: Text:', text.substring(0, 50) + '...');
-    console.log('🦆 DUCK: Selection:', selection);
-    
     // Don't initialize here - should already be initialized
-    console.log('🦆 DUCK: Popup should already be initialized, sending window message');
-    
     // Extract serializable data from selection with smart positioning
     const range = selection.getRangeAt(0);
     const rect = range.getBoundingClientRect();
@@ -157,14 +148,6 @@ class EnhancementPopupManager {
       }
     }
     
-    console.log('🦆 DUCK: Smart positioning calculated:', {
-      original: { x: rect.left, y: rect.top },
-      adjusted: { x, y },
-      viewport: { width: window.innerWidth, height: window.innerHeight },
-      spaceAbove,
-      spaceBelow
-    });
-    
     const selectionData = {
       text: selection.toString(),
       rangeCount: selection.rangeCount,
@@ -176,15 +159,11 @@ class EnhancementPopupManager {
       }
     };
     
-    console.log('🦆 DUCK: Selection data prepared:', selectionData);
-    
     // Trigger popup show via state management
     window.postMessage({
       type: 'EMOTIFYAI_SHOW_POPUP',
       payload: { text, selection: selectionData }
     }, '*');
-    
-    console.log('🦆 DUCK: Window message sent');
   }
 
   hidePopup(): void {
@@ -196,8 +175,6 @@ class EnhancementPopupManager {
 
 // Enhancement Popup Component with hooks
 function EnhancementPopupComponent({ manager }: { manager: EnhancementPopupManager }) {
-  console.log('🦆 DUCK: EnhancementPopupComponent mounted');
-  
   const [state, setState] = React.useState({
     visible: false,
     position: { x: 0, y: 0 },
@@ -208,25 +185,13 @@ function EnhancementPopupComponent({ manager }: { manager: EnhancementPopupManag
   });
 
   React.useEffect(() => {
-    console.log('🦆 DUCK: EnhancementPopupComponent useEffect - setting up message listener');
-    
     function handleMessage(event: MessageEvent) {
-      console.log('🦆 DUCK: EnhancementPopupComponent received message:', event.data.type);
       if (event.source !== window) return;
 
       switch (event.data.type) {
         case 'EMOTIFYAI_SHOW_POPUP':
-          console.log('🦆 DUCK: EnhancementPopupComponent received SHOW_POPUP message');
-          console.log('🦆 DUCK: Event data:', event.data);
-          
           const { text, selection: selectionData } = event.data.payload;
-          
-          console.log('🦆 DUCK: Text from payload:', text?.substring(0, 50) + '...');
-          console.log('🦆 DUCK: Selection data:', selectionData);
           if (text && selectionData && selectionData.rangeCount > 0) {
-            console.log('🦆 DUCK: ✅ Valid text and selection data, showing popup');
-            console.log('🦆 DUCK: Position:', selectionData.position);
-            
             setState({
               visible: true,
               position: { 
@@ -238,12 +203,7 @@ function EnhancementPopupComponent({ manager }: { manager: EnhancementPopupManag
               isLoading: false,
               error: undefined
             });
-            
-            console.log('🦆 DUCK: ✅ Popup state updated, should be visible now');
           } else {
-            console.log('🦆 DUCK: ❌ Invalid text or selection data');
-            console.log('🦆 DUCK: Text:', !!text);
-            console.log('🦆 DUCK: Selection data:', selectionData);
           }
           break;
 
@@ -275,10 +235,7 @@ function EnhancementPopupComponent({ manager }: { manager: EnhancementPopupManag
     }
 
     window.addEventListener('message', handleMessage);
-    console.log('🦆 DUCK: EnhancementPopupComponent message listener added');
-    
     return () => {
-      console.log('🦆 DUCK: EnhancementPopupComponent message listener removed');
       window.removeEventListener('message', handleMessage);
     };
   }, []);
@@ -298,9 +255,6 @@ function EnhancementPopupComponent({ manager }: { manager: EnhancementPopupManag
   };
 
   const handleRetry = async (options: any) => {
-    console.log('🦆 DUCK: Enhancement retry called with options:', options);
-    console.log('🦆 DUCK: Original text:', state.originalText);
-    
     setState(prev => ({ ...prev, isLoading: true, error: undefined }));
     
     try {
@@ -314,22 +268,14 @@ function EnhancementPopupComponent({ manager }: { manager: EnhancementPopupManag
           }
         }
       };
-      
-      console.log('🦆 DUCK: Sending message to background script:', message);
-      
       const response = await browser.runtime.sendMessage(message);
-      
-      console.log('🦆 DUCK: Background script response:', response);
-
       if (response.success) {
-        console.log('🦆 DUCK: ✅ Enhancement successful');
         setState(prev => ({ 
           ...prev, 
           enhancedText: response.enhancedText, 
           isLoading: false 
         }));
       } else {
-        console.log('🦆 DUCK: ❌ Enhancement failed:', response.error);
         setState(prev => ({ 
           ...prev, 
           error: response.error || 'Enhancement failed', 
@@ -337,7 +283,6 @@ function EnhancementPopupComponent({ manager }: { manager: EnhancementPopupManag
         }));
       }
     } catch (error: any) {
-      console.log('🦆 DUCK: ❌ Enhancement error:', error);
       setState(prev => ({ 
         ...prev, 
         error: error.message || 'Enhancement failed', 
@@ -440,30 +385,21 @@ class TextReplacementManager {
   }
 
   replace(originalText: string, enhancedText: string): boolean {
-    console.log('🦆 DUCK: TextReplacementManager.replace called');
-    console.log('🦆 DUCK: Original text:', originalText.substring(0, 50) + '...');
-    console.log('🦆 DUCK: Enhanced text:', enhancedText.substring(0, 50) + '...');
-    
     // Try to get current selection first
     let range = this.selectionManager.getRange();
-    console.log('🦆 DUCK: Current selection range:', !!range);
-    
     // If no current selection, try to find the text in the DOM
     if (!range) {
-      console.log('🦆 DUCK: No current selection, searching for text in DOM');
       range = this.findTextInDOM(originalText);
       if (!range) {
         logger.warn('Could not find text in DOM');
         this.messageSender.showError('Could not locate the text to replace. Please try selecting the text again.');
         return false;
       }
-      console.log('🦆 DUCK: ✅ Found text in DOM');
     }
 
     // Verify selection matches (if we have a current selection)
     const currentSelection = this.selectionManager.getSelectedText();
     if (currentSelection && currentSelection !== originalText) {
-      console.log('🦆 DUCK: Current selection does not match original text');
       // Try to find the text in DOM as fallback
       range = this.findTextInDOM(originalText);
       if (!range) {
@@ -487,40 +423,29 @@ class TextReplacementManager {
   }
 
   private findTextInDOM(text: string): Range | null {
-    console.log('🦆 DUCK: Searching for text in DOM:', text.substring(0, 30) + '...');
-    
     // First try simple search in text nodes
     const simpleRange = this.findTextInTextNodes(text);
     if (simpleRange) {
-      console.log('🦆 DUCK: ✅ Found text in single text node');
       return simpleRange;
     }
 
     // If not found, try more advanced search across multiple nodes
-    console.log('🦆 DUCK: Trying advanced search across multiple nodes');
     const advancedRange = this.findTextAcrossNodes(text);
     if (advancedRange) {
-      console.log('🦆 DUCK: ✅ Found text across multiple nodes');
       return advancedRange;
     }
 
     // Last resort: try fuzzy matching (allowing for slight differences)
-    console.log('🦆 DUCK: Trying fuzzy text matching');
     const fuzzyRange = this.findTextFuzzy(text);
     if (fuzzyRange) {
-      console.log('🦆 DUCK: ✅ Found text with fuzzy matching');
       return fuzzyRange;
     }
 
     // Final fallback: search in input fields and textareas
-    console.log('🦆 DUCK: Trying search in input fields');
     const inputRange = this.findTextInInputs(text);
     if (inputRange) {
-      console.log('🦆 DUCK: ✅ Found text in input field');
       return inputRange;
     }
-
-    console.log('🦆 DUCK: ❌ Text not found in DOM with any method');
     return null;
   }
 
@@ -644,7 +569,6 @@ class TextReplacementManager {
         // Try exact match
         let index = textContent.indexOf(searchText);
         if (index !== -1) {
-          console.log('🦆 DUCK: ✅ Found exact match with strategy:', searchText.substring(0, 30));
           const range = document.createRange();
           range.setStart(node, index);
           range.setEnd(node, index + searchText.length);
@@ -656,7 +580,6 @@ class TextReplacementManager {
         const normalizedSearch = searchText.replace(/\s+/g, ' ').trim();
         index = normalizedContent.indexOf(normalizedSearch);
         if (index !== -1) {
-          console.log('🦆 DUCK: ✅ Found normalized match with strategy:', normalizedSearch.substring(0, 30));
           const range = document.createRange();
           range.setStart(node, 0);
           range.setEnd(node, node.textContent?.length || 0);
@@ -683,8 +606,6 @@ class TextReplacementManager {
       }
       
       if (value.includes(text)) {
-        console.log('🦆 DUCK: Found text in input element:', element);
-        
         // For input fields, we need to handle replacement differently
         // Create a range that covers the input element
         const range = document.createRange();
@@ -721,8 +642,6 @@ class TextReplacementManager {
     const inputText = (range as any)._inputText;
     
     if (inputElement && inputText) {
-      console.log('🦆 DUCK: Performing replacement in input element');
-      
       if (inputElement instanceof HTMLInputElement || inputElement instanceof HTMLTextAreaElement) {
         // Handle input/textarea elements
         const currentValue = inputElement.value;
@@ -821,15 +740,10 @@ class RuntimeMessageHandler {
   ) {}
 
   handle(message: RuntimeMessage): void {
-    console.log('🦆 DUCK: RuntimeMessageHandler.handle called');
-    console.log('🦆 DUCK: Message type:', message.type);
-    console.log('🦆 DUCK: Message payload:', message.payload);
-    
     const { type, payload } = message;
 
     switch (type) {
       case 'SHOW_ENHANCEMENT_POPUP':
-        console.log('🦆 DUCK: Handling SHOW_ENHANCEMENT_POPUP');
         this.handleShowEnhancementPopup(payload);
         break;
 
@@ -851,27 +765,15 @@ class RuntimeMessageHandler {
   }
 
   private handleShowEnhancementPopup(payload?: RuntimeMessage['payload']): void {
-    console.log('🦆 DUCK: handleShowEnhancementPopup called');
-    console.log('🦆 DUCK: Payload:', payload);
-    
     if (!payload?.text) {
-      console.log('🦆 DUCK: ❌ Missing text in payload');
       logger.error('Missing text in SHOW_ENHANCEMENT_POPUP message');
       return;
     }
-
-    console.log('🦆 DUCK: Text to enhance:', payload.text.substring(0, 50) + '...');
-    
     const selection = this.selectionManager.getSelection();
-    console.log('🦆 DUCK: Selection:', selection);
-    console.log('🦆 DUCK: Selection range count:', selection?.rangeCount);
-    
     // Try to use current selection, but if not available, create a mock selection for positioning
     if (selection && selection.rangeCount > 0) {
-      console.log('🦆 DUCK: ✅ Valid selection, showing popup');
       this.enhancementPopupManager.showPopup(payload.text, selection);
     } else {
-      console.log('🦆 DUCK: No current selection, but showing popup anyway (text was captured from context menu)');
       // Create a mock selection for positioning - center of viewport
       const mockSelection = {
         toString: () => payload.text,
@@ -941,22 +843,17 @@ class WindowMessageHandler {
         break;
 
       case 'EMOTIFYAI_SHOW_POPUP':
-        console.log('🦆 DUCK: WindowMessageHandler received SHOW_POPUP message');
-        console.log('🦆 DUCK: Payload:', event.data.payload);
         // Let this message pass through to the popup component
         // Don't break here - let it bubble up to other listeners
         return;
 
       case 'EMOTIFYAI_AUTH_SUCCESS':
-        console.log('🦆 DUCK: Content script received auth success message');
-        console.log('🦆 DUCK: Payload:', event.data.payload);
         // Forward the auth success message to the background script
         browser.runtime.sendMessage({
           type: 'EMOTIFYAI_AUTH_SUCCESS',
           payload: event.data.payload,
           source: 'content_script'
         }).catch(error => {
-          console.log('🦆 DUCK: Failed to forward auth message to background:', error);
         });
         break;
     }
@@ -1025,8 +922,6 @@ export default defineContentScript({
   // Use manual injection instead of automatic matching
   matches: [],
   main() {
-    console.log('🦆 DUCK: Content script main() called');
-    console.log('🦆 DUCK: Current URL:', window.location.href);
     logger.info('Content script loaded');
 
     // Initialize managers
@@ -1038,20 +933,16 @@ export default defineContentScript({
     const enhancementService = new EnhancementService();
 
     // Initialize theme system for content script
-    console.log('🦆 DUCK: Initializing theme system for content script');
     import('@/utils/theme').then(({ initializeTheme, setupSystemThemeListener }) => {
       initializeTheme().then(() => {
         setupSystemThemeListener();
-        console.log('🦆 DUCK: ✅ Theme system initialized for content script');
       });
     });
 
     // Initialize popup manager early so React component can mount and set up listeners
-    console.log('🦆 DUCK: Initializing popup manager early');
     enhancementPopupManager.initialize();
 
     // Initialize popup manager early so React component can mount and set up listeners
-    console.log('🦆 DUCK: Initializing popup manager early');
     enhancementPopupManager.initialize();
 
     // Initialize handlers
@@ -1076,40 +967,28 @@ export default defineContentScript({
 
     // Setup listeners
     browser.runtime.onMessage.addListener((message: RuntimeMessage) => {
-      console.log('🦆 DUCK: Content script received runtime message');
-      console.log('🦆 DUCK: Message:', message);
       runtimeMessageHandler.handle(message);
     });
 
     window.addEventListener('message', (event: MessageEvent<WindowMessage>) => {
-      console.log('🦆 DUCK: Main window message listener received:', event.data.type);
       windowMessageHandler.handle(event);
     });
 
     // Also listen for custom events as a fallback
     window.addEventListener('emotifyai-auth-success', (event: Event) => {
-      console.log('🦆 DUCK: Content script received custom auth success event');
       const customEvent = event as CustomEvent;
-      console.log('🦆 DUCK: Event detail:', customEvent.detail);
       // Forward to background script
       browser.runtime.sendMessage({
         type: 'EMOTIFYAI_AUTH_SUCCESS',
         payload: customEvent.detail.payload,
         source: 'content_script_custom_event'
       }).catch(error => {
-        console.log('🦆 DUCK: Failed to forward custom event auth message:', error);
       });
     });
 
     document.addEventListener('keydown', (event: KeyboardEvent) => {
       keyboardShortcutHandler.handle(event);
     });
-
-    console.log('🦆 DUCK: ✅ Content script fully initialized');
-    console.log('🦆 DUCK: Runtime message listener:', !!browser.runtime.onMessage);
-    console.log('🦆 DUCK: Window message listener added');
-    console.log('🦆 DUCK: Keyboard listener added');
-    
     logger.info('Content script initialized');
   },
 });

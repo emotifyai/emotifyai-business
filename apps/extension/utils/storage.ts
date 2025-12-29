@@ -14,7 +14,7 @@ import {browser} from "wxt/browser";
 export async function getAuthToken(): Promise<string | null> {
     try {
         const result = await browser.storage.local.get('local:authToken');
-        return result['local:authToken'] || null;
+        return (result['local:authToken'] as string) || null;
     } catch (error) {
         logger.error('Failed to get auth token', error);
         return null;
@@ -44,7 +44,7 @@ export async function clearAuthToken(): Promise<void> {
 export async function getUserProfile(): Promise<User | null> {
     try {
         const result = await browser.storage.local.get('local:user');
-        return result['local:user'] || null;
+        return (result['local:user'] as User) || null;
     } catch (error) {
         logger.error('Failed to get user profile', error);
         return null;
@@ -74,7 +74,7 @@ export async function clearUserProfile(): Promise<void> {
 export async function getSubscription(): Promise<Subscription | null> {
     try {
         const result = await browser.storage.local.get('local:subscription');
-        return result['local:subscription'] || null;
+        return (result['local:subscription'] as Subscription) || null;
     } catch (error) {
         logger.error('Failed to get subscription', error);
         return null;
@@ -95,7 +95,7 @@ export async function setSubscription(subscription: Subscription): Promise<void>
 export async function getUsageStats(): Promise<UsageStats | null> {
     try {
         const result = await browser.storage.local.get('local:usageStats');
-        return result['local:usageStats'] || null;
+        return (result['local:usageStats'] as UsageStats) || null;
     } catch (error) {
         logger.error('Failed to get usage stats', error);
         return null;
@@ -128,7 +128,7 @@ export async function incrementUsage(): Promise<UsageStats> {
 export async function getSettings(): Promise<Settings> {
     try {
         const result = await browser.storage.local.get('local:settings');
-        return result['local:settings'] || DEFAULT_SETTINGS;
+        return (result['local:settings'] as Settings) || DEFAULT_SETTINGS;
     } catch (error) {
         logger.error('Failed to get settings', error);
         return DEFAULT_SETTINGS;

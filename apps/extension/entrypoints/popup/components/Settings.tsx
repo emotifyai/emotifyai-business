@@ -24,9 +24,6 @@ export default function SettingsComponent({ onBack }: SettingsProps) {
 
     const handleChange = async (key: keyof Settings, value: any) => {
         if (!settings) return;
-
-        console.log('🦆 DUCK: Settings change:', key, '=', value);
-        
         const newSettings = { ...settings, [key]: value };
         setSettingsState(newSettings);
 
@@ -36,13 +33,9 @@ export default function SettingsComponent({ onBack }: SettingsProps) {
             
             // Apply theme immediately if theme was changed
             if (key === 'theme') {
-                console.log('🦆 DUCK: Applying theme change immediately');
                 await applyTheme(value);
             }
-            
-            console.log('🦆 DUCK: ✅ Settings saved successfully');
         } catch (error) {
-            console.log('🦆 DUCK: ❌ Failed to save settings:', error);
         } finally {
             setIsSaving(false);
         }

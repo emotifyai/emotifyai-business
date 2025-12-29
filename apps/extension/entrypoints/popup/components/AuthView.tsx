@@ -30,11 +30,9 @@ export default function AuthView({ onLogin }: AuthViewProps) {
         try {
             // Open signup page in new tab with extension callback and trial plan selection
             const signupUrl = `${import.meta.env.VITE_WEB_APP_URL}/signup?source=extension&plan=trial&redirect_to=/auth/extension-success`;
-            console.log('🦆 DUCK: Opening signup URL:', signupUrl);
             await browser.tabs.create({ url: signupUrl });
             window.close();
         } catch (err) {
-            console.log('🦆 DUCK: ❌ Failed to open signup page:', err);
             setError('Failed to open signup page. Please try again.');
             console.error(err);
         } finally {

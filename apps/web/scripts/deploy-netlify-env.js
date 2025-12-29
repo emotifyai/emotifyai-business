@@ -240,7 +240,6 @@ async function setNetlifyEnvVars(envVars, cliCommand) {
             const isSensitive = sensitiveKeys.some(sensitive => key.includes(sensitive));
             const displayValue = isSensitive ? `****${value.slice(-4)}` : value;
 
-            log(`🦆 DUCK: Setting ${key}=${displayValue}...`, 'blue');
 
             // Use single quotes for the value in the command to prevent shell interpolation
             // and escape any single quotes in the value itself
@@ -251,15 +250,12 @@ async function setNetlifyEnvVars(envVars, cliCommand) {
 
             if (result.success) {
                 results.success.push(key);
-                log(`    ✅ 🦆 DUCK: ${key} set successfully`, 'green');
             } else {
                 results.failed.push({ key, error: result.error });
-                log(`    ❌ 🦆 DUCK: Failed to set ${key}: ${result.error}`, 'red');
                 if (result.output) log(`       Output: ${result.output}`, 'red');
             }
         } catch (error) {
             results.failed.push({ key, error: error.message });
-            log(`    ❌ 🦆 DUCK: Exception setting ${key}: ${error.message}`, 'red');
         }
     }
 
