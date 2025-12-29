@@ -60,10 +60,7 @@ export default defineBackground(() => {
 
       // Only accept messages from allowed origins
       const allowedOrigins = [
-        'http://localhost:3000',
         'https://emotifyai.com',
-        'https://emotifyai-app.netlify.app',
-        'https://bright-marzipan-1b48f4.netlify.app'
       ];
 
       const senderOrigin = sender.url ? new URL(sender.url).origin : '';

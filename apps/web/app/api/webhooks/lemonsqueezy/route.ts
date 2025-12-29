@@ -3,7 +3,6 @@ import crypto from 'crypto'
 import { createAdminClient } from '@/lib/supabase/server'
 import { SubscriptionStatus, SubscriptionTier } from '@/types/database'
 import type { LemonSqueezyWebhookPayload } from '@/types/api'
-import { webhookLog } from '@/lib/debug-logger'
 
 /**
  * Verify webhook signature from Lemon Squeezy
@@ -12,7 +11,7 @@ function verifySignature(payload: string, signature: string): boolean {
     const secret = process.env.LEMONSQUEEZY_WEBHOOK_SECRET
 
     if (!secret) {
-        webhookLog.error('LEMONSQUEEZY_WEBHOOK_SECRET is not set')
+        console.error('LEMONSQUEEZY_WEBHOOK_SECRET is not set')
         return false
     }
 
@@ -85,20 +84,14 @@ export async function POST(request: NextRequest) {
             timestamp: new Date().toISOString()
         })
 
-        webhookLog.info('Lemon Squeezy webhook received', {
-            hasSignature: !!signature,
-            bodyLength: rawBody.length,
-            timestamp: new Date().toISOString()
-        })
-
         if (!signature) {
-            webhookLog.error('Missing webhook signature')
+            console.error('Missing webhook signature')
             return NextResponse.json({ error: 'Missing signature' }, { status: 401 })
         }
 
         // Verify the webhook signature
         if (!verifySignature(rawBody, signature)) {
-            webhookLog.error('Invalid webhook signature')
+            console.error('Invalid webhook signature')
             return NextResponse.json({ error: 'Invalid signature' }, { status: 401 })
         }
 
@@ -106,25 +99,14 @@ export async function POST(request: NextRequest) {
         const payload: LemonSqueezyWebhookPayload = JSON.parse(rawBody)
         const eventName = payload.meta.event_name
 
-        webhookLog.info(`Processing Lemon Squeezy webhook: ${eventName}`, {
+        console.log(`Processing Lemon Squeezy webhook: ${eventName}`, {
             eventName,
             dataId: payload.data.id,
-            dataType: payload.data.type,
-            fullPayload: payload
+            dataType: payload.data.type
         })
 
         // Get admin Supabase client (bypasses RLS)
         const supabase = await createAdminClient()
-
-        // Debug: Log environment variables (without exposing sensitive data)
-        webhookLog.info('Environment check', {
-            hasSupabaseUrl: !!process.env.NEXT_PUBLIC_SUPABASE_URL,
-            hasServiceKey: !!process.env.SUPABASE_SERVICE_ROLE_KEY,
-            supabaseUrlLength: process.env.NEXT_PUBLIC_SUPABASE_URL?.length || 0,
-            serviceKeyLength: process.env.SUPABASE_SERVICE_ROLE_KEY?.length || 0,
-            serviceKeyPrefix: process.env.SUPABASE_SERVICE_ROLE_KEY?.substring(0, 10) || 'none',
-            urlPrefix: process.env.NEXT_PUBLIC_SUPABASE_URL?.substring(0, 20) || 'none'
-        })
 
         // Test Supabase connection
         try {
@@ -135,19 +117,17 @@ export async function POST(request: NextRequest) {
                 .limit(1)
 
             if (testError) {
-                webhookLog.error('Supabase connection test failed', {
+                console.error('Supabase connection test failed:', {
                     error: testError.message,
                     code: testError.code,
                     details: testError.details,
                     hint: testError.hint
                 })
             } else {
-                webhookLog.info('Supabase connection test successful', {
-                    hasData: !!testData
-                })
+                console.log('Supabase connection test successful')
             }
         } catch (error) {
-            webhookLog.error('Supabase connection failed', {
+            console.error('Supabase connection failed:', {
                 error: error instanceof Error ? error.message : 'Unknown error',
                 stack: error instanceof Error ? error.stack : undefined
             })
@@ -168,12 +148,6 @@ export async function POST(request: NextRequest) {
 
                 console.log(`Processing ${eventName} for email: ${userEmail}, variant: ${variantId}`)
 
-                webhookLog.info(`Processing ${eventName}`, {
-                    email: userEmail,
-                    variantId: variantId,
-                    eventName: eventName
-                })
-
                 // Find the user by email (case-insensitive)
                 // @ts-ignore
                 const { data: profile, error: profileError } = await supabase
@@ -190,14 +164,11 @@ export async function POST(request: NextRequest) {
                         .select('id, email')
                         .limit(10)
 
-                    webhookLog.error(`User not found for email: ${userEmail}`, {
+                    console.error(`User not found for email: ${userEmail}`, {
                         email: userEmail,
                         error: profileError?.message,
                         // @ts-ignore
-                        allProfiles: allProfiles?.map(p => ({ id: p.id, email: p.email })) || [],
-                        searchedEmail: userEmail,
-                        emailLength: (userEmail as string)?.length,
-                        emailTrimmed: (userEmail as string)?.trim()
+                        allProfiles: allProfiles?.map(p => ({ id: p.id, email: p.email })) || []
                     })
                     return NextResponse.json({ 
                         error: 'User not found', 
@@ -302,18 +273,14 @@ export async function POST(request: NextRequest) {
                     })
 
                 if (error) {
-                    webhookLog.error('Error upserting subscription', {
+                    console.error('Error upserting subscription:', {
                         error: error.message,
                         subscriptionData: subscriptionData
                     })
                     return NextResponse.json({ error: 'Database error' }, { status: 500 })
                 }
 
-                webhookLog.info(`Successfully processed ${eventName}`, {
-                    email: userEmail,
-                    tier: tier,
-                    creditsLimit: subscriptionData.credits_limit
-                })
+                console.log(`Successfully processed ${eventName} for ${userEmail}, tier: ${tier}`)
 
                 break
             }
@@ -330,33 +297,11 @@ export async function POST(request: NextRequest) {
 
                 console.log(`Processing order_created for email: ${userEmail}, variant: ${variantId}`)
 
-                webhookLog.info('Processing order_created', {
-                    email: userEmail,
-                    // @ts-ignore
-                    originalEmail: attrs.user_email,
-                    variantId: variantId,
-                    expectedVariantId: process.env.LEMONSQUEEZY_LIFETIME_LAUNCH_VARIANT_ID,
-                    isLifetime: variantId === process.env.LEMONSQUEEZY_LIFETIME_LAUNCH_VARIANT_ID,
-                    variantIdType: typeof variantId,
-                    envVarType: typeof process.env.LEMONSQUEEZY_LIFETIME_LAUNCH_VARIANT_ID,
-                    orderData: {
-                        orderId: payload.data.id,
-                        // @ts-ignore
-                        status: attrs.status,
-                        // @ts-ignore
-                        total: attrs.total,
-                        // @ts-ignore
-                        currency: attrs.currency,
-                        // @ts-ignore
-                        userName: attrs.user_name
-                    }
-                })
-
                 // Only process Lifetime Launch purchases
                 const isLifetimeVariant = variantId === process.env.LEMONSQUEEZY_LIFETIME_LAUNCH_VARIANT_ID
                 
                 if (isLifetimeVariant) {
-                    webhookLog.info(`Processing Lifetime Launch order for ${userEmail}`)
+                    console.log(`Processing Lifetime Launch order for ${userEmail}`)
 
                     // Find the user by email - try multiple approaches
                     let foundProfile = null
@@ -371,7 +316,7 @@ export async function POST(request: NextRequest) {
 
                     if (profile1) {
                         foundProfile = profile1
-                        webhookLog.info('Found user with case-insensitive search', {
+                        console.log('Found user with case-insensitive search:', {
                             searchedEmail: userEmail,
                             // @ts-ignore
                             foundEmail: profile1.email,
@@ -390,7 +335,7 @@ export async function POST(request: NextRequest) {
 
                         if (profile2) {
                             foundProfile = profile2
-                            webhookLog.info('Found user with exact match', {
+                            console.log('Found user with exact match:', {
                                 searchedEmail: userEmail,
                                 // @ts-ignore
                                 originalEmail: attrs.user_email,
@@ -410,15 +355,12 @@ export async function POST(request: NextRequest) {
                             .select('id, email')
                             .limit(10)
 
-                        webhookLog.error(`User not found for lifetime order: ${userEmail}`, {
+                        console.error(`User not found for lifetime order: ${userEmail}`, {
                             email: userEmail,
                             // @ts-ignore
                             originalEmail: attrs.user_email,
                             // @ts-ignore
-                            allProfiles: allProfiles?.map(p => ({ id: p.id, email: p.email })) || [],
-                            searchedEmail: userEmail,
-                            emailLength: (userEmail as string)?.length,
-                            emailTrimmed: (userEmail as string)?.trim()
+                            allProfiles: allProfiles?.map(p => ({ id: p.id, email: p.email })) || []
                         })
                         return NextResponse.json({ 
                             error: 'User not found', 
@@ -464,12 +406,11 @@ export async function POST(request: NextRequest) {
                             validity_days: null,
                         }
 
-                        webhookLog.info('Creating lifetime subscription', {
+                        console.log('Creating lifetime subscription:', {
                             // @ts-ignore
                             userId: foundProfile.id,
                             // @ts-ignore
-                            userEmail: foundProfile.email,
-                            subscriptionData: subscriptionData
+                            userEmail: foundProfile.email
                         })
 
                         // @ts-ignore
@@ -481,9 +422,8 @@ export async function POST(request: NextRequest) {
                             })
 
                         if (insertError) {
-                            webhookLog.error('Error creating lifetime subscription', {
+                            console.error('Error creating lifetime subscription:', {
                                 error: insertError.message,
-                                subscriptionData: subscriptionData,
                                 // @ts-ignore
                                 userId: foundProfile.id
                             })
@@ -491,7 +431,7 @@ export async function POST(request: NextRequest) {
                             return NextResponse.json({ error: 'Database error', details: insertError.message }, { status: 500 })
                         }
 
-                        webhookLog.info('Successfully created lifetime subscription', {
+                        console.log('Successfully created lifetime subscription:', {
                             // @ts-ignore
                             userId: foundProfile.id,
                             // @ts-ignore
@@ -517,12 +457,7 @@ export async function POST(request: NextRequest) {
                         return NextResponse.json({ error: 'Failed to process order' }, { status: 500 })
                     }
                 } else {
-                    webhookLog.info(`Ignoring non-lifetime order`, {
-                        variantId: variantId,
-                        expectedLifetimeVariant: process.env.LEMONSQUEEZY_LIFETIME_LAUNCH_VARIANT_ID,
-                        reason: 'Variant ID does not match lifetime launch variant',
-                        userEmail: userEmail
-                    })
+                    console.log(`Ignoring non-lifetime order - variant ${variantId} does not match lifetime variant`)
                 }
 
                 break
@@ -737,14 +672,14 @@ export async function POST(request: NextRequest) {
             }
 
             default:
-                webhookLog.info(`Unhandled webhook event: ${eventName}`)
+                console.log(`Unhandled webhook event: ${eventName}`)
         }
 
         // Return 200 to acknowledge receipt
-        webhookLog.info('Webhook processed successfully')
+        console.log('Webhook processed successfully')
         return NextResponse.json({ received: true })
     } catch (error) {
-        webhookLog.error('Webhook processing error', {
+        console.error('Webhook processing error:', {
             error: error instanceof Error ? error.message : 'Unknown error',
             stack: error instanceof Error ? error.stack : undefined
         })

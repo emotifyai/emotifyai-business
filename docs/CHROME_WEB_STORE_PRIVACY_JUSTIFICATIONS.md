@@ -62,8 +62,8 @@ This document provides the required justifications for all permissions used by t
 
 **Developer Email**: ahmedmuhmmed239@gmail.com
 **Support Email**: support@emotifyai.com
-**Privacy Policy**: https://emotifyai-app.netlify.app/privacy
-**Terms of Service**: https://emotifyai-app.netlify.app/terms
+**Privacy Policy**: https://emotifyai.com/privacy
+**Terms of Service**: https://emotifyai.com/terms
 
 ## Account Requirements
 

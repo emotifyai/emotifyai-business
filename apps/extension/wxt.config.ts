@@ -58,18 +58,9 @@ export default defineConfig({
       'scripting',
       'identity',
     ],
-    // Remove host_permissions - use activeTab instead
-    // host_permissions: [
-    //   'http://localhost/*',
-    //   'https://emotifyai.com/*',
-    //   'https://*/*',
-    //   'http://*/*',
-    // ],
     externally_connectable: {
       matches: [
-        // 'http://localhost:3000/*',
         'https://emotifyai.com/*',
-        // 'https://emotifyai-app.netlify.app/*',
       ],
     },
     icons: {
