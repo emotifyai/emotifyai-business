@@ -918,9 +918,13 @@ class KeyboardShortcutHandler {
 // Main Content Script
 // ============================================================================
 
+// This content script uses programmatic injection via activeTab permission
+// to avoid broad host permissions and Chrome Web Store review delays.
+
 export default defineContentScript({
-  // Use manual injection instead of automatic matching
-  matches: [],
+  // Use a minimal match that won't trigger broad permissions
+  // The background script will inject this programmatically when needed
+  matches: ['https://emotifyai.com/*'],
   main() {
     logger.info('Content script loaded');
 
