@@ -14,8 +14,13 @@ This document provides the required justifications for all permissions used by t
 ### 2. contextMenus Permission  
 **Justification**: Required to add the "Enhance with EmotifyAI" option to the browser's right-click context menu when text is selected. This provides users with an intuitive way to access the text enhancement feature directly from any webpage. The context menu only appears when text is selected and the user is authenticated.
 
-### 3. ~~Host Permissions~~ (REMOVED)
-**Status**: No longer required. The extension now uses activeTab permission instead of broad host permissions, which means it only accesses the current tab when the user actively triggers the enhancement feature through the context menu.
+### 3. Host Permissions (OPTIMIZED APPROACH)
+**Current Status**: The extension uses a **hybrid approach** for optimal Chrome Web Store approval:
+- **Declarative content script**: Limited to `https://emotifyai.com/*` (our own domain) for web app integration
+- **Programmatic injection**: Uses `activeTab` + `scripting` permissions to inject content scripts only when users trigger the context menu
+- **User-initiated only**: Content scripts are injected dynamically via the background script when users right-click and select "Enhance with EmotifyAI"
+
+This approach avoids broad host permissions (`https://*/*`) while still providing full functionality across all websites. The extension only accesses websites when users explicitly request text enhancement.
 
 ### 4. identity Permission
 **Justification**: Required for secure user authentication using Google OAuth. This permission allows users to log into their EmotifyAI account directly from the extension without entering credentials manually, providing a seamless and secure authentication experience.
@@ -27,36 +32,39 @@ This document provides the required justifications for all permissions used by t
 **Justification**: Required to inject content scripts into webpages ONLY when the user actively triggers text enhancement through the context menu. This allows the extension to dynamically inject the necessary UI components and text replacement functionality only on the current active tab when needed. The extension does not run scripts automatically on all websites - scripts are only injected when the user explicitly requests text enhancement.
 
 ### 7. storage Permission
-**Justification**: Required to store user authentication tokens, usage statistics, and user preferences locally in the browser. This enables the extension to remember the user's login state, track their usage limits, and maintain their settings (like preferred language and enhancement mode) across browser sessions.
+**Justification**: Required to store user authentication tokens, usage statistics, user preferences, and usage analytics locally in the browser. This enables the extension to remember the user's login state, track their usage limits, maintain their settings (like preferred language and enhancement mode), and store usage logs for service improvement. All data is stored securely in the browser's local storage and never shared with third parties.
 
 ## Key Security Improvements
 
-### On-Demand Script Injection
-- **No automatic content scripts**: Scripts are only injected when the user actively uses the context menu
-- **activeTab only**: Extension only accesses the current active tab, not all websites
+### Hybrid Permission Approach
+- **Limited declarative content script**: Only runs on our own domain (`https://emotifyai.com/*`)
+- **Programmatic injection**: Content scripts injected only when user triggers context menu via `activeTab` + `scripting`
 - **User-initiated**: All functionality requires explicit user action (right-click → select menu item)
+- **No automatic access**: Extension cannot access websites unless user explicitly triggers enhancement
 
 ### Minimal Permissions
-- **Removed broad host permissions**: No longer requires access to all websites
-- **Reduced attack surface**: Extension cannot access websites unless user explicitly triggers it
-- **Privacy-focused**: No background monitoring or automatic data collection
+- **No broad host permissions**: Uses targeted approach instead of `https://*/*`
+- **Reduced attack surface**: Extension only accesses current tab when user requests it
+- **Privacy-focused**: No background monitoring or automatic data collection across websites
 
 ## Data Usage Compliance
 
 ### Data Collection
 - **Text Content**: Only the text selected by the user is temporarily sent to our secure servers for AI enhancement. Text is processed and immediately deleted - not stored permanently.
 - **Authentication Data**: OAuth tokens are stored locally in the browser's secure storage and used only for API authentication.
-- **Usage Statistics**: Anonymous usage counts are stored to track subscription limits and provide usage analytics to users.
+- **Usage Analytics**: We collect usage logs including enhancement request metadata (timestamps, language preferences, success/failure status, token usage, and performance metrics) to improve user experience and service reliability. These logs never contain the actual text content - only technical metadata about the enhancement process.
+- **User Preferences**: Settings like preferred language, enhancement mode, and theme preferences are stored locally.
 
 ### Data Sharing
 - **No Third-Party Sharing**: User data is never shared with third parties except for the AI processing service (Anthropic Claude) which processes text under strict data protection agreements.
 - **No Advertising**: The extension does not collect data for advertising purposes.
-- **No Analytics Tracking**: No user behavior tracking or analytics beyond essential usage counting for subscription management.
+- **Analytics for UX**: Usage analytics are collected solely to improve service performance, identify technical issues, and develop better features based on user behavior patterns.
 
 ### Data Security
 - **Encryption**: All data transmission uses HTTPS encryption.
 - **Local Storage**: Sensitive data is stored in the browser's secure storage APIs.
-- **Minimal Data**: Only essential data required for functionality is collected.
+- **Minimal Data**: Only essential data required for functionality and service improvement is collected.
+- **Content Privacy**: Actual text content is never stored in our usage logs - only metadata about the enhancement process.
 
 ## Contact Information
 

@@ -28,7 +28,7 @@ export default function TermsPage() {
                                 Please read these terms carefully before using EmotifyAI.
                             </p>
                             <p className="mt-4 text-sm text-muted-foreground">
-                                Last updated: December 27, 2025
+                                Last updated: December 30, 2025
                             </p>
                         </div>
                     </div>
@@ -77,9 +77,15 @@ export default function TermsPage() {
                                                 <li>Web application dashboard for account management</li>
                                                 <li>AI-driven text enhancement processing (powered by industry-leading models)</li>
                                                 <li>Subscription and usage tracking</li>
+                                                <li>Usage analytics and logging for service improvement and user experience optimization</li>
                                             </ul>
                                             <p>
                                                 We strive to provide premium, reliable service, but because we rely on complex AI and third-party infrastructure, we do not guarantee 100% uninterrupted or error-free operation.
+                                            </p>
+
+                                            <h3>Data Collection for Service Enhancement</h3>
+                                            <p>
+                                                To provide the best possible user experience, we collect usage logs that include metadata about your interactions with our service (such as enhancement requests, language preferences, success/failure status, and performance metrics). <strong>These logs never contain the actual text content you enhance</strong> - only technical metadata that helps us improve service reliability and develop better features.
                                             </p>
                                         </div>
                                     </div>
@@ -156,6 +162,36 @@ export default function TermsPage() {
                                     </p>
                                     <p>
                                         <strong>Refunds:</strong> We offer a short-term "no questions asked" refund for your first monthly subscription payment. Lifetime licenses are non-refundable after 30 days due to the permanent nature of the access.
+                                    </p>
+                                </div>
+                            </CardContent>
+                        </Card>
+
+                        {/* Data Usage and Privacy */}
+                        <Card>
+                            <CardContent className="pt-6">
+                                <div className="prose prose-zinc dark:prose-invert max-w-none">
+                                    <h2 className="text-2xl font-bold mb-4">Data Usage and Privacy</h2>
+
+                                    <h3>Usage Analytics</h3>
+                                    <p>
+                                        By using EmotifyAI, you consent to our collection of usage analytics data to improve service quality and user experience. This includes:
+                                    </p>
+                                    <ul>
+                                        <li>Enhancement request metadata (timestamps, language preferences, success/failure status)</li>
+                                        <li>Performance metrics (processing time, token usage, error rates)</li>
+                                        <li>Feature usage patterns to guide product development</li>
+                                        <li>Technical diagnostics for troubleshooting and optimization</li>
+                                    </ul>
+
+                                    <h3>Content Privacy</h3>
+                                    <p>
+                                        <strong>We do not store, log, or analyze the actual text content you enhance.</strong> Your text is processed in real-time and immediately discarded after enhancement. Only technical metadata about the enhancement process is retained for service improvement purposes.
+                                    </p>
+
+                                    <h3>Data Retention</h3>
+                                    <p>
+                                        Usage logs and analytics data are retained for a reasonable period to enable service improvements and troubleshooting. You may request deletion of your data by contacting us at any time.
                                     </p>
                                 </div>
                             </CardContent>

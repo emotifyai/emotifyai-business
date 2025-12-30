@@ -28,7 +28,7 @@ export default function PrivacyPage() {
                                 Your privacy is our priority. Learn how we collect, use, and protect your data.
                             </p>
                             <p className="mt-4 text-sm text-muted-foreground">
-                                Last updated: December 27, 2025
+                                Last updated: December 30, 2025
                             </p>
                         </div>
                     </div>
@@ -83,11 +83,27 @@ export default function PrivacyPage() {
                                                 <li>Number of text enhancements performed (to manage subscription limits)</li>
                                                 <li>Subscription tier and status (to provide appropriate features)</li>
                                                 <li>Browser and extension version (for troubleshooting and compatibility)</li>
+                                                <li>Usage logs including enhancement requests, language preferences, and success/failure status (to improve user experience and service reliability)</li>
                                             </ul>
 
                                             <h3>Text Data</h3>
                                             <p>
                                                 When you use EmotifyAI to enhance text, we temporarily process your text through our AI service. <strong>We do not store, log, or train AI models on the content of your text.</strong> Text is processed in real-time and immediately discarded after enhancement.
+                                            </p>
+
+                                            <h3>Usage Analytics for UX Enhancement</h3>
+                                            <p>
+                                                To continuously improve your experience with EmotifyAI, we collect and store usage logs that include:
+                                            </p>
+                                            <ul>
+                                                <li>Timestamps of enhancement requests</li>
+                                                <li>Language detection results and user language preferences</li>
+                                                <li>Enhancement success/failure status and error types</li>
+                                                <li>Token usage and processing time metrics</li>
+                                                <li>Feature usage patterns (which enhancement modes are most popular)</li>
+                                            </ul>
+                                            <p>
+                                                <strong>Important:</strong> These logs contain metadata about your usage patterns but never include the actual text content you enhance. This data helps us identify performance issues, optimize our AI processing, and develop new features that better serve your needs.
                                             </p>
                                         </div>
                                     </div>
@@ -112,7 +128,9 @@ export default function PrivacyPage() {
                                                 <li>Process text enhancement requests</li>
                                                 <li>Manage subscriptions and billing securely</li>
                                                 <li>Monitor usage limits and prevent system abuse</li>
-                                                <li>Improve our service and user experience</li>
+                                                <li>Analyze usage patterns to improve service performance and user experience</li>
+                                                <li>Identify and resolve technical issues through usage logs</li>
+                                                <li>Develop new features based on user behavior insights</li>
                                                 <li>Send essential service updates (no marketing spam)</li>
                                             </ul>
                                         </div>
