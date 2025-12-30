@@ -30,7 +30,7 @@ async function checkSchema() {
     try {
         // Check if tables exist
         console.log('📋 Checking Tables:')
-        const tables = ['profiles', 'subscriptions', 'usage_logs', 'api_keys', 'lifetime_subscribers']
+        const tables = ['profiles', 'subscriptions', 'api_keys', 'lifetime_subscribers']
         
         for (const table of tables) {
             try {

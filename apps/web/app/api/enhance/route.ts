@@ -4,7 +4,6 @@ import { canMakeEnhancement } from '@/lib/subscription/validation'
 import { enhanceText, mockEnhanceText, EnhanceOptions } from '@/lib/ai/claude'
 import { detectLanguage, validateOutputQuality, isLanguageSupported } from '@/lib/ai/language-detection'
 import { EnhanceRequestSchema, ApiErrorCode } from '@/types/api'
-import { EnhancementMode, UsageLogInsert } from '@/types/database'
 
 const USE_MOCK = process.env.MOCK_AI_RESPONSES === 'true'
 
@@ -109,20 +108,8 @@ export async function POST(request: NextRequest) {
         
         if (consumeError || !creditConsumed) {
             // Continue anyway - we don't want to fail the request if credit consumption fails
-        } else {
         }
-        const usageLogData: UsageLogInsert = {
-            user_id: user.id,
-            input_text: text,
-            output_text: result.enhancedText,
-            language,
-            mode: EnhancementMode.ENHANCE,
-            tokens_used: result.tokensUsed,
-            success: true,
-            credits_consumed: 1 // Each enhancement consumes 1 credit
-        };
-        // @ts-ignore
-        await supabase.from('usage_logs').insert(usageLogData)
+
         const successResponse = {
             enhancedText: result.enhancedText,
             tokensUsed: result.tokensUsed,

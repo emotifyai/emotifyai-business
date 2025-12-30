@@ -42,7 +42,7 @@ Three-tier system managed through Lemon Squeezy:
 - **Lifetime**: One-time payment for unlimited access (no reset, limit = -1)
 
 Usage tracking:
-- Logged in `usage_logs` table with full audit trail
+- Credit consumption tracked in subscription records
 - Real-time usage stats synced to extension
 - Automatic limit enforcement before AI processing
 - Reset dates for monthly subscriptions
@@ -71,7 +71,7 @@ Usage tracking:
 5. Backend validates auth, subscription, and usage
 6. Backend calls Claude API for enhancement
 7. Backend validates output quality
-8. Backend logs usage and returns result
+8. Backend updates credit consumption and returns result
 9. Content script replaces text in-page
 
 ## Distribution Channels

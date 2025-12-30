@@ -115,35 +115,6 @@ CREATE TABLE IF NOT EXISTS public.lifetime_subscribers (
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
--- Usage logs table (tracks all enhancement requests)
-CREATE TABLE IF NOT EXISTS public.usage_logs (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    user_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
-    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    
-    -- Enhancement details
-    input_text TEXT NOT NULL,
-    output_text TEXT NOT NULL,
-    language TEXT NOT NULL DEFAULT 'en',
-    mode enhancement_mode NOT NULL DEFAULT 'enhance',
-    
-    -- Token and credit tracking
-    tokens_used INTEGER NOT NULL DEFAULT 0,
-    credits_consumed INTEGER NOT NULL DEFAULT 1,
-    
-    -- Request status
-    success BOOLEAN NOT NULL DEFAULT true,
-    error_message TEXT,
-    
-    -- Legacy cache columns (maintained for compatibility)
-    cached BOOLEAN DEFAULT false,
-    tokens_saved INTEGER DEFAULT 0,
-    
-    -- Constraints
-    CONSTRAINT usage_logs_tokens_check CHECK (tokens_used >= 0),
-    CONSTRAINT usage_logs_credits_check CHECK (credits_consumed > 0),
-    CONSTRAINT usage_logs_text_check CHECK (length(input_text) > 0)
-);
 
 -- API keys table (for programmatic access)
 CREATE TABLE IF NOT EXISTS public.api_keys (
@@ -184,12 +155,7 @@ CREATE INDEX IF NOT EXISTS lifetime_subscribers_user_id_idx ON public.lifetime_s
 CREATE INDEX IF NOT EXISTS lifetime_subscribers_number_idx ON public.lifetime_subscribers(subscriber_number);
 CREATE INDEX IF NOT EXISTS lifetime_subscribers_date_idx ON public.lifetime_subscribers(subscribed_at DESC);
 
--- Usage logs indexes
-CREATE INDEX IF NOT EXISTS usage_logs_user_id_idx ON public.usage_logs(user_id);
-CREATE INDEX IF NOT EXISTS usage_logs_created_at_idx ON public.usage_logs(created_at DESC);
-CREATE INDEX IF NOT EXISTS usage_logs_user_created_idx ON public.usage_logs(user_id, created_at DESC);
-CREATE INDEX IF NOT EXISTS usage_logs_success_idx ON public.usage_logs(success);
-CREATE INDEX IF NOT EXISTS usage_logs_credits_idx ON public.usage_logs(credits_consumed);
+
 
 -- API keys indexes
 CREATE INDEX IF NOT EXISTS api_keys_user_id_idx ON public.api_keys(user_id);
@@ -204,7 +170,6 @@ CREATE INDEX IF NOT EXISTS api_keys_active_idx ON public.api_keys(user_id, revok
 ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.subscriptions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.lifetime_subscribers ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.usage_logs ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.api_keys ENABLE ROW LEVEL SECURITY;
 
 -- Profiles policies
@@ -231,15 +196,7 @@ CREATE POLICY "Users can view own lifetime subscription" ON public.lifetime_subs
 CREATE POLICY "Service role can manage lifetime subscriptions" ON public.lifetime_subscribers
     FOR ALL USING (auth.role() = 'service_role');
 
--- Usage logs policies
-CREATE POLICY "Users can view own usage logs" ON public.usage_logs
-    FOR SELECT USING (auth.uid() = user_id);
 
-CREATE POLICY "Users can insert own usage logs" ON public.usage_logs
-    FOR INSERT WITH CHECK (auth.uid() = user_id);
-
-CREATE POLICY "Service role can manage usage logs" ON public.usage_logs
-    FOR ALL USING (auth.role() = 'service_role');
 
 -- API keys policies
 CREATE POLICY "Users can manage own API keys" ON public.api_keys
@@ -592,7 +549,6 @@ CREATE TRIGGER auto_reset_credits_trigger
 COMMENT ON TABLE public.profiles IS 'User profiles extending Supabase auth.users';
 COMMENT ON TABLE public.subscriptions IS 'Credit-based subscription management with Lemon Squeezy integration';
 COMMENT ON TABLE public.lifetime_subscribers IS 'Tracks lifetime subscribers with sequential numbering (limited to 500)';
-COMMENT ON TABLE public.usage_logs IS 'Logs all text enhancement requests with credit consumption tracking';
 COMMENT ON TABLE public.api_keys IS 'API keys for programmatic access to the enhancement service';
 
 -- Column comments
@@ -602,7 +558,6 @@ COMMENT ON COLUMN public.subscriptions.credits_used IS 'Credits consumed in curr
 COMMENT ON COLUMN public.subscriptions.credits_reset_date IS 'When credits will reset for next billing period';
 COMMENT ON COLUMN public.subscriptions.validity_days IS 'Number of days the subscription is valid (for free plan)';
 COMMENT ON COLUMN public.lifetime_subscribers.subscriber_number IS 'Sequential number from 1-500 for lifetime subscribers';
-COMMENT ON COLUMN public.usage_logs.credits_consumed IS 'Number of credits consumed by this enhancement';
 
 -- Function comments
 COMMENT ON FUNCTION public.get_lifetime_subscriber_count() IS 'Returns total number of lifetime subscribers';
@@ -627,7 +582,6 @@ Migration History:
 Schema Relationships:
 - profiles (1) → subscriptions (many): User can have multiple subscriptions over time
 - profiles (1) → lifetime_subscribers (0..1): User can have at most one lifetime subscription
-- profiles (1) → usage_logs (many): User can have many enhancement requests
 - profiles (1) → api_keys (many): User can have multiple API keys
 
 Key Features:

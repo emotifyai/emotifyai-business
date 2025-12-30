@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { EnhancementMode, SubscriptionTier } from './database'
+import { SubscriptionTier } from './database'
 
 // =============================================================================
 // API REQUEST/RESPONSE TYPES
@@ -8,7 +8,7 @@ import { EnhancementMode, SubscriptionTier } from './database'
 // Enhancement API
 export const EnhanceRequestSchema = z.object({
     text: z.string().min(1).max(10000),
-    mode: z.nativeEnum(EnhancementMode),
+    mode: z.literal('enhance'),
     language: z.string().length(2).optional(), // ISO 639-1 code
     tone: z.enum(['formal', 'casual', 'professional']).optional(),
 })
@@ -50,27 +50,6 @@ export interface CustomerPortalResponse {
     success: boolean
     data?: {
         portalUrl: string
-    }
-    error?: {
-        code: string
-        message: string
-    }
-}
-
-// Usage Stats API
-export interface UsageStatsResponse {
-    success: boolean
-    data?: {
-        currentPeriod: {
-            start: string
-            end: string
-            enhancementsUsed: number
-            enhancementsLimit: number
-        }
-        history: {
-            date: string
-            count: number
-        }[]
     }
     error?: {
         code: string

@@ -514,66 +514,6 @@ describe('/api/enhance POST', () => {
     })
   })
 
-  describe('Usage Logging', () => {
-    beforeEach(() => {
-      const mockUser = { id: 'user-123', email: 'test@example.com' }
-      mockSupabase.auth.getUser.mockResolvedValue({
-        data: { user: mockUser },
-        error: null
-      })
-      mockCanMakeEnhancement.mockResolvedValue({ allowed: true })
-      mockEnhanceText.mockResolvedValue({
-        enhancedText: 'Enhanced text',
-        tokensUsed: 50,
-        language: 'en'
-      })
-    })
-
-    it('should log successful enhancement usage', async () => {
-      const mockInsert = jest.fn().mockResolvedValue({ error: null })
-      mockSupabase.from.mockReturnValue({
-        insert: mockInsert
-      })
-
-      const request = createMockRequest({
-        text: 'original text',
-        mode: 'enhance'
-      })
-
-      await POST(request)
-
-      expect(mockSupabase.from).toHaveBeenCalledWith('usage_logs')
-      expect(mockInsert).toHaveBeenCalledWith({
-        user_id: 'user-123',
-        input_text: 'original text',
-        output_text: 'Enhanced text',
-        language: 'en',
-        tokens_used: 50,
-        success: true
-      })
-    })
-
-    it('should continue even if logging fails', async () => {
-      const mockInsert = jest.fn().mockResolvedValue({ 
-        error: new Error('Database error') 
-      })
-      mockSupabase.from.mockReturnValue({
-        insert: mockInsert
-      })
-
-      const request = createMockRequest({
-        text: 'test text',
-        mode: 'enhance'
-      })
-
-      const rawResponse = await POST(request); const response = assertResponse(rawResponse)
-      const data = await parseResponse(response)
-
-      expect(response.status).toBe(200)
-      expect(data.success).toBe(true)
-    })
-  })
-
   describe('Error Handling', () => {
     beforeEach(() => {
       const mockUser = { id: 'user-123', email: 'test@example.com' }

@@ -82,9 +82,13 @@ export async function POST(request: NextRequest) {
                     user_id: user.id,
                     lemon_squeezy_id: `trial-${user.id}`,
                     tier: 'trial',
+                    tier_name: 'Trial',
                     status: 'active',
                     current_period_start: new Date().toISOString(),
                     current_period_end: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+                    credits_limit: 10,
+                    credits_used: 0,
+                    validity_days: 30,
                 })
                 .select()
                 .single()
@@ -110,13 +114,6 @@ export async function POST(request: NextRequest) {
             })
         }
 
-        // Get usage count
-        const { count: usageCount } = await (supabase
-            .from('usage_logs') as any)
-            .select('*', { count: 'exact', head: true })
-            .eq('user_id', user.id)
-            .gte('created_at', (subscription as any).current_period_start)
-
         return NextResponse.json({
             token,
             user: {
@@ -128,8 +125,8 @@ export async function POST(request: NextRequest) {
             subscription: {
                 tier: (subscription as any).tier,
                 status: (subscription as any).status,
-                usage: usageCount || 0,
-                limit: (subscription as any).tier === 'trial' ? 10 : -1,
+                usage: (subscription as any).credits_used || 0,
+                limit: (subscription as any).credits_limit || ((subscription as any).tier === 'trial' ? 10 : -1),
             },
         })
     } catch (error) {

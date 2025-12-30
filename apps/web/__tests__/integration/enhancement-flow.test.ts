@@ -338,37 +338,7 @@ describe('Enhancement Flow Integration', () => {
     })
   })
 
-  describe('Usage Logging Integration', () => {
-    it('should log successful enhancement usage', async () => {
-      process.env.MOCK_AI_RESPONSES = 'true'
-      
-      const mockInsert = jest.fn().mockResolvedValue({ error: null })
-      mockSupabase.from.mockReturnValue({
-        insert: mockInsert
-      })
 
-      const request = createMockRequest({
-        text: 'original text for logging',
-        mode: 'enhance',
-        language: 'en'
-      })
-
-      const response = await POST(request)
-      
-      expect(response.status).toBe(200)
-      expect(mockSupabase.from).toHaveBeenCalledWith('usage_logs')
-      expect(mockInsert).toHaveBeenCalledWith({
-        user_id: 'test-user-123',
-        input_text: 'original text for logging',
-        output_text: '[ENHANCED] original text for logging',
-        language: 'en',
-        tokens_used: 100,
-        success: true
-      })
-      
-      delete process.env.MOCK_AI_RESPONSES
-    })
-  })
 
   describe('Language Detection Integration', () => {
     it('should auto-detect language when not provided', async () => {
