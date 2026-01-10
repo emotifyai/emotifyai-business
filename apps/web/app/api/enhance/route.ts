@@ -43,8 +43,6 @@ export async function POST(request: NextRequest) {
             return createErrorResponse({ code: ApiErrorCode.INVALID_REQUEST, message: 'Invalid request data' }, 400)
         }
 
-        console.log('🦆 DUCK: ✅ Validation successful');
-
         const { 
             text, 
             language: requestedLanguage, 
@@ -53,11 +51,9 @@ export async function POST(request: NextRequest) {
             strength,
             isEditorSession 
         } = validation.data
-        console.log('🦆 DUCK: Parsed data - text length:', text?.length, 'language:', requestedLanguage, 'tone:', tone, 'strength:', strength, 'isEditorSession:', isEditorSession);
         
         const language = requestedLanguage || detectLanguage(text)
         const finalOutputLanguage = outputLanguage || language
-        console.log('🦆 DUCK: Detected/final language:', language, 'output language:', finalOutputLanguage);
 
         if (!isLanguageSupported(language)) {
             return createErrorResponse({
@@ -109,8 +105,6 @@ export async function POST(request: NextRequest) {
             }
         }
 
-        console.log('🦆 DUCK: ✅ Usage limit check passed');
-
         const enhanceOptions: EnhanceOptions = { 
             text, 
             language, 
@@ -118,14 +112,10 @@ export async function POST(request: NextRequest) {
             tone,
             strength 
         }
-        console.log('🦆 DUCK: Enhancement options:', enhanceOptions);
-        console.log('🦆 DUCK: Using mock AI:', USE_MOCK);
         
         const result = USE_MOCK ? await mockEnhanceText(enhanceOptions) : await enhanceText(enhanceOptions)
-        console.log('🦆 DUCK: Enhancement result:', result);
 
         const qualityCheck = validateOutputQuality(text, result.enhancedText, finalOutputLanguage)
-        console.log('🦆 DUCK: Quality check result:', qualityCheck);
         
         if (!qualityCheck.isValid) {
             return createErrorResponse({

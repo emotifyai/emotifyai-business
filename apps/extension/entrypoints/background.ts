@@ -26,10 +26,7 @@ export default defineBackground(() => {
 
   // Handle context menu clicks
   browser.contextMenus.onClicked.addListener(async (info: any, tab?: any) => {
-    console.log('🦆 DUCK: Context menu clicked');
-    console.log('🦆 DUCK: Menu item ID:', info.menuItemId);
-    console.log('🦆 DUCK: Selection text:', info.selectionText?.substring(0, 50) + '...');
-    console.log('🦆 DUCK: Tab info:', { id: tab?.id, url: tab?.url });
+    
 
     if (info.menuItemId === 'enhance-text' && info.selectionText) {
       await handleEnhanceText(info.selectionText, tab?.id);
@@ -51,9 +48,6 @@ export default defineBackground(() => {
   // Handle external messages from web app
   if (browser.runtime.onMessageExternal) {
     browser.runtime.onMessageExternal.addListener((message: any, sender: any, sendResponse: (response: any) => void) => {
-      console.log('🦆 DUCK: External message received in background script');
-      console.log('🦆 DUCK: Message:', message);
-      console.log('🦆 DUCK: Sender URL:', sender.url);
       logger.info('Received external message', { message, sender: sender.url });
 
       // Only accept messages from allowed origins (production and development)
@@ -112,16 +106,12 @@ async function updateContextMenuState(isAuthenticated: boolean): Promise<void> {
 // Handle text enhancement from context menu - redirect to web editor
 async function handleEnhanceText(text: string, tabId?: number): Promise<void> {
   try {
-    console.log('🦆 DUCK: handleEnhanceText called - redirecting to web editor');
-    console.log('🦆 DUCK: Text:', text.substring(0, 50) + '...');
-    console.log('🦆 DUCK: Tab ID:', tabId);
 
     logger.info('Redirecting to web editor from context menu', { textLength: text.length });
 
     // Check authentication first
     const token = await getAuthToken();
     if (!token) {
-      console.log('🦆 DUCK: ❌ No auth token, redirecting to login');
       // Redirect to login page
       await browser.tabs.create({
         url: 'https://emotifyai.com/auth/login?redirect=/dashboard/editor'
@@ -129,14 +119,10 @@ async function handleEnhanceText(text: string, tabId?: number): Promise<void> {
       return;
     }
 
-    console.log('🦆 DUCK: ✅ Auth token found, redirecting to editor with text');
-
     // Encode the text for URL transmission
     const encodedText = encodeURIComponent(text);
     const editorUrl = `https://emotifyai.com/dashboard/editor?text=${encodedText}`;
     
-    console.log('🦆 DUCK: Editor URL:', editorUrl.substring(0, 100) + '...');
-
     // Create new tab with editor
     await browser.tabs.create({
       url: editorUrl
