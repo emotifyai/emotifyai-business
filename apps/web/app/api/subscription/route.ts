@@ -29,7 +29,7 @@ export async function GET(request: NextRequest) {
             .from('subscriptions')
             .select('*')
             .eq('user_id', user.id)
-            .eq('status', 'active')
+            .in('status', ['active', 'trial'])
             .order('created_at', { ascending: false })
 
         if (subscriptionError) {
@@ -42,13 +42,13 @@ export async function GET(request: NextRequest) {
                 success: true,
                 data: {
                     tier: SubscriptionTier.FREE,
-                    status: SubscriptionStatus.ACTIVE,
-                    credits_limit: 50,
+                    status: SubscriptionStatus.TRIAL,
+                    credits_limit: 10,
                     credits_used: 0,
-                    credits_remaining: 50,
+                    credits_remaining: 10,
                     credits_reset_date: null,
                     validity_days: 10,
-                    tier_name: 'Free Plan',
+                    tier_name: 'Free Trial',
                     current_period_end: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000).toISOString()
                 }
             })

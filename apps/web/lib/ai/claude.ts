@@ -20,7 +20,9 @@ const MAX_TOKENS = parseInt(process.env.ANTHROPIC_MAX_TOKENS || '1024', 10)
 export interface EnhanceOptions {
     text: string
     language?: string
-    tone?: 'formal' | 'casual' | 'professional'
+    outputLanguage?: string
+    tone?: 'emotional' | 'professional' | 'marketing'
+    strength?: number
 }
 
 export interface EnhanceResult {
@@ -44,7 +46,13 @@ export interface EnhanceResult {
  * Implements retry logic with exponential backoff
  */
 export async function enhanceText(options: EnhanceOptions): Promise<EnhanceResult> {
-    const { text, language = 'en', tone = 'professional' } = options
+    const { 
+        text, 
+        language = 'en', 
+        outputLanguage, 
+        tone = 'professional',
+        strength = 3 
+    } = options
 
     let retries = 0
     const maxRetries = 3
@@ -53,10 +61,17 @@ export async function enhanceText(options: EnhanceOptions): Promise<EnhanceResul
         try {
             // Detect language if needed
             const detectedLanguage = language as 'en' | 'ar' | 'fr';
+            const finalOutputLanguage = outputLanguage || detectedLanguage;
 
             // Build cached prompts
             const systemPrompt = buildCachedSystemPrompt(detectedLanguage);
-            const userPromptContent = buildUserPrompt(text, tone, true);
+            const userPromptContent = buildUserPrompt(
+                text, 
+                tone, 
+                true, 
+                finalOutputLanguage as 'en' | 'ar' | 'fr',
+                strength
+            );
 
             const message = await anthropic.messages.create({
                 model: MODEL,
@@ -77,7 +92,7 @@ export async function enhanceText(options: EnhanceOptions): Promise<EnhanceResul
                 .join('\n')
 
             // PURIFICATION: Clean the AI output
-            const purificationResult = completePurification(rawText, detectedLanguage);
+            const purificationResult = completePurification(rawText, finalOutputLanguage as 'en' | 'ar' | 'fr');
             
             // Use purified text as the final result
             const enhancedText = purificationResult.cleanText;
@@ -114,7 +129,7 @@ export async function enhanceText(options: EnhanceOptions): Promise<EnhanceResul
             return {
                 enhancedText,
                 tokensUsed,
-                language: detectedLanguage,
+                language: finalOutputLanguage,
                 cached: savings.wasCacheHit,
                 cacheStats: {
                     tokensSaved: savings.tokensSaved,

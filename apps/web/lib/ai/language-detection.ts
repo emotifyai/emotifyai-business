@@ -39,8 +39,11 @@ export function isLanguageSupported(language: string): boolean {
 /**
  * Validate the quality of AI output
  * Returns true if the output meets quality standards
+ * @param input - Original input text
+ * @param output - AI-generated output text
+ * @param expectedOutputLanguage - The language the output should be in (could be different from input for translation)
  */
-export function validateOutputQuality(input: string, output: string, language: string): {
+export function validateOutputQuality(input: string, output: string, expectedOutputLanguage: string): {
     isValid: boolean
     reason?: string
 } {
@@ -53,16 +56,19 @@ export function validateOutputQuality(input: string, output: string, language: s
     }
 
     // Check if output is identical to input (AI didn't make changes)
-    if (output.trim() === input.trim()) {
+    // Skip this check if translating to a different language
+    const inputLanguage = detectLanguage(input)
+    if (output.trim() === input.trim() && inputLanguage === expectedOutputLanguage) {
         return {
             isValid: false,
             reason: 'Output is identical to input',
         }
     }
 
-    // Check if output is suspiciously short compared to input (for expand mode)
-    // This is a basic check - you might want more sophisticated validation
-    if (output.length < input.length * 0.5) {
+    // Check if output is suspiciously short compared to input
+    // Be more lenient when translating (some languages are more compact)
+    const minLengthRatio = inputLanguage !== expectedOutputLanguage ? 0.3 : 0.5
+    if (output.length < input.length * minLengthRatio) {
         return {
             isValid: false,
             reason: 'Output is significantly shorter than expected',
@@ -88,20 +94,14 @@ export function validateOutputQuality(input: string, output: string, language: s
         }
     }
 
-    // Language-specific validation
-    if (!isLanguageSupported(language)) {
-        // For unsupported languages, we're more lenient but still check basics
-        return {
-            isValid: true,
-        }
-    }
-
-    // Validate that the output is in the expected language
-    const detectedLanguage = detectLanguage(output)
-    if (detectedLanguage !== language && isLanguageSupported(language)) {
-        return {
-            isValid: false,
-            reason: `Output language (${detectedLanguage}) does not match expected language (${language})`,
+    // Language-specific validation - check output is in expected language
+    if (isLanguageSupported(expectedOutputLanguage)) {
+        const detectedOutputLanguage = detectLanguage(output)
+        if (detectedOutputLanguage !== expectedOutputLanguage) {
+            return {
+                isValid: false,
+                reason: `Output language (${detectedOutputLanguage}) does not match expected output language (${expectedOutputLanguage})`,
+            }
         }
     }
 

@@ -924,7 +924,8 @@ class KeyboardShortcutHandler {
 export default defineContentScript({
   // Use a minimal match that won't trigger broad permissions
   // The background script will inject this programmatically when needed
-  matches: ['https://emotifyai.com/*'],
+  // Include localhost for development
+  matches: ['https://emotifyai.com/*', 'http://localhost:3000/*'],
   main() {
     logger.info('Content script loaded');
 

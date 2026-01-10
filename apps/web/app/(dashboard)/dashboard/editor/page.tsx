@@ -60,7 +60,7 @@ const LOADING_MESSAGES = [
 export default function EditorPage() {
   const searchParams = useSearchParams()
   const { data: subscription } = useSubscription()
-  const { data: usage, refetch: refetchUsage } = useUsageStats()
+  const { data: usage } = useUsageStats()
 
   const totalCredits = usage ? usage.credits_used + usage.credits_remaining : 0
   const isUnlimited = usage?.credits_remaining === -1
@@ -80,19 +80,8 @@ export default function EditorPage() {
   const [showHistory, setShowHistory] = useState(false)
   const [copiedStates, setCopiedStates] = useState<{ [key: string]: boolean }>({})
 
-  // Load cached session data on mount (only if no URL text param)
+  // Load cached session data on mount
   useEffect(() => {
-    const textParam = searchParams.get('text')
-    
-    // If there's a text param in URL, use that instead of cache
-    if (textParam) {
-      setOriginalText(decodeURIComponent(textParam))
-      // Clear the URL param after loading to prevent re-triggering
-      window.history.replaceState({}, '', '/dashboard/editor')
-      return
-    }
-    
-    // Otherwise load from session cache
     const cached = sessionStorage.getItem('editor_session')
     if (cached) {
       try {
@@ -106,16 +95,20 @@ export default function EditorPage() {
         console.error('Failed to parse cached session:', e)
       }
     }
-  }, [searchParams])
+  }, [])
 
   // Save to session cache when editor state changes
   useEffect(() => {
-    // Skip saving if originalText is empty (initial state)
-    if (!originalText && !enhancedText) return
-    
     const data = { originalText, enhancedText, tone, outputLanguage, strength }
     sessionStorage.setItem('editor_session', JSON.stringify(data))
   }, [originalText, enhancedText, tone, outputLanguage, strength])
+
+  useEffect(() => {
+    const textParam = searchParams.get('text')
+    if (textParam) {
+      setOriginalText(decodeURIComponent(textParam))
+    }
+  }, [searchParams])
 
   useEffect(() => {
     loadHistory()
@@ -201,8 +194,6 @@ export default function EditorPage() {
         toast.success('Text enhanced successfully!', {
           description: `${data.data.tokensUsed || 0} tokens used`
         })
-        // Refetch usage stats to update the counter
-        refetchUsage()
         const newHistoryItem: HistoryItem = {
           id: Date.now().toString(),
           originalText,

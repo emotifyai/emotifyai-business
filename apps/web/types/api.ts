@@ -8,9 +8,12 @@ import { EnhancementMode, SubscriptionTier } from './database'
 // Enhancement API
 export const EnhanceRequestSchema = z.object({
     text: z.string().min(1).max(10000),
-    mode: z.nativeEnum(EnhancementMode),
+    mode: z.nativeEnum(EnhancementMode).optional().default(EnhancementMode.ENHANCE),
     language: z.string().length(2).optional(), // ISO 639-1 code
-    tone: z.enum(['formal', 'casual', 'professional']).optional(),
+    outputLanguage: z.string().length(2).optional(), // ISO 639-1 code for output
+    tone: z.enum(['emotional', 'professional', 'marketing']).optional(),
+    strength: z.number().min(1).max(5).optional().default(3),
+    isEditorSession: z.boolean().optional().default(false),
 })
 
 export type EnhanceRequest = z.infer<typeof EnhanceRequestSchema>

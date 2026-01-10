@@ -2,7 +2,6 @@ import { enhanceText } from '@/services/api/ai';
 import { checkLimit } from '@/services/api/subscription';
 import { getAuthToken, incrementUsage, watchStorage } from '@/utils/storage';
 import { logger } from '@/utils/logger';
-import { env } from '@/lib/env';
 import type { EnhanceTextMessage, EnhanceTextResponse } from '@/types';
 import { browser } from "wxt/browser";
 
@@ -26,7 +25,12 @@ export default defineBackground(() => {
   });
 
   // Handle context menu clicks
-  browser.contextMenus.onClicked.addListener(async (info, tab) => {
+  browser.contextMenus.onClicked.addListener(async (info: any, tab?: any) => {
+    console.log('🦆 DUCK: Context menu clicked');
+    console.log('🦆 DUCK: Menu item ID:', info.menuItemId);
+    console.log('🦆 DUCK: Selection text:', info.selectionText?.substring(0, 50) + '...');
+    console.log('🦆 DUCK: Tab info:', { id: tab?.id, url: tab?.url });
+
     if (info.menuItemId === 'enhance-text' && info.selectionText) {
       await handleEnhanceText(info.selectionText, tab?.id);
     } else {
@@ -34,7 +38,7 @@ export default defineBackground(() => {
   });
 
   // Handle messages from content script and popup
-  browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  browser.runtime.onMessage.addListener((message: any, sender: any, sendResponse: (response: any) => void) => {
     handleMessage(message, sender)
       .then(sendResponse)
       .catch((error) => {
@@ -46,7 +50,10 @@ export default defineBackground(() => {
 
   // Handle external messages from web app
   if (browser.runtime.onMessageExternal) {
-    browser.runtime.onMessageExternal.addListener((message, sender, sendResponse) => {
+    browser.runtime.onMessageExternal.addListener((message: any, sender: any, sendResponse: (response: any) => void) => {
+      console.log('🦆 DUCK: External message received in background script');
+      console.log('🦆 DUCK: Message:', message);
+      console.log('🦆 DUCK: Sender URL:', sender.url);
       logger.info('Received external message', { message, sender: sender.url });
 
       // Only accept messages from allowed origins (production and development)
@@ -102,31 +109,33 @@ async function updateContextMenuState(isAuthenticated: boolean): Promise<void> {
   }
 }
 
-// Handle text enhancement from context menu
+// Handle text enhancement from context menu - redirect to web editor
 async function handleEnhanceText(text: string, tabId?: number): Promise<void> {
   try {
+    console.log('🦆 DUCK: handleEnhanceText called - redirecting to web editor');
+    console.log('🦆 DUCK: Text:', text.substring(0, 50) + '...');
+    console.log('🦆 DUCK: Tab ID:', tabId);
 
     logger.info('Redirecting to web editor from context menu', { textLength: text.length });
-
-    const webAppUrl = env.VITE_WEB_APP_URL;
 
     // Check authentication first
     const token = await getAuthToken();
     if (!token) {
-      // Redirect to login page with redirect back to editor
-      const loginUrl = `${webAppUrl}/login?redirectTo=/dashboard/editor`;
-      await browser.tabs.create({ url: loginUrl });
+      console.log('🦆 DUCK: ❌ No auth token, redirecting to login');
+      // Redirect to login page
+      await browser.tabs.create({
+        url: 'https://emotifyai.com/auth/login?redirect=/dashboard/editor'
+      });
       return;
     }
 
-    // Truncate text if too long to prevent URL issues
-    const truncatedText = text.length > MAX_TEXT_LENGTH_FOR_URL 
-      ? text.substring(0, MAX_TEXT_LENGTH_FOR_URL) 
-      : text;
-    
+    console.log('🦆 DUCK: ✅ Auth token found, redirecting to editor with text');
+
     // Encode the text for URL transmission
-    const encodedText = encodeURIComponent(truncatedText);
-    const editorUrl = `${webAppUrl}/dashboard/editor?text=${encodedText}`;
+    const encodedText = encodeURIComponent(text);
+    const editorUrl = `https://emotifyai.com/dashboard/editor?text=${encodedText}`;
+    
+    console.log('🦆 DUCK: Editor URL:', editorUrl.substring(0, 100) + '...');
 
     // Create new tab with editor
     await browser.tabs.create({
@@ -135,9 +144,9 @@ async function handleEnhanceText(text: string, tabId?: number): Promise<void> {
 
     logger.info('Successfully redirected to web editor');
   } catch (error) {
-    logger.error('Failed to show enhancement popup', error);
+    logger.error('Failed to redirect to web editor', error);
 
-    // Fallback to error message
+    // Fallback to error notification
     if (tabId) {
       try {
         await browser.scripting.executeScript({
@@ -147,7 +156,7 @@ async function handleEnhanceText(text: string, tabId?: number): Promise<void> {
         
         await browser.tabs.sendMessage(tabId, {
           type: 'SHOW_ERROR',
-          payload: { error: 'Failed to open enhancement popup' },
+          payload: { error: 'Failed to open editor. Please try again.' },
         });
       } catch (fallbackError) {
       }
@@ -156,7 +165,7 @@ async function handleEnhanceText(text: string, tabId?: number): Promise<void> {
 }
 
 // Handle messages
-async function handleMessage(message: any, sender: any): Promise<any> {
+async function handleMessage(message: any, _sender: any): Promise<any> {
   const { type, payload } = message;
 
   switch (type) {

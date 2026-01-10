@@ -6,6 +6,7 @@ import { cn } from '@/lib/utils'
 import { Button } from '@ui/button'
 import {
     LayoutDashboard,
+    Wand2,
     BarChart3,
     CreditCard,
     Key,
@@ -23,6 +24,11 @@ const sidebarItems = [
         title: 'Overview',
         href: '/dashboard',
         icon: LayoutDashboard,
+    },
+    {
+        title: 'Editor',
+        href: '/dashboard/editor',
+        icon: Wand2,
     },
     {
         title: 'Usage',

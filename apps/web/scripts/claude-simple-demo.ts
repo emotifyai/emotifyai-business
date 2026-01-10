@@ -38,7 +38,7 @@ const realExamples = [
     title: "🇫🇷 French Casual Text",
     text: "salut! on se voit demain pour le projet? dis moi si ca marche pour toi",
     language: 'fr' as const,
-    tone: 'casual' as const
+    tone: 'professional' as const
   }
 ]
 

@@ -131,6 +131,11 @@ export interface Database {
                     tokens_saved: number | null
                     // New credit tracking
                     credits_consumed: number
+                    // New editor session fields
+                    editor_session_id: string | null
+                    is_editor_session: boolean | null
+                    tone: string | null
+                    output_language: string | null
                 }
                 Insert: {
                     id?: string
@@ -146,6 +151,10 @@ export interface Database {
                     cached?: boolean | null
                     tokens_saved?: number | null
                     credits_consumed?: number
+                    editor_session_id?: string | null
+                    is_editor_session?: boolean | null
+                    tone?: string | null
+                    output_language?: string | null
                 }
                 Update: {
                     id?: string
@@ -161,6 +170,10 @@ export interface Database {
                     cached?: boolean | null
                     tokens_saved?: number | null
                     credits_consumed?: number
+                    editor_session_id?: string | null
+                    is_editor_session?: boolean | null
+                    tone?: string | null
+                    output_language?: string | null
                 }
             }
             api_keys: {

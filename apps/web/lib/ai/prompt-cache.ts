@@ -80,20 +80,87 @@ export function buildCachedSystemPrompt(language: 'en' | 'ar' | 'fr'): CachedPro
 }
 
 /**
+ * Strength level instructions (1-5 scale)
+ * Each level has specific guidance for how much to transform the text
+ */
+export const STRENGTH_INSTRUCTIONS = {
+    1: `STRENGTH LEVEL 1 - MINIMAL (Light Polish):
+- Fix only obvious typos and grammatical errors
+- Keep the original sentence structure intact
+- Preserve the author's voice and word choices
+- Make the smallest possible changes to improve readability
+- Output should be 95-100% similar to the original`,
+
+    2: `STRENGTH LEVEL 2 - LIGHT (Gentle Refinement):
+- Fix grammar, spelling, and punctuation errors
+- Improve awkward phrasing while keeping the original structure
+- Enhance clarity without changing the meaning
+- Keep most of the original vocabulary
+- Output should be 85-95% similar to the original`,
+
+    3: `STRENGTH LEVEL 3 - MODERATE (Balanced Enhancement):
+- Improve grammar, clarity, and flow
+- Restructure sentences for better readability when needed
+- Replace weak words with stronger alternatives
+- Maintain the core message and intent
+- Output should be 70-85% similar to the original`,
+
+    4: `STRENGTH LEVEL 4 - STRONG (Significant Improvement):
+- Substantially improve clarity, impact, and professionalism
+- Freely restructure sentences and paragraphs for better flow
+- Use more sophisticated vocabulary and expressions
+- Enhance the overall quality while preserving the core message
+- Output should be 50-70% similar to the original`,
+
+    5: `STRENGTH LEVEL 5 - MAXIMUM (Complete Transformation):
+- Completely rewrite the text for maximum impact and clarity
+- Use the best possible vocabulary and sentence structures
+- Transform the text into its most polished, professional version
+- Keep only the core meaning and intent from the original
+- Output can be significantly different from the original (30-50% similarity)`
+} as const;
+
+/**
  * Build user prompt with optional caching - PURIFIED VERSION
  */
 export function buildUserPrompt(
     text: string,
-    tone: 'professional' | 'casual' | 'formal',
-    enableCaching: boolean = true
+    tone: 'emotional' | 'professional' | 'marketing',
+    enableCaching: boolean = true,
+    outputLanguage?: 'en' | 'ar' | 'fr',
+    strength?: number
 ): CachedPrompt {
     const toneInstructions = {
-        professional: "Use a professional and polished tone.",
-        casual: "Use a friendly and conversational tone.",
-        formal: "Use a formal and academic tone."
+        emotional: "Use an emotional and engaging tone that connects with the reader's feelings.",
+        professional: "Use a professional and polished tone suitable for business contexts.",
+        marketing: "Use a persuasive and compelling marketing tone that drives action."
     };
 
+    // Map strength value to 1-5 scale (default to 3 if not provided)
+    const strengthLevel = strength ? Math.min(5, Math.max(1, strength)) as 1 | 2 | 3 | 4 | 5 : 3;
+    const strengthInstruction = STRENGTH_INSTRUCTIONS[strengthLevel];
+
+    // Build output language instruction - handle all language codes
+    const languageNames: Record<string, string> = {
+        'en': 'English',
+        'ar': 'Arabic', 
+        'fr': 'French',
+        'es': 'Spanish',
+        'de': 'German',
+        'it': 'Italian',
+        'pt': 'Portuguese',
+        'zh': 'Chinese',
+        'ja': 'Japanese',
+        'ko': 'Korean'
+    };
+    const languageInstruction = outputLanguage ? 
+        `Output language: ${languageNames[outputLanguage] || outputLanguage.toUpperCase()}` : '';
+
     const prompt = `${toneInstructions[tone]}
+
+${strengthInstruction}
+
+${languageInstruction}
 
 REMEMBER: Return ONLY the enhanced text. No explanations, no introductions, no meta-commentary.
 

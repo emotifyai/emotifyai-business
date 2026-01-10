@@ -250,6 +250,10 @@ export const mockUsageLogs: UsageLog[] = [
         cached: false,
         tokens_saved: null,
         credits_consumed: 1,
+        editor_session_id: null,
+        is_editor_session: false,
+        tone: null,
+        output_language: null,
     },
     {
         id: 'log-2',
@@ -265,6 +269,10 @@ export const mockUsageLogs: UsageLog[] = [
         cached: false,
         tokens_saved: null,
         credits_consumed: 1,
+        editor_session_id: null,
+        is_editor_session: false,
+        tone: null,
+        output_language: null,
     },
     {
         id: 'log-3',
@@ -280,6 +288,10 @@ export const mockUsageLogs: UsageLog[] = [
         cached: false,
         tokens_saved: null,
         credits_consumed: 1,
+        editor_session_id: null,
+        is_editor_session: false,
+        tone: null,
+        output_language: null,
     },
 ]
 

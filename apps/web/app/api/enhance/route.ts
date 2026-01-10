@@ -42,8 +42,23 @@ export async function POST(request: NextRequest) {
         if (!validation.success) {
             return createErrorResponse({ code: ApiErrorCode.INVALID_REQUEST, message: 'Invalid request data' }, 400)
         }
-        const { text, language: requestedLanguage, tone } = validation.data
+
+        console.log('🦆 DUCK: ✅ Validation successful');
+
+        const { 
+            text, 
+            language: requestedLanguage, 
+            outputLanguage, 
+            tone, 
+            strength,
+            isEditorSession 
+        } = validation.data
+        console.log('🦆 DUCK: Parsed data - text length:', text?.length, 'language:', requestedLanguage, 'tone:', tone, 'strength:', strength, 'isEditorSession:', isEditorSession);
+        
         const language = requestedLanguage || detectLanguage(text)
+        const finalOutputLanguage = outputLanguage || language
+        console.log('🦆 DUCK: Detected/final language:', language, 'output language:', finalOutputLanguage);
+
         if (!isLanguageSupported(language)) {
             return createErrorResponse({
                 code: ApiErrorCode.UNSUPPORTED_LANGUAGE,
@@ -93,9 +108,25 @@ export async function POST(request: NextRequest) {
                 }, 403)
             }
         }
-        const enhanceOptions: EnhanceOptions = { text, language, tone }
+
+        console.log('🦆 DUCK: ✅ Usage limit check passed');
+
+        const enhanceOptions: EnhanceOptions = { 
+            text, 
+            language, 
+            outputLanguage: finalOutputLanguage,
+            tone,
+            strength 
+        }
+        console.log('🦆 DUCK: Enhancement options:', enhanceOptions);
+        console.log('🦆 DUCK: Using mock AI:', USE_MOCK);
+        
         const result = USE_MOCK ? await mockEnhanceText(enhanceOptions) : await enhanceText(enhanceOptions)
-        const qualityCheck = validateOutputQuality(text, result.enhancedText, language)
+        console.log('🦆 DUCK: Enhancement result:', result);
+
+        const qualityCheck = validateOutputQuality(text, result.enhancedText, finalOutputLanguage)
+        console.log('🦆 DUCK: Quality check result:', qualityCheck);
+        
         if (!qualityCheck.isValid) {
             return createErrorResponse({
                 code: ApiErrorCode.QUALITY_CHECK_FAILED,
@@ -116,10 +147,13 @@ export async function POST(request: NextRequest) {
             input_text: text,
             output_text: result.enhancedText,
             language,
+            output_language: finalOutputLanguage !== language ? finalOutputLanguage : undefined,
             mode: EnhancementMode.ENHANCE,
             tokens_used: result.tokensUsed,
             success: true,
-            credits_consumed: 1 // Each enhancement consumes 1 credit
+            credits_consumed: 1, // Each enhancement consumes 1 credit
+            is_editor_session: isEditorSession || false,
+            tone: tone || undefined,
         };
         // @ts-ignore
         await supabase.from('usage_logs').insert(usageLogData)
@@ -131,6 +165,12 @@ export async function POST(request: NextRequest) {
         return createSuccessResponse(successResponse);
     } catch (error) {
         console.error('Enhancement API error:', error)
+        // Log full error details
+        if (error instanceof Error) {
+            console.error('Error name:', error.name);
+            console.error('Error message:', error.message);
+            console.error('Error stack:', error.stack);
+        }
         return createErrorResponse({ code: ApiErrorCode.INTERNAL_ERROR, message: 'Internal error' }, 500)
     }
 }

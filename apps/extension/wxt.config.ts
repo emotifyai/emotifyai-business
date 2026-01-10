@@ -1,21 +1,16 @@
 import { defineConfig } from 'wxt';
 import tailwindcss from '@tailwindcss/vite';
-import type { UserConfig } from 'vite';
 import path from 'path';
 
 // See https://wxt.dev/api/config.html
-// @ts-ignore
 export default defineConfig({
-  // @ts-ignore
   modules: ['@wxt-dev/module-react'],
   dev: {
     server: {
       port: 4250,
     },
   },
-  // @ts-ignore
-  vite: (): UserConfig => ({
-    // @ts-ignore
+  vite: () => ({
     plugins: [tailwindcss()],
     resolve: {
       alias: {
