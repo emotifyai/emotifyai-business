@@ -2,9 +2,12 @@ import { enhanceText } from '@/services/api/ai';
 import { checkLimit } from '@/services/api/subscription';
 import { getAuthToken, incrementUsage, watchStorage } from '@/utils/storage';
 import { logger } from '@/utils/logger';
-import { SubscriptionError, LanguageNotSupportedError, AuthenticationError } from '@/utils/errors';
+import { env } from '@/lib/env';
 import type { EnhanceTextMessage, EnhanceTextResponse } from '@/types';
 import { browser } from "wxt/browser";
+
+// Maximum text length for URL parameter (to prevent URL too long errors)
+const MAX_TEXT_LENGTH_FOR_URL = 2000;
 
 export default defineBackground(() => {
   logger.info('Background script initialized');
@@ -46,9 +49,10 @@ export default defineBackground(() => {
     browser.runtime.onMessageExternal.addListener((message, sender, sendResponse) => {
       logger.info('Received external message', { message, sender: sender.url });
 
-      // Only accept messages from allowed origins
+      // Only accept messages from allowed origins (production and development)
       const allowedOrigins = [
         'https://emotifyai.com',
+        'http://localhost:3000',
       ];
 
       const senderOrigin = sender.url ? new URL(sender.url).origin : '';
@@ -101,48 +105,35 @@ async function updateContextMenuState(isAuthenticated: boolean): Promise<void> {
 // Handle text enhancement from context menu
 async function handleEnhanceText(text: string, tabId?: number): Promise<void> {
   try {
-    logger.info('Showing enhancement popup from context menu', { textLength: text.length });
+
+    logger.info('Redirecting to web editor from context menu', { textLength: text.length });
+
+    const webAppUrl = env.VITE_WEB_APP_URL;
 
     // Check authentication first
     const token = await getAuthToken();
     if (!token) {
-      if (tabId) {
-        // Inject content script first, then show error
-        try {
-          await browser.scripting.executeScript({
-            target: { tabId },
-            files: ['content-scripts/content.js']
-          });
-          
-          await browser.tabs.sendMessage(tabId, {
-            type: 'SHOW_ERROR',
-            payload: { error: 'Please log in to use EmotifyAI' },
-          });
-        } catch (error) {
-        }
-      }
+      // Redirect to login page with redirect back to editor
+      const loginUrl = `${webAppUrl}/login?redirectTo=/dashboard/editor`;
+      await browser.tabs.create({ url: loginUrl });
       return;
     }
-    // Inject content script and show enhancement popup
-    if (tabId) {
-      try {
-        // Inject content script
-        await browser.scripting.executeScript({
-          target: { tabId },
-          files: ['content-scripts/content.js']
-        });
-        const message = {
-          type: 'SHOW_ENHANCEMENT_POPUP',
-          payload: { text },
-        };
-        await browser.tabs.sendMessage(tabId, message);
-      } catch (error) {
-        logger.error('Failed to inject content script', error);
-      }
-    } else {
-    }
 
-    logger.info('Enhancement popup shown successfully');
+    // Truncate text if too long to prevent URL issues
+    const truncatedText = text.length > MAX_TEXT_LENGTH_FOR_URL 
+      ? text.substring(0, MAX_TEXT_LENGTH_FOR_URL) 
+      : text;
+    
+    // Encode the text for URL transmission
+    const encodedText = encodeURIComponent(truncatedText);
+    const editorUrl = `${webAppUrl}/dashboard/editor?text=${encodedText}`;
+
+    // Create new tab with editor
+    await browser.tabs.create({
+      url: editorUrl
+    });
+
+    logger.info('Successfully redirected to web editor');
   } catch (error) {
     logger.error('Failed to show enhancement popup', error);
 

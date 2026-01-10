@@ -58,7 +58,7 @@ function Dashboard({ user, subscription, usage, onLogout, onOpenSettings }: Dash
                             {subscription?.tier === 'lifetime_launch' && '💎 Lifetime'}
                         </span>
                         <span className="px-3 py-1 rounded-xl text-xs font-semibold bg-white/30 text-white">
-                            {subscription?.status === 'active' ? '✓ Active' : '⚠ Inactive'}
+                            {(subscription?.status === 'active' || subscription?.status === 'trial') ? '✓ Active' : '⚠ Inactive'}
                         </span>
                     </div>
 
