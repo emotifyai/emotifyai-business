@@ -268,26 +268,7 @@ export default async function PricingPage({ searchParams }: PricingPageProps) {
                     </div>
 
                     {/* Lifetime Offer Section */}
-                    <div className="max-w-4xl mx-auto mb-12">
-                        <div className="bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-950 dark:to-orange-950 border border-yellow-200 dark:border-yellow-800 rounded-xl p-6">
-                            <div className="text-center mb-6">
-                                <h2 className="text-2xl font-bold text-yellow-800 dark:text-yellow-200 mb-2">
-                                    🚀 Limited Launch Offer
-                                </h2>
-                                <p className="text-yellow-700 dark:text-yellow-300">
-                                    Get lifetime access for a one-time payment. Only 500 spots available!
-                                </p>
-                            </div>
-
-                            <Suspense fallback={
-                                <div className="flex justify-center">
-                                    <div className="animate-pulse bg-gray-200 dark:bg-gray-700 h-20 w-80 rounded-lg" />
-                                </div>
-                            }>
-                                <LifetimeSlotCounter compact={false} />
-                            </Suspense>
-                        </div>
-                    </div>
+                 
 
                     {/* Pricing Grid */}
                     <div className="grid gap-8 lg:grid-cols-3 xl:grid-cols-3 max-w-7xl mx-auto">
@@ -300,16 +281,7 @@ export default async function PricingPage({ searchParams }: PricingPageProps) {
                             userHasLifetime={userHasLifetime}
                         />
 
-                        {/* Lifetime Launch Offer */}
-                        <PricingCard
-                            tier="lifetime_launch"
-                            isPopular={!userHasLifetime}
-                            fromNewUser={fromNewUser}
-                            soldOut={lifetimeSoldOut}
-                            isAuthenticated={isAuthenticated}
-                            currentSubscription={currentSubscription}
-                            userHasLifetime={userHasLifetime}
-                        />
+                    
 
                         {/* Pro Monthly (Most Popular) */}
                         <PricingCard
