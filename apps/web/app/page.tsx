@@ -20,6 +20,24 @@ export default async function Home() {
       <main className="flex-1">
         {/* Hero Section */}
         <PersonalizedHero />
+        {/* Demo Video Section */}
+<section className="container py-16">
+  <div className="mx-auto max-w-4xl text-center">
+    <h2 className="mb-4 text-3xl font-bold">See EmotifyAI in Action</h2>
+    <p className="text-muted-foreground mb-8">Watch how one right-click transforms boring text into powerful marketing copy</p>
+    <div className="relative aspect-video rounded-xl overflow-hidden shadow-2xl">
+      <iframe
+        width="100%"
+        height="100%"
+        src="https://www.youtube.com/embed/axq8kcw2ZVQ"
+        title="EmotifyAI Demo"
+        frameBorder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowFullScreen
+      />
+    </div>
+  </div>
+</section>
 
         {/* Features Section */}
         <section className="container py-24">
