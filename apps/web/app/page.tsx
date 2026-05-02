@@ -20,25 +20,15 @@ export default async function Home() {
       <main className="flex-1">
         {/* Hero Section */}
         <PersonalizedHero />
-        {/* Chrome Extension CTA */}
+{/* Chrome Extension CTA */}
 <section className="container py-12">
   <div className="mx-auto max-w-2xl text-center">
-    
-      href="https://chromewebstore.google.com/detail/emotifyai/gfdhmjalkhficdnaoojpgcmcjfjbmldl"
-      target="_blank"
-      rel="noopener noreferrer"
-      className="inline-flex items-center gap-3 bg-primary text-primary-foreground px-8 py-4 rounded-full text-lg font-semibold hover:opacity-90 transition-opacity shadow-lg"
-    >
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/>
-      </svg>
+    <a href="https://chromewebstore.google.com/detail/emotifyai/gfdhmjalkhficdnaoojpgcmcjfjbmldl" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-3 bg-primary text-primary-foreground px-8 py-4 rounded-full text-lg font-semibold hover:opacity-90 transition-opacity shadow-lg">
       Add to Chrome — It&apos;s Free
     </a>
     <p className="mt-3 text-sm text-muted-foreground">10 free enhancements. No credit card required.</p>
   </div>
 </section>
-        {/* Demo Video Section */}
-<section className="container py-16">
   <div className="mx-auto max-w-4xl text-center">
     <h2 className="mb-4 text-3xl font-bold">See EmotifyAI in Action</h2>
     <p className="text-muted-foreground mb-8">Watch how one right-click transforms boring text into powerful marketing copy</p>
