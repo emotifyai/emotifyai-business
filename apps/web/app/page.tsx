@@ -29,6 +29,7 @@ export default async function Home() {
     <p className="mt-3 text-sm text-muted-foreground">10 free enhancements. No credit card required.</p>
   </div>
 </section>
+        <section className="container py-12">
   <div className="mx-auto max-w-4xl text-center">
     <h2 className="mb-4 text-3xl font-bold">See EmotifyAI in Action</h2>
     <p className="text-muted-foreground mb-8">Watch how one right-click transforms boring text into powerful marketing copy</p>
