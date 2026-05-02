@@ -44,7 +44,7 @@ export default async function Home() {
       />
     </div>
   </div>
-
+</section>
 
         {/* Features Section */}
         <section className="container py-24">
