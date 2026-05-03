@@ -48,7 +48,7 @@ export default async function Home() {
 </section>
       {/* Before & After Section */}
 <section className="container py-24">
-  <div className="mx-auto max-w-4xl">
+ <div className="mx-auto max-w-6xl">
     <div className="mb-12 text-center">
       <h2 className="mb-4 text-3xl font-bold">See The Difference</h2>
       <p className="text-muted-foreground">From dry technical text to powerful emotional copy — instantly</p>
@@ -56,11 +56,15 @@ export default async function Home() {
     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
       <div className="flex flex-col items-center">
         <span className="mb-3 text-sm font-semibold uppercase tracking-widest text-muted-foreground">Before</span>
-        <img src="/before.png" alt="Before EmotifyAI" className="rounded-xl shadow-2xl w-full" />
+       <a href="/before.png" target="_blank">
+  <img src="/before.png" alt="Before EmotifyAI" className="rounded-xl shadow-2xl w-full cursor-pointer hover:opacity-90 transition-opacity" />
+</a>
       </div>
       <div className="flex flex-col items-center">
         <span className="mb-3 text-sm font-semibold uppercase tracking-widest text-primary">After</span>
-        <img src="/after.png" alt="After EmotifyAI" className="rounded-xl shadow-2xl w-full" />
+       <a href="/after.png" target="_blank">
+  <img src="/after.png" alt="After EmotifyAI" className="rounded-xl shadow-2xl w-full cursor-pointer hover:opacity-90 transition-opacity" />
+</a>
       </div>
     </div>
   </div>
