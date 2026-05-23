@@ -1,12 +1,12 @@
 'use client'
 
 import { useUser } from '@/lib/hooks/use-auth'
-import { Button } from '@ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@ui/card'
-import { Input } from '@ui/input'
-import { Label } from '@ui/label'
-import { Switch } from '@ui/switch'
-import { Skeleton } from '@ui/skeleton'
+import { Button } from '@emotifyai/ui'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@emotifyai/ui'
+import { Input } from '@emotifyai/ui'
+import { Label } from '@emotifyai/ui'
+import { Switch } from '@emotifyai/ui'
+import { Skeleton } from '@emotifyai/ui'
 import { toast } from 'sonner'
 import React from "react";
 

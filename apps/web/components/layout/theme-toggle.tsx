@@ -2,13 +2,13 @@
 
 import { Moon, Sun } from 'lucide-react'
 import { useTheme } from 'next-themes'
-import { Button } from '@ui/button'
+import { Button } from '@emotifyai/ui'
 import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuTrigger,
-} from '@ui/dropdown-menu'
+} from '@emotifyai/ui'
 
 export function ThemeToggle() {
     const { setTheme, theme } = useTheme()

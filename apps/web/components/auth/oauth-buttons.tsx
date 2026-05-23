@@ -1,6 +1,6 @@
 'use client'
 
-import { Button } from '@ui/button'
+import { Button } from '@emotifyai/ui'
 import { useOAuthLogin } from '@/lib/hooks/use-auth'
 import { useSearchParams } from 'next/navigation'
 

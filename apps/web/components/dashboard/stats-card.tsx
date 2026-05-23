@@ -1,4 +1,4 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@emotifyai/ui'
 import { LucideIcon } from 'lucide-react'
 
 interface StatsCardProps {

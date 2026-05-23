@@ -1,5 +1,5 @@
-import { Skeleton } from '@ui/skeleton'
-import { Card, CardContent, CardHeader } from '@ui/card'
+import { Skeleton } from '@emotifyai/ui'
+import { Card, CardContent, CardHeader } from '@emotifyai/ui'
 
 export default function SubscriptionLoading() {
     return (

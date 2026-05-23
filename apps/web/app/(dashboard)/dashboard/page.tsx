@@ -9,9 +9,9 @@ import { UsageChart } from '@/components/dashboard/usage-chart'
 import { SubscriptionCard } from '@/components/dashboard/subscription-card'
 import { PlanHandler } from './components/plan-handler'
 import { BarChart3, Zap, CreditCard, Activity, AlertCircle, RefreshCw, CheckCircle } from 'lucide-react'
-import { Skeleton } from '@ui/skeleton'
-import { Alert, AlertDescription } from '@ui/alert'
-import { Button } from '@ui/button'
+import { Skeleton } from '@emotifyai/ui'
+import { Alert, AlertDescription } from '@emotifyai/ui'
+import { Button } from '@emotifyai/ui'
 import { toast } from 'sonner'
 
 export default function DashboardPage() {

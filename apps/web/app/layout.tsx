@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
-import "@ui/globals.css";
+import "@emotifyai/ui/styles/globals.css";
 import { ThemeProvider } from "next-themes";
 
 import { QueryProvider } from "@/lib/query-provider";
-import { Toaster } from "@ui/sonner";
+import { Toaster } from "@emotifyai/ui";
 import React from "react";
 
 export const metadata: Metadata = {

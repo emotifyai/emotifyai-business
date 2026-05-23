@@ -1,12 +1,12 @@
 'use client'
 
-import { Button } from '@ui/button'
+import { Button } from '@emotifyai/ui'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { toast } from 'sonner'
 import { SubscriptionTier } from '@/lib/subscription/types'
-import { LoadingSpinner } from '@ui/loading-spinner'
+import { LoadingSpinner } from '@emotifyai/ui'
 
 interface PricingButtonProps {
     tier: SubscriptionTier

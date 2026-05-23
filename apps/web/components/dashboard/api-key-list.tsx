@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react'
 import { useApiKeys, useCreateApiKey, useRevokeApiKey } from '@/lib/hooks/use-api-keys'
-import { Button } from '@ui/button'
+import { Button } from '@emotifyai/ui'
 import {
     Table,
     TableBody,
@@ -10,7 +10,7 @@ import {
     TableHead,
     TableHeader,
     TableRow,
-} from '@ui/table'
+} from '@emotifyai/ui'
 import {
     Dialog,
     DialogContent,
@@ -19,10 +19,10 @@ import {
     DialogHeader,
     DialogTitle,
     DialogTrigger,
-} from '@ui/dialog'
-import { Input } from '@ui/input'
-import { Label } from '@ui/label'
-import { Badge } from '@ui/badge'
+} from '@emotifyai/ui'
+import { Input } from '@emotifyai/ui'
+import { Label } from '@emotifyai/ui'
+import { Badge } from '@emotifyai/ui'
 import { Loader2, Plus, Trash2, Copy, Check } from 'lucide-react'
 import { formatDate } from '@/lib/utils'
 import { toast } from 'sonner'

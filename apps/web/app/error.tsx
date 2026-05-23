@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect } from 'react'
-import { Button } from '@ui/button'
+import { Button } from '@emotifyai/ui'
 import { AlertTriangle, RefreshCcw, Home } from 'lucide-react'
 import Link from 'next/link'
 

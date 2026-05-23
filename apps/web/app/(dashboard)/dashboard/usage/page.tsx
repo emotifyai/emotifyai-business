@@ -4,9 +4,9 @@ import { useUsageStats, useUsageHistory } from '@/lib/hooks/use-usage'
 import { UsageChart } from '@/components/dashboard/usage-chart'
 import { StatsCard } from '@/components/dashboard/stats-card'
 import { Zap, Activity, Clock, BarChart3, AlertCircle } from 'lucide-react'
-import { Skeleton } from '@ui/skeleton'
-import { Alert, AlertDescription } from '@ui/alert'
-import { Button } from '@ui/button'
+import { Skeleton } from '@emotifyai/ui'
+import { Alert, AlertDescription } from '@emotifyai/ui'
+import { Button } from '@emotifyai/ui'
 
 export default function UsagePage() {
     const { 

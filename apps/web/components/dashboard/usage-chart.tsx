@@ -1,6 +1,6 @@
 'use client'
 
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@ui/card'
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@emotifyai/ui'
 import { Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 
 interface UsageChartProps {

@@ -1,4 +1,4 @@
-import { PageLoading } from '@ui/page-loading'
+import { PageLoading } from '@emotifyai/ui'
 
 export default function AuthLoading() {
     return (

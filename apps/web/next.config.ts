@@ -3,7 +3,7 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   /* config options here */
   experimental: {
-    optimizePackageImports: ['@ui/button', '@ui/card', '@ui/badge'],
+    optimizePackageImports: ['@emotifyai/ui', '@emotifyai/ui', '@emotifyai/ui'],
   },
   productionBrowserSourceMaps: false,
   images: {

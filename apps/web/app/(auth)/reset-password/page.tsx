@@ -1,8 +1,8 @@
 import { Metadata } from 'next'
 import Link from 'next/link'
-import { Button } from '@ui/button'
-import { Input } from '@ui/input'
-import { Label } from '@ui/label'
+import { Button } from '@emotifyai/ui'
+import { Input } from '@emotifyai/ui'
+import { Label } from '@emotifyai/ui'
 
 export const metadata: Metadata = {
     title: 'Reset Password - EmotifyAI',

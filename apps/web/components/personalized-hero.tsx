@@ -1,6 +1,6 @@
 'use client'
 
-import { Button } from '@ui/button'
+import { Button } from '@emotifyai/ui'
 import Link from 'next/link'
 import { useUser } from '@/lib/hooks/use-auth'
 

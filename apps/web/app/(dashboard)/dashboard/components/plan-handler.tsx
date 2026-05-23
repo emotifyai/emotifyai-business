@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { toast } from 'sonner'
-import { LoadingSpinner } from '@ui/loading-spinner'
+import { LoadingSpinner } from '@emotifyai/ui'
 
 /**
  * PlanHandler Component

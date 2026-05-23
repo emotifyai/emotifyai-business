@@ -1,8 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Progress } from '@ui/progress';
-import { Badge } from '@ui/badge';
+import { Progress } from '@emotifyai/ui';
+import { Badge } from '@emotifyai/ui';
 import { AlertCircle, TrendingUp, Zap } from 'lucide-react';
 
 interface LifetimeSlotInfo {

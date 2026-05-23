@@ -1,7 +1,7 @@
 import { Header } from '@/components/layout/header'
 import { Footer } from '@/components/layout/footer'
-import { Skeleton } from '@ui/skeleton'
-import { Card, CardContent, CardHeader } from '@ui/card'
+import { Skeleton } from '@emotifyai/ui'
+import { Card, CardContent, CardHeader } from '@emotifyai/ui'
 
 export default function PricingLoading() {
     return (

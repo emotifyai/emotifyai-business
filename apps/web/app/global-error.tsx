@@ -1,6 +1,6 @@
 'use client'
 
-import { Button } from '@ui/button'
+import { Button } from '@emotifyai/ui'
 import { AlertTriangle, RefreshCcw } from 'lucide-react'
 
 export default function GlobalError({

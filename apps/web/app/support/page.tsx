@@ -1,9 +1,9 @@
 import { Metadata } from 'next'
 import { Header } from '@/components/layout/header'
 import { Footer } from '@/components/layout/footer'
-import { Card, CardContent } from '@ui/card'
+import { Card, CardContent } from '@emotifyai/ui'
 import { Mail, MessageCircle, FileText, Clock } from 'lucide-react'
-import { Button } from '@ui/button'
+import { Button } from '@emotifyai/ui'
 import Link from 'next/link'
 
 export const metadata: Metadata = {

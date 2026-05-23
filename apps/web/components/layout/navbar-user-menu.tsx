@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { Button } from '@ui/button'
+import { Button } from '@emotifyai/ui'
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -9,7 +9,7 @@ import {
     DropdownMenuLabel,
     DropdownMenuSeparator,
     DropdownMenuTrigger,
-} from '@ui/dropdown-menu'
+} from '@emotifyai/ui'
 import { User, LogOut, Settings, BarChart3 } from 'lucide-react'
 import { useLogout } from '@/lib/hooks/use-auth'
 import { useSubscription } from '@/lib/hooks/use-subscription'

@@ -2,12 +2,12 @@
 
 import { useSubscription, useCreateCheckout, useCustomerPortal } from '@/lib/hooks/use-subscription'
 import { SubscriptionCard } from '@/components/dashboard/subscription-card'
-import { Button } from '@ui/button'
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@ui/card'
+import { Button } from '@emotifyai/ui'
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@emotifyai/ui'
 import { Check } from 'lucide-react'
 import { SubscriptionTier } from '@/types/database'
 import { SUBSCRIPTION_TIERS } from '@/lib/subscription/types'
-import { Skeleton } from '@ui/skeleton'
+import { Skeleton } from '@emotifyai/ui'
 
 export default function SubscriptionPage() {
     const { data: subscription, isLoading } = useSubscription()
