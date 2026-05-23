@@ -1,6 +1,6 @@
 # Product Overview
 
-Verba is an AI-powered text enhancement platform that helps users rewrite, rephrase, and improve text quality across the web through a browser extension and web application.
+Emotifyai is an AI-powered text enhancement platform that helps users rewrite, rephrase, and improve text quality across the web through a browser extension and web application.
 
 ## Core Components
 

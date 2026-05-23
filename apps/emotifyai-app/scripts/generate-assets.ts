@@ -63,7 +63,7 @@ async function generateStoreListing(): Promise<void> {
         await sharp(LOGO_PATH)
             .resize(config.width, config.height, {
                 fit: 'contain',
-                background: { r: 15, g: 23, b: 42, alpha: 1 } // Dark background consistent with Verba branding
+                background: { r: 15, g: 23, b: 42, alpha: 1 } // Dark background consistent with Emotifyai branding
             })
             .png()
             .toFile(outputPath);

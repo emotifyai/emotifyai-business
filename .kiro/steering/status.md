@@ -7,7 +7,7 @@ This document tracks what has been implemented and what remains to be done.
 ### ✅ Completed
 
 **Core Functionality**:
-- Context menu integration with "Enhance with Verba" action
+- Context menu integration with "Enhance with Emotifyai" action
 - Keyboard shortcut support (Ctrl+Shift+E)
 - In-page text replacement with selection validation
 - Undo functionality for text replacements

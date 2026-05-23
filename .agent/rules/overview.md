@@ -2,9 +2,9 @@
 trigger: always_on
 ---
 
-# Verba Platform - Complete Project Overview
+# Emotifyai Platform - Complete Project Overview
 
-Verba is an **AI-powered text enhancement platform** that seamlessly integrates into users' workflows through a browser extension and web application. The platform enables instant rewriting, rephrasing, and text enhancement powered by Claude 3.5 Sonnet AI, with a focus on delivering high-quality results for English, Arabic, and French languages.
+Emotifyai is an **AI-powered text enhancement platform** that seamlessly integrates into users' workflows through a browser extension and web application. The platform enables instant rewriting, rephrasing, and text enhancement powered by Claude 3.5 Sonnet AI, with a focus on delivering high-quality results for English, Arabic, and French languages.
 
 ### Core Value Proposition
 - **Seamless Integration**: Right-click context menu for instant text enhancement
@@ -242,7 +242,7 @@ emotifyai-monorepo/
 ```
 1. USER INTERACTION
    ├─ User selects text on webpage
-   ├─ Right-clicks → "Enhance with Verba"
+   ├─ Right-clicks → "Enhance with Emotifyai"
    └─ Or presses Ctrl+Shift+E
 
 2. CONTENT SCRIPT
