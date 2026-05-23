@@ -1,2 +1,2 @@
 [workspace]
-members = ["apps/*", "packages/*"]
+members = ["apps/*", "packages/*", "emotifyai-extension"]

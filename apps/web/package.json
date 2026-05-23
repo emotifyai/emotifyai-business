@@ -10,7 +10,7 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
-    "type-check": "tsc --noEmit",
+    "typecheck": "tsc --noEmit",
     "find-claude-models": "bun run scripts/find-claude-models.ts",
     "claude-demo": "bun run scripts/claude-demo.ts",
     "claude-simple": "bun run scripts/claude-simple-demo.ts",
