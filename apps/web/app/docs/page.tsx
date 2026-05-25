@@ -11,12 +11,12 @@ export const metadata: Metadata = {
 
 export default function DocsPage() {
     return (
-        <div className="flex min-h-screen flex-col">
+        <div className="flex min-h-dvh flex-col overflow-x-hidden">
             <Header />
             <main className="flex-1">
                 {/* Hero Section */}
                 <section className="border-b bg-gradient-to-b from-background to-muted/20">
-                    <div className="container py-16 md:py-24">
+                    <div className="page-container py-16 md:py-24">
                         <div className="mx-auto max-w-3xl text-center">
                             <div className="mb-6 inline-flex items-center justify-center rounded-full bg-primary/10 p-3">
                                 <BookOpen className="h-8 w-8 text-primary" />
@@ -32,7 +32,7 @@ export default function DocsPage() {
                 </section>
 
                 {/* Content */}
-                <section className="container py-16 md:py-24">
+                <section className="page-container py-16 md:py-24">
                     <div className="mx-auto max-w-5xl space-y-12">
                         {/* Getting Started */}
                         <div>

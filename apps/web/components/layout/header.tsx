@@ -6,71 +6,66 @@ import { Button } from '@emotifyai/ui'
 import { useUser } from '@/lib/hooks/use-auth'
 import { NavbarUserMenu } from './navbar-user-menu'
 import { ThemeToggle } from './theme-toggle'
+import { MobileNavMenu } from './mobile-nav-menu'
+import { cn } from '@/lib/utils'
 
-export function Header() {
-    const { data: user, isLoading } = useUser()
-    const pathname = usePathname()
+export function Header({ showMobileMenu = true }: { showMobileMenu?: boolean }) {
+  const { data: user, isLoading } = useUser()
+  const pathname = usePathname()
 
-    return (
-        <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-            <div className="container flex h-16 items-center justify-between">
-                {/* Logo */}
-                <Link href="/" className="flex items-center space-x-2">
-                    <img 
-                        src="/logo.svg" 
-                        alt="EmotifyAI" 
-                        className="h-8 w-8"
-                    />
-                    <div className="text-gradient-brand text-2xl font-bold">EmotifyAI</div>
-                </Link>
+  return (
+    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 safe-area-top safe-area-x">
+      <div className="page-container flex h-14 items-center justify-between gap-2 sm:h-16">
+        <div className="flex min-w-0 items-center gap-2">
+          {showMobileMenu && <MobileNavMenu />}
+          <Link href="/" className="flex min-w-0 items-center gap-2">
+            <img
+              src="/logo.svg"
+              alt="EmotifyAI"
+              className="h-8 w-8 shrink-0"
+            />
+            <span className="text-gradient-brand truncate text-lg font-bold sm:text-2xl">
+              EmotifyAI
+            </span>
+          </Link>
+        </div>
 
-                {/* Navigation */}
-                <nav className="hidden md:flex items-center space-x-6">
-                    <Link
-                        href="/pricing"
-                        className={`text-sm font-medium transition-colors ${pathname === '/pricing'
-                            ? 'text-primary'
-                            : 'text-muted-foreground hover:text-primary'
-                            }`}
-                    >
-                        Pricing
-                    </Link>
-                    <Link
-                        href="/docs"
-                        className={`text-sm font-medium transition-colors ${pathname === '/docs'
-                            ? 'text-primary'
-                            : 'text-muted-foreground hover:text-primary'
-                            }`}
-                    >
-                        Docs
-                    </Link>
-                    <Link
-                        href="/about"
-                        className={`text-sm font-medium transition-colors ${pathname === '/about'
-                            ? 'text-primary'
-                            : 'text-muted-foreground hover:text-primary'
-                            }`}
-                    >
-                        About
-                    </Link>
-                </nav>
+        <nav className="hidden items-center gap-6 md:flex">
+          {[
+            { href: '/pricing', label: 'Pricing' },
+            { href: '/docs', label: 'Docs' },
+            { href: '/about', label: 'About' },
+          ].map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={cn(
+                'text-sm font-medium transition-colors',
+                pathname === item.href
+                  ? 'text-primary'
+                  : 'text-muted-foreground hover:text-primary'
+              )}
+            >
+              {item.label}
+            </Link>
+          ))}
+        </nav>
 
-                {/* Auth Actions */}
-                <div className="flex items-center space-x-4">
-                    <ThemeToggle />
-                    {isLoading ? (
-                        <div className="h-9 w-24 animate-pulse rounded-md bg-muted" />
-                    ) : user ? (
-                        <NavbarUserMenu user={user} />
-                    ) : (
-                        <>
-                            <Button variant="ghost" asChild>
-                                <Link href="/login">Login</Link>
-                            </Button>
-                        </>
-                    )}
-                </div>
-            </div>
-        </header>
-    )
+        <div className="flex shrink-0 items-center gap-1 sm:gap-2">
+          <span className="hidden sm:inline-flex">
+            <ThemeToggle />
+          </span>
+          {isLoading ? (
+            <div className="h-9 w-9 animate-pulse rounded-full bg-muted sm:w-24 sm:rounded-md" />
+          ) : user ? (
+            <NavbarUserMenu user={user} />
+          ) : (
+            <Button variant="ghost" size="sm" asChild>
+              <Link href="/login">Login</Link>
+            </Button>
+          )}
+        </div>
+      </div>
+    </header>
+  )
 }

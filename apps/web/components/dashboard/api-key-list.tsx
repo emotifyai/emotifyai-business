@@ -175,7 +175,7 @@ function CreateKeyForm({
                     onClick={() => handleSubmit({ preventDefault: () => {} } as React.FormEvent)}
                     disabled={isPending || !name.trim()}
                 >
-                    {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                    {isPending && <Loader2 className="me-2 h-4 w-4 animate-spin" />}
                     Create Key
                 </Button>
             </DialogFooter>
@@ -206,7 +206,7 @@ function CreateKeyDialog({
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogTrigger asChild>
                 <Button variant="glow" size="sm">
-                    <Plus className="mr-2 h-4 w-4" />
+                    <Plus className="me-2 h-4 w-4" />
                     Create New Key
                 </Button>
             </DialogTrigger>
@@ -251,7 +251,7 @@ function ApiKeyRow({
             <TableCell>
                 <StatusBadge revoked={apiKey.revoked} />
             </TableCell>
-            <TableCell className="text-right">
+            <TableCell className="text-end">
                 <Button
                     variant="ghost"
                     size="icon"
@@ -288,7 +288,7 @@ function ApiKeysTable({
                         <TableHead>Created</TableHead>
                         <TableHead>Last Used</TableHead>
                         <TableHead>Status</TableHead>
-                        <TableHead className="text-right">Actions</TableHead>
+                        <TableHead className="text-end">Actions</TableHead>
                     </TableRow>
                 </TableHeader>
                 <TableBody>

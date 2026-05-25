@@ -166,7 +166,7 @@ export function LifetimeSlotCounter({
                             value={slotInfo.percentage_taken}
                             className="h-2"
                         />
-                        <p className="text-xs text-muted-foreground text-right">
+                        <p className="text-xs text-muted-foreground text-end">
                             {slotInfo.percentage_taken.toFixed(1)}% claimed
                         </p>
                     </div>

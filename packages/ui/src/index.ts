@@ -54,3 +54,7 @@ export {
 } from './table'
 export { Tabs, TabsContent, TabsList, TabsTrigger } from './tabs'
 export { Toaster } from './sonner'
+export { PageContainer } from './page-container'
+export { MobileShell } from './mobile-shell'
+export { BottomNav, BottomNavLink, type BottomNavItem } from './bottom-nav'
+export { TextDemoCarousel, type TextDemoPair } from './text-demo-carousel'

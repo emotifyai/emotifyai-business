@@ -97,10 +97,10 @@ export default function DashboardPage() {
     return (
         <div className="space-y-8">
             <PlanHandler />
-            <div className="flex items-center justify-between">
-                <div>
-                    <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
-                    <p className="text-muted-foreground">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                <div className="min-w-0">
+                    <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">Dashboard</h2>
+                    <p className="truncate text-sm text-muted-foreground sm:text-base">
                         Welcome back, {user.display_name || 'User'}
                     </p>
                 </div>
@@ -109,7 +109,7 @@ export default function DashboardPage() {
                     size="sm"
                     onClick={handleRefresh}
                     disabled={isRefreshing}
-                    className="flex items-center gap-2"
+                    className="w-full shrink-0 sm:w-auto flex items-center justify-center gap-2"
                 >
                     <RefreshCw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
                     {isRefreshing ? 'Refreshing...' : 'Refresh'}

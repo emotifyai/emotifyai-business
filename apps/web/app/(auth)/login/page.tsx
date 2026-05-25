@@ -36,7 +36,7 @@ async function LoginContent({ searchParams }: LoginPageProps) {
                 </p>
             </div>
             <LoginForm />
-            <p className="px-8 text-center text-sm text-muted-foreground">
+            <p className="text-center text-sm text-muted-foreground">
                 Don&apos;t have an account?{' '}
                 <Link
                     href={signupUrl}

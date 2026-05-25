@@ -22,7 +22,7 @@ export default function GlobalError({
                             A critical error occurred in the application layout.
                         </p>
                         <Button onClick={() => reset()} variant="default">
-                            <RefreshCcw className="mr-2 h-4 w-4" />
+                            <RefreshCcw className="me-2 h-4 w-4" />
                             Try again
                         </Button>
                     </div>

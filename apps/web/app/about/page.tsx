@@ -11,20 +11,19 @@ export const metadata: Metadata = {
 
 export default function AboutPage() {
     return (
-        <div className="flex min-h-screen flex-col">
+        <div className="flex min-h-dvh flex-col overflow-x-hidden">
             <Header />
-            <main className="flex-1">
-                {/* Hero Section */}
+            <main className="flex-1 overflow-x-hidden">
                 <section className="border-b bg-gradient-to-b from-background to-muted/20">
-                    <div className="container py-16 md:py-24">
+                    <div className="page-container py-12 sm:py-16 md:py-24">
                         <div className="mx-auto max-w-3xl text-center">
-                            <div className="mb-6 inline-flex items-center justify-center rounded-full bg-primary/10 p-3">
+                            <div className="mb-4 inline-flex items-center justify-center rounded-full bg-primary/10 p-3 sm:mb-6">
                                 <Sparkles className="h-8 w-8 text-primary" />
                             </div>
-                            <h1 className="text-4xl font-bold tracking-tight md:text-5xl mb-4">
+                            <h1 className="mb-3 text-3xl font-bold tracking-tight sm:mb-4 sm:text-4xl md:text-5xl">
                                 About EmotifyAI
                             </h1>
-                            <p className="text-xl text-muted-foreground">
+                            <p className="text-base text-muted-foreground sm:text-xl">
                                 Elevating writing with the power of AI, making communication effortless for everyone.
                             </p>
                         </div>
@@ -32,7 +31,7 @@ export default function AboutPage() {
                 </section>
 
                 {/* Mission Section */}
-                <section className="container py-16 md:py-24">
+                <section className="page-container py-12 sm:py-16 md:py-24">
                     <div className="mx-auto max-w-4xl space-y-12">
                         {/* Our Mission */}
                         <Card className="border-primary/20">

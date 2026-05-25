@@ -81,7 +81,7 @@ export function LoginForm() {
                     </div>
                     <Button disabled={login.isPending} type="submit" variant="glow">
                         {login.isPending && (
-                            <span className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-background border-t-transparent" />
+                            <span className="me-2 h-4 w-4 animate-spin rounded-full border-2 border-background border-t-transparent" />
                         )}
                         Sign In
                     </Button>

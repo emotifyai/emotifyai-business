@@ -72,13 +72,13 @@ export function NavbarUserMenu({ user }: NavbarUserMenuProps) {
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
                     <Link href="/dashboard" className="cursor-pointer">
-                        <Settings className="mr-2 h-4 w-4" />
+                        <Settings className="me-2 h-4 w-4" />
                         Dashboard
                     </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
                     <Link href="/pricing" className="cursor-pointer">
-                        <BarChart3 className="mr-2 h-4 w-4" />
+                        <BarChart3 className="me-2 h-4 w-4" />
                         Subscription
                     </Link>
                 </DropdownMenuItem>
@@ -87,7 +87,7 @@ export function NavbarUserMenu({ user }: NavbarUserMenuProps) {
                     onClick={handleLogout} 
                     className="cursor-pointer text-destructive focus:text-destructive"
                 >
-                    <LogOut className="mr-2 h-4 w-4" />
+                    <LogOut className="me-2 h-4 w-4" />
                     Logout
                 </DropdownMenuItem>
             </DropdownMenuContent>

@@ -282,11 +282,10 @@ export default function EditorPage() {
   }
 
   return (
-    <div className="container mx-auto pt-4 px-2 max-w-6xl min-h-screen bg-slate-50/50 dark:bg-background">
-      {/* Header with usage */}
-      <div className="flex items-center justify-between mb-4">
-        <div>
-          <h1 className="text-2xl font-bold">Text Editor</h1>
+    <div className="mx-auto w-full min-w-0 max-w-6xl overflow-x-hidden">
+      <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+        <div className="min-w-0">
+          <h1 className="text-xl font-bold sm:text-2xl">Text Editor</h1>
           <p className="text-sm text-muted-foreground">Enhance your text with AI</p>
         </div>
         {usage && (
@@ -301,11 +300,11 @@ export default function EditorPage() {
       {/* Settings Bar - Compact horizontal layout */}
       <Card className="mb-4 border-2 border-gray-300 dark:border-border shadow-sm bg-gray-50/50 dark:bg-card">
         <CardContent>
-          <div className="flex flex-wrap items-center gap-4">
-            <div className="flex items-center gap-2">
+          <div className="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-center">
+            <div className="flex w-full flex-col gap-1.5 sm:w-auto sm:flex-row sm:items-center sm:gap-2">
               <span className="text-sm text-muted-foreground">Tone:</span>
               <Select value={tone} onValueChange={setTone}>
-                <SelectTrigger className="w-[130px] h-8 border-2 border-gray-300 dark:border-border bg-white dark:bg-background">
+                <SelectTrigger className="h-11 w-full border-2 border-gray-300 bg-white dark:border-border dark:bg-background sm:w-[130px] sm:h-9">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -318,10 +317,10 @@ export default function EditorPage() {
               </Select>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex w-full flex-col gap-1.5 sm:w-auto sm:flex-row sm:items-center sm:gap-2">
               <span className="text-sm text-muted-foreground">Output:</span>
               <Select value={outputLanguage} onValueChange={setOutputLanguage}>
-                <SelectTrigger className="w-[120px] h-8 border-2 border-gray-300 dark:border-border bg-white dark:bg-background">
+                <SelectTrigger className="h-11 w-full border-2 border-gray-300 bg-white dark:border-border dark:bg-background sm:w-[120px] sm:h-9">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -334,16 +333,16 @@ export default function EditorPage() {
               </Select>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex w-full flex-col gap-1.5 sm:w-auto sm:flex-row sm:items-center sm:gap-2">
               <span className="text-sm text-muted-foreground">Strength:</span>
-              <div className="flex items-center gap-3">
+              <div className="flex w-full items-center gap-3 sm:w-auto">
                 <Slider
                   value={[strength]}
                   onValueChange={(value) => setStrength(value[0])}
                   min={1}
                   max={5}
                   step={1}
-                  className="w-24"
+                  className="min-w-0 flex-1 sm:w-24 sm:flex-none"
                 />
                 <span className="text-xs font-medium text-foreground min-w-[60px]">
                   {STRENGTH_LEVELS[strength - 1].label}
@@ -441,21 +440,50 @@ export default function EditorPage() {
         </Card>
       </div>
 
-      {/* Action Buttons */}
-      <div className="flex gap-3 mb-4">
+      <div className="sticky bottom-[calc(4rem+env(safe-area-inset-bottom,0px))] z-20 -mx-1 mb-4 flex gap-3 border-t bg-background/95 p-3 backdrop-blur sm:static sm:bottom-auto sm:mx-0 sm:border-0 sm:bg-transparent sm:p-0 md:hidden">
         <Button
           onClick={handleGenerate}
           disabled={!originalText.trim() || isGenerating || !canGenerate()}
-          className="flex-1 relative overflow-hidden"
+          className="relative min-h-12 flex-1 overflow-hidden"
         >
           {isGenerating ? (
             <span className="flex items-center">
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              <Loader2 className="me-2 h-4 w-4 animate-spin" />
               <span className="animate-pulse">{loadingMessage || 'Generating...'}</span>
             </span>
           ) : (
             <>
-              <Wand2 className="mr-2 h-4 w-4" />
+              <Wand2 className="me-2 h-4 w-4" />
+              {enhancedText ? 'Regenerate' : 'Generate'}
+            </>
+          )}
+        </Button>
+        <Button
+          variant="outline"
+          size="icon"
+          className="shrink-0"
+          onClick={() => { setOriginalText(''); setEnhancedText('') }}
+          disabled={!originalText && !enhancedText}
+          aria-label="Clear"
+        >
+          <RotateCcw className="h-4 w-4" />
+        </Button>
+      </div>
+
+      <div className="mb-4 hidden gap-3 md:flex">
+        <Button
+          onClick={handleGenerate}
+          disabled={!originalText.trim() || isGenerating || !canGenerate()}
+          className="relative min-h-11 flex-1 overflow-hidden"
+        >
+          {isGenerating ? (
+            <span className="flex items-center">
+              <Loader2 className="me-2 h-4 w-4 animate-spin" />
+              <span className="animate-pulse">{loadingMessage || 'Generating...'}</span>
+            </span>
+          ) : (
+            <>
+              <Wand2 className="me-2 h-4 w-4" />
               {enhancedText ? 'Regenerate' : 'Generate'}
             </>
           )}
@@ -465,7 +493,7 @@ export default function EditorPage() {
           onClick={() => { setOriginalText(''); setEnhancedText('') }}
           disabled={!originalText && !enhancedText}
         >
-          <RotateCcw className="mr-2 h-4 w-4" />
+          <RotateCcw className="me-2 h-4 w-4" />
           Clear
         </Button>
       </div>

@@ -17,13 +17,13 @@ export default function NotFound() {
                 <div className="flex gap-4">
                     <Button variant="outline" asChild>
                         <Link href="/">
-                            <Home className="mr-2 h-4 w-4" />
+                            <Home className="me-2 h-4 w-4" />
                             Go Home
                         </Link>
                     </Button>
                     <Button variant="ghost" asChild>
                         <Link href="javascript:history.back()">
-                            <ArrowLeft className="mr-2 h-4 w-4" />
+                            <ArrowLeft className="me-2 h-4 w-4" />
                             Go Back
                         </Link>
                     </Button>

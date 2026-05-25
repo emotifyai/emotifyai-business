@@ -136,7 +136,7 @@ export function PricingButton({
                 onClick={handleCheckout}
                 disabled={isLoading}
             >
-                {isLoading && <LoadingSpinner className="mr-2 h-4 w-4" />}
+                {isLoading && <LoadingSpinner className="me-2 h-4 w-4" />}
                 {buttonText}
             </Button>
         )
@@ -151,7 +151,7 @@ export function PricingButton({
                 onClick={handleCheckout}
                 disabled={isLoading}
             >
-                {isLoading && <LoadingSpinner className="mr-2 h-4 w-4" />}
+                {isLoading && <LoadingSpinner className="me-2 h-4 w-4" />}
                 {buttonText}
             </Button>
         )

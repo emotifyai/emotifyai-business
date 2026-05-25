@@ -92,7 +92,7 @@ export function SignupForm() {
                     </div>
                     <Button disabled={signup.isPending} type="submit" variant="glow">
                         {signup.isPending && (
-                            <LoadingSpinner className="mr-2 h-4 w-4" />
+                            <LoadingSpinner className="me-2 h-4 w-4" />
                         )}
                         Create Account
                     </Button>

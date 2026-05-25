@@ -29,12 +29,12 @@ export default function Error({
                 </p>
                 <div className="flex gap-4">
                     <Button onClick={() => reset()} variant="default">
-                        <RefreshCcw className="mr-2 h-4 w-4" />
+                        <RefreshCcw className="me-2 h-4 w-4" />
                         Try again
                     </Button>
                     <Button variant="outline" asChild>
                         <Link href="/">
-                            <Home className="mr-2 h-4 w-4" />
+                            <Home className="me-2 h-4 w-4" />
                             Go Home
                         </Link>
                     </Button>

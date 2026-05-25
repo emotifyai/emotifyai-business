@@ -7,7 +7,7 @@ export default function DashboardLoading() {
         <div className="flex min-h-screen flex-col">
             <Header />
             <main className="flex-1">
-                <div className="container py-8 space-y-8">
+                <div className="page-container py-8 space-y-8">
                     {/* Page Header Skeleton */}
                     <div className="space-y-2">
                         <Skeleton className="h-8 w-48" />
