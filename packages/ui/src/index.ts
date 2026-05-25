@@ -58,3 +58,11 @@ export { PageContainer } from './page-container'
 export { MobileShell } from './mobile-shell'
 export { BottomNav, BottomNavLink, type BottomNavItem } from './bottom-nav'
 export { TextDemoCarousel, type TextDemoPair } from './text-demo-carousel'
+export {
+  UpgradePrompt,
+  UPGRADE_PROMPT_CONTENT,
+  getUpgradePromptContent,
+  type UpgradePromptProps,
+  type UpgradePromptVariant,
+  type UpgradePromptLayout,
+} from './upgrade-prompt'

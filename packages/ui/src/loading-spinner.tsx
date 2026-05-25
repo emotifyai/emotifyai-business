@@ -21,9 +21,9 @@ export function LoadingSpinner({ size = 'md', className }: LoadingSpinnerProps) 
                 className
             )}
             role="status"
-            aria-label="Loading"
+            aria-label="جاري التحميل"
         >
-            <span className="sr-only">Loading...</span>
+            <span className="sr-only">جاري التحميل…</span>
         </div>
     )
 }

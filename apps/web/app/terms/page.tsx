@@ -5,8 +5,8 @@ import { Card, CardContent } from '@emotifyai/ui'
 import { FileText, Scale, AlertCircle, CheckCircle } from 'lucide-react'
 
 export const metadata: Metadata = {
-    title: 'Terms of Service - EmotifyAI',
-    description: 'Terms and conditions for using EmotifyAI',
+    title: 'شروط الخدمة - إيموتيفاي',
+    description: 'الشروط والأحكام لاستخدام إيموتيفاي',
 }
 
 export default function TermsPage() {
@@ -14,7 +14,6 @@ export default function TermsPage() {
         <div className="flex min-h-dvh flex-col overflow-x-hidden">
             <Header />
             <main className="flex-1">
-                {/* Hero Section */}
                 <section className="border-b bg-gradient-to-b from-background to-muted/20">
                     <div className="page-container py-16 md:py-24">
                         <div className="mx-auto max-w-3xl text-center">
@@ -22,22 +21,20 @@ export default function TermsPage() {
                                 <Scale className="h-8 w-8 text-primary" />
                             </div>
                             <h1 className="text-4xl font-bold tracking-tight md:text-5xl mb-4">
-                                Terms of Service
+                                شروط الخدمة
                             </h1>
                             <p className="text-xl text-muted-foreground">
-                                Please read these terms carefully before using EmotifyAI.
+                                يرجى قراءة هذه الشروط بعناية قبل استخدام إيموتيفاي.
                             </p>
                             <p className="mt-4 text-sm text-muted-foreground">
-                                Last updated: December 30, 2025
+                                آخر تحديث: ٣٠ ديسمبر ٢٠٢٥
                             </p>
                         </div>
                     </div>
                 </section>
 
-                {/* Content */}
                 <section className="page-container py-16 md:py-24">
                     <div className="mx-auto max-w-4xl space-y-8">
-                        {/* Acceptance */}
                         <Card className="border-primary/20">
                             <CardContent className="pt-6">
                                 <div className="flex items-start gap-4">
@@ -45,13 +42,13 @@ export default function TermsPage() {
                                         <CheckCircle className="h-5 w-5 text-primary" />
                                     </div>
                                     <div className="flex-1">
-                                        <h2 className="text-2xl font-bold mb-4">Acceptance of Terms</h2>
+                                        <h2 className="text-2xl font-bold mb-4">قبول الشروط</h2>
                                         <div className="prose prose-zinc dark:prose-invert max-w-none">
                                             <p>
-                                                By accessing or using EmotifyAI's browser extension and web application ("Service"), you agree to be bound by these Terms of Service ("Terms"). We've designed these terms to be clear and fair. If you do not agree to these Terms, please do not use our Service.
+                                                بالوصول إلى إضافة المتصفح وتطبيق الويب لإيموتيفاي (&laquo;الخدمة&raquo;) أو استخدامهما، فإنك توافق على الالتزام بشروط الخدمة هذه. إن لم توافق، لا تستخدم الخدمة.
                                             </p>
                                             <p>
-                                                We reserve the right to modify these Terms at any time to reflect changes in our service or legal requirements. Continued use of the Service after changes constitutes acceptance of the modified Terms.
+                                                نحتفظ بحق تعديل هذه الشروط في أي وقت. استمرارك في الاستخدام بعد التعديلات يعني قبول الشروط المعدّلة.
                                             </p>
                                         </div>
                                     </div>
@@ -59,7 +56,6 @@ export default function TermsPage() {
                             </CardContent>
                         </Card>
 
-                        {/* Service Description */}
                         <Card>
                             <CardContent className="pt-6">
                                 <div className="flex items-start gap-4">
@@ -67,25 +63,20 @@ export default function TermsPage() {
                                         <FileText className="h-5 w-5 text-blue-500" />
                                     </div>
                                     <div className="flex-1">
-                                        <h2 className="text-2xl font-bold mb-4">Service Description</h2>
+                                        <h2 className="text-2xl font-bold mb-4">وصف الخدمة</h2>
                                         <div className="prose prose-zinc dark:prose-invert max-w-none">
                                             <p>
-                                                EmotifyAI is an AI-powered text enhancement tool that helps users improve their writing quality, tone, and clarity. The Service includes:
+                                                إيموتيفاي أداة تحسين نصوص بالذكاء الاصطناعي تساعدك على رفع جودة الكتابة ووضوحها ونبرتها. تشمل الخدمة:
                                             </p>
                                             <ul>
-                                                <li>Browser extension for integration with your favorite websites</li>
-                                                <li>Web application dashboard for account management</li>
-                                                <li>AI-driven text enhancement processing (powered by industry-leading models)</li>
-                                                <li>Subscription and usage tracking</li>
-                                                <li>Usage analytics and logging for service improvement and user experience optimization</li>
+                                                <li>إضافة متصفح للتكامل مع مواقعك</li>
+                                                <li>لوحة تحكم لإدارة الحساب</li>
+                                                <li>معالجة تحسين النص بالذكاء الاصطناعي</li>
+                                                <li>تتبّع الاشتراك والاستخدام</li>
+                                                <li>تحليلات استخدام لتحسين الخدمة (بيانات وصفية فقط، دون محتوى النص)</li>
                                             </ul>
                                             <p>
-                                                We strive to provide premium, reliable service, but because we rely on complex AI and third-party infrastructure, we do not guarantee 100% uninterrupted or error-free operation.
-                                            </p>
-
-                                            <h3>Data Collection for Service Enhancement</h3>
-                                            <p>
-                                                To provide the best possible user experience, we collect usage logs that include metadata about your interactions with our service (such as enhancement requests, language preferences, success/failure status, and performance metrics). <strong>These logs never contain the actual text content you enhance</strong> - only technical metadata that helps us improve service reliability and develop better features.
+                                                نسعى لتقديم خدمة موثوقة، لكن بسبب اعتمادنا على بنية تحتية معقدة وطرف ثالث، لا نضمن تشغيلاً بلا انقطاع أو بلا أخطاء بنسبة ١٠٠٪.
                                             </p>
                                         </div>
                                     </div>
@@ -93,111 +84,76 @@ export default function TermsPage() {
                             </CardContent>
                         </Card>
 
-                        {/* User Accounts */}
                         <Card>
                             <CardContent className="pt-6">
                                 <div className="prose prose-zinc dark:prose-invert max-w-none">
-                                    <h2 className="text-2xl font-bold mb-4">User Accounts</h2>
-                                    <h3>Account Creation</h3>
-                                    <p>
-                                        To use EmotifyAI, you must create a secure account. You agree to:
-                                    </p>
+                                    <h2 className="text-2xl font-bold mb-4">حسابات المستخدمين</h2>
+                                    <h3>إنشاء الحساب</h3>
+                                    <p>لاستخدام إيموتيفاي يجب إنشاء حساب آمن. أنت توافق على:</p>
                                     <ul>
-                                        <li>Provide accurate information (email is required for account recovery)</li>
-                                        <li>Maintain the security of your account and API keys</li>
-                                        <li>Notify us immediately of any suspected unauthorized access</li>
-                                        <li>Take responsibility for all activities occurring under your account</li>
+                                        <li>تقديم معلومات دقيقة (البريد مطلوب لاستعادة الحساب)</li>
+                                        <li>الحفاظ على أمان حسابك ومفاتيح API</li>
+                                        <li>إبلاغنا فوراً بأي وصول غير مصرّح به</li>
+                                        <li>تحمّل مسؤولية النشاط تحت حسابك</li>
                                     </ul>
-
-                                    <h3>Account Privacy</h3>
+                                    <h3>خصوصية الحساب</h3>
                                     <p>
-                                        Your account data is managed through Supabase. We do not have access to your OAuth passwords (e.g., Google/GitHub passwords). For more details, see our <a href="/privacy">Privacy Policy</a>.
+                                        تُدار بيانات حسابك عبر Supabase. لا نصل إلى كلمات مرور OAuth (مثل Google). راجع <a href="/privacy">سياسة الخصوصية</a>.
                                     </p>
-
-                                    <h3>Account Termination</h3>
+                                    <h3>إنهاء الحساب</h3>
                                     <p>
-                                        We reserve the right to suspend or terminate accounts that violate these Terms, engage in system abuse, or perform illegal activities.
+                                        نحتفظ بحق تعليق أو إنهاء الحسابات التي تنتهك هذه الشروط أو تسيء استخدام النظام أو تنخرط في أنشطة غير قانونية.
                                     </p>
                                 </div>
                             </CardContent>
                         </Card>
 
-                        {/* Subscription and Billing */}
                         <Card>
                             <CardContent className="pt-6">
                                 <div className="prose prose-zinc dark:prose-invert max-w-none">
-                                    <h2 className="text-2xl font-bold mb-4">Subscription and Billing</h2>
-
-                                    <h3>Subscription Tiers</h3>
+                                    <h2 className="text-2xl font-bold mb-4">الاشتراك والفوترة</h2>
+                                    <h3>مستويات الاشتراك</h3>
                                     <ul>
-                                        <li><strong>Trial:</strong> 10 free enhancements for new users (one-time use)</li>
-                                        <li><strong>Monthly Plans:</strong> Recurring subscriptions providing a fixed number of enhancements monthly</li>
-                                        <li><strong>Lifetime:</strong> A one-time purchase granting a perpetual monthly credit allowance</li>
+                                        <li><strong>تجربة:</strong> ١٠ تحسينات مجانية للمستخدمين الجدد (مرة واحدة)</li>
+                                        <li><strong>خطط شهرية:</strong> اشتراكات متكررة بعدد تحسينات شهري ثابت</li>
+                                        <li><strong>مدى الحياة:</strong> شراء لمرة واحدة برصيد شهري دائم</li>
                                     </ul>
-
-                                    <h3>Usage Limits (Credits)</h3>
-                                    <p>
-                                        Our Service operates on a credit-based system to ensure fair resource allocation:
-                                    </p>
+                                    <h3>حدود الاستخدام (الرصيد)</h3>
                                     <ul>
-                                        <li>One enhancement action typically consumes one credit</li>
-                                        <li>Credits reset at the start of your monthly billing cycle</li>
-                                        <li>Unused credits do not roll over to the next month</li>
-                                        <li>If you reach your limit, you can upgrade your plan or wait for the next cycle</li>
+                                        <li>التحسين الواحد يستهلك عادة رصيداً واحداً</li>
+                                        <li>يُعاد تعيين الرصيد مع بداية دورة الفوترة الشهرية</li>
+                                        <li>الرصيد غير المستخدم لا يُرحّل للشهر التالي</li>
+                                        <li>عند بلوغ الحد يمكنك الترقية أو انتظار الدورة التالية</li>
                                     </ul>
-
-                                    <h3>Billing & Payments</h3>
-                                    <p>
-                                        All payments are securely processed through Lemon Squeezy. By subscribing, you agree to:
-                                    </p>
+                                    <h3>المدفوعات</h3>
+                                    <p>تُعالَج المدفوعات عبر Lemon Squeezy. بالاشتراك توافق على:</p>
                                     <ul>
-                                        <li>Automatic renewal for monthly subscriptions until cancelled</li>
-                                        <li>Charges to your provided payment method according to your plan</li>
-                                        <li>Understanding that access depends on successful payment</li>
+                                        <li>التجديد التلقائي للاشتراكات الشهرية حتى الإلغاء</li>
+                                        <li>الخصم من وسيلة الدفع حسب خطتك</li>
+                                        <li>أن الوصول يعتمد على نجاح الدفع</li>
                                     </ul>
-
-                                    <h3>Cancellation & Refunds</h3>
+                                    <h3>الإلغاء والاسترداد</h3>
                                     <p>
-                                        You can cancel your subscription anytime via the dashboard. Access remains active until the current period ends.
+                                        يمكنك إلغاء الاشتراك من لوحة التحكم. يبقى الوصول نشطاً حتى نهاية الفترة الحالية.
                                     </p>
                                     <p>
-                                        <strong>Refunds:</strong> We offer a short-term "no questions asked" refund for your first monthly subscription payment. Lifetime licenses are non-refundable after 30 days due to the permanent nature of the access.
+                                        <strong>الاسترداد:</strong> نقدّم استرداداً قصير الأجل &laquo;بدون أسئلة&raquo; لأول دفعة شهرية. تراخيص مدى الحياة غير قابلة للاسترداد بعد ٣٠ يوماً.
                                     </p>
                                 </div>
                             </CardContent>
                         </Card>
 
-                        {/* Data Usage and Privacy */}
                         <Card>
                             <CardContent className="pt-6">
                                 <div className="prose prose-zinc dark:prose-invert max-w-none">
-                                    <h2 className="text-2xl font-bold mb-4">Data Usage and Privacy</h2>
-
-                                    <h3>Usage Analytics</h3>
+                                    <h2 className="text-2xl font-bold mb-4">البيانات والخصوصية</h2>
                                     <p>
-                                        By using EmotifyAI, you consent to our collection of usage analytics data to improve service quality and user experience. This includes:
-                                    </p>
-                                    <ul>
-                                        <li>Enhancement request metadata (timestamps, language preferences, success/failure status)</li>
-                                        <li>Performance metrics (processing time, token usage, error rates)</li>
-                                        <li>Feature usage patterns to guide product development</li>
-                                        <li>Technical diagnostics for troubleshooting and optimization</li>
-                                    </ul>
-
-                                    <h3>Content Privacy</h3>
-                                    <p>
-                                        <strong>We do not store, log, or analyze the actual text content you enhance.</strong> Your text is processed in real-time and immediately discarded after enhancement. Only technical metadata about the enhancement process is retained for service improvement purposes.
-                                    </p>
-
-                                    <h3>Data Retention</h3>
-                                    <p>
-                                        Usage logs and analytics data are retained for a reasonable period to enable service improvements and troubleshooting. You may request deletion of your data by contacting us at any time.
+                                        <strong>لا نخزّن ولا نسجّل محتوى النص الذي تحسّنه.</strong> يُعالَج لحظياً ويُحذف بعد التحسين. تُحفظ بيانات وصفية فقط لتحسين الخدمة.
                                     </p>
                                 </div>
                             </CardContent>
                         </Card>
 
-                        {/* Acceptable Use */}
                         <Card>
                             <CardContent className="pt-6">
                                 <div className="flex items-start gap-4">
@@ -205,20 +161,20 @@ export default function TermsPage() {
                                         <AlertCircle className="h-5 w-5 text-orange-500" />
                                     </div>
                                     <div className="flex-1">
-                                        <h2 className="text-2xl font-bold mb-4">Acceptable Use Policy</h2>
+                                        <h2 className="text-2xl font-bold mb-4">سياسة الاستخدام المقبول</h2>
                                         <div className="prose prose-zinc dark:prose-invert max-w-none">
-                                            <p>You agree NOT to:</p>
+                                            <p>توافق على عدم:</p>
                                             <ul>
-                                                <li>Use the Service for illegal or unauthorized purposes</li>
-                                                <li>Attempt to gain unauthorized access to our systems</li>
-                                                <li>Reverse engineer or decompile the Service</li>
-                                                <li>Share your API keys or account credentials</li>
-                                                <li>Abuse the Service through excessive automated requests</li>
-                                                <li>Use the Service to generate harmful, offensive, or illegal content</li>
-                                                <li>Resell or redistribute the Service without permission</li>
+                                                <li>استخدام الخدمة لأغراض غير قانونية أو غير مصرّح بها</li>
+                                                <li>محاولة الوصول غير المصرّح به لأنظمتنا</li>
+                                                <li>هندسة عكسية أو تفكيك الخدمة</li>
+                                                <li>مشاركة مفاتيح API أو بيانات الحساب</li>
+                                                <li>إساءة استخدام الخدمة بطلبات آلية مفرطة</li>
+                                                <li>توليد محتوى ضار أو مسيء أو غير قانوني</li>
+                                                <li>إعادة بيع الخدمة دون إذن</li>
                                             </ul>
                                             <p className="font-semibold text-destructive">
-                                                Violation of this policy may result in immediate account termination.
+                                                قد يؤدي انتهاك هذه السياسة إلى إنهاء الحساب فوراً.
                                             </p>
                                         </div>
                                     </div>
@@ -226,74 +182,50 @@ export default function TermsPage() {
                             </CardContent>
                         </Card>
 
-                        {/* Intellectual Property */}
                         <Card>
                             <CardContent className="pt-6">
                                 <div className="prose prose-zinc dark:prose-invert max-w-none">
-                                    <h2 className="text-2xl font-bold mb-4">Intellectual Property</h2>
-
-                                    <h3>Our Rights</h3>
-                                    <p>
-                                        EmotifyAI and all related trademarks, logos, and content are owned by us or our licensors. You may not use our intellectual property without written permission.
-                                    </p>
-
-                                    <h3>Your Content</h3>
-                                    <p>
-                                        You retain all rights to the text you input into EmotifyAI. We do not claim ownership of your content. By using the Service, you grant us a limited license to process your text for the purpose of providing the enhancement service.
-                                    </p>
-
-                                    <h3>AI-Generated Content</h3>
-                                    <p>
-                                        Enhanced text generated by our AI is provided "as-is." You are responsible for reviewing and verifying the accuracy of AI-generated content before use.
-                                    </p>
+                                    <h2 className="text-2xl font-bold mb-4">الملكية الفكرية</h2>
+                                    <p>إيموتيفاي وعلاماتها ومحتواها مملوكة لنا أو لمرخّصينا.</p>
+                                    <p>تحتفظ بحقوق النص الذي تدخله. لا ندّعي ملكية محتواك.</p>
+                                    <p>النص المُولَّد بالذكاء الاصطناعي يُقدَّم &laquo;كما هو&raquo; — أنت مسؤول عن مراجعته قبل الاستخدام.</p>
                                 </div>
                             </CardContent>
                         </Card>
 
-                        {/* Limitation of Liability */}
                         <Card>
                             <CardContent className="pt-6">
                                 <div className="prose prose-zinc dark:prose-invert max-w-none">
-                                    <h2 className="text-2xl font-bold mb-4">Limitation of Liability</h2>
-                                    <p>
-                                        TO THE MAXIMUM EXTENT PERMITTED BY LAW:
-                                    </p>
+                                    <h2 className="text-2xl font-bold mb-4">حدود المسؤولية</h2>
+                                    <p>في الحد الأقصى الذي يسمح به القانون:</p>
                                     <ul>
-                                        <li>EmotifyAI is provided "AS-IS" without warranties of any kind</li>
-                                        <li>We are not liable for any indirect, incidental, or consequential damages</li>
-                                        <li>Our total liability is limited to the amount you paid in the last 12 months</li>
-                                        <li>We are not responsible for third-party services or content</li>
+                                        <li>تُقدَّم إيموتيفاي &laquo;كما هي&raquo; دون ضمانات</li>
+                                        <li>لسنا مسؤولين عن أضرار غير مباشرة أو تبعية</li>
+                                        <li>مسؤوليتنا الإجمالية محدودة بما دفعته خلال آخر ١٢ شهراً</li>
+                                        <li>لسنا مسؤولين عن خدمات أو محتوى طرف ثالث</li>
                                     </ul>
                                 </div>
                             </CardContent>
                         </Card>
 
-                        {/* Governing Law */}
                         <Card>
                             <CardContent className="pt-6">
                                 <div className="prose prose-zinc dark:prose-invert max-w-none">
-                                    <h2 className="text-2xl font-bold mb-4">Governing Law and Jurisdiction</h2>
+                                    <h2 className="text-2xl font-bold mb-4">القانون الحاكم والاختصاص</h2>
                                     <p>
-                                        These Terms of Service are governed by and construed in accordance with the laws of the Hashemite Kingdom of Jordan. Any disputes, claims, or legal proceedings arising out of or relating to these Terms or the use of EmotifyAI services shall be subject to the exclusive jurisdiction of the courts of Jordan.
-                                    </p>
-                                    <p>
-                                        By using our Service, you consent to the jurisdiction and venue of the Jordanian courts for the resolution of any disputes.
+                                        تخضع هذه الشروط لقوانين المملكة الأردنية الهاشمية. تخضع النزاعات للاختصاص الحصري لمحاكم الأردن.
                                     </p>
                                 </div>
                             </CardContent>
                         </Card>
 
-                        {/* Contact */}
                         <Card className="border-primary/20 bg-primary/5">
                             <CardContent className="pt-6">
                                 <div className="prose prose-zinc dark:prose-invert max-w-none">
-                                    <h2 className="text-2xl font-bold mb-4">Contact Us</h2>
-                                    <p>
-                                        If you have questions about these Terms, please contact us:
-                                    </p>
+                                    <h2 className="text-2xl font-bold mb-4">تواصل معنا</h2>
                                     <ul>
-                                        <li>Email: <a href="mailto:legal@emotifyai.com">legal@emotifyai.com</a></li>
-                                        <li>Support: <a href="mailto:support@emotifyai.com">support@emotifyai.com</a></li>
+                                        <li>البريد: <a href="mailto:legal@emotifyai.com">legal@emotifyai.com</a></li>
+                                        <li>الدعم: <a href="mailto:support@emotifyai.com">support@emotifyai.com</a></li>
                                     </ul>
                                 </div>
                             </CardContent>

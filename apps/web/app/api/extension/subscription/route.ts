@@ -77,7 +77,7 @@ export async function GET(request: NextRequest) {
                         credits_remaining: 10,
                         credits_reset_date: null,
                         validity_days: 30,
-                        tier_name: 'Trial',
+                        tier_name: 'تجربة',
                         current_period_end: endDate.toISOString()
                     }
                 })
@@ -91,15 +91,17 @@ export async function GET(request: NextRequest) {
 
         // Format tier name for display
         const tierNames: Record<SubscriptionTier, string> = {
-            [SubscriptionTier.TRIAL]: 'Trial',
-            [SubscriptionTier.FREE]: 'Free Plan',
-            [SubscriptionTier.LIFETIME_LAUNCH]: 'Lifetime Launch',
-            [SubscriptionTier.BASIC_MONTHLY]: 'Basic Monthly',
-            [SubscriptionTier.PRO_MONTHLY]: 'Pro Monthly',
-            [SubscriptionTier.BUSINESS_MONTHLY]: 'Business Monthly',
-            [SubscriptionTier.BASIC_ANNUAL]: 'Basic Annual',
-            [SubscriptionTier.PRO_ANNUAL]: 'Pro Annual',
-            [SubscriptionTier.BUSINESS_ANNUAL]: 'Business Annual',
+            [SubscriptionTier.TRIAL]: 'تجربة',
+            [SubscriptionTier.FREE]: 'مجاني',
+            [SubscriptionTier.LIFETIME_LAUNCH]: 'مدى الحياة',
+            [SubscriptionTier.BASIC_MONTHLY]: 'أساسي شهري',
+            [SubscriptionTier.PRO_MONTHLY]: 'Pro شهري',
+            [SubscriptionTier.BUSINESS_MONTHLY]: 'أعمال شهري',
+            [SubscriptionTier.BASIC_ANNUAL]: 'أساسي سنوي',
+            [SubscriptionTier.PRO_ANNUAL]: 'Pro سنوي',
+            [SubscriptionTier.BUSINESS_ANNUAL]: 'أعمال سنوي',
+            [SubscriptionTier.SMALL_BUNDLE]: 'حزمة صغيرة',
+            [SubscriptionTier.LARGE_BUNDLE]: 'حزمة كبيرة',
         }
 
         // Ensure dates are valid ISO strings
@@ -132,7 +134,7 @@ export async function GET(request: NextRequest) {
                 credits_remaining: creditsRemaining,
                 credits_reset_date: resetDate,
                 validity_days: subscription.validity_days,
-                tier_name: tierNames[subscription.tier as SubscriptionTier] || subscription.tier_name || 'Unknown Plan',
+                tier_name: tierNames[subscription.tier as SubscriptionTier] || subscription.tier_name || 'خطة غير معروفة',
                 current_period_end: endDate
             }
         })

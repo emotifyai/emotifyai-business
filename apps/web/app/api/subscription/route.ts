@@ -19,7 +19,7 @@ export async function GET(request: NextRequest) {
                 success: false,
                 error: {
                     code: 'UNAUTHORIZED',
-                    message: 'Authentication required'
+                    message: 'يرجى تسجيل الدخول'
                 }
             }, { status: 401 })
         }
@@ -48,7 +48,7 @@ export async function GET(request: NextRequest) {
                     credits_remaining: 10,
                     credits_reset_date: null,
                     validity_days: 10,
-                    tier_name: 'Free Trial',
+                    tier_name: 'تجربة مجانية',
                     current_period_end: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000).toISOString()
                 }
             })
@@ -60,11 +60,13 @@ export async function GET(request: NextRequest) {
             'trial': 2,
             'basic_monthly': 3,
             'basic_annual': 4,
+            'small_bundle': 3,
+            'large_bundle': 4,
             'pro_monthly': 5,
             'pro_annual': 6,
             'business_monthly': 7,
             'business_annual': 8,
-            'lifetime_launch': 10, // Highest priority
+            'lifetime_launch': 10,
         }
 
         // Select the best subscription (highest priority, then latest)
@@ -92,15 +94,17 @@ export async function GET(request: NextRequest) {
 
         // Format tier name for display
         const tierNames: Record<SubscriptionTier, string> = {
-            [SubscriptionTier.TRIAL]: 'Trial',
-            [SubscriptionTier.FREE]: 'Free Plan',
-            [SubscriptionTier.LIFETIME_LAUNCH]: 'Lifetime Launch',
-            [SubscriptionTier.BASIC_MONTHLY]: 'Basic Monthly',
-            [SubscriptionTier.PRO_MONTHLY]: 'Pro Monthly',
-            [SubscriptionTier.BUSINESS_MONTHLY]: 'Business Monthly',
-            [SubscriptionTier.BASIC_ANNUAL]: 'Basic Annual',
-            [SubscriptionTier.PRO_ANNUAL]: 'Pro Annual',
-            [SubscriptionTier.BUSINESS_ANNUAL]: 'Business Annual',
+            [SubscriptionTier.TRIAL]: 'تجربة',
+            [SubscriptionTier.FREE]: 'مجاني',
+            [SubscriptionTier.LIFETIME_LAUNCH]: 'مدى الحياة',
+            [SubscriptionTier.BASIC_MONTHLY]: 'أساسي شهري',
+            [SubscriptionTier.PRO_MONTHLY]: 'Pro شهري',
+            [SubscriptionTier.BUSINESS_MONTHLY]: 'أعمال شهري',
+            [SubscriptionTier.BASIC_ANNUAL]: 'أساسي سنوي',
+            [SubscriptionTier.PRO_ANNUAL]: 'Pro سنوي',
+            [SubscriptionTier.BUSINESS_ANNUAL]: 'أعمال سنوي',
+            [SubscriptionTier.SMALL_BUNDLE]: 'حزمة صغيرة',
+            [SubscriptionTier.LARGE_BUNDLE]: 'حزمة كبيرة',
         }
 
         return NextResponse.json({
@@ -113,7 +117,7 @@ export async function GET(request: NextRequest) {
                 credits_remaining: creditsRemaining,
                 credits_reset_date: (subscription as any).credits_reset_date,
                 validity_days: (subscription as any).validity_days,
-                tier_name: tierNames[(subscription as any).tier as SubscriptionTier] || (subscription as any).tier_name || 'Unknown Plan',
+                tier_name: tierNames[(subscription as any).tier as SubscriptionTier] || (subscription as any).tier_name || 'خطة غير معروفة',
                 current_period_end: (subscription as any).current_period_end
             }
         })

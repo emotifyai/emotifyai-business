@@ -10,7 +10,6 @@ interface PricingPlanActionProps {
   fromNewUser: boolean
   isAuthenticated: boolean
   isCurrentPlan?: boolean
-  compact?: boolean
 }
 
 export function PricingPlanAction({
@@ -18,14 +17,12 @@ export function PricingPlanAction({
   fromNewUser,
   isAuthenticated,
   isCurrentPlan = false,
-  compact = false,
 }: PricingPlanActionProps) {
-  const size = compact ? 'sm' : 'default'
-  const className = compact ? 'shrink-0 whitespace-nowrap' : 'w-full'
+  const className = 'w-full'
 
   if (isCurrentPlan && plan.checkoutTier) {
     return (
-      <Button size={size} className={className} variant="outline" disabled>
+      <Button className={className} variant="outline" disabled>
         خطتك الحالية
       </Button>
     )
@@ -34,18 +31,20 @@ export function PricingPlanAction({
   switch (plan.id) {
     case 'instant_trial':
       return (
-        <Button size={size} className={className} variant="outline" asChild>
-          <Link href="/">جرّب الآن</Link>
+        <Button className={className} variant="outline" asChild>
+          <Link href="/">{plan.cta}</Link>
         </Button>
       )
     case 'registered_trial':
       return (
-        <Button size={size} className={className} variant="outline" asChild>
-          <Link href="/signup">سجّل مجاناً</Link>
+        <Button className={className} variant="outline" asChild>
+          <Link href="/signup">{plan.cta}</Link>
         </Button>
       )
     case 'pro_monthly':
     case 'pro_annual':
+    case 'small_bundle':
+    case 'large_bundle':
       if (!plan.checkoutTier) return null
       return (
         <PricingButton
@@ -53,19 +52,12 @@ export function PricingPlanAction({
           fromNewUser={fromNewUser}
           isFree={false}
           isLifetime={false}
-          buttonText={compact ? 'اشترك' : 'اشترك الآن'}
+          buttonText={plan.cta}
           variant={plan.highlighted ? 'default' : 'outline'}
           isAuthenticated={isAuthenticated}
           disabled={isCurrentPlan}
           isCurrentPlan={isCurrentPlan}
         />
-      )
-    case 'small_bundle':
-    case 'large_bundle':
-      return (
-        <Button size={size} className={className} variant="outline" disabled title="راجع docs/lemon-squeezy-pricing.md">
-          {compact ? 'قريباً' : 'قريباً — تفعيل الدفع'}
-        </Button>
       )
     default:
       return null

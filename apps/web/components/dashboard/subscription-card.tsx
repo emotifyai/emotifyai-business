@@ -51,22 +51,22 @@ export function SubscriptionCard({ tier, status, currentPeriodEnd, usage }: Subs
         <Card className={isPro ? "border-primary/50" : ""}>
             <CardHeader>
                 <div className="flex items-center justify-between">
-                    <CardTitle>Current Plan</CardTitle>
+                    <CardTitle>الخطة الحالية</CardTitle>
                     <Badge variant={isPro ? "default" : "secondary"}>
                         {tier.toUpperCase()}
                     </Badge>
                 </div>
                 <CardDescription>
                     {isLifetime
-                        ? "You have lifetime access to EmotifyAI"
-                        : `Your plan renews on ${formatDate(currentPeriodEnd)}`
+                        ? "لديك وصول مدى الحياة إلى إيموتيفاي"
+                        : `تتجدد خطتك في ${formatDate(currentPeriodEnd)}`
                     }
                 </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
                 <div className="space-y-2">
                     <div className="flex items-center justify-between text-sm">
-                        <span className="text-muted-foreground">Monthly Usage</span>
+                        <span className="text-muted-foreground">الاستخدام الشهري</span>
                         <span className="font-medium">
                             {usage.used} / {isLifetime ? "∞" : usage.limit}
                         </span>
@@ -77,15 +77,15 @@ export function SubscriptionCard({ tier, status, currentPeriodEnd, usage }: Subs
                 <div className="grid gap-2">
                     <div className="flex items-center gap-2 text-sm">
                         <Check className="h-4 w-4 text-primary" />
-                        <span>Browser Extension Access</span>
+                        <span>الوصول إلى إضافة المتصفح</span>
                     </div>
                     <div className="flex items-center gap-2 text-sm">
                         <Check className="h-4 w-4 text-primary" />
-                        <span>{isPro ? "Premium" : "Basic"} AI Enhancements</span>
+                        <span>{isPro ? "تحسينات ذكاء اصطناعي مميزة" : "تحسينات ذكاء اصطناعي أساسية"}</span>
                     </div>
                     <div className="flex items-center gap-2 text-sm">
                         <Check className="h-4 w-4 text-primary" />
-                        <span>Multi-language Support</span>
+                        <span>دعم لغات متعددة</span>
                     </div>
                 </div>
             </CardContent>
@@ -99,10 +99,10 @@ export function SubscriptionCard({ tier, status, currentPeriodEnd, usage }: Subs
                         disabled={isLoading}
                     >
                         {isPro ? (
-                            isLoading ? "Loading..." : "Manage Subscription"
+                            isLoading ? "جاري التحميل…" : "إدارة الاشتراك"
                         ) : (
                             <Link href="/pricing">
-                                Upgrade to Pro
+                                الترقية إلى Pro
                             </Link>
                         )}
                     </Button>

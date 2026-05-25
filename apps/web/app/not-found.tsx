@@ -1,31 +1,35 @@
+'use client'
+
 import Link from 'next/link'
 import { Button } from '@emotifyai/ui'
-import { FileQuestion, Home, ArrowLeft } from 'lucide-react'
+import { FileQuestion, Home, ArrowRight } from 'lucide-react'
 
 export default function NotFound() {
     return (
-        <div className="flex min-h-screen flex-col items-center justify-center bg-background text-foreground p-4">
+        <div className="flex min-h-screen flex-col items-center justify-center bg-background p-4 text-foreground">
             <div className="mx-auto flex max-w-[500px] flex-col items-center justify-center text-center">
                 <div className="mb-8 flex h-24 w-24 items-center justify-center rounded-full bg-muted">
                     <FileQuestion className="h-12 w-12 text-muted-foreground" />
                 </div>
-                <h1 className="text-4xl font-bold tracking-tight sm:text-6xl mb-4">404</h1>
-                <h2 className="text-2xl font-semibold tracking-tight mb-4">Page not found</h2>
-                <p className="text-muted-foreground mb-8 text-lg">
-                    Sorry, we couldn&#39;t find the page you&#39;re looking for. It might have been moved, deleted, or never existed.
+                <h1 className="mb-4 text-4xl font-bold tracking-tight sm:text-6xl">٤٠٤</h1>
+                <h2 className="mb-4 text-2xl font-semibold tracking-tight">الصفحة غير موجودة</h2>
+                <p className="mb-8 text-lg text-muted-foreground">
+                    عذراً، لم نتمكن من العثور على الصفحة المطلوبة. ربما نُقلت أو حُذفت أو لم تُنشأ من الأساس.
                 </p>
-                <div className="flex gap-4">
+                <div className="flex flex-wrap justify-center gap-4">
                     <Button variant="outline" asChild>
                         <Link href="/">
-                            <Home className="me-2 h-4 w-4" />
-                            Go Home
+                            <Home className="ms-2 h-4 w-4" />
+                            الصفحة الرئيسية
                         </Link>
                     </Button>
-                    <Button variant="ghost" asChild>
-                        <Link href="javascript:history.back()">
-                            <ArrowLeft className="me-2 h-4 w-4" />
-                            Go Back
-                        </Link>
+                    <Button
+                        variant="ghost"
+                        type="button"
+                        onClick={() => window.history.back()}
+                    >
+                        <ArrowRight className="ms-2 h-4 w-4" />
+                        رجوع
                     </Button>
                 </div>
             </div>

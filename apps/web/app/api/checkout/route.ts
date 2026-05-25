@@ -1,45 +1,45 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createSubscriptionCheckout } from '@/lib/lemonsqueezy/checkout'
+import { getVariantId } from '@/lib/lemonsqueezy/config'
 import { z } from 'zod'
 import { SubscriptionTier } from '@/lib/subscription/types'
 
+const CHECKOUT_TIERS = [
+    'lifetime_launch',
+    'basic_monthly',
+    'pro_monthly',
+    'business_monthly',
+    'basic_annual',
+    'pro_annual',
+    'business_annual',
+    'small_bundle',
+    'large_bundle',
+] as const
+
 const CheckoutSchema = z.object({
-    tier: z.string().refine((val) => {
-        return [
-            'lifetime_launch',
-            'basic_monthly',
-            'pro_monthly',
-            'business_monthly',
-            'basic_annual',
-            'pro_annual',
-            'business_annual',
-        ].includes(val)
-    }, 'Invalid subscription tier'),
+    tier: z.enum(CHECKOUT_TIERS),
     redirectUrl: z.string().url().optional(),
 })
 
 export async function POST(request: NextRequest) {
     try {
-        // LOUD DUCK ENV CHECK
-        const envToCheck = {
-            'LEMONSQUEEZY_API_KEY': !!process.env.LEMONSQUEEZY_API_KEY,
-            'LEMONSQUEEZY_STORE_ID': !!process.env.LEMONSQUEEZY_STORE_ID,
-            'LEMONSQUEEZY_WEBHOOK_SECRET': !!process.env.LEMONSQUEEZY_WEBHOOK_SECRET,
-            'NEXT_PUBLIC_APP_URL': !!process.env.NEXT_PUBLIC_APP_URL,
-            'LEMONSQUEEZY_LIFETIME_LAUNCH_VARIANT_ID': !!process.env.LEMONSQUEEZY_LIFETIME_LAUNCH_VARIANT_ID
+        const coreEnv = {
+            LEMONSQUEEZY_API_KEY: !!process.env.LEMONSQUEEZY_API_KEY,
+            LEMONSQUEEZY_STORE_ID: !!process.env.LEMONSQUEEZY_STORE_ID,
+            NEXT_PUBLIC_APP_URL: !!process.env.NEXT_PUBLIC_APP_URL,
         }
-        const missing = Object.entries(envToCheck).filter(([_, exists]) => !exists).map(([key]) => key)
+        const missingCore = Object.entries(coreEnv)
+            .filter(([, exists]) => !exists)
+            .map(([key]) => key)
 
-        if (missing.length > 0) {
+        if (missingCore.length > 0) {
             return NextResponse.json(
-                {
-                    error: 'Missing Configuration',
-                    missing,
-                },
+                { error: 'Missing Configuration', missing: missingCore },
                 { status: 500 }
             )
         }
+
         const supabase = await createClient()
         const { data: { user }, error: authError } = await supabase.auth.getUser()
 
@@ -50,6 +50,17 @@ export async function POST(request: NextRequest) {
         }
         const body = await request.json()
         const { tier, redirectUrl } = CheckoutSchema.parse(body)
+
+        if (!getVariantId(tier)) {
+            return NextResponse.json(
+                {
+                    error: 'Missing Configuration',
+                    missing: [`LEMONSQUEEZY variant for tier: ${tier}`],
+                },
+                { status: 500 }
+            )
+        }
+
         const checkout = await createSubscriptionCheckout({
             tier: tier as SubscriptionTier,
             userEmail: user.email!,

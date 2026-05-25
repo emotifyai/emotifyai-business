@@ -5,8 +5,8 @@ import { Input } from '@emotifyai/ui'
 import { Label } from '@emotifyai/ui'
 
 export const metadata: Metadata = {
-    title: 'Reset Password - EmotifyAI',
-    description: 'Reset your EmotifyAI account password',
+    title: 'إعادة تعيين كلمة المرور - إيموتيفاي',
+    description: 'أعد تعيين كلمة مرور حسابك في إيموتيفاي',
 }
 
 export default function ResetPasswordPage() {
@@ -14,17 +14,17 @@ export default function ResetPasswordPage() {
         <>
             <div className="flex flex-col space-y-2 text-center">
                 <h1 className="text-2xl font-semibold tracking-tight">
-                    Reset Password
+                    إعادة تعيين كلمة المرور
                 </h1>
                 <p className="text-sm text-muted-foreground">
-                    Enter your email address and we&apos;ll send you a link to reset your password
+                    أدخل بريدك الإلكتروني وسنرسل لك رابطاً لإعادة تعيين كلمة المرور
                 </p>
             </div>
             <div className="grid gap-6">
                 <form>
                     <div className="grid gap-4">
                         <div className="grid gap-2">
-                            <Label htmlFor="email">Email</Label>
+                            <Label htmlFor="email">البريد الإلكتروني</Label>
                             <Input
                                 id="email"
                                 placeholder="name@example.com"
@@ -36,7 +36,7 @@ export default function ResetPasswordPage() {
                             />
                         </div>
                         <Button type="submit" variant="glow">
-                            Send Reset Link
+                            إرسال رابط إعادة التعيين
                         </Button>
                     </div>
                 </form>
@@ -46,7 +46,7 @@ export default function ResetPasswordPage() {
                     href="/login"
                     className="underline underline-offset-4 hover:text-primary"
                 >
-                    Back to Login
+                    العودة لتسجيل الدخول
                 </Link>
             </p>
         </>

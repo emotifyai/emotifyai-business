@@ -13,6 +13,10 @@ import { useSubscription } from '@/lib/hooks/use-subscription'
 import { useUsageStats } from '@/lib/hooks/use-usage'
 import { SubscriptionTier } from '@/types/database'
 import { toast } from 'sonner'
+import {
+  ConnectedUpgradePrompt,
+  resolveUpgradeVariant,
+} from '@/components/upgrade-prompt'
 
 interface HistoryItem {
   id: string
@@ -25,36 +29,36 @@ interface HistoryItem {
 }
 
 const TONE_OPTIONS = [
-  { value: 'emotional', label: 'Emotional' },
-  { value: 'professional', label: 'Professional' },
-  { value: 'marketing', label: 'Marketing' }
+  { value: 'emotional', label: 'عاطفي' },
+  { value: 'professional', label: 'احترافي' },
+  { value: 'marketing', label: 'تسويقي' }
 ]
 
 const OUTPUT_LANGUAGES = [
-  { value: 'en', label: 'English' },
-  { value: 'ar', label: 'Arabic' },
-  { value: 'fr', label: 'French' }
+  { value: 'en', label: 'الإنجليزية' },
+  { value: 'ar', label: 'العربية' },
+  { value: 'fr', label: 'الفرنسية' }
 ]
 
 const STRENGTH_LEVELS = [
-  { value: 1, label: 'Minimal', description: 'Fix typos only' },
-  { value: 2, label: 'Light', description: 'Gentle refinement' },
-  { value: 3, label: 'Moderate', description: 'Balanced' },
-  { value: 4, label: 'Strong', description: 'Significant' },
-  { value: 5, label: 'Maximum', description: 'Full rewrite' }
+  { value: 1, label: 'أدنى', description: 'تصحيح الأخطاء فقط' },
+  { value: 2, label: 'خفيف', description: 'تحسين لطيف' },
+  { value: 3, label: 'متوسط', description: 'متوازن' },
+  { value: 4, label: 'قوي', description: 'تحسين ملحوظ' },
+  { value: 5, label: 'أقصى', description: 'إعادة صياغة كاملة' }
 ]
 
 const LOADING_MESSAGES = [
-  "Analyzing your text...",
-  "Crafting the perfect words...",
-  "Enhancing clarity and flow...",
-  "Polishing your message...",
-  "Adding that professional touch...",
-  "Fine-tuning the tone...",
-  "Making it shine...",
-  "Almost there...",
-  "Applying AI magic...",
-  "Perfecting every sentence...",
+  'جاري تحليل النص…',
+  'جاري صياغة الكلمات المناسبة…',
+  'جاري تحسين الوضوح والسلاسة…',
+  'جاري صقل الرسالة…',
+  'جاري إضافة لمسة احترافية…',
+  'جاري ضبط النبرة…',
+  'جاري اللمسة النهائية…',
+  'اقتربنا من الانتهاء…',
+  'جاري تطبيق الذكاء الاصطناعي…',
+  'جاري إتقان كل جملة…',
 ]
 
 export default function EditorPage() {
@@ -79,6 +83,9 @@ export default function EditorPage() {
   const [history, setHistory] = useState<HistoryItem[]>([])
   const [showHistory, setShowHistory] = useState(false)
   const [copiedStates, setCopiedStates] = useState<{ [key: string]: boolean }>({})
+  const [upgradeVariant, setUpgradeVariant] = useState<
+    import('@emotifyai/ui').UpgradePromptVariant | undefined
+  >(undefined)
 
   // Load cached session data on mount
   useEffect(() => {
@@ -129,9 +136,9 @@ export default function EditorPage() {
   const detectLanguage = (text: string): string => {
     const arabicRegex = /[\u0600-\u06FF]/
     const frenchRegex = /[àâäéèêëïîôöùûüÿç]/i
-    if (arabicRegex.test(text)) return 'Arabic'
-    if (frenchRegex.test(text)) return 'French'
-    return 'English'
+    if (arabicRegex.test(text)) return 'العربية'
+    if (frenchRegex.test(text)) return 'الفرنسية'
+    return 'الإنجليزية'
   }
 
   useEffect(() => {
@@ -149,16 +156,18 @@ export default function EditorPage() {
 
   const handleGenerate = async () => {
     if (!originalText.trim()) {
-      toast.error('Please enter some text to enhance')
+      toast.error('يرجى إدخال نص للتحسين')
       return
     }
     if (!canGenerate()) {
-      toast.error('Usage limit reached. Please upgrade your subscription.', {
-        action: {
-          label: 'Upgrade',
-          onClick: () => window.location.href = '/pricing'
-        }
-      })
+      setUpgradeVariant(
+        resolveUpgradeVariant({
+          isAuthenticated: true,
+          tier: subscription?.tier,
+          creditsRemaining: usage?.credits_remaining ?? 0,
+          creditsLimit: totalCredits || subscription?.credits_limit,
+        }) ?? 'limit_reached'
+      )
       return
     }
 
@@ -191,8 +200,8 @@ export default function EditorPage() {
       
       if (data.success) {
         setEnhancedText(data.data.enhancedText)
-        toast.success('Text enhanced successfully!', {
-          description: `${data.data.tokensUsed || 0} tokens used`
+        toast.success('تم تحسين النص بنجاح!', {
+          description: `تم استخدام ${data.data.tokensUsed || 0} رمزاً`
         })
         const newHistoryItem: HistoryItem = {
           id: Date.now().toString(),
@@ -211,47 +220,48 @@ export default function EditorPage() {
         
         switch (errorCode) {
           case 'USAGE_LIMIT_EXCEEDED':
-            toast.error('You\'ve run out of credits', {
-              description: 'Upgrade your plan to continue enhancing text',
-              action: {
-                label: 'Upgrade',
-                onClick: () => window.location.href = '/pricing'
-              }
-            })
+            setUpgradeVariant(
+              resolveUpgradeVariant({
+                isAuthenticated: true,
+                tier: data.error?.tier ?? subscription?.tier,
+                creditsRemaining: 0,
+                creditsLimit: totalCredits || subscription?.credits_limit,
+              }) ?? 'limit_reached'
+            )
             break
           case 'UNAUTHORIZED':
-            toast.error('Session expired', {
-              description: 'Please log in again to continue',
+            toast.error('انتهت الجلسة', {
+              description: 'يرجى تسجيل الدخول مرة أخرى للمتابعة',
               action: {
-                label: 'Login',
+                label: 'تسجيل الدخول',
                 onClick: () => window.location.href = '/login'
               }
             })
             break
           case 'QUALITY_CHECK_FAILED':
-            toast.error('Quality check failed', {
-              description: 'The AI output didn\'t meet quality standards. Please try again.'
+            toast.error('فشل فحص الجودة', {
+              description: 'لم يلبِ مخرجات الذكاء الاصطناعي معايير الجودة. حاول مرة أخرى.'
             })
             break
           case 'UNSUPPORTED_LANGUAGE':
-            toast.error('Language not supported', {
-              description: 'Please use English, Arabic, or French'
+            toast.error('اللغة غير مدعومة', {
+              description: 'يرجى استخدام الإنجليزية أو العربية أو الفرنسية'
             })
             break
           case 'RATE_LIMIT_EXCEEDED':
-            toast.error('Too many requests', {
-              description: 'Please wait a moment before trying again'
+            toast.error('طلبات كثيرة جداً', {
+              description: 'انتظر لحظة قبل المحاولة مرة أخرى'
             })
             break
           default:
-            toast.error('Enhancement failed', {
+            toast.error('فشل التحسين', {
               description: errorMessage
             })
         }
       }
     } catch (error) {
-      toast.error('Connection error', {
-        description: 'Please check your internet connection and try again'
+      toast.error('خطأ في الاتصال', {
+        description: 'تحقق من اتصالك بالإنترنت وحاول مرة أخرى'
       })
     } finally {
       clearInterval(messageInterval)
@@ -264,10 +274,10 @@ export default function EditorPage() {
     try {
       await navigator.clipboard.writeText(text)
       setCopiedStates(prev => ({ ...prev, [key]: true }))
-      toast.success('Copied!')
+      toast.success('تم النسخ!')
       setTimeout(() => setCopiedStates(prev => ({ ...prev, [key]: false })), 2000)
     } catch (error) {
-      toast.error('Failed to copy')
+      toast.error('فشل النسخ')
     }
   }
 
@@ -285,13 +295,13 @@ export default function EditorPage() {
     <div className="mx-auto w-full min-w-0 max-w-6xl overflow-x-hidden">
       <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <div className="min-w-0">
-          <h1 className="text-xl font-bold sm:text-2xl">Text Editor</h1>
-          <p className="text-sm text-muted-foreground">Enhance your text with AI</p>
+          <h1 className="text-xl font-bold sm:text-2xl">محرر النصوص</h1>
+          <p className="text-sm text-muted-foreground">حسّن نصوصك بالذكاء الاصطناعي</p>
         </div>
         {usage && (
           <div className="flex items-center gap-2">
             <span className="text-sm text-muted-foreground">
-              {usage.credits_used} / {isUnlimited ? '∞' : totalCredits} used
+              {usage.credits_used} / {isUnlimited ? '∞' : totalCredits} مستخدم
             </span>
           </div>
         )}
@@ -302,7 +312,7 @@ export default function EditorPage() {
         <CardContent>
           <div className="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-center">
             <div className="flex w-full flex-col gap-1.5 sm:w-auto sm:flex-row sm:items-center sm:gap-2">
-              <span className="text-sm text-muted-foreground">Tone:</span>
+              <span className="text-sm text-muted-foreground">النبرة:</span>
               <Select value={tone} onValueChange={setTone}>
                 <SelectTrigger className="h-11 w-full border-2 border-gray-300 bg-white dark:border-border dark:bg-background sm:w-[130px] sm:h-9">
                   <SelectValue />
@@ -318,7 +328,7 @@ export default function EditorPage() {
             </div>
 
             <div className="flex w-full flex-col gap-1.5 sm:w-auto sm:flex-row sm:items-center sm:gap-2">
-              <span className="text-sm text-muted-foreground">Output:</span>
+              <span className="text-sm text-muted-foreground">اللغة:</span>
               <Select value={outputLanguage} onValueChange={setOutputLanguage}>
                 <SelectTrigger className="h-11 w-full border-2 border-gray-300 bg-white dark:border-border dark:bg-background sm:w-[120px] sm:h-9">
                   <SelectValue />
@@ -334,7 +344,7 @@ export default function EditorPage() {
             </div>
 
             <div className="flex w-full flex-col gap-1.5 sm:w-auto sm:flex-row sm:items-center sm:gap-2">
-              <span className="text-sm text-muted-foreground">Strength:</span>
+              <span className="text-sm text-muted-foreground">القوة:</span>
               <div className="flex w-full items-center gap-3 sm:w-auto">
                 <Slider
                   value={[strength]}
@@ -351,7 +361,7 @@ export default function EditorPage() {
             </div>
             {detectedLanguage && (
               <Badge variant="secondary" className="text-xs">
-                Detected: {detectedLanguage}
+                مكتشف: {detectedLanguage}
               </Badge>
             )}
           </div>
@@ -364,9 +374,9 @@ export default function EditorPage() {
         <Card className="border-2 border-gray-300 dark:border-border shadow-sm bg-white dark:bg-card">
           <CardContent className="p-3">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-sm font-medium">Original Text</span>
+              <span className="text-sm font-medium">النص الأصلي</span>
               <div className="flex items-center gap-2">
-                <span className="text-xs text-muted-foreground">{originalText.length} chars</span>
+                <span className="text-xs text-muted-foreground">{originalText.length} حرف</span>
                 <Button
                   variant="ghost"
                   size="icon"
@@ -379,7 +389,7 @@ export default function EditorPage() {
               </div>
             </div>
             <Textarea
-              placeholder="Type, paste, or use the browser extension to select text..."
+              placeholder="اكتب أو الصق النص، أو استخدم إضافة المتصفح لتحديد النص…"
               value={originalText}
               onChange={(e) => setOriginalText(e.target.value)}
               className="min-h-[280px] resize-none text-sm border-2 border-gray-300 dark:border-border bg-gray-50/30 dark:bg-background focus:bg-white dark:focus:bg-background"
@@ -391,9 +401,9 @@ export default function EditorPage() {
         <Card className="border-2 border-gray-300 dark:border-border shadow-sm relative bg-white dark:bg-card">
           <CardContent className="p-3">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-sm font-medium">Enhanced Text</span>
+              <span className="text-sm font-medium">النص المحسّن</span>
               <div className="flex items-center gap-2">
-                <span className="text-xs text-muted-foreground">{enhancedText.length} chars</span>
+                <span className="text-xs text-muted-foreground">{enhancedText.length} حرف</span>
                 <Button
                   variant="ghost"
                   size="icon"
@@ -407,33 +417,19 @@ export default function EditorPage() {
             </div>
             <div className="relative">
               <Textarea
-                placeholder="Enhanced text will appear here..."
+                placeholder="سيظهر النص المحسّن هنا…"
                 value={enhancedText}
                 onChange={(e) => setEnhancedText(e.target.value)}
                 className={`min-h-[280px] resize-none text-sm border-2 border-gray-300 dark:border-border bg-gray-50/30 dark:bg-background focus:bg-white dark:focus:bg-background ${!canGenerate() && !enhancedText ? 'opacity-50' : ''}`}
               />
-              {/* Upgrade Overlay */}
-              {!canGenerate() && !enhancedText && (
-                <div className="absolute inset-0 flex items-center justify-center bg-background/80 backdrop-blur-sm rounded-md">
-                  <div className="text-center p-6 max-w-xs">
-                    <div className="w-12 h-12 mx-auto mb-4 rounded-full bg-primary/10 flex items-center justify-center">
-                      <Wand2 className="h-6 w-6 text-primary" />
-                    </div>
-                    <h3 className="font-semibold text-lg mb-2">Credits Exhausted</h3>
-                    <p className="text-sm text-muted-foreground mb-4">
-                      You've used all your free credits. Upgrade to continue enhancing your text.
-                    </p>
-                    <Button 
-                      onClick={() => window.location.href = '/pricing'}
-                      className="w-full"
-                    >
-                      View Plans
-                    </Button>
-                    <p className="text-xs text-muted-foreground mt-3">
-                      Starting at $17/month
-                    </p>
-                  </div>
-                </div>
+              {(!canGenerate() || upgradeVariant) && !enhancedText && (
+                <ConnectedUpgradePrompt
+                  variant={upgradeVariant}
+                  layout="overlay"
+                  creditsUsed={usage?.credits_used}
+                  creditsLimit={totalCredits || undefined}
+                  remainingCredits={usage?.credits_remaining}
+                />
               )}
             </div>
           </CardContent>
@@ -449,12 +445,12 @@ export default function EditorPage() {
           {isGenerating ? (
             <span className="flex items-center">
               <Loader2 className="me-2 h-4 w-4 animate-spin" />
-              <span className="animate-pulse">{loadingMessage || 'Generating...'}</span>
+              <span className="animate-pulse">{loadingMessage || 'جاري التوليد…'}</span>
             </span>
           ) : (
             <>
               <Wand2 className="me-2 h-4 w-4" />
-              {enhancedText ? 'Regenerate' : 'Generate'}
+              {enhancedText ? 'إعادة التوليد' : 'توليد'}
             </>
           )}
         </Button>
@@ -464,7 +460,7 @@ export default function EditorPage() {
           className="shrink-0"
           onClick={() => { setOriginalText(''); setEnhancedText('') }}
           disabled={!originalText && !enhancedText}
-          aria-label="Clear"
+          aria-label="مسح"
         >
           <RotateCcw className="h-4 w-4" />
         </Button>
@@ -479,12 +475,12 @@ export default function EditorPage() {
           {isGenerating ? (
             <span className="flex items-center">
               <Loader2 className="me-2 h-4 w-4 animate-spin" />
-              <span className="animate-pulse">{loadingMessage || 'Generating...'}</span>
+              <span className="animate-pulse">{loadingMessage || 'جاري التوليد…'}</span>
             </span>
           ) : (
             <>
               <Wand2 className="me-2 h-4 w-4" />
-              {enhancedText ? 'Regenerate' : 'Generate'}
+              {enhancedText ? 'إعادة التوليد' : 'توليد'}
             </>
           )}
         </Button>
@@ -494,7 +490,7 @@ export default function EditorPage() {
           disabled={!originalText && !enhancedText}
         >
           <RotateCcw className="me-2 h-4 w-4" />
-          Clear
+          مسح
         </Button>
       </div>
 
@@ -507,7 +503,7 @@ export default function EditorPage() {
           >
             <div className="flex items-center gap-2">
               <History className="h-4 w-4" />
-              <span className="text-sm font-medium">History</span>
+              <span className="text-sm font-medium">السجل</span>
               {history.length > 0 && (
                 <Badge variant="secondary" className="text-xs">{history.length}</Badge>
               )}
@@ -523,7 +519,7 @@ export default function EditorPage() {
             <div className="max-h-[300px] overflow-y-auto">
               {history.length === 0 ? (
                 <p className="text-sm text-muted-foreground text-center py-6">
-                  No history yet
+                  لا يوجد سجل بعد
                 </p>
               ) : (
                 <div className="divide-y">
@@ -565,7 +561,7 @@ export default function EditorPage() {
               )}
               {history.length > 0 && (
                 <div className="text-xs text-muted-foreground text-center py-2 border-t bg-muted/30">
-                  History kept for 7 days
+                  يُحفظ السجل لمدة ٧ أيام
                 </div>
               )}
             </div>

@@ -19,9 +19,9 @@ export function UsageChart({ data }: UsageChartProps) {
     return (
         <Card className="col-span-4">
             <CardHeader>
-                <CardTitle>Enhancement Usage</CardTitle>
+                <CardTitle>استخدام التحسينات</CardTitle>
                 <CardDescription>
-                    Your daily text enhancement activity over the last 30 days
+                    نشاط تحسين النصوص اليومي خلال آخر ٣٠ يوماً
                 </CardDescription>
             </CardHeader>
             <CardContent className="ps-2">

@@ -5,8 +5,8 @@ import { Card, CardContent } from '@emotifyai/ui'
 import { Shield, Lock, Eye, Database, FileText, UserCheck } from 'lucide-react'
 
 export const metadata: Metadata = {
-    title: 'Privacy Policy - EmotifyAI',
-    description: 'Learn how EmotifyAI protects your privacy and handles your data',
+    title: 'سياسة الخصوصية - إيموتيفاي',
+    description: 'تعرّف على كيف تحمي إيموتيفاي خصوصيتك وتتعامل مع بياناتك',
 }
 
 export default function PrivacyPage() {
@@ -14,7 +14,6 @@ export default function PrivacyPage() {
         <div className="flex min-h-dvh flex-col overflow-x-hidden">
             <Header />
             <main className="flex-1">
-                {/* Hero Section */}
                 <section className="border-b bg-gradient-to-b from-background to-muted/20">
                     <div className="page-container py-16 md:py-24">
                         <div className="mx-auto max-w-3xl text-center">
@@ -22,22 +21,20 @@ export default function PrivacyPage() {
                                 <Shield className="h-8 w-8 text-primary" />
                             </div>
                             <h1 className="text-4xl font-bold tracking-tight md:text-5xl mb-4">
-                                Privacy Policy
+                                سياسة الخصوصية
                             </h1>
                             <p className="text-xl text-muted-foreground">
-                                Your privacy is our priority. Learn how we collect, use, and protect your data.
+                                خصوصيتك أولويتنا. تعرّف على كيف نجمع بياناتك ونستخدمها ونحميها.
                             </p>
                             <p className="mt-4 text-sm text-muted-foreground">
-                                Last updated: December 30, 2025
+                                آخر تحديث: ٣٠ ديسمبر ٢٠٢٥
                             </p>
                         </div>
                     </div>
                 </section>
 
-                {/* Content */}
                 <section className="page-container py-16 md:py-24">
                     <div className="mx-auto max-w-4xl space-y-8">
-                        {/* Introduction */}
                         <Card className="border-primary/20">
                             <CardContent className="pt-6">
                                 <div className="flex items-start gap-4">
@@ -45,13 +42,13 @@ export default function PrivacyPage() {
                                         <FileText className="h-5 w-5 text-primary" />
                                     </div>
                                     <div className="flex-1">
-                                        <h2 className="text-2xl font-bold mb-4">Introduction</h2>
+                                        <h2 className="text-2xl font-bold mb-4">مقدمة</h2>
                                         <div className="prose prose-zinc dark:prose-invert max-w-none">
                                             <p>
-                                                EmotifyAI ("we," "our," or "us") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our browser extension and web application. We believe in being fully transparent about our data practices.
+                                                تلتزم إيموتيفاي (&laquo;نحن&raquo; أو &laquo;لنا&raquo;) بحماية خصوصيتك. توضّح هذه السياسة كيف نجمع معلوماتك ونستخدمها ونفصح عنها ونؤمّنها عند استخدام إضافة المتصفح وتطبيق الويب. نؤمن بالشفافية الكاملة في ممارساتنا للبيانات.
                                             </p>
                                             <p>
-                                                By using EmotifyAI, you agree to the collection and use of information in accordance with this policy.
+                                                باستخدام إيموتيفاي، فإنك توافق على جمع المعلومات واستخدامها وفق هذه السياسة.
                                             </p>
                                         </div>
                                     </div>
@@ -59,7 +56,6 @@ export default function PrivacyPage() {
                             </CardContent>
                         </Card>
 
-                        {/* Information We Collect */}
                         <Card>
                             <CardContent className="pt-6">
                                 <div className="flex items-start gap-4">
@@ -67,43 +63,37 @@ export default function PrivacyPage() {
                                         <Database className="h-5 w-5 text-blue-500" />
                                     </div>
                                     <div className="flex-1">
-                                        <h2 className="text-2xl font-bold mb-4">Information We Collect</h2>
+                                        <h2 className="text-2xl font-bold mb-4">المعلومات التي نجمعها</h2>
                                         <div className="prose prose-zinc dark:prose-invert max-w-none">
-                                            <p>We only collect the minimum amount of data necessary to provide our service.</p>
-
-                                            <h3>Account Information</h3>
+                                            <p>نجمع الحد الأدنى من البيانات اللازمة لتقديم الخدمة.</p>
+                                            <h3>معلومات الحساب</h3>
                                             <ul>
-                                                <li>Email address (for account identification and communication)</li>
-                                                <li>Display name (for personalizing your experience)</li>
-                                                <li>OAuth provider information (if you sign in with Google or GitHub)</li>
+                                                <li>البريد الإلكتروني (للتعريف بالحساب والتواصل)</li>
+                                                <li>اسم العرض (لتخصيص تجربتك)</li>
+                                                <li>معلومات مزوّد OAuth (إن سجّلت الدخول عبر Google)</li>
                                             </ul>
-
-                                            <h3>Usage Data</h3>
+                                            <h3>بيانات الاستخدام</h3>
                                             <ul>
-                                                <li>Number of text enhancements performed (to manage subscription limits)</li>
-                                                <li>Subscription tier and status (to provide appropriate features)</li>
-                                                <li>Browser and extension version (for troubleshooting and compatibility)</li>
-                                                <li>Usage logs including enhancement requests, language preferences, and success/failure status (to improve user experience and service reliability)</li>
+                                                <li>عدد تحسينات النص (لإدارة حدود الاشتراك)</li>
+                                                <li>مستوى الاشتراك وحالته</li>
+                                                <li>إصدار المتصفح والإضافة (للدعم والتوافق)</li>
+                                                <li>سجلات الاستخدام تشمل طلبات التحسين وتفضيلات اللغة وحالة النجاح/الفشل</li>
                                             </ul>
-
-                                            <h3>Text Data</h3>
+                                            <h3>بيانات النص</h3>
                                             <p>
-                                                When you use EmotifyAI to enhance text, we temporarily process your text through our AI service. <strong>We do not store, log, or train AI models on the content of your text.</strong> Text is processed in real-time and immediately discarded after enhancement.
+                                                عند تحسين النص، نعالجه مؤقتاً عبر خدمة الذكاء الاصطناعي. <strong>لا نخزّن ولا نسجّل ولا ندرّب نماذج الذكاء الاصطناعي على محتوى نصوصك.</strong> يُعالَج النص لحظياً ويُحذف فور انتهاء التحسين.
                                             </p>
-
-                                            <h3>Usage Analytics for UX Enhancement</h3>
-                                            <p>
-                                                To continuously improve your experience with EmotifyAI, we collect and store usage logs that include:
-                                            </p>
+                                            <h3>تحليلات الاستخدام لتحسين التجربة</h3>
+                                            <p>لتحسين تجربتك باستمرار، نجمع سجلات استخدام تتضمن:</p>
                                             <ul>
-                                                <li>Timestamps of enhancement requests</li>
-                                                <li>Language detection results and user language preferences</li>
-                                                <li>Enhancement success/failure status and error types</li>
-                                                <li>Token usage and processing time metrics</li>
-                                                <li>Feature usage patterns (which enhancement modes are most popular)</li>
+                                                <li>طوابع زمنية لطلبات التحسين</li>
+                                                <li>نتائج كشف اللغة وتفضيلات المستخدم</li>
+                                                <li>حالة نجاح/فشل التحسين وأنواع الأخطاء</li>
+                                                <li>استخدام الرموز (tokens) وزمن المعالجة</li>
+                                                <li>أنماط استخدام الميزات</li>
                                             </ul>
                                             <p>
-                                                <strong>Important:</strong> These logs contain metadata about your usage patterns but never include the actual text content you enhance. This data helps us identify performance issues, optimize our AI processing, and develop new features that better serve your needs.
+                                                <strong>مهم:</strong> هذه السجلات تحتوي بيانات وصفية عن الاستخدام ولا تتضمن أبداً محتوى النص الذي تحسّنه.
                                             </p>
                                         </div>
                                     </div>
@@ -111,7 +101,6 @@ export default function PrivacyPage() {
                             </CardContent>
                         </Card>
 
-                        {/* How We Use Your Information */}
                         <Card>
                             <CardContent className="pt-6">
                                 <div className="flex items-start gap-4">
@@ -119,19 +108,19 @@ export default function PrivacyPage() {
                                         <UserCheck className="h-5 w-5 text-green-500" />
                                     </div>
                                     <div className="flex-1">
-                                        <h2 className="text-2xl font-bold mb-4">How We Use Your Information</h2>
+                                        <h2 className="text-2xl font-bold mb-4">كيف نستخدم معلوماتك</h2>
                                         <div className="prose prose-zinc dark:prose-invert max-w-none">
-                                            <p>We use the collected information strictly to:</p>
+                                            <p>نستخدم المعلومات المجمّعة حصرياً من أجل:</p>
                                             <ul>
-                                                <li>Provide and maintain our service</li>
-                                                <li>Authenticate and authorize users</li>
-                                                <li>Process text enhancement requests</li>
-                                                <li>Manage subscriptions and billing securely</li>
-                                                <li>Monitor usage limits and prevent system abuse</li>
-                                                <li>Analyze usage patterns to improve service performance and user experience</li>
-                                                <li>Identify and resolve technical issues through usage logs</li>
-                                                <li>Develop new features based on user behavior insights</li>
-                                                <li>Send essential service updates (no marketing spam)</li>
+                                                <li>تقديم الخدمة وصيانتها</li>
+                                                <li>مصادقة المستخدمين والتحقق منهم</li>
+                                                <li>معالجة طلبات تحسين النص</li>
+                                                <li>إدارة الاشتراكات والفوترة بأمان</li>
+                                                <li>مراقبة حدود الاستخدام ومنع إساءة النظام</li>
+                                                <li>تحليل أنماط الاستخدام لتحسين الأداء والتجربة</li>
+                                                <li>تحديد المشاكل التقنية وحلها</li>
+                                                <li>تطوير ميزات جديدة</li>
+                                                <li>إرسال تحديثات الخدمة الضرورية (بدون رسائل تسويقية مزعجة)</li>
                                             </ul>
                                         </div>
                                     </div>
@@ -139,7 +128,6 @@ export default function PrivacyPage() {
                             </CardContent>
                         </Card>
 
-                        {/* Data Security */}
                         <Card>
                             <CardContent className="pt-6">
                                 <div className="flex items-start gap-4">
@@ -147,14 +135,14 @@ export default function PrivacyPage() {
                                         <Lock className="h-5 w-5 text-purple-500" />
                                     </div>
                                     <div className="flex-1">
-                                        <h2 className="text-2xl font-bold mb-4">Data Security</h2>
+                                        <h2 className="text-2xl font-bold mb-4">أمان البيانات</h2>
                                         <div className="prose prose-zinc dark:prose-invert max-w-none">
-                                            <p>We implement robust industry-standard security measures to protect your data:</p>
+                                            <p>نطبّق إجراءات أمان معيارية لحماية بياناتك:</p>
                                             <ul>
-                                                <li><strong>Encryption:</strong> All data is encrypted in transit using HTTPS/TLS and at rest where applicable.</li>
-                                                <li><strong>Authentication:</strong> Secure OAuth 2.0 and JWT-based authentication powered by Supabase.</li>
-                                                <li><strong>Database Security:</strong> Row-level security (RLS) policies ensure you can only access your own data.</li>
-                                                <li><strong>No Text Storage:</strong> Your text content is never recorded on our persistent storage.</li>
+                                                <li><strong>التشفير:</strong> جميع البيانات مشفّرة أثناء النقل عبر HTTPS/TLS وفي حالة السكون حيث ينطبق.</li>
+                                                <li><strong>المصادقة:</strong> OAuth 2.0 وJWT عبر Supabase.</li>
+                                                <li><strong>أمان قاعدة البيانات:</strong> سياسات RLS تضمن وصولك لبياناتك فقط.</li>
+                                                <li><strong>عدم تخزين النص:</strong> محتوى نصوصك لا يُسجّل في التخزين الدائم.</li>
                                             </ul>
                                         </div>
                                     </div>
@@ -162,7 +150,6 @@ export default function PrivacyPage() {
                             </CardContent>
                         </Card>
 
-                        {/* Third-Party Services */}
                         <Card>
                             <CardContent className="pt-6">
                                 <div className="flex items-start gap-4">
@@ -170,32 +157,24 @@ export default function PrivacyPage() {
                                         <Eye className="h-5 w-5 text-orange-500" />
                                     </div>
                                     <div className="flex-1">
-                                        <h2 className="text-2xl font-bold mb-4">Third-Party Services</h2>
+                                        <h2 className="text-2xl font-bold mb-4">خدمات الطرف الثالث</h2>
                                         <div className="prose prose-zinc dark:prose-invert max-w-none">
-                                            <p>To provide a seamless experience, we partner with specialized service providers:</p>
+                                            <p>نتعاون مع مزوّدين متخصصين:</p>
                                             <ul>
-                                                <li><strong>Supabase:</strong> For secure authentication and reliable database hosting.</li>
-                                                <li><strong>Anthropic (Claude AI):</strong> For high-quality, privacy-conscious AI text processing.</li>
-                                                <li><strong>Lemon Squeezy:</strong> For secure payment processing and subscription management.</li>
+                                                <li><strong>Supabase:</strong> المصادقة واستضافة قاعدة البيانات.</li>
+                                                <li><strong>Anthropic (Claude AI):</strong> معالجة النص بالذكاء الاصطناعي.</li>
+                                                <li><strong>Lemon Squeezy:</strong> المدفوعات وإدارة الاشتراكات.</li>
                                             </ul>
-
-                                            <h3 className="mt-6">Data Sharing (Service Providers Only)</h3>
-                                            <p><strong>We do not sell user data.</strong></p>
+                                            <h3 className="mt-6">مشاركة البيانات (مزوّدو الخدمة فقط)</h3>
+                                            <p><strong>لا نبيع بيانات المستخدمين.</strong></p>
                                             <p>
-                                                We share user data only with the service providers listed above that help us operate EmotifyAI. These providers process data strictly on our behalf for the purposes described in this Privacy Policy.
+                                                نشارك البيانات فقط مع المزوّدين أعلاه لتشغيل إيموتيفاي. لا نشاركها للإعلان أو التتبّع عبر المواقع.
                                             </p>
-                                            <p>
-                                                We do not share user data for advertising, marketing profiling, or cross-site tracking.
-                                            </p>
-
-                                            <h3 className="mt-6">Provider Policies</h3>
-                                            <p>
-                                                These services have their own privacy policies which govern how they handle data. We encourage you to review them:
-                                            </p>
+                                            <h3 className="mt-6">سياسات المزوّدين</h3>
                                             <ul>
-                                                <li><a href="https://supabase.com/privacy" target="_blank" rel="noopener noreferrer">Supabase Privacy Policy</a></li>
-                                                <li><a href="https://www.anthropic.com/privacy" target="_blank" rel="noopener noreferrer">Anthropic Privacy Policy</a></li>
-                                                <li><a href="https://www.lemonsqueezy.com/privacy" target="_blank" rel="noopener noreferrer">Lemon Squeezy Privacy Policy</a></li>
+                                                <li><a href="https://supabase.com/privacy" target="_blank" rel="noopener noreferrer">سياسة خصوصية Supabase</a></li>
+                                                <li><a href="https://www.anthropic.com/privacy" target="_blank" rel="noopener noreferrer">سياسة خصوصية Anthropic</a></li>
+                                                <li><a href="https://www.lemonsqueezy.com/privacy" target="_blank" rel="noopener noreferrer">سياسة خصوصية Lemon Squeezy</a></li>
                                             </ul>
                                         </div>
                                     </div>
@@ -203,52 +182,43 @@ export default function PrivacyPage() {
                             </CardContent>
                         </Card>
 
-                        {/* Your Rights */}
                         <Card>
                             <CardContent className="pt-6">
                                 <div className="prose prose-zinc dark:prose-invert max-w-none">
-                                    <h2 className="text-2xl font-bold mb-4">Your Rights</h2>
-                                    <p>You have the right to:</p>
+                                    <h2 className="text-2xl font-bold mb-4">حقوقك</h2>
+                                    <p>يحق لك:</p>
                                     <ul>
-                                        <li><strong>Access:</strong> Request a copy of your personal data</li>
-                                        <li><strong>Correction:</strong> Update or correct your information</li>
-                                        <li><strong>Deletion:</strong> Request deletion of your account and data</li>
-                                        <li><strong>Data Portability:</strong> Export your data in a machine-readable format</li>
-                                        <li><strong>Opt-Out:</strong> Unsubscribe from marketing communications</li>
+                                        <li><strong>الوصول:</strong> طلب نسخة من بياناتك الشخصية</li>
+                                        <li><strong>التصحيح:</strong> تحديث أو تصحيح معلوماتك</li>
+                                        <li><strong>الحذف:</strong> طلب حذف حسابك وبياناتك</li>
+                                        <li><strong>قابلية النقل:</strong> تصدير بياناتك بصيغة قابلة للقراءة آلياً</li>
+                                        <li><strong>إلغاء الاشتراك:</strong> من رسائل التسويق</li>
                                     </ul>
                                     <p>
-                                        To exercise these rights, please contact us at <a href="mailto:privacy@emotifyai.com">privacy@emotifyai.com</a>.
+                                        لممارسة هذه الحقوق: <a href="mailto:privacy@emotifyai.com">privacy@emotifyai.com</a>
                                     </p>
                                 </div>
                             </CardContent>
                         </Card>
 
-                        {/* Governing Law */}
                         <Card>
                             <CardContent className="pt-6">
                                 <div className="prose prose-zinc dark:prose-invert max-w-none">
-                                    <h2 className="text-2xl font-bold mb-4">Governing Law and Jurisdiction</h2>
+                                    <h2 className="text-2xl font-bold mb-4">القانون الحاكم والاختصاص</h2>
                                     <p>
-                                        This Privacy Policy is governed by and construed in accordance with the laws of the Hashemite Kingdom of Jordan. Any disputes, claims, or legal proceedings arising out of or relating to this Privacy Policy or our data practices shall be subject to the exclusive jurisdiction of the courts of Jordan.
-                                    </p>
-                                    <p>
-                                        By using our Service, you consent to the jurisdiction and venue of the Jordanian courts for the resolution of any privacy-related disputes.
+                                        تخضع هذه السياسة لقوانين المملكة الأردنية الهاشمية. تخضع أي نزاعات للاختصاص الحصري لمحاكم الأردن.
                                     </p>
                                 </div>
                             </CardContent>
                         </Card>
 
-                        {/* Contact */}
                         <Card className="border-primary/20 bg-primary/5">
                             <CardContent className="pt-6">
                                 <div className="prose prose-zinc dark:prose-invert max-w-none">
-                                    <h2 className="text-2xl font-bold mb-4">Contact Us</h2>
-                                    <p>
-                                        If you have questions about this Privacy Policy, please contact us:
-                                    </p>
+                                    <h2 className="text-2xl font-bold mb-4">تواصل معنا</h2>
                                     <ul>
-                                        <li>Email: <a href="mailto:privacy@emotifyai.com">privacy@emotifyai.com</a></li>
-                                        <li>Support: <a href="mailto:support@emotifyai.com">support@emotifyai.com</a></li>
+                                        <li>البريد: <a href="mailto:privacy@emotifyai.com">privacy@emotifyai.com</a></li>
+                                        <li>الدعم: <a href="mailto:support@emotifyai.com">support@emotifyai.com</a></li>
                                     </ul>
                                 </div>
                             </CardContent>

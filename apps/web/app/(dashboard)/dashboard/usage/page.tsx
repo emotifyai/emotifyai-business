@@ -31,14 +31,14 @@ export default function UsagePage() {
     }
 
     // Handle authentication errors
-    if (statsError?.message.includes('Authentication required') || 
-        historyError?.message.includes('Authentication required')) {
+    if (statsError?.message.includes('يرجى تسجيل الدخول') || 
+        historyError?.message.includes('يرجى تسجيل الدخول')) {
         return (
             <div className="space-y-8">
                 <Alert variant="destructive">
                     <AlertCircle className="h-4 w-4" />
                     <AlertDescription>
-                        Please log in to view your usage statistics.
+                        يرجى تسجيل الدخول لعرض إحصائيات الاستخدام.
                     </AlertDescription>
                 </Alert>
             </div>
@@ -53,14 +53,14 @@ export default function UsagePage() {
                     <AlertCircle className="h-4 w-4" />
                     <AlertDescription className="flex items-center justify-between">
                         <span>
-                            Failed to load usage data: {statsError?.message || historyError?.message}
+                            فشل تحميل بيانات الاستخدام: {statsError?.message || historyError?.message}
                         </span>
                         <Button 
                             variant="outline" 
                             size="sm" 
                             onClick={() => refetchStats()}
                         >
-                            Retry
+                            إعادة المحاولة
                         </Button>
                     </AlertDescription>
                 </Alert>
@@ -90,36 +90,36 @@ export default function UsagePage() {
     return (
         <div className="space-y-8">
             <div>
-                <h2 className="text-3xl font-bold tracking-tight">Usage Statistics</h2>
+                <h2 className="text-3xl font-bold tracking-tight">إحصائيات الاستخدام</h2>
                 <p className="text-muted-foreground">
-                    Monitor your AI enhancement usage and limits
+                    راقب استخدامك لتحسينات الذكاء الاصطناعي والحدود
                 </p>
             </div>
 
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                 <StatsCard
-                    title="Total Enhancements"
+                    title="إجمالي التحسينات"
                     value={usage.total_enhancements}
                     icon={Zap}
-                    description="All time"
+                    description="طوال الوقت"
                 />
                 <StatsCard
-                    title="Credits Used"
+                    title="الرصيد المستخدم"
                     value={usage.credits_used}
                     icon={Activity}
-                    description={`${usagePercentage.toFixed(1)}% of ${totalCredits}`}
+                    description={`${usagePercentage.toFixed(1)}٪ من ${totalCredits}`}
                 />
                 <StatsCard
-                    title="Weekly Usage"
+                    title="الاستخدام الأسبوعي"
                     value={usage.weekly_usage}
                     icon={BarChart3}
-                    description="Last 7 days"
+                    description="آخر ٧ أيام"
                 />
                 <StatsCard
-                    title="Days Remaining"
+                    title="الأيام المتبقية"
                     value={daysRemaining ?? "∞"}
                     icon={Clock}
-                    description={usage.reset_date ? "Until reset" : "No reset scheduled"}
+                    description={usage.reset_date ? "حتى إعادة التعيين" : "لا يوجد إعادة تعيين مجدولة"}
                 />
             </div>
 
@@ -134,7 +134,7 @@ export default function UsagePage() {
                                 onClick={() => fetchNextPage()}
                                 disabled={isFetchingNextPage}
                             >
-                                {isFetchingNextPage ? 'Loading...' : 'Load More History'}
+                                {isFetchingNextPage ? 'جاري التحميل…' : 'تحميل المزيد من السجل'}
                             </Button>
                         </div>
                     )}

@@ -19,15 +19,15 @@ export default function AuthLayout({
                     </div>
                     <div className="relative z-20 flex items-center text-lg font-medium">
                         <Link href="/" className="flex items-center gap-2">
-                            <span className="text-gradient-brand text-2xl font-bold">EmotifyAI</span>
+                            <span className="text-gradient-brand text-2xl font-bold">إيموتيف<span className="text-primary">اي</span></span>
                         </Link>
                     </div>
                     <div className="relative z-20 mt-auto">
                         <blockquote className="space-y-2">
                             <p className="text-lg">
-                                &ldquo;EmotifyAI has completely transformed how I write. The AI enhancement is subtle yet powerful, making my emails and documents sound so much more professional.&rdquo;
+                                &laquo;غيّرت إيموتيفاي طريقة كتابتي بالكامل. التحسين بالذكاء الاصطناعي دقيق وقوي، ورسائلي ووثائقي أصبحت أكثر احترافية.&raquo;
                             </p>
-                            <footer className="text-sm">Sofia Davis</footer>
+                            <footer className="text-sm">صفاء الدوسري</footer>
                         </blockquote>
                     </div>
                 </div>

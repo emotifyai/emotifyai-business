@@ -28,9 +28,9 @@ export default function DashboardPage() {
                 refetchSubscription(),
                 refetchUsage()
             ])
-            toast.success('Dashboard data refreshed successfully!')
+            toast.success('تم تحديث بيانات لوحة التحكم بنجاح!')
         } catch (error) {
-            toast.error('Failed to refresh data. Please try again.')
+            toast.error('فشل تحديث البيانات. حاول مرة أخرى.')
         } finally {
             setIsRefreshing(false)
         }
@@ -42,14 +42,14 @@ export default function DashboardPage() {
     }
 
     // Handle authentication errors
-    if (userError?.message.includes('Authentication required') ||
-        usageError?.message.includes('Authentication required')) {
+    if (userError?.message.includes('يرجى تسجيل الدخول') ||
+        usageError?.message.includes('يرجى تسجيل الدخول')) {
         return (
             <div className="space-y-8">
                 <Alert variant="destructive">
                     <AlertCircle className="h-4 w-4" />
                     <AlertDescription>
-                        Please log in to view your dashboard.
+                        يرجى تسجيل الدخول لعرض لوحة التحكم.
                     </AlertDescription>
                 </Alert>
             </div>
@@ -64,7 +64,7 @@ export default function DashboardPage() {
                     <AlertCircle className="h-4 w-4" />
                     <AlertDescription className="flex items-center justify-between">
                         <span>
-                            Failed to load dashboard data: {usageError?.message || subError?.message}
+                            فشل تحميل بيانات لوحة التحكم: {usageError?.message || subError?.message}
                         </span>
                         <Button
                             variant="outline"
@@ -72,7 +72,7 @@ export default function DashboardPage() {
                             onClick={handleRefresh}
                             disabled={isRefreshing}
                         >
-                            Retry
+                            إعادة المحاولة
                         </Button>
                     </AlertDescription>
                 </Alert>
@@ -99,9 +99,9 @@ export default function DashboardPage() {
             <PlanHandler />
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div className="min-w-0">
-                    <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">Dashboard</h2>
+                    <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">لوحة التحكم</h2>
                     <p className="truncate text-sm text-muted-foreground sm:text-base">
-                        Welcome back, {user.display_name || 'User'}
+                        مرحباً بعودتك، {user.display_name || 'مستخدم'}
                     </p>
                 </div>
                 <Button
@@ -112,34 +112,34 @@ export default function DashboardPage() {
                     className="w-full shrink-0 sm:w-auto flex items-center justify-center gap-2"
                 >
                     <RefreshCw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
-                    {isRefreshing ? 'Refreshing...' : 'Refresh'}
+                    {isRefreshing ? 'جاري التحديث…' : 'تحديث'}
                 </Button>
             </div>
 
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                 <StatsCard
-                    title="Total Enhancements"
+                    title="إجمالي التحسينات"
                     value={usage.total_enhancements}
                     icon={Zap}
-                    description="All time"
+                    description="طوال الوقت"
                 />
                 <StatsCard
-                    title="Credits Used"
+                    title="الرصيد المستخدم"
                     value={usage.credits_used}
                     icon={Activity}
-                    description={`${usage.credits_remaining} remaining`}
+                    description={`${usage.credits_remaining} متبقي`}
                 />
                 <StatsCard
-                    title="Current Plan"
+                    title="الخطة الحالية"
                     value={subscription.tier.toUpperCase()}
                     icon={CreditCard}
                     description={subscription.status}
                 />
                 <StatsCard
-                    title="Daily Usage"
+                    title="الاستخدام اليومي"
                     value={usage.daily_usage}
                     icon={BarChart3}
-                    description="Last 24 hours"
+                    description="آخر ٢٤ ساعة"
                 />
             </div>
 

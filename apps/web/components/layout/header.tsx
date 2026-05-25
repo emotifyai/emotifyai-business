@@ -21,20 +21,20 @@ export function Header({ showMobileMenu = true }: { showMobileMenu?: boolean }) 
           <Link href="/" className="flex min-w-0 items-center gap-2">
             <img
               src="/logo.svg"
-              alt="EmotifyAI"
+              alt="إيموتيفاي"
               className="h-8 w-8 shrink-0"
             />
             <span className="text-gradient-brand truncate text-lg font-bold sm:text-2xl">
-              EmotifyAI
+              إيموتيف<span className="text-primary">اي</span>
             </span>
           </Link>
         </div>
 
         <nav className="hidden items-center gap-6 md:flex">
           {[
-            { href: '/pricing', label: 'Pricing' },
-            { href: '/docs', label: 'Docs' },
-            { href: '/about', label: 'About' },
+            { href: '/about', label: 'من نحن' },
+            { href: '/docs', label: 'التوثيق' },
+            { href: '/pricing', label: 'الأسعار' },
           ].map((item) => (
             <Link
               key={item.href}
@@ -61,7 +61,7 @@ export function Header({ showMobileMenu = true }: { showMobileMenu?: boolean }) 
             <NavbarUserMenu user={user} />
           ) : (
             <Button variant="ghost" size="sm" asChild>
-              <Link href="/login">Login</Link>
+              <Link href="/login">تسجيل الدخول</Link>
             </Button>
           )}
         </div>

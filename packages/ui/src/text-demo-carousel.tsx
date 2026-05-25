@@ -3,9 +3,22 @@
 import * as React from "react"
 import { cn } from "../lib/utils"
 
+export type TextDemoLang = "en" | "ar" | "fr"
+
 export type TextDemoPair = {
   input: string
   output: string
+  lang: TextDemoLang
+}
+
+const LANG_BADGE: Record<TextDemoLang, string> = {
+  ar: "عربي",
+  en: "انجليزي",
+  fr: "فرنسي",
+}
+
+function textDir(lang: TextDemoLang): "rtl" | "ltr" {
+  return lang === "ar" ? "rtl" : "ltr"
 }
 
 type TextDemoCarouselProps = {
@@ -47,7 +60,12 @@ export function TextDemoCarousel({
     >
       <div className="mb-4 flex items-center justify-between gap-2 text-xs text-muted-foreground">
         <span>{inputLabel}</span>
-        <span className="text-primary">→</span>
+        <span
+          className="rounded-full border border-border/50 bg-background/60 px-2 py-0.5 text-[10px] font-medium text-foreground"
+          aria-label={`لغة المثال: ${LANG_BADGE[pair.lang]}`}
+        >
+          {LANG_BADGE[pair.lang]}
+        </span>
         <span>{outputLabel}</span>
       </div>
       <div className="grid gap-4 sm:grid-cols-2">
@@ -56,6 +74,7 @@ export function TextDemoCarousel({
           direction={direction}
           label={inputLabel}
           text={pair.input}
+          dir={textDir(pair.lang)}
           variant="input"
         />
         <DemoPane
@@ -63,6 +82,7 @@ export function TextDemoCarousel({
           direction={direction}
           label={outputLabel}
           text={pair.output}
+          dir={textDir(pair.lang)}
           variant="output"
         />
       </div>
@@ -94,11 +114,13 @@ function DemoPane({
   label,
   variant,
   direction,
+  dir,
 }: {
   text: string
   label: string
   variant: "input" | "output"
   direction: "up" | "down"
+  dir: "rtl" | "ltr"
 }) {
   return (
     <div
@@ -111,7 +133,7 @@ function DemoPane({
       )}
     >
       <p className="mb-1 text-xs font-medium text-muted-foreground">{label}</p>
-      <p dir="auto" className="text-pretty">
+      <p dir={dir} className="text-pretty">
         {text}
       </p>
     </div>

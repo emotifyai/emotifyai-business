@@ -12,7 +12,9 @@ export type SubscriptionTier =
     | 'business_monthly'
     | 'basic_annual'
     | 'pro_annual'
-    | 'business_annual';
+    | 'business_annual'
+    | 'small_bundle'
+    | 'large_bundle';
 
 export type SubscriptionStatus =
     | 'active'
@@ -88,14 +90,38 @@ export const SUBSCRIPTION_TIERS: Record<SubscriptionTier, SubscriptionTierConfig
         ]
     },
 
+    small_bundle: {
+        id: 'small_bundle',
+        name: 'Small Bundle',
+        price: 5,
+        generations: 50,
+        features: [
+            '50 one-time conversions',
+            'No expiration date',
+            'Stacks with your current plan',
+        ],
+    },
+
+    large_bundle: {
+        id: 'large_bundle',
+        name: 'Large Bundle',
+        price: 10,
+        generations: 100,
+        features: [
+            '100 one-time conversions',
+            'No expiration date',
+            'Stacks with your current plan',
+        ],
+    },
+
     pro_monthly: {
         id: 'pro_monthly',
         name: 'Pro Monthly',
-        price: 37,
-        generations: 700,
+        price: 12,
+        generations: 300,
         duration: 'month',
         features: [
-            '700 generations per month',
+            '300 generations per month',
             'All languages (EN, AR, FR)',
             'All enhancement modes',
             'Fast processing speed',
@@ -141,11 +167,11 @@ export const SUBSCRIPTION_TIERS: Record<SubscriptionTier, SubscriptionTierConfig
     pro_annual: {
         id: 'pro_annual',
         name: 'Pro Annual',
-        price: 333, // 37 * 12 * 0.75
-        generations: 700,
+        price: 99,
+        generations: 300,
         duration: 'year',
         features: [
-            '700 generations per month',
+            '300 generations per month',
             'Save 25% vs monthly',
             'All languages (EN, AR, FR)',
             'All enhancement modes',

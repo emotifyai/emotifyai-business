@@ -23,19 +23,18 @@ export function LoginForm() {
         try {
             await login.mutateAsync({ email, password })
             
-            // Check if this is from extension
             const source = searchParams.get('source')
             const redirectTo = searchParams.get('redirect_to')
             
             if (source === 'extension' && redirectTo) {
-                toast.success('Logged in successfully! Connecting to extension...')
+                toast.success('تم تسجيل الدخول بنجاح! جاري الاتصال بالإضافة…')
                 router.push(redirectTo)
             } else {
-                toast.success('Logged in successfully')
+                toast.success('تم تسجيل الدخول بنجاح')
                 router.push('/dashboard')
             }
         } catch (error) {
-            toast.error(`Failed to login. Please check your credentials. ${error}`)
+            toast.error(`فشل تسجيل الدخول. تحقق من بياناتك. ${error}`)
         }
     }
 
@@ -44,7 +43,7 @@ export function LoginForm() {
             <form onSubmit={handleSubmit}>
                 <div className="grid gap-4">
                     <div className="grid gap-2">
-                        <Label htmlFor="email">Email</Label>
+                        <Label htmlFor="email">البريد الإلكتروني</Label>
                         <Input
                             id="email"
                             placeholder="name@example.com"
@@ -60,12 +59,12 @@ export function LoginForm() {
                     </div>
                     <div className="grid gap-2">
                         <div className="flex items-center justify-between">
-                            <Label htmlFor="password">Password</Label>
+                            <Label htmlFor="password">كلمة المرور</Label>
                             <Link
                                 href="/reset-password"
                                 className="text-sm font-medium text-muted-foreground hover:text-primary"
                             >
-                                Forgot password?
+                                نسيت كلمة المرور؟
                             </Link>
                         </div>
                         <Input
@@ -83,7 +82,7 @@ export function LoginForm() {
                         {login.isPending && (
                             <span className="me-2 h-4 w-4 animate-spin rounded-full border-2 border-background border-t-transparent" />
                         )}
-                        Sign In
+                        تسجيل الدخول
                     </Button>
                 </div>
             </form>
@@ -94,7 +93,7 @@ export function LoginForm() {
                 </div>
                 <div className="relative flex justify-center text-xs uppercase">
                     <span className="bg-background px-2 text-muted-foreground">
-                        Or continue with
+                        أو تابع باستخدام
                     </span>
                 </div>
             </div>

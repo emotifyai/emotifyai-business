@@ -6,7 +6,6 @@ import { Button } from '@emotifyai/ui'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@emotifyai/ui'
 import { Check } from 'lucide-react'
 import { SubscriptionTier } from '@/types/database'
-import { SUBSCRIPTION_TIERS } from '@/lib/subscription/types'
 import { Skeleton } from '@emotifyai/ui'
 
 export default function SubscriptionPage() {
@@ -22,42 +21,55 @@ export default function SubscriptionPage() {
 
     const plans = [
         {
-            name: 'Monthly Pro',
-            price: '$37',
-            period: '/month',
+            name: 'Pro شهري',
+            price: '٤٥ ريال',
+            period: '/شهر',
             tier: SubscriptionTier.PRO_MONTHLY,
-            features: SUBSCRIPTION_TIERS.pro_monthly.features,
+            features: [
+                '٣٠٠ تحويل شهرياً',
+                'جميع اللغات (عربي، إنجليزي، فرنسي)',
+                'جميع أوضاع التحسين',
+                'معالجة سريعة',
+                'دعم بالبريد',
+            ],
         },
         {
-            name: 'Lifetime Launch',
-            price: '$97',
-            period: 'one-time',
+            name: 'مدى الحياة',
+            price: '٩٧ دولار',
+            period: 'مرة واحدة',
             tier: SubscriptionTier.LIFETIME_LAUNCH,
-            features: SUBSCRIPTION_TIERS.lifetime_launch.features,
+            features: [
+                'وصول مدى الحياة',
+                'جميع اللغات',
+                'دعم أولوية',
+                'معالجة سريعة',
+                'محدود لأول ٥٠٠ مشترك',
+            ],
         },
     ]
 
     return (
         <div className="space-y-8">
             <div>
-                <h2 className="text-3xl font-bold tracking-tight">Subscription</h2>
+                <h2 className="text-3xl font-bold tracking-tight">الاشتراك</h2>
                 <p className="text-muted-foreground">
-                    Manage your subscription plan and billing
+                    إدارة خطتك والفوترة
                 </p>
             </div>
 
             <div className="grid gap-8 md:grid-cols-2">
-                {/* Current Plan */}
                 <div className="space-y-6">
-                    <h3 className="text-lg font-medium">Current Plan</h3>
+                    <h3 className="text-lg font-medium">الخطة الحالية</h3>
                     <SubscriptionCard
                         tier={subscription.tier}
                         status={subscription.status}
                         currentPeriodEnd={new Date(subscription.current_period_end)}
                         usage={{
-                            used: 45, // Mock data
-                            limit: 1000,
-                            percentage: 4.5
+                            used: subscription.credits_used ?? 0,
+                            limit: subscription.credits_limit ?? 0,
+                            percentage: subscription.credits_limit
+                                ? ((subscription.credits_used ?? 0) / subscription.credits_limit) * 100
+                                : 0,
                         }}
                     />
                     {subscription.tier !== SubscriptionTier.TRIAL && (
@@ -66,14 +78,13 @@ export default function SubscriptionPage() {
                             className="w-full"
                             onClick={() => customerPortal.mutate()}
                         >
-                            Manage Billing & Invoices
+                            إدارة الفوترة والفواتير
                         </Button>
                     )}
                 </div>
 
-                {/* Available Plans */}
                 <div className="space-y-6">
-                    <h3 className="text-lg font-medium">Available Plans</h3>
+                    <h3 className="text-lg font-medium">الخطط المتاحة</h3>
                     <div className="grid gap-4">
                         {plans.map((plan) => (
                             <Card key={plan.name} className={subscription.tier === plan.tier ? "border-primary" : ""}>
@@ -96,14 +107,14 @@ export default function SubscriptionPage() {
                                 </CardContent>
                                 <CardFooter>
                                     {subscription.tier === plan.tier ? (
-                                        <Button className="w-full" disabled>Current Plan</Button>
+                                        <Button className="w-full" disabled>خطتك الحالية</Button>
                                     ) : (
                                         <Button
                                             className="w-full"
                                             variant="glow"
                                             onClick={() => createCheckout.mutate(plan.tier)}
                                         >
-                                            Upgrade to {plan.name}
+                                            الترقية إلى {plan.name}
                                         </Button>
                                     )}
                                 </CardFooter>

@@ -20,16 +20,13 @@ export function PlanHandler() {
     useEffect(() => {
         if (!plan || isProcessing) return
 
-        // Don't auto-checkout for trial plan
         if (plan === 'trial') {
-            // Just remove the parameter
             const url = new URL(window.location.href)
             url.searchParams.delete('plan')
             router.replace(url.pathname + url.search)
             return
         }
 
-        // Trigger checkout for paid plans
         setIsProcessing(true)
 
         fetch('/api/checkout', {
@@ -49,10 +46,9 @@ export function PlanHandler() {
                 }
             })
             .catch(error => {
-                toast.error('Failed to start checkout. Please try again.')
+                toast.error('فشل بدء الدفع. حاول مرة أخرى.')
                 console.error(error)
                 setIsProcessing(false)
-                // Remove plan parameter on error
                 const url = new URL(window.location.href)
                 url.searchParams.delete('plan')
                 router.replace(url.pathname + url.search)
@@ -65,8 +61,8 @@ export function PlanHandler() {
         <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center">
             <div className="bg-card p-8 rounded-lg shadow-lg flex flex-col items-center gap-4">
                 <LoadingSpinner className="h-8 w-8" />
-                <p className="text-lg font-medium">Redirecting to checkout...</p>
-                <p className="text-sm text-muted-foreground">Please wait</p>
+                <p className="text-lg font-medium">جاري التوجيه إلى الدفع…</p>
+                <p className="text-sm text-muted-foreground">يرجى الانتظار</p>
             </div>
         </div>
     )

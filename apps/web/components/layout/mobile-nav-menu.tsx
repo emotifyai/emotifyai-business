@@ -9,9 +9,9 @@ import { cn } from '@/lib/utils'
 import { ThemeToggle } from './theme-toggle'
 
 const publicNavItems = [
-  { href: '/pricing', label: 'Pricing' },
-  { href: '/docs', label: 'Docs' },
-  { href: '/about', label: 'About' },
+  { href: '/about', label: 'من نحن' },
+  { href: '/docs', label: 'التوثيق' },
+  { href: '/pricing', label: 'الأسعار' },
 ]
 
 export function MobileNavMenu() {
@@ -25,19 +25,19 @@ export function MobileNavMenu() {
           variant="ghost"
           size="icon"
           className="md:hidden"
-          aria-label="Open menu"
+          aria-label="فتح القائمة"
         >
           <Menu className="size-5" />
         </Button>
       </SheetTrigger>
-      <SheetContent side="left" className="safe-area-top w-full sm:max-w-sm">
+      <SheetContent side="right" className="safe-area-top w-full sm:max-w-sm">
         <div className="flex flex-col gap-6 pt-2">
           <Link
             href="/"
             className="text-gradient-brand text-xl font-bold"
             onClick={() => setOpen(false)}
           >
-            EmotifyAI
+            إيموتيفاي
           </Link>
           <nav className="flex flex-col gap-1">
             {publicNavItems.map((item) => (
@@ -57,7 +57,7 @@ export function MobileNavMenu() {
             ))}
           </nav>
           <div className="flex items-center justify-between border-t pt-4">
-            <span className="text-sm text-muted-foreground">Theme</span>
+            <span className="text-sm text-muted-foreground">المظهر</span>
             <ThemeToggle />
           </div>
         </div>

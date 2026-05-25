@@ -24,19 +24,18 @@ export function SignupForm() {
         try {
             await signup.mutateAsync({ email, password, displayName })
             
-            // Check if this is from extension
             const source = searchParams.get('source')
             const redirectTo = searchParams.get('redirect_to')
             
             if (source === 'extension' && redirectTo) {
-                toast.success('Account created successfully! Setting up your extension...')
+                toast.success('تم إنشاء الحساب بنجاح! جاري إعداد الإضافة…')
                 router.push(redirectTo)
             } else {
-                toast.success('Account created successfully! Choose your plan to get started.')
+                toast.success('تم إنشاء الحساب بنجاح! اختر خطتك للبدء.')
                 router.push('/pricing?from=new_user')
             }
         } catch (error) {
-            toast.error(`Failed to create account. Please try again. ${error}`)
+            toast.error(`فشل إنشاء الحساب. حاول مرة أخرى. ${error}`)
         }
     }
 
@@ -45,10 +44,10 @@ export function SignupForm() {
             <form onSubmit={handleSubmit}>
                 <div className="grid gap-4">
                     <div className="grid gap-2">
-                        <Label htmlFor="name">Full Name</Label>
+                        <Label htmlFor="name">الاسم الكامل</Label>
                         <Input
                             id="name"
-                            placeholder="John Doe"
+                            placeholder="محمد أحمد"
                             type="text"
                             autoCapitalize="words"
                             autoComplete="name"
@@ -59,7 +58,7 @@ export function SignupForm() {
                         />
                     </div>
                     <div className="grid gap-2">
-                        <Label htmlFor="email">Email</Label>
+                        <Label htmlFor="email">البريد الإلكتروني</Label>
                         <Input
                             id="email"
                             placeholder="name@example.com"
@@ -74,7 +73,7 @@ export function SignupForm() {
                         />
                     </div>
                     <div className="grid gap-2">
-                        <Label htmlFor="password">Password</Label>
+                        <Label htmlFor="password">كلمة المرور</Label>
                         <Input
                             id="password"
                             type="password"
@@ -87,14 +86,14 @@ export function SignupForm() {
                             minLength={8}
                         />
                         <p className="text-xs text-muted-foreground">
-                            Must be at least 8 characters long
+                            يجب أن تكون ٨ أحرف على الأقل
                         </p>
                     </div>
                     <Button disabled={signup.isPending} type="submit" variant="glow">
                         {signup.isPending && (
                             <LoadingSpinner className="me-2 h-4 w-4" />
                         )}
-                        Create Account
+                        إنشاء حساب
                     </Button>
                 </div>
             </form>
@@ -105,7 +104,7 @@ export function SignupForm() {
                 </div>
                 <div className="relative flex justify-center text-xs uppercase">
                     <span className="bg-background px-2 text-muted-foreground">
-                        Or continue with
+                        أو تابع باستخدام
                     </span>
                 </div>
             </div>

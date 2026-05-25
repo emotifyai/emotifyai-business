@@ -273,6 +273,8 @@ export enum SubscriptionTier {
     BASIC_ANNUAL = 'basic_annual',
     PRO_ANNUAL = 'pro_annual',
     BUSINESS_ANNUAL = 'business_annual',
+    SMALL_BUNDLE = 'small_bundle',
+    LARGE_BUNDLE = 'large_bundle',
 }
 
 /**

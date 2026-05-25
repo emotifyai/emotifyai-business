@@ -4,7 +4,7 @@ interface PageLoadingProps {
     message?: string
 }
 
-export function PageLoading({ message = 'Loading...' }: PageLoadingProps) {
+export function PageLoading({ message = 'جاري التحميل…' }: PageLoadingProps) {
     return (
         <div className="flex min-h-[400px] flex-col items-center justify-center">
             <LoadingSpinner size="lg" className="mb-4" />

@@ -6,10 +6,10 @@ import { LayoutDashboard, Wand2, BarChart3, Settings } from 'lucide-react'
 import { BottomNav, type BottomNavItem } from '@emotifyai/ui'
 
 const navItems = [
-  { href: '/dashboard', label: 'Home', icon: <LayoutDashboard /> },
-  { href: '/dashboard/editor', label: 'Editor', icon: <Wand2 /> },
-  { href: '/dashboard/usage', label: 'Usage', icon: <BarChart3 /> },
-  { href: '/dashboard/settings', label: 'Settings', icon: <Settings /> },
+  { href: '/dashboard', label: 'الرئيسية', icon: <LayoutDashboard /> },
+  { href: '/dashboard/editor', label: 'المحرر', icon: <Wand2 /> },
+  { href: '/dashboard/usage', label: 'الاستخدام', icon: <BarChart3 /> },
+  { href: '/dashboard/settings', label: 'الإعدادات', icon: <Settings /> },
 ]
 
 export function DashboardBottomNav() {

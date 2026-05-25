@@ -3,6 +3,8 @@ import crypto from 'crypto'
 import { createAdminClient } from '@/lib/supabase/server'
 import { SubscriptionStatus, SubscriptionTier } from '@/types/database'
 import type { LemonSqueezyWebhookPayload } from '@/types/api'
+import { getCreditsForTier, isBundleTier } from '@/lib/pricing/credits'
+import type { SubscriptionTier as AppSubscriptionTier } from '@/lib/subscription/types'
 
 /**
  * Verify webhook signature from Lemon Squeezy
@@ -68,8 +70,25 @@ function getSubscriptionTier(variantId: string): SubscriptionTier {
         return SubscriptionTier.BUSINESS_ANNUAL
     }
 
+    if (variantId === process.env.LEMONSQUEEZY_SMALL_BUNDLE_VARIANT_ID) {
+        return SubscriptionTier.SMALL_BUNDLE
+    }
+    if (variantId === process.env.LEMONSQUEEZY_LARGE_BUNDLE_VARIANT_ID) {
+        return SubscriptionTier.LARGE_BUNDLE
+    }
+
     // Default to free plan for unknown variants
     return SubscriptionTier.FREE
+}
+
+function getBundleTierFromVariant(variantId: string): SubscriptionTier | null {
+    if (variantId === process.env.LEMONSQUEEZY_SMALL_BUNDLE_VARIANT_ID) {
+        return SubscriptionTier.SMALL_BUNDLE
+    }
+    if (variantId === process.env.LEMONSQUEEZY_LARGE_BUNDLE_VARIANT_ID) {
+        return SubscriptionTier.LARGE_BUNDLE
+    }
+    return null
 }
 
 export async function POST(request: NextRequest) {
@@ -181,27 +200,6 @@ export async function POST(request: NextRequest) {
 
                 const tier = getSubscriptionTier(variantId)
 
-                // Get credit limits based on tier
-                const getCreditLimit = (tier: SubscriptionTier): number => {
-                    switch (tier) {
-                        case SubscriptionTier.FREE:
-                            return 10  // Updated to match schema
-                        case SubscriptionTier.LIFETIME_LAUNCH:
-                            return 1000
-                        case SubscriptionTier.BASIC_MONTHLY:
-                        case SubscriptionTier.BASIC_ANNUAL:
-                            return 350
-                        case SubscriptionTier.PRO_MONTHLY:
-                        case SubscriptionTier.PRO_ANNUAL:
-                            return 700
-                        case SubscriptionTier.BUSINESS_MONTHLY:
-                        case SubscriptionTier.BUSINESS_ANNUAL:
-                            return 1500
-                        default:
-                            return 10  // Updated to match schema
-                    }
-                }
-
                 const subscriptionData = {
                     // @ts-ignore
                     user_id: profile.id,
@@ -216,12 +214,14 @@ export async function POST(request: NextRequest) {
                     current_period_end: attrs.ends_at || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
                     // @ts-ignore
                     cancel_at: attrs.ends_at || null,
-                    credits_limit: getCreditLimit(tier),
+                    credits_limit: getCreditsForTier(tier as AppSubscriptionTier),
                     credits_used: 0,
-                    credits_reset_date: tier === SubscriptionTier.FREE ? null :
-                        (tier.includes('annual') ?
-                            new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString() :
-                            new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()),
+                    credits_reset_date:
+                        tier === SubscriptionTier.FREE || isBundleTier(tier as AppSubscriptionTier)
+                            ? null
+                            : tier.includes('annual')
+                              ? new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString()
+                              : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
                     validity_days: tier === SubscriptionTier.FREE ? 10 : null,
                 }
 
@@ -297,10 +297,55 @@ export async function POST(request: NextRequest) {
 
                 console.log(`Processing order_created for email: ${userEmail}, variant: ${variantId}`)
 
-                // Only process Lifetime Launch purchases
-                const isLifetimeVariant = variantId === process.env.LEMONSQUEEZY_LIFETIME_LAUNCH_VARIANT_ID
-                
-                if (isLifetimeVariant) {
+                const bundleTier = variantId ? getBundleTierFromVariant(variantId) : null
+                const isLifetimeVariant =
+                    variantId === process.env.LEMONSQUEEZY_LIFETIME_LAUNCH_VARIANT_ID
+
+                if (bundleTier) {
+                    // @ts-ignore
+                    const { data: profile, error: profileError } = await supabase
+                        .from('profiles')
+                        .select('id, email')
+                        .ilike('email', userEmail as string)
+                        .single()
+
+                    if (!profile || profileError) {
+                        console.error(`User not found for bundle order: ${userEmail}`, profileError)
+                        return NextResponse.json({ error: 'User not found' }, { status: 404 })
+                    }
+
+                    const bundleCredits = getCreditsForTier(bundleTier as AppSubscriptionTier)
+                    const farFuture = new Date(Date.now() + 100 * 365 * 24 * 60 * 60 * 1000).toISOString()
+
+                    const bundleData = {
+                        // @ts-ignore
+                        user_id: profile.id,
+                        lemon_squeezy_id: `order_${payload.data.id}`,
+                        status: SubscriptionStatus.ACTIVE,
+                        tier: bundleTier,
+                        tier_name: bundleTier,
+                        current_period_start: new Date().toISOString(),
+                        current_period_end: farFuture,
+                        cancel_at: null,
+                        credits_limit: bundleCredits,
+                        credits_used: 0,
+                        credits_reset_date: null,
+                        validity_days: null,
+                    }
+
+                    // @ts-ignore
+                    const { error: insertError } = await supabase
+                        .from('subscriptions')
+                        // @ts-ignore
+                        .upsert(bundleData, { onConflict: 'lemon_squeezy_id' })
+
+                    if (insertError) {
+                        console.error('Error creating bundle subscription:', insertError)
+                        return NextResponse.json({ error: 'Database error' }, { status: 500 })
+                    }
+
+                    console.log(`Bundle order processed: ${bundleTier} for ${userEmail}`)
+                } else if (isLifetimeVariant) {
                     console.log(`Processing Lifetime Launch order for ${userEmail}`)
 
                     // Find the user by email - try multiple approaches
@@ -457,7 +502,7 @@ export async function POST(request: NextRequest) {
                         return NextResponse.json({ error: 'Failed to process order' }, { status: 500 })
                     }
                 } else {
-                    console.log(`Ignoring non-lifetime order - variant ${variantId} does not match lifetime variant`)
+                    console.log(`Ignoring order - variant ${variantId} not configured`)
                 }
 
                 break

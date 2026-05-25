@@ -15,13 +15,13 @@ interface LifetimeSlotInfo {
 }
 
 interface LifetimeSlotCounterProps {
-    refreshInterval?: number; // in milliseconds
+    refreshInterval?: number;
     showProgress?: boolean;
     compact?: boolean;
 }
 
 export function LifetimeSlotCounter({
-    refreshInterval = 30000, // 30 seconds
+    refreshInterval = 30000,
     showProgress = true,
     compact = false
 }: LifetimeSlotCounterProps) {
@@ -43,7 +43,7 @@ export function LifetimeSlotCounter({
             setError(null);
         } catch (err) {
             console.error('[LifetimeSlotCounter] Error:', err);
-            setError('Unable to load slot information');
+            setError('تعذّر تحميل معلومات التوفر');
         } finally {
             setLoading(false);
         }
@@ -51,10 +51,7 @@ export function LifetimeSlotCounter({
 
     useEffect(() => {
         fetchSlotInfo();
-
-        // Set up auto-refresh
         const interval = setInterval(fetchSlotInfo, refreshInterval);
-
         return () => clearInterval(interval);
     }, [refreshInterval]);
 
@@ -62,7 +59,7 @@ export function LifetimeSlotCounter({
         return (
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <div className="h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-                <span>Loading availability...</span>
+                <span>جاري تحميل التوفر…</span>
             </div>
         );
     }
@@ -71,7 +68,7 @@ export function LifetimeSlotCounter({
         return (
             <div className="flex items-center gap-2 text-sm text-destructive">
                 <AlertCircle className="h-4 w-4" />
-                <span>{error || 'Unable to load'}</span>
+                <span>{error || 'تعذّر التحميل'}</span>
             </div>
         );
     }
@@ -94,28 +91,18 @@ export function LifetimeSlotCounter({
         }
     };
 
-    const getProgressColor = () => {
-        const level = getUrgencyLevel();
-        switch (level) {
-            case 'critical': return 'bg-red-600';
-            case 'high': return 'bg-orange-600';
-            case 'medium': return 'bg-yellow-600';
-            default: return 'bg-green-600';
-        }
-    };
-
     const getUrgencyMessage = (): string | null => {
         if (slotInfo.remaining_slots === 0) {
-            return 'Sold Out!';
+            return 'نفدت الكمية!';
         }
         if (slotInfo.remaining_slots <= 10) {
-            return `Only ${slotInfo.remaining_slots} left!`;
+            return `بقي ${slotInfo.remaining_slots} فقط!`;
         }
         if (slotInfo.percentage_taken >= 90) {
-            return 'Almost sold out!';
+            return 'على وشك النفاد!';
         }
         if (slotInfo.percentage_taken >= 75) {
-            return 'Selling fast!';
+            return 'يُباع بسرعة!';
         }
         return null;
     };
@@ -127,7 +114,7 @@ export function LifetimeSlotCounter({
             <div className="flex items-center gap-2">
                 <Zap className={`h-4 w-4 ${getUrgencyColor()}`} />
                 <span className={`text-sm font-medium ${getUrgencyColor()}`}>
-                    {slotInfo.remaining_slots} / {slotInfo.total_slots} available
+                    {slotInfo.remaining_slots.toLocaleString('ar-SA')} / {slotInfo.total_slots.toLocaleString('ar-SA')} متاح
                 </span>
                 {urgencyMessage && (
                     <Badge variant="destructive" className="text-xs">
@@ -143,7 +130,7 @@ export function LifetimeSlotCounter({
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                     <TrendingUp className={`h-5 w-5 ${getUrgencyColor()}`} />
-                    <h3 className="font-semibold text-foreground">Lifetime Offer Availability</h3>
+                    <h3 className="font-semibold text-foreground">توفر عرض مدى الحياة</h3>
                 </div>
                 {urgencyMessage && (
                     <Badge variant="destructive" className="animate-pulse">
@@ -154,20 +141,17 @@ export function LifetimeSlotCounter({
 
             <div className="space-y-2">
                 <div className="flex items-center justify-between text-sm">
-                    <span className="text-muted-foreground">Subscriptions Remaining</span>
+                    <span className="text-muted-foreground">الاشتراكات المتبقية</span>
                     <span className={`font-bold ${getUrgencyColor()}`}>
-                        {slotInfo.remaining_slots.toLocaleString()} / {slotInfo.total_slots.toLocaleString()}
+                        {slotInfo.remaining_slots.toLocaleString('ar-SA')} / {slotInfo.total_slots.toLocaleString('ar-SA')}
                     </span>
                 </div>
 
                 {showProgress && (
                     <div className="space-y-1">
-                        <Progress
-                            value={slotInfo.percentage_taken}
-                            className="h-2"
-                        />
+                        <Progress value={slotInfo.percentage_taken} className="h-2" />
                         <p className="text-xs text-muted-foreground text-end">
-                            {slotInfo.percentage_taken.toFixed(1)}% claimed
+                            {slotInfo.percentage_taken.toFixed(1)}٪ محجوز
                         </p>
                     </div>
                 )}
@@ -175,18 +159,18 @@ export function LifetimeSlotCounter({
 
             {slotInfo.show_urgency && slotInfo.remaining_slots > 0 && (
                 <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">
-                    <p className="font-medium">⚡ Limited Time Offer</p>
+                    <p className="font-medium">⚡ عرض لفترة محدودة</p>
                     <p className="text-xs mt-1">
-                        Secure your lifetime subscription before all {slotInfo.total_slots} slots are gone!
+                        احجز اشتراكك مدى الحياة قبل نفاد جميع الـ {slotInfo.total_slots.toLocaleString('ar-SA')} مقعداً!
                     </p>
                 </div>
             )}
 
             {slotInfo.remaining_slots === 0 && (
                 <div className="rounded-md bg-muted p-3 text-sm text-muted-foreground">
-                    <p className="font-medium">❌ Sold Out</p>
+                    <p className="font-medium">❌ نفدت الكمية</p>
                     <p className="text-xs mt-1">
-                        All {slotInfo.total_slots} lifetime subscriptions have been claimed. Check out our other plans!
+                        حُجزت جميع اشتراكات مدى الحياة ({slotInfo.total_slots.toLocaleString('ar-SA')}). اطّلع على خططنا الأخرى!
                     </p>
                 </div>
             )}

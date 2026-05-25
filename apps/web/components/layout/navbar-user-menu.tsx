@@ -44,7 +44,7 @@ export function NavbarUserMenu({ user }: NavbarUserMenuProps) {
                     {user.avatar_url ? (
                         <img
                             src={user.avatar_url}
-                            alt={user.display_name || 'User'}
+                            alt={user.display_name || 'مستخدم'}
                             className="h-9 w-9 rounded-full object-cover"
                         />
                     ) : (
@@ -58,7 +58,7 @@ export function NavbarUserMenu({ user }: NavbarUserMenuProps) {
             >
                 <DropdownMenuLabel>
                     <div className="flex flex-col space-y-1">
-                        <p className="text-sm font-medium leading-none">{user.display_name || 'User'}</p>
+                        <p className="text-sm font-medium leading-none">{user.display_name || 'مستخدم'}</p>
                         <p className="text-xs leading-none text-muted-foreground">{user.email}</p>
                         {subscriptionLoading ? (
                             <div className="h-3 w-20 animate-pulse rounded bg-muted mt-1" />
@@ -73,13 +73,13 @@ export function NavbarUserMenu({ user }: NavbarUserMenuProps) {
                 <DropdownMenuItem asChild>
                     <Link href="/dashboard" className="cursor-pointer">
                         <Settings className="me-2 h-4 w-4" />
-                        Dashboard
+                        لوحة التحكم
                     </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
                     <Link href="/pricing" className="cursor-pointer">
                         <BarChart3 className="me-2 h-4 w-4" />
-                        Subscription
+                        الاشتراك
                     </Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
@@ -88,7 +88,7 @@ export function NavbarUserMenu({ user }: NavbarUserMenuProps) {
                     className="cursor-pointer text-destructive focus:text-destructive"
                 >
                     <LogOut className="me-2 h-4 w-4" />
-                    Logout
+                    تسجيل الخروج
                 </DropdownMenuItem>
             </DropdownMenuContent>
         </DropdownMenu>

@@ -85,23 +85,38 @@ export async function POST(request: NextRequest) {
                         })
                     
                     if (createError) {
-                        return createErrorResponse({
-                            code: ApiErrorCode.USAGE_LIMIT_EXCEEDED,
-                            message: 'Unable to create free trial'
-                        }, 403)
+                        return NextResponse.json({
+                            success: false,
+                            error: {
+                                code: ApiErrorCode.USAGE_LIMIT_EXCEEDED,
+                                message: 'Unable to create free trial',
+                                reason: canEnhance.reason,
+                            },
+                        }, { status: 403 })
                     }
                     // Continue with the enhancement since we just created a fresh trial
-                } catch (error) {
-                    return createErrorResponse({
-                        code: ApiErrorCode.USAGE_LIMIT_EXCEEDED,
-                        message: 'Usage limit exceeded'
-                    }, 403)
+                } catch {
+                    return NextResponse.json({
+                        success: false,
+                        error: {
+                            code: ApiErrorCode.USAGE_LIMIT_EXCEEDED,
+                            message: 'Usage limit exceeded',
+                            reason: canEnhance.reason,
+                            tier: canEnhance.creditStatus?.tier_name,
+                        },
+                    }, { status: 403 })
                 }
             } else {
-                return createErrorResponse({
-                    code: ApiErrorCode.USAGE_LIMIT_EXCEEDED,
-                    message: 'Usage limit exceeded'
-                }, 403)
+                const tier = canEnhance.creditStatus?.tier_name
+                return NextResponse.json({
+                    success: false,
+                    error: {
+                        code: ApiErrorCode.USAGE_LIMIT_EXCEEDED,
+                        message: 'Usage limit exceeded',
+                        reason: canEnhance.reason,
+                        tier,
+                    },
+                }, { status: 403 })
             }
         }
 

@@ -51,8 +51,26 @@ export const SUBSCRIPTION_LIMITS: Record<SubscriptionTier, SubscriptionLimits> =
             fastProcessing: true,
         },
     },
+    [SubscriptionTier.SMALL_BUNDLE]: {
+        enhancementsPerPeriod: 50,
+        rateLimit: 15,
+        features: {
+            advancedFeatures: true,
+            prioritySupport: false,
+            fastProcessing: true,
+        },
+    },
+    [SubscriptionTier.LARGE_BUNDLE]: {
+        enhancementsPerPeriod: 100,
+        rateLimit: 15,
+        features: {
+            advancedFeatures: true,
+            prioritySupport: false,
+            fastProcessing: true,
+        },
+    },
     [SubscriptionTier.PRO_MONTHLY]: {
-        enhancementsPerPeriod: 700,
+        enhancementsPerPeriod: 300,
         rateLimit: 15,
         features: {
             advancedFeatures: true,
@@ -79,7 +97,7 @@ export const SUBSCRIPTION_LIMITS: Record<SubscriptionTier, SubscriptionLimits> =
         },
     },
     [SubscriptionTier.PRO_ANNUAL]: {
-        enhancementsPerPeriod: 700,
+        enhancementsPerPeriod: 300,
         rateLimit: 15,
         features: {
             advancedFeatures: true,

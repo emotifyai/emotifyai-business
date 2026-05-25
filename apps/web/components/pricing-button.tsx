@@ -64,7 +64,7 @@ export function PricingButton({
                 throw new Error('No checkout URL returned')
             }
         } catch (error) {
-            toast.error('Something went wrong. Please try again.')
+            toast.error('حدث خطأ ما. حاول مرة أخرى.')
             console.error(error)
             setIsLoading(false)
         }
@@ -74,7 +74,7 @@ export function PricingButton({
     if (soldOut && isLifetime) {
         return (
             <Button className="w-full" variant="destructive" disabled>
-                SOLD OUT
+                نفدت الكمية
             </Button>
         )
     }
@@ -83,7 +83,7 @@ export function PricingButton({
     if (isCurrentPlan) {
         return (
             <Button className="w-full" variant="default" disabled>
-                ✓ Current Plan
+                ✓ خطتك الحالية
             </Button>
         )
     }
@@ -92,7 +92,7 @@ export function PricingButton({
     if (isDowngrade) {
         return (
             <Button className="w-full" variant="outline" disabled>
-                Not Available
+                غير متاح
             </Button>
         )
     }

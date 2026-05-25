@@ -55,7 +55,7 @@ function EmptyState() {
     return (
         <TableRow>
             <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
-                No API keys found. Create one to get started.
+                لا توجد مفاتيح API. أنشئ واحداً للبدء.
             </TableCell>
         </TableRow>
     )
@@ -67,7 +67,7 @@ function EmptyState() {
 
 function StatusBadge({ revoked }: { revoked: boolean }) {
     if (revoked) {
-        return <Badge variant="destructive">Revoked</Badge>
+        return <Badge variant="destructive">ملغى</Badge>
     }
 
     return (
@@ -75,7 +75,7 @@ function StatusBadge({ revoked }: { revoked: boolean }) {
             variant="secondary"
             className="bg-green-500/10 text-green-500 hover:bg-green-500/20"
         >
-            Active
+            نشط
         </Badge>
     )
 }
@@ -90,7 +90,7 @@ function CopyButton({ text }: { text: string }) {
     const handleCopy = async () => {
         await navigator.clipboard.writeText(text)
         setCopied(true)
-        toast.success('Copied to clipboard')
+        toast.success('تم النسخ إلى الحافظة')
         setTimeout(() => setCopied(false), 2000)
     }
 
@@ -120,7 +120,7 @@ function CreatedKeyDisplay({
         <div className="space-y-4 py-4">
             <div className="rounded-md bg-muted p-4">
                 <p className="text-sm font-medium mb-2">
-                    Here is your new API key. Please copy it now as you won't be able to see it again!
+                    هذا مفتاح API الجديد. انسخه الآن ولن تتمكن من رؤيته مرة أخرى!
                 </p>
                 <div className="flex items-center gap-2">
                     <code className="flex-1 rounded bg-background p-2 font-mono text-sm">
@@ -130,7 +130,7 @@ function CreatedKeyDisplay({
                 </div>
             </div>
             <DialogFooter>
-                <Button onClick={onClose}>Done</Button>
+                <Button onClick={onClose}>تم</Button>
             </DialogFooter>
         </div>
     )
@@ -159,10 +159,10 @@ function CreateKeyForm({
         <div onSubmit={handleSubmit} style={{ width: '100%' }}>
             <div className="grid gap-4 py-4">
                 <div className="grid gap-2">
-                    <Label htmlFor="name">Key Name</Label>
+                    <Label htmlFor="name">اسم المفتاح</Label>
                     <Input
                         id="name"
-                        placeholder="e.g. Chrome Extension (Work)"
+                        placeholder="مثال: إضافة Chrome (عمل)"
                         value={name}
                         onChange={(e) => setName(e.target.value)}
                         required
@@ -176,7 +176,7 @@ function CreateKeyForm({
                     disabled={isPending || !name.trim()}
                 >
                     {isPending && <Loader2 className="me-2 h-4 w-4 animate-spin" />}
-                    Create Key
+                    إنشاء مفتاح
                 </Button>
             </DialogFooter>
         </div>
@@ -207,14 +207,14 @@ function CreateKeyDialog({
             <DialogTrigger asChild>
                 <Button variant="glow" size="sm">
                     <Plus className="me-2 h-4 w-4" />
-                    Create New Key
+                    إنشاء مفتاح جديد
                 </Button>
             </DialogTrigger>
             <DialogContent>
                 <DialogHeader>
-                    <DialogTitle>Create API Key</DialogTitle>
+                    <DialogTitle>إنشاء مفتاح API</DialogTitle>
                     <DialogDescription>
-                        Create a new API key to use with the EmotifyAI browser extension.
+                        أنشئ مفتاح API جديداً لاستخدامه مع إضافة إيموتيفاي للمتصفح.
                     </DialogDescription>
                 </DialogHeader>
 
@@ -246,7 +246,7 @@ function ApiKeyRow({
             <TableCell className="font-medium">{apiKey.name}</TableCell>
             <TableCell>{formatDate(apiKey.created_at)}</TableCell>
             <TableCell>
-                {apiKey.last_used_at ? formatDate(apiKey.last_used_at) : 'Never'}
+                {apiKey.last_used_at ? formatDate(apiKey.last_used_at) : 'أبداً'}
             </TableCell>
             <TableCell>
                 <StatusBadge revoked={apiKey.revoked} />
@@ -284,11 +284,11 @@ function ApiKeysTable({
             <Table>
                 <TableHeader>
                     <TableRow>
-                        <TableHead>Name</TableHead>
-                        <TableHead>Created</TableHead>
-                        <TableHead>Last Used</TableHead>
-                        <TableHead>Status</TableHead>
-                        <TableHead className="text-end">Actions</TableHead>
+                        <TableHead>الاسم</TableHead>
+                        <TableHead>تاريخ الإنشاء</TableHead>
+                        <TableHead>آخر استخدام</TableHead>
+                        <TableHead>الحالة</TableHead>
+                        <TableHead className="text-end">إجراءات</TableHead>
                     </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -326,24 +326,24 @@ export function ApiKeyList() {
         try {
             const result = await createApiKey.mutateAsync({ name })
             setCreatedKey(result.key!)
-            toast.success('API key created successfully')
+            toast.success('تم إنشاء مفتاح API بنجاح')
         } catch {
-            toast.error('Failed to create API key')
+            toast.error('فشل إنشاء مفتاح API')
         }
     }
 
     const handleRevokeKey = async (id: string) => {
         const confirmed = confirm(
-            'Are you sure you want to revoke this API key? This action cannot be undone.'
+            'هل أنت متأكد من إلغاء هذا المفتاح؟ لا يمكن التراجع عن هذا الإجراء.'
         )
 
         if (!confirmed) return
 
         try {
             await revokeApiKey.mutateAsync({ id })
-            toast.success('API key revoked successfully')
+            toast.success('تم إلغاء مفتاح API بنجاح')
         } catch {
-            toast.error('Failed to revoke API key')
+            toast.error('فشل إلغاء مفتاح API')
         }
     }
 
@@ -357,7 +357,7 @@ export function ApiKeyList() {
     return (
         <div className="space-y-4">
             <div className="flex justify-between items-center">
-                <h3 className="text-lg font-medium">Your API Keys</h3>
+                <h3 className="text-lg font-medium">مفاتيح API الخاصة بك</h3>
                 <CreateKeyDialog
                     open={isDialogOpen}
                     onOpenChange={handleDialogChange}

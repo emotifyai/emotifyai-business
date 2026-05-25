@@ -21,65 +21,63 @@ export default function SettingsPage() {
 
     const handleSaveProfile = (e: React.FormEvent) => {
         e.preventDefault()
-        toast.success('Profile updated successfully')
+        toast.success('تم تحديث الملف الشخصي بنجاح')
     }
 
     return (
         <div className="space-y-8">
             <div>
-                <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">Settings</h2>
+                <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">الإعدادات</h2>
                 <p className="text-muted-foreground">
-                    Manage your account settings and preferences
+                    إدارة إعدادات حسابك وتفضيلاتك
                 </p>
             </div>
 
             <div className="grid gap-6">
-                {/* Profile Settings */}
                 <Card>
                     <CardHeader>
-                        <CardTitle>Profile</CardTitle>
+                        <CardTitle>الملف الشخصي</CardTitle>
                         <CardDescription>
-                            Update your personal information
+                            تحديث معلوماتك الشخصية
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
                         <form onSubmit={handleSaveProfile} className="space-y-4">
                             <div className="grid gap-2">
-                                <Label htmlFor="name">Display Name</Label>
+                                <Label htmlFor="name">اسم العرض</Label>
                                 <Input id="name" defaultValue={user.display_name || ''} />
                             </div>
                             <div className="grid gap-2">
-                                <Label htmlFor="email">Email</Label>
+                                <Label htmlFor="email">البريد الإلكتروني</Label>
                                 <Input id="email" defaultValue={user.email} disabled />
                             </div>
-                            <Button type="submit" variant="glow">Save Changes</Button>
+                            <Button type="submit" variant="glow">حفظ التغييرات</Button>
                         </form>
                     </CardContent>
                 </Card>
 
-                {/* Preferences */}
                 <Card>
                     <CardHeader>
-                        <CardTitle>Preferences</CardTitle>
+                        <CardTitle>التفضيلات</CardTitle>
                         <CardDescription>
-                            Customize your EmotifyAI experience
+                            تخصيص تجربة إيموتيفاي
                         </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
                         <div className="flex items-center justify-between">
                             <div className="space-y-0.5">
-                                <Label>Email Notifications</Label>
+                                <Label>إشعارات البريد</Label>
                                 <p className="text-sm text-muted-foreground">
-                                    Receive emails about usage limits and updates
+                                    استلام رسائل عن حدود الاستخدام والتحديثات
                                 </p>
                             </div>
                             <Switch defaultChecked />
                         </div>
                         <div className="flex items-center justify-between">
                             <div className="space-y-0.5">
-                                <Label>Marketing Emails</Label>
+                                <Label>رسائل تسويقية</Label>
                                 <p className="text-sm text-muted-foreground">
-                                    Receive emails about new features and offers
+                                    استلام رسائل عن الميزات والعروض الجديدة
                                 </p>
                             </div>
                             <Switch />
@@ -87,16 +85,15 @@ export default function SettingsPage() {
                     </CardContent>
                 </Card>
 
-                {/* Danger Zone */}
                 <Card className="border-destructive/50">
                     <CardHeader>
-                        <CardTitle className="text-destructive">Danger Zone</CardTitle>
+                        <CardTitle className="text-destructive">منطقة الخطر</CardTitle>
                         <CardDescription>
-                            Irreversible actions for your account
+                            إجراءات لا رجعة فيها على حسابك
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <Button variant="destructive">Delete Account</Button>
+                        <Button variant="destructive">حذف الحساب</Button>
                     </CardContent>
                 </Card>
             </div>

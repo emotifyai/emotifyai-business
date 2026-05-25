@@ -7,8 +7,8 @@ import { Button } from '@emotifyai/ui'
 import Link from 'next/link'
 
 export const metadata: Metadata = {
-    title: 'Support - EmotifyAI',
-    description: 'Get help with EmotifyAI - contact support, view documentation, and find answers to common questions',
+    title: 'الدعم - إيموتيفاي',
+    description: 'احصل على المساعدة مع إيموتيفاي — تواصل مع الدعم واطّلع على التوثيق والأسئلة الشائعة',
 }
 
 export default function SupportPage() {
@@ -16,7 +16,6 @@ export default function SupportPage() {
         <div className="flex min-h-dvh flex-col overflow-x-hidden">
             <Header />
             <main className="flex-1">
-                {/* Hero Section */}
                 <section className="border-b bg-gradient-to-b from-background to-muted/20">
                     <div className="page-container py-16 md:py-24">
                         <div className="mx-auto max-w-3xl text-center">
@@ -24,20 +23,18 @@ export default function SupportPage() {
                                 <MessageCircle className="h-8 w-8 text-primary" />
                             </div>
                             <h1 className="text-4xl font-bold tracking-tight md:text-5xl mb-4">
-                                How can we help you?
+                                كيف يمكننا مساعدتك؟
                             </h1>
                             <p className="text-xl text-muted-foreground">
-                                Get support, find answers, or contact our team directly.
+                                احصل على الدعم، ابحث عن إجابات، أو تواصل مع فريقنا مباشرة.
                             </p>
                         </div>
                     </div>
                 </section>
 
-                {/* Support Options */}
                 <section className="page-container py-16 md:py-24">
                     <div className="mx-auto max-w-4xl">
                         <div className="grid gap-6 md:grid-cols-2">
-                            {/* Email Support */}
                             <Card className="border-primary/20">
                                 <CardContent className="pt-6">
                                     <div className="flex items-start gap-4">
@@ -45,13 +42,13 @@ export default function SupportPage() {
                                             <Mail className="h-6 w-6 text-primary" />
                                         </div>
                                         <div className="flex-1">
-                                            <h3 className="text-xl font-bold mb-2">Email Support</h3>
+                                            <h3 className="text-xl font-bold mb-2">دعم البريد الإلكتروني</h3>
                                             <p className="text-muted-foreground mb-4">
-                                                Send us an email and we'll get back to you within 24 hours.
+                                                أرسل لنا بريداً وسنرد خلال ٢٤ ساعة.
                                             </p>
                                             <Button asChild>
                                                 <a href="mailto:support@emotifyai.com">
-                                                    Contact Support
+                                                    تواصل مع الدعم
                                                 </a>
                                             </Button>
                                         </div>
@@ -59,7 +56,6 @@ export default function SupportPage() {
                                 </CardContent>
                             </Card>
 
-                            {/* Documentation */}
                             <Card>
                                 <CardContent className="pt-6">
                                     <div className="flex items-start gap-4">
@@ -67,13 +63,13 @@ export default function SupportPage() {
                                             <FileText className="h-6 w-6 text-blue-500" />
                                         </div>
                                         <div className="flex-1">
-                                            <h3 className="text-xl font-bold mb-2">Documentation</h3>
+                                            <h3 className="text-xl font-bold mb-2">التوثيق</h3>
                                             <p className="text-muted-foreground mb-4">
-                                                Find detailed guides and troubleshooting information.
+                                                أدلة مفصّلة ومعلومات استكشاف الأخطاء.
                                             </p>
                                             <Button variant="outline" asChild>
                                                 <Link href="/docs">
-                                                    View Docs
+                                                    عرض التوثيق
                                                 </Link>
                                             </Button>
                                         </div>
@@ -82,78 +78,69 @@ export default function SupportPage() {
                             </Card>
                         </div>
 
-                        {/* Response Times */}
-                <Card className="mt-8">
-  <CardContent className="pt-6">
-    <div className="flex items-start gap-4">
-      <div className="rounded-lg bg-green-500/10 p-2">
-        <Clock className="h-6 w-6 text-green-500" />
-      </div>
+                        <Card className="mt-8">
+                            <CardContent className="pt-6">
+                                <div className="flex items-start gap-4">
+                                    <div className="rounded-lg bg-green-500/10 p-2">
+                                        <Clock className="h-6 w-6 text-green-500" />
+                                    </div>
+                                    <div className="flex-1">
+                                        <h3 className="text-xl font-bold mb-4">أوقات الاستجابة</h3>
+                                        <div className="grid gap-4 md:grid-cols-3">
+                                            <div className="text-center p-4 rounded-lg border bg-card">
+                                                <div className="text-2xl font-bold text-primary mb-1">
+                                                    &lt; ٢٤ س
+                                                </div>
+                                                <div className="text-sm text-muted-foreground">
+                                                    دعم عام
+                                                </div>
+                                            </div>
+                                            <div className="text-center p-4 rounded-lg border bg-card">
+                                                <div className="text-2xl font-bold text-primary mb-1">
+                                                    &lt; ١٢ س
+                                                </div>
+                                                <div className="text-sm text-muted-foreground">
+                                                    مشاكل الفوترة
+                                                </div>
+                                            </div>
+                                            <div className="text-center p-4 rounded-lg border bg-card">
+                                                <div className="text-2xl font-bold text-primary mb-1">
+                                                    &lt; ٤ س
+                                                </div>
+                                                <div className="text-sm text-muted-foreground">
+                                                    مشاكل حرجة
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </CardContent>
+                        </Card>
 
-      <div className="flex-1">
-        <h3 className="text-xl font-bold mb-4">Response Times</h3>
-
-        <div className="grid gap-4 md:grid-cols-3">
-          <div className="text-center p-4 rounded-lg border bg-card">
-            <div className="text-2xl font-bold text-primary mb-1">
-              &lt; 24h
-            </div>
-            <div className="text-sm text-muted-foreground">
-              General Support
-            </div>
-          </div>
-
-          <div className="text-center p-4 rounded-lg border bg-card">
-            <div className="text-2xl font-bold text-primary mb-1">
-              &lt; 12h
-            </div>
-            <div className="text-sm text-muted-foreground">
-              Billing Issues
-            </div>
-          </div>
-
-          <div className="text-center p-4 rounded-lg border bg-card">
-            <div className="text-2xl font-bold text-primary mb-1">
-              &lt; 4h
-            </div>
-            <div className="text-sm text-muted-foreground">
-              Critical Issues
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </CardContent>
-</Card>
-
-
-                        {/* Common Issues */}
                         <div className="mt-16">
-                            <h2 className="text-2xl font-bold text-center mb-8">Common Questions</h2>
+                            <h2 className="text-2xl font-bold text-center mb-8">أسئلة شائعة</h2>
                             <div className="space-y-6">
                                 <Card>
                                     <CardContent className="pt-6">
-                                        <h4 className="font-semibold mb-2">Extension not working on a website?</h4>
+                                        <h4 className="font-semibold mb-2">الإضافة لا تعمل على موقع معيّن؟</h4>
                                         <p className="text-muted-foreground text-sm">
-                                            Some websites block extensions. Try refreshing the page or check if the extension is enabled in your browser settings.
+                                            بعض المواقع تمنع الإضافات. جرّب تحديث الصفحة أو تحقق من تفعيل الإضافة في إعدادات المتصفح.
                                         </p>
                                     </CardContent>
                                 </Card>
-
                                 <Card>
                                     <CardContent className="pt-6">
-                                        <h4 className="font-semibold mb-2">Credits not updating?</h4>
+                                        <h4 className="font-semibold mb-2">الرصيد لا يتحدّث؟</h4>
                                         <p className="text-muted-foreground text-sm">
-                                            Credits may take a few minutes to sync. Try logging out and back in, or contact support if the issue persists.
+                                            قد يستغرق المزامنة بضع دقائق. جرّب تسجيل الخروج والدخول مجدداً، أو تواصل مع الدعم إن استمرت المشكلة.
                                         </p>
                                     </CardContent>
                                 </Card>
-
                                 <Card>
                                     <CardContent className="pt-6">
-                                        <h4 className="font-semibold mb-2">Billing or subscription issues?</h4>
+                                        <h4 className="font-semibold mb-2">مشاكل في الفوترة أو الاشتراك؟</h4>
                                         <p className="text-muted-foreground text-sm">
-                                            For billing questions, please email us with your account email and we'll resolve it quickly.
+                                            لأسئلة الفوترة، راسلنا مع بريد حسابك وسنعالج الأمر بسرعة.
                                         </p>
                                     </CardContent>
                                 </Card>

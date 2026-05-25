@@ -51,12 +51,12 @@ export function useUsageStats() {
         queryFn: async (): Promise<UsageStats> => {
             const response = await fetch('/api/usage?type=stats')
             if (!response.ok) {
-                throw new Error(`Failed to fetch usage stats: ${response.statusText}`)
+                throw new Error(`فشل جلب إحصائيات الاستخدام: ${response.statusText}`)
             }
             
             const data = await response.json()
             if (!data.success) {
-                throw new Error(`Failed to fetch usage stats: ${data.error?.message}`)
+                throw new Error(`فشل جلب إحصائيات الاستخدام: ${data.error?.message}`)
             }
 
             return data.data
@@ -64,7 +64,7 @@ export function useUsageStats() {
         refetchInterval: 30 * 1000, // Refresh every 30 seconds
         retry: (failureCount, error) => {
             // Don't retry authentication errors
-            if (error.message.includes('Authentication required')) {
+            if (error.message.includes('يرجى تسجيل الدخول')) {
                 return false
             }
             // Retry other errors up to 2 times
@@ -89,12 +89,12 @@ export function useUsageHistory(pageSize: number = 20) {
         }> => {
             const response = await fetch(`/api/usage?type=history&page=${pageParam}&pageSize=${pageSize}`)
             if (!response.ok) {
-                throw new Error(`Failed to fetch usage history: ${response.statusText}`)
+                throw new Error(`فشل جلب سجل الاستخدام: ${response.statusText}`)
             }
             
             const result = await response.json()
             if (!result.success) {
-                throw new Error(`Failed to fetch usage history: ${result.error?.message}`)
+                throw new Error(`فشل جلب سجل الاستخدام: ${result.error?.message}`)
             }
 
             return {
@@ -107,7 +107,7 @@ export function useUsageHistory(pageSize: number = 20) {
         refetchInterval: 30 * 1000, // Refresh every 30 seconds
         retry: (failureCount, error) => {
             // Don't retry authentication errors
-            if (error.message.includes('Authentication required')) {
+            if (error.message.includes('يرجى تسجيل الدخول')) {
                 return false
             }
             // Retry other errors up to 2 times

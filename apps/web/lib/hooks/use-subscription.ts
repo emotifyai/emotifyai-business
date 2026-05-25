@@ -31,13 +31,13 @@ export function useSubscription() {
                     // User not authenticated
                     return null
                 }
-                throw new Error('Failed to fetch subscription data')
+                throw new Error('فشل جلب بيانات الاشتراك')
             }
 
             const result = await response.json()
             
             if (!result.success) {
-                throw new Error(result.error?.message || 'Failed to fetch subscription data')
+                throw new Error(result.error?.message || 'فشل جلب بيانات الاشتراك')
             }
 
             return result.data

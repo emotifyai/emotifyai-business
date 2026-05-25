@@ -22,6 +22,10 @@ export function getVariantId(tier: SubscriptionTier): string | undefined {
             return process.env.LEMONSQUEEZY_PRO_ANNUAL_VARIANT_ID
         case 'business_annual':
             return process.env.LEMONSQUEEZY_BUSINESS_ANNUAL_VARIANT_ID
+        case 'small_bundle':
+            return process.env.LEMONSQUEEZY_SMALL_BUNDLE_VARIANT_ID
+        case 'large_bundle':
+            return process.env.LEMONSQUEEZY_LARGE_BUNDLE_VARIANT_ID
         default:
             return undefined
     }

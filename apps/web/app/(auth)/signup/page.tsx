@@ -2,10 +2,11 @@ import { Metadata } from 'next'
 import Link from 'next/link'
 import { SignupForm } from '@/components/auth/signup-form'
 import { Suspense } from 'react'
+import { PageLoading } from '@emotifyai/ui'
 
 export const metadata: Metadata = {
-    title: 'Sign Up - EmotifyAI',
-    description: 'Create a new EmotifyAI account',
+    title: 'إنشاء حساب - إيموتيفاي',
+    description: 'أنشئ حساباً جديداً في إيموتيفاي',
 }
 
 function SignupContent() {
@@ -13,37 +14,37 @@ function SignupContent() {
         <>
             <div className="flex flex-col space-y-2 text-center">
                 <h1 className="text-2xl font-semibold tracking-tight">
-                    Create an account
+                    إنشاء حساب
                 </h1>
                 <p className="text-sm text-muted-foreground">
-                    Get started with your free trial - 10 enhancements included
+                    ابدأ بتجربتك المجانية — ١٠ تحسينات مشمولة
                 </p>
             </div>
             <SignupForm />
             <p className="px-8 text-center text-sm text-muted-foreground">
-                By clicking continue, you agree to our{' '}
+                بالمتابعة، أنت توافق على{' '}
                 <Link
                     href="/terms"
                     className="underline underline-offset-4 hover:text-primary"
                 >
-                    Terms of Service
+                    شروط الخدمة
                 </Link>{' '}
-                and{' '}
+                و{' '}
                 <Link
                     href="/privacy"
                     className="underline underline-offset-4 hover:text-primary"
                 >
-                    Privacy Policy
+                    سياسة الخصوصية
                 </Link>
                 .
             </p>
             <p className="px-8 text-center text-sm text-muted-foreground">
-                Already have an account?{' '}
+                لديك حساب بالفعل؟{' '}
                 <Link
                     href="/login"
                     className="underline underline-offset-4 hover:text-primary"
                 >
-                    Sign in
+                    تسجيل الدخول
                 </Link>
             </p>
         </>
@@ -52,7 +53,7 @@ function SignupContent() {
 
 export default function SignupPage() {
     return (
-        <Suspense fallback={<div>Loading...</div>}>
+        <Suspense fallback={<PageLoading message="جاري التحميل…" />}>
             <SignupContent />
         </Suspense>
     )

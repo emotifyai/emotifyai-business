@@ -2,10 +2,11 @@ import { Metadata } from 'next'
 import Link from 'next/link'
 import { LoginForm } from '@/components/auth/login-form'
 import { Suspense } from 'react'
+import { PageLoading } from '@emotifyai/ui'
 
 export const metadata: Metadata = {
-    title: 'Login - EmotifyAI',
-    description: 'Login to your EmotifyAI account',
+    title: 'تسجيل الدخول - إيموتيفاي',
+    description: 'سجّل الدخول إلى حسابك في إيموتيفاي',
 }
 
 interface LoginPageProps {
@@ -15,7 +16,6 @@ interface LoginPageProps {
 async function LoginContent({ searchParams }: LoginPageProps) {
     const params = await searchParams
     
-    // Preserve URL parameters when linking to signup
     const urlParams = new URLSearchParams()
     if (params.source && typeof params.source === 'string') {
         urlParams.set('source', params.source)
@@ -29,20 +29,20 @@ async function LoginContent({ searchParams }: LoginPageProps) {
         <>
             <div className="flex flex-col space-y-2 text-center">
                 <h1 className="text-2xl font-semibold tracking-tight">
-                    Welcome back
+                    مرحباً بعودتك
                 </h1>
                 <p className="text-sm text-muted-foreground">
-                    Sign in to continue using your EmotifyAI extension
+                    سجّل الدخول لمتابعة استخدام إضافة إيموتيفاي
                 </p>
             </div>
             <LoginForm />
             <p className="text-center text-sm text-muted-foreground">
-                Don&apos;t have an account?{' '}
+                ليس لديك حساب؟{' '}
                 <Link
                     href={signupUrl}
                     className="underline underline-offset-4 hover:text-primary"
                 >
-                    Sign up
+                    إنشاء حساب
                 </Link>
             </p>
         </>
@@ -51,7 +51,7 @@ async function LoginContent({ searchParams }: LoginPageProps) {
 
 export default async function LoginPage({ searchParams }: LoginPageProps) {
     return (
-        <Suspense fallback={<div>Loading...</div>}>
+        <Suspense fallback={<PageLoading message="جاري التحميل…" />}>
             <LoginContent searchParams={searchParams} />
         </Suspense>
     )

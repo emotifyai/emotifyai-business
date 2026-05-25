@@ -21,32 +21,22 @@ import { useState } from 'react'
 
 const sidebarItems = [
     {
-        title: 'Overview',
+        title: 'نظرة عامة',
         href: '/dashboard',
         icon: LayoutDashboard,
     },
     {
-        title: 'Editor',
+        title: 'المحرر',
         href: '/dashboard/editor',
         icon: Wand2,
     },
     {
-        title: 'Usage',
+        title: 'الاستخدام',
         href: '/dashboard/usage',
         icon: BarChart3,
     },
-    // {
-    //     title: 'Subscription',
-    //     href: '/dashboard/subscription',
-    //     icon: CreditCard,
-    // },
-    // {
-    //     title: 'API Keys',
-    //     href: '/dashboard/api-keys',
-    //     icon: Key,
-    // },
     {
-        title: 'Settings',
+        title: 'الإعدادات',
         href: '/dashboard/settings',
         icon: Settings,
     },
@@ -90,7 +80,7 @@ export function Sidebar({ className }: { className?: string }) {
                             onClick={handleLogout}
                         >
                             <LogOut className="me-2 h-4 w-4" />
-                            Logout
+                            تسجيل الخروج
                         </Button>
                     </div>
                 </div>
@@ -107,13 +97,13 @@ export function MobileSidebar() {
             <SheetTrigger asChild>
                 <Button variant="ghost" className="me-2 px-0 text-base hover:bg-transparent focus-visible:bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 md:hidden">
                     <Menu className="h-6 w-6" />
-                    <span className="sr-only">Toggle Menu</span>
+                    <span className="sr-only">فتح القائمة</span>
                 </Button>
             </SheetTrigger>
             <SheetContent side="right" className="pe-0">
                 <div className="px-7">
                     <Link href="/" className="flex items-center" onClick={() => setOpen(false)}>
-                        <span className="text-gradient-brand text-2xl font-bold">EmotifyAI</span>
+                        <span className="text-gradient-brand text-2xl font-bold">إيموتيف<span className="text-primary">اي</span></span>
                     </Link>
                 </div>
                 <Sidebar className="my-4 h-[calc(100vh-8rem)] pb-10 ps-6" />
