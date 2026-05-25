@@ -2,6 +2,7 @@ import { Metadata } from 'next'
 import { Header } from '@/components/layout/header'
 import { Footer } from '@/components/layout/footer'
 import { PricingPlansTable } from '@/components/pricing/pricing-plans-table'
+import { getTierLabelAr, getTierPriorityMap } from '@emotifyai/config/pricing'
 import { createClient } from '@/lib/supabase/server'
 
 export const metadata: Metadata = {
@@ -11,16 +12,6 @@ export const metadata: Metadata = {
 
 interface PricingPageProps {
   searchParams: Promise<{ from?: string }>
-}
-
-const TIER_LABELS_AR: Record<string, string> = {
-  free: 'مجاني',
-  trial: 'تجربة مسجلة',
-  pro_monthly: 'Pro شهري',
-  pro_annual: 'Pro سنوي',
-  small_bundle: 'حزمة صغيرة',
-  large_bundle: 'حزمة كبيرة',
-  lifetime_launch: 'مدى الحياة',
 }
 
 export default async function PricingPage({ searchParams }: PricingPageProps) {
@@ -44,19 +35,7 @@ export default async function PricingPage({ searchParams }: PricingPageProps) {
       .order('created_at', { ascending: false })
 
     if (subscriptions?.length) {
-      const tierPriority: Record<string, number> = {
-        free: 1,
-        trial: 2,
-        small_bundle: 3,
-        large_bundle: 4,
-        pro_monthly: 5,
-        pro_annual: 6,
-        basic_monthly: 5,
-        basic_annual: 6,
-        business_monthly: 7,
-        business_annual: 8,
-        lifetime_launch: 10,
-      }
+      const tierPriority = getTierPriorityMap()
 
       type SubRow = { tier: string; status: string; created_at: string }
       const rows = subscriptions as SubRow[]
@@ -70,7 +49,7 @@ export default async function PricingPage({ searchParams }: PricingPageProps) {
   }
 
   const currentTierLabel = currentTier
-    ? TIER_LABELS_AR[currentTier] ?? currentTier.replace(/_/g, ' ')
+    ? getTierLabelAr(currentTier)
     : null
 
   return (

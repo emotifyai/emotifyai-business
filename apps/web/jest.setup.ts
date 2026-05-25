@@ -1,9 +1,6 @@
 import '@testing-library/jest-dom'
 import { cleanup } from '@testing-library/react'
 
-// Add Node.js shims for Anthropic SDK
-import '@anthropic-ai/sdk/shims/node'
-
 // Mock fetch API for test environment
 global.fetch = jest.fn(() => Promise.resolve({
     ok: true,
@@ -21,24 +18,81 @@ global.Request = class MockRequest {
 } as any
 
 global.Response = class MockResponse {
-  constructor(public body?: any, public init?: any) {}
-  static json(data: any, init?: any) {
-    return new MockResponse(JSON.stringify(data), { ...init, headers: { 'content-type': 'application/json' } })
-  }
-  json() { return Promise.resolve(typeof this.body === 'string' ? JSON.parse(this.body) : this.body) }
-  text() { return Promise.resolve(typeof this.body === 'string' ? this.body : JSON.stringify(this.body)) }
-  ok = true
-  status = 200
-} as any
+  ok: boolean
+  status: number
+  headers: Headers
 
-global.Headers = class MockHeaders extends Map {
-  constructor(init?: any) {
-    super()
+  constructor(public body?: BodyInit | null, public init?: ResponseInit) {
+    this.status = init?.status ?? 200
+    this.ok = this.status >= 200 && this.status < 300
+    this.headers = new Headers(init?.headers as HeadersInit)
+  }
+
+  static json(data: unknown, init?: ResponseInit) {
+    return new MockResponse(JSON.stringify(data), {
+      ...init,
+      headers: { 'content-type': 'application/json', ...(init?.headers as Record<string, string>) },
+    })
+  }
+
+  json() {
+    return Promise.resolve(typeof this.body === 'string' ? JSON.parse(this.body) : this.body)
+  }
+
+  text() {
+    return Promise.resolve(typeof this.body === 'string' ? this.body : JSON.stringify(this.body))
+  }
+} as typeof Response
+
+global.Headers = class MockHeaders {
+  private map = new Map<string, string>()
+
+  constructor(init?: Record<string, string> | [string, string][] | Headers) {
     if (init) {
-      Object.entries(init).forEach(([key, value]) => this.set(key, value as string))
+      if (init instanceof Headers) {
+        init.forEach((value, key) => this.map.set(key.toLowerCase(), value))
+      } else if (Array.isArray(init)) {
+        init.forEach(([key, value]) => this.map.set(key.toLowerCase(), value))
+      } else {
+        Object.entries(init).forEach(([key, value]) => this.map.set(key.toLowerCase(), value))
+      }
     }
   }
-} as any
+
+  append(name: string, value: string) {
+    const key = name.toLowerCase()
+    const existing = this.map.get(key)
+    this.map.set(key, existing ? `${existing}, ${value}` : value)
+  }
+
+  get(name: string) {
+    return this.map.get(name.toLowerCase()) ?? null
+  }
+
+  set(name: string, value: string) {
+    this.map.set(name.toLowerCase(), value)
+  }
+
+  has(name: string) {
+    return this.map.has(name.toLowerCase())
+  }
+
+  delete(name: string) {
+    this.map.delete(name.toLowerCase())
+  }
+
+  forEach(callback: (value: string, key: string) => void) {
+    this.map.forEach((value, key) => callback(value, key))
+  }
+
+  getSetCookie() {
+    return []
+  }
+
+  [Symbol.iterator]() {
+    return this.map[Symbol.iterator]()
+  }
+} as unknown as typeof Headers
 
 // Cleanup after each test
 afterEach(() => {

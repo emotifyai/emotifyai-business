@@ -300,6 +300,8 @@ export const mockUsageLogs: UsageLog[] = [
         is_editor_session: false,
         tone: null,
         output_language: null,
+        platform: null,
+        detected_route: null,
     },
     {
         id: 'log-2',
@@ -319,6 +321,8 @@ export const mockUsageLogs: UsageLog[] = [
         is_editor_session: false,
         tone: null,
         output_language: null,
+        platform: null,
+        detected_route: null,
     },
     {
         id: 'log-3',
@@ -338,6 +342,8 @@ export const mockUsageLogs: UsageLog[] = [
         is_editor_session: false,
         tone: null,
         output_language: null,
+        platform: null,
+        detected_route: null,
     },
 ]
 

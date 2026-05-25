@@ -1,3 +1,4 @@
+import { RUNTIME_SUBSCRIPTION_DEFAULTS } from '@emotifyai/config/pricing'
 import { createClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
 
@@ -53,7 +54,13 @@ export async function GET(request: Request) {
                     console.log(`Creating trial subscription for new user: ${data.user.email}`)
 
                     // Create trial subscription for all new users
-                    const trialDays = parseInt(process.env.TRIAL_ENHANCEMENT_LIMIT || '10')
+                    const authDefaults = RUNTIME_SUBSCRIPTION_DEFAULTS.authCallbackNewUser
+                    const trialLimit = parseInt(
+                      process.env.TRIAL_ENHANCEMENT_LIMIT ||
+                        String(authDefaults.credits),
+                      10
+                    )
+                    const trialDays = trialLimit
                     const trialEndDate = new Date()
                     trialEndDate.setDate(trialEndDate.getDate() + trialDays)
 
@@ -63,7 +70,7 @@ export async function GET(request: Request) {
                         tier: 'free',
                         tier_name: 'free',
                         status: 'trial',
-                        credits_limit: parseInt(process.env.TRIAL_ENHANCEMENT_LIMIT || '10'),
+                        credits_limit: trialLimit,
                         credits_used: 0,
                         validity_days: trialDays,
                         current_period_start: new Date().toISOString(),

@@ -37,7 +37,7 @@ export function MobileNavMenu() {
             className="text-gradient-brand text-xl font-bold"
             onClick={() => setOpen(false)}
           >
-            إيموتيفاي
+            EmotifyAI
           </Link>
           <nav className="flex flex-col gap-1">
             {publicNavItems.map((item) => (

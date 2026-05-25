@@ -23,6 +23,12 @@
       }
     ],
     "paths": {
+      "@emotifyai/config": [
+        "../../packages/config/src/index.ts"
+      ],
+      "@emotifyai/config/*": [
+        "../../packages/config/src/*"
+      ],
       "@emotifyai/ui": [
         "../../packages/ui/src/index.ts"
       ],

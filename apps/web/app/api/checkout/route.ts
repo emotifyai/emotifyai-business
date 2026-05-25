@@ -2,20 +2,11 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createSubscriptionCheckout } from '@/lib/lemonsqueezy/checkout'
 import { getVariantId } from '@/lib/lemonsqueezy/config'
+import { CHECKOUT_TIER_IDS } from '@emotifyai/config/pricing'
 import { z } from 'zod'
 import { SubscriptionTier } from '@/lib/subscription/types'
 
-const CHECKOUT_TIERS = [
-    'lifetime_launch',
-    'basic_monthly',
-    'pro_monthly',
-    'business_monthly',
-    'basic_annual',
-    'pro_annual',
-    'business_annual',
-    'small_bundle',
-    'large_bundle',
-] as const
+const CHECKOUT_TIERS = CHECKOUT_TIER_IDS
 
 const CheckoutSchema = z.object({
     tier: z.enum(CHECKOUT_TIERS),

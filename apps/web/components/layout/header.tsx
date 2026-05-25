@@ -21,11 +21,11 @@ export function Header({ showMobileMenu = true }: { showMobileMenu?: boolean }) 
           <Link href="/" className="flex min-w-0 items-center gap-2">
             <img
               src="/logo.svg"
-              alt="إيموتيفاي"
+              alt="EmotifyAI"
               className="h-8 w-8 shrink-0"
             />
             <span className="text-gradient-brand truncate text-lg font-bold sm:text-2xl">
-              إيموتيف<span className="text-primary">اي</span>
+              Emotify<span className="text-primary">AI</span>
             </span>
           </Link>
         </div>

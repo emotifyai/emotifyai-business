@@ -7,7 +7,6 @@ import { Card, CardContent } from '@emotifyai/ui'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@emotifyai/ui'
 import { Textarea } from '@emotifyai/ui'
 import { Badge } from '@emotifyai/ui'
-import { Slider } from '@emotifyai/ui'
 import { Loader2, Wand2, RotateCcw, History, Copy, Check, ChevronDown } from 'lucide-react'
 import { useSubscription } from '@/lib/hooks/use-subscription'
 import { useUsageStats } from '@/lib/hooks/use-usage'
@@ -17,6 +16,7 @@ import {
   ConnectedUpgradePrompt,
   resolveUpgradeVariant,
 } from '@/components/upgrade-prompt'
+import { detectInputLanguage } from '@/lib/ai/language-detection'
 
 interface HistoryItem {
   id: string
@@ -24,29 +24,30 @@ interface HistoryItem {
   enhancedText: string
   tone: string
   outputLanguage: string
-  strength: number
+  platform?: string
   createdAt: string
 }
 
+const OUTPUT_LANGUAGES = [
+  { value: 'ar_gulf', label: 'عربي خليجي' },
+  { value: 'ar_msa', label: 'عربي فصيح' },
+  { value: 'en', label: 'إنجليزي' },
+] as const
+
 const TONE_OPTIONS = [
   { value: 'emotional', label: 'عاطفي' },
-  { value: 'professional', label: 'احترافي' },
-  { value: 'marketing', label: 'تسويقي' }
-]
+  { value: 'marketing', label: 'تسويقي' },
+  { value: 'exclusive', label: 'حصري' },
+] as const
 
-const OUTPUT_LANGUAGES = [
-  { value: 'en', label: 'الإنجليزية' },
-  { value: 'ar', label: 'العربية' },
-  { value: 'fr', label: 'الفرنسية' }
-]
-
-const STRENGTH_LEVELS = [
-  { value: 1, label: 'أدنى', description: 'تصحيح الأخطاء فقط' },
-  { value: 2, label: 'خفيف', description: 'تحسين لطيف' },
-  { value: 3, label: 'متوسط', description: 'متوازن' },
-  { value: 4, label: 'قوي', description: 'تحسين ملحوظ' },
-  { value: 5, label: 'أقصى', description: 'إعادة صياغة كاملة' }
-]
+const PLATFORM_OPTIONS = [
+  { value: 'store', label: 'متجر' },
+  { value: 'whatsapp', label: 'واتساب' },
+  { value: 'instagram', label: 'إنستغرام' },
+  { value: 'facebook', label: 'فيسبوك' },
+  { value: 'snap', label: 'سناب' },
+  { value: 'tiktok', label: 'تيك توك' },
+] as const
 
 const LOADING_MESSAGES = [
   'جاري تحليل النص…',
@@ -72,11 +73,12 @@ export default function EditorPage() {
   // Editor state
   const [originalText, setOriginalText] = useState('')
   const [enhancedText, setEnhancedText] = useState('')
-  const [tone, setTone] = useState<string>('professional')
-  const [outputLanguage, setOutputLanguage] = useState<string>('en')
-  const [strength, setStrength] = useState(3)
+  const [tone, setTone] = useState<string>('marketing')
+  const [outputLanguage, setOutputLanguage] = useState<string>('ar_gulf')
+  const [platform, setPlatform] = useState<string>('store')
   const [isGenerating, setIsGenerating] = useState(false)
-  const [detectedLanguage, setDetectedLanguage] = useState<string>('')
+  const [detectedInputLabel, setDetectedInputLabel] = useState<string>('')
+  const [detectionConfidence, setDetectionConfidence] = useState<number | null>(null)
   const [loadingMessage, setLoadingMessage] = useState('')
 
   // History state
@@ -97,7 +99,7 @@ export default function EditorPage() {
         if (data.enhancedText) setEnhancedText(data.enhancedText)
         if (data.tone) setTone(data.tone)
         if (data.outputLanguage) setOutputLanguage(data.outputLanguage)
-        if (data.strength) setStrength(data.strength)
+        if (data.platform) setPlatform(data.platform)
       } catch (e) {
         console.error('Failed to parse cached session:', e)
       }
@@ -106,9 +108,9 @@ export default function EditorPage() {
 
   // Save to session cache when editor state changes
   useEffect(() => {
-    const data = { originalText, enhancedText, tone, outputLanguage, strength }
+    const data = { originalText, enhancedText, tone, outputLanguage, platform }
     sessionStorage.setItem('editor_session', JSON.stringify(data))
-  }, [originalText, enhancedText, tone, outputLanguage, strength])
+  }, [originalText, enhancedText, tone, outputLanguage, platform])
 
   useEffect(() => {
     const textParam = searchParams.get('text')
@@ -133,18 +135,15 @@ export default function EditorPage() {
     }
   }
 
-  const detectLanguage = (text: string): string => {
-    const arabicRegex = /[\u0600-\u06FF]/
-    const frenchRegex = /[àâäéèêëïîôöùûüÿç]/i
-    if (arabicRegex.test(text)) return 'العربية'
-    if (frenchRegex.test(text)) return 'الفرنسية'
-    return 'الإنجليزية'
-  }
-
   useEffect(() => {
-    if (originalText) {
-      setDetectedLanguage(detectLanguage(originalText))
+    if (!originalText.trim()) {
+      setDetectedInputLabel('')
+      setDetectionConfidence(null)
+      return
     }
+    const detection = detectInputLanguage(originalText)
+    setDetectedInputLabel(detection.inputSummaryAr)
+    setDetectionConfidence(detection.confidence)
   }, [originalText])
 
   const canGenerate = () => {
@@ -191,8 +190,8 @@ export default function EditorPage() {
           text: originalText,
           tone,
           outputLanguage,
-          strength,
-          isEditorSession: true
+          platform,
+          isEditorSession: true,
         }),
       })
 
@@ -209,8 +208,8 @@ export default function EditorPage() {
           enhancedText: data.data.enhancedText,
           tone,
           outputLanguage,
-          strength,
-          createdAt: new Date().toISOString()
+          platform,
+          createdAt: new Date().toISOString(),
         }
         setHistory(prev => [newHistoryItem, ...prev])
       } else {
@@ -244,8 +243,8 @@ export default function EditorPage() {
             })
             break
           case 'UNSUPPORTED_LANGUAGE':
-            toast.error('اللغة غير مدعومة', {
-              description: 'يرجى استخدام الإنجليزية أو العربية أو الفرنسية'
+            toast.error('لغة المخرج غير مدعومة', {
+              description: 'اختر عربي خليجي أو فصيح أو إنجليزي',
             })
             break
           case 'RATE_LIMIT_EXCEEDED':
@@ -285,9 +284,9 @@ export default function EditorPage() {
     // Handle both local history format and API format
     setOriginalText(item.originalText || (item as any).input_text || '')
     setEnhancedText(item.enhancedText || (item as any).output_text || '')
-    setTone(item.tone || 'professional')
-    setOutputLanguage(item.outputLanguage || (item as any).output_language || 'en')
-    setStrength(item.strength || 3)
+    setTone(item.tone || 'marketing')
+    setOutputLanguage(item.outputLanguage || (item as any).output_language || 'ar_gulf')
+    setPlatform(item.platform || (item as any).platform || 'store')
     setShowHistory(false)
   }
 
@@ -307,34 +306,20 @@ export default function EditorPage() {
         )}
       </div>
 
-      {/* Settings Bar - Compact horizontal layout */}
       <Card className="mb-4 border-2 border-gray-300 dark:border-border shadow-sm bg-gray-50/50 dark:bg-card">
-        <CardContent>
+        <CardContent className="pt-4">
+          <p className="mb-3 text-xs text-muted-foreground">
+            المدخل: أي لغة — يُحوَّل تلقائياً إلى لغة المخرج المختارة
+          </p>
           <div className="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-center">
             <div className="flex w-full flex-col gap-1.5 sm:w-auto sm:flex-row sm:items-center sm:gap-2">
-              <span className="text-sm text-muted-foreground">النبرة:</span>
-              <Select value={tone} onValueChange={setTone}>
-                <SelectTrigger className="h-11 w-full border-2 border-gray-300 bg-white dark:border-border dark:bg-background sm:w-[130px] sm:h-9">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {TONE_OPTIONS.map(option => (
-                    <SelectItem key={option.value} value={option.value}>
-                      {option.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="flex w-full flex-col gap-1.5 sm:w-auto sm:flex-row sm:items-center sm:gap-2">
-              <span className="text-sm text-muted-foreground">اللغة:</span>
+              <span className="text-sm font-medium text-muted-foreground">لغة المخرج:</span>
               <Select value={outputLanguage} onValueChange={setOutputLanguage}>
-                <SelectTrigger className="h-11 w-full border-2 border-gray-300 bg-white dark:border-border dark:bg-background sm:w-[120px] sm:h-9">
+                <SelectTrigger className="h-11 w-full border-2 border-gray-300 bg-white dark:border-border dark:bg-background sm:h-9 sm:w-[140px]">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {OUTPUT_LANGUAGES.map(lang => (
+                  {OUTPUT_LANGUAGES.map((lang) => (
                     <SelectItem key={lang.value} value={lang.value}>
                       {lang.label}
                     </SelectItem>
@@ -344,24 +329,42 @@ export default function EditorPage() {
             </div>
 
             <div className="flex w-full flex-col gap-1.5 sm:w-auto sm:flex-row sm:items-center sm:gap-2">
-              <span className="text-sm text-muted-foreground">القوة:</span>
-              <div className="flex w-full items-center gap-3 sm:w-auto">
-                <Slider
-                  value={[strength]}
-                  onValueChange={(value) => setStrength(value[0])}
-                  min={1}
-                  max={5}
-                  step={1}
-                  className="min-w-0 flex-1 sm:w-24 sm:flex-none"
-                />
-                <span className="text-xs font-medium text-foreground min-w-[60px]">
-                  {STRENGTH_LEVELS[strength - 1].label}
-                </span>
-              </div>
+              <span className="text-sm font-medium text-muted-foreground">النبرة:</span>
+              <Select value={tone} onValueChange={setTone}>
+                <SelectTrigger className="h-11 w-full border-2 border-gray-300 bg-white dark:border-border dark:bg-background sm:h-9 sm:w-[120px]">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {TONE_OPTIONS.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
-            {detectedLanguage && (
+
+            <div className="flex w-full flex-col gap-1.5 sm:w-auto sm:flex-row sm:items-center sm:gap-2">
+              <span className="text-sm font-medium text-muted-foreground">المنصة:</span>
+              <Select value={platform} onValueChange={setPlatform}>
+                <SelectTrigger className="h-11 w-full border-2 border-gray-300 bg-white dark:border-border dark:bg-background sm:h-9 sm:w-[130px]">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {PLATFORM_OPTIONS.map((p) => (
+                    <SelectItem key={p.value} value={p.value}>
+                      {p.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {detectedInputLabel && (
               <Badge variant="secondary" className="text-xs">
-                مكتشف: {detectedLanguage}
+                مدخل: {detectedInputLabel}
+                {detectionConfidence != null &&
+                  ` — ثقة ${Math.round(detectionConfidence * 100)}٪`}
               </Badge>
             )}
           </div>
@@ -526,11 +529,13 @@ export default function EditorPage() {
                   {history.map((item) => {
                     // Handle both local history format and API format
                     const originalText = item.originalText || (item as any).input_text || ''
-                    const tone = item.tone || 'professional'
-                    const strength = item.strength || 3
+                    const tone = item.tone || 'marketing'
                     const createdAt = item.createdAt || (item as any).created_at
-                    const outputLang = item.outputLanguage || (item as any).output_language || 'en'
-                    const langLabel = OUTPUT_LANGUAGES.find(l => l.value === outputLang)?.label || outputLang.toUpperCase()
+                    const outputLang = item.outputLanguage || (item as any).output_language || 'ar_gulf'
+                    const langLabel = OUTPUT_LANGUAGES.find(l => l.value === outputLang)?.label || outputLang
+                    const platformLabel =
+                      PLATFORM_OPTIONS.find((p) => p.value === (item.platform || (item as any).platform))
+                        ?.label || 'متجر'
                     
                     return (
                       <div
@@ -551,7 +556,7 @@ export default function EditorPage() {
                           <div className="flex gap-1 flex-shrink-0 flex-wrap justify-end">
                             <Badge variant="outline" className="text-xs">{tone}</Badge>
                             <Badge variant="outline" className="text-xs">{langLabel}</Badge>
-                            <Badge variant="outline" className="text-xs">L{strength}</Badge>
+                            <Badge variant="outline" className="text-xs">{platformLabel}</Badge>
                           </div>
                         </div>
                       </div>

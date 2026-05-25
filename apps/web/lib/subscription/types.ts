@@ -1,362 +1,227 @@
 /**
  * Subscription Tier Definitions
- * 
- * Defines all subscription tiers, their limits, and features
+ *
+ * Tier metadata is defined in @emotifyai/config (packages/config/src/pricing.ts).
  */
 
-export type SubscriptionTier =
-    | 'trial'
-    | 'lifetime_launch'
-    | 'basic_monthly'
-    | 'pro_monthly'
-    | 'business_monthly'
-    | 'basic_annual'
-    | 'pro_annual'
-    | 'business_annual'
-    | 'small_bundle'
-    | 'large_bundle';
+import {
+  TIER_DEFINITIONS,
+  SUBSCRIPTION_TIER_IDS,
+  type SubscriptionTierId,
+  type TierDefinition,
+} from '@emotifyai/config/pricing'
+
+export type SubscriptionTier = SubscriptionTierId
 
 export type SubscriptionStatus =
-    | 'active'
-    | 'cancelled'
-    | 'expired'
-    | 'past_due'
-    | 'paused'
-    | 'trial';
+  | 'active'
+  | 'cancelled'
+  | 'expired'
+  | 'past_due'
+  | 'paused'
+  | 'trial'
 
 export interface SubscriptionTierConfig {
-    id: SubscriptionTier;
-    name: string;
-    price: number;
-    generations: number;
-    duration?: 'month' | 'year' | 'lifetime' | 'trial';
-    durationDays?: number; // For trial
-    maxSubscribers?: number; // For lifetime launch
-    features: string[];
-    popular?: boolean;
-    badge?: string;
+  id: SubscriptionTier
+  name: string
+  price: number
+  generations: number
+  duration?: 'month' | 'year' | 'lifetime' | 'trial'
+  durationDays?: number
+  maxSubscribers?: number
+  features: string[]
+  popular?: boolean
+  badge?: string
 }
 
-/**
- * Complete subscription tier configurations
- */
-export const SUBSCRIPTION_TIERS: Record<SubscriptionTier, SubscriptionTierConfig> = {
-    trial: {
-        id: 'trial',
-        name: 'Free Trial',
-        price: 0,
-        generations: 10,
-        duration: 'trial',
-        durationDays: 10,
-        features: [
-            '10 text enhancements',
-            'No renewal - one-time trial',
-            'All languages (EN, AR, FR)',
-            'All enhancement modes',
-                ]
-    },
+function billingToDuration(
+  billing: TierDefinition['billing']
+): SubscriptionTierConfig['duration'] {
+  switch (billing) {
+    case 'subscription_monthly':
+      return 'month'
+    case 'subscription_annual':
+      return 'year'
+    case 'lifetime':
+      return 'lifetime'
+    case 'none':
+      return 'trial'
+    default:
+      return undefined
+  }
+}
 
-    lifetime_launch: {
-        id: 'lifetime_launch',
-        name: 'Lifetime Launch Offer',
-        price: 97,
-        generations: 1000,
-        duration: 'lifetime',
-        maxSubscribers: 500,
-        features: [
-            '1000 generations per month',
-            'Lifetime access',
-            'All languages (EN, AR, FR)',
-            'Priority support',
-            'Fast processing speed',
-            'Limited to first 500 subscribers'
-        ],
-        popular: true,
-        badge: 'Limited Offer'
-    },
+function tierToConfig(def: TierDefinition): SubscriptionTierConfig {
+  const duration = billingToDuration(def.billing)
+  const features = [
+    `${def.credits} ${def.billing === 'one_time' ? 'one-time conversions' : 'generations per month'}`,
+    ...Object.entries(def.features)
+      .filter(([, enabled]) => enabled)
+      .map(([key]) => {
+        switch (key) {
+          case 'prioritySupport':
+            return 'Priority support'
+          case 'advancedFeatures':
+            return 'Advanced features'
+          case 'fastProcessing':
+            return 'Fast processing speed'
+          default:
+            return key
+        }
+      }),
+  ]
 
-    basic_monthly: {
-        id: 'basic_monthly',
-        name: 'Basic Monthly',
-        price: 17,
-        generations: 350,
-        duration: 'month',
-        features: [
-            '350 generations per month',
-            'All languages (EN, AR, FR)',
-            'All enhancement modes',
-            'Fast processing speed',
-            'Email support'
-        ]
-    },
+  if (def.maxLifetimeSlots) {
+    features.push(`Limited to first ${def.maxLifetimeSlots} subscribers`)
+  }
 
-    small_bundle: {
-        id: 'small_bundle',
-        name: 'Small Bundle',
-        price: 5,
-        generations: 50,
-        features: [
-            '50 one-time conversions',
-            'No expiration date',
-            'Stacks with your current plan',
-        ],
-    },
+  const config: SubscriptionTierConfig = {
+    id: def.id,
+    name: def.labelEn,
+    price: def.priceUsd,
+    generations: def.credits,
+    duration,
+    features,
+  }
 
-    large_bundle: {
-        id: 'large_bundle',
-        name: 'Large Bundle',
-        price: 10,
-        generations: 100,
-        features: [
-            '100 one-time conversions',
-            'No expiration date',
-            'Stacks with your current plan',
-        ],
-    },
+  if (def.validityDays != null && def.billing === 'none') {
+    config.durationDays = def.validityDays
+  }
+  if (def.maxLifetimeSlots) {
+    config.maxSubscribers = def.maxLifetimeSlots
+  }
+  if (def.id === 'pro_monthly') {
+    config.popular = true
+  }
+  if (def.id === 'lifetime_launch') {
+    config.popular = true
+    config.badge = 'Limited Offer'
+  }
+  if (def.id === 'pro_annual') {
+    config.badge = 'Best Value'
+  }
 
-    pro_monthly: {
-        id: 'pro_monthly',
-        name: 'Pro Monthly',
-        price: 12,
-        generations: 300,
-        duration: 'month',
-        features: [
-            '300 generations per month',
-            'All languages (EN, AR, FR)',
-            'All enhancement modes',
-            'Fast processing speed',
-            'Priority support',
-            'Advanced features'
-        ],
-        popular: true
-    },
+  return config
+}
 
-    business_monthly: {
-        id: 'business_monthly',
-        name: 'Business Monthly',
-        price: 57,
-        generations: 1500,
-        duration: 'month',
-        features: [
-            '1500 generations per month',
-            'All languages (EN, AR, FR)',
-            'All enhancement modes',
-            'Fast processing speed',
-            'Dedicated support',
-            'Advanced features',
-            'Team features (coming soon)'
-        ]
-    },
-
-    basic_annual: {
-        id: 'basic_annual',
-        name: 'Basic Annual',
-        price: 153, // 17 * 12 * 0.75
-        generations: 350,
-        duration: 'year',
-        features: [
-            '350 generations per month',
-            'Save 25% vs monthly',
-            'All languages (EN, AR, FR)',
-            'All enhancement modes',
-            'Fast processing speed',
-            'Email support'
-        ]
-    },
-
-    pro_annual: {
-        id: 'pro_annual',
-        name: 'Pro Annual',
-        price: 99,
-        generations: 300,
-        duration: 'year',
-        features: [
-            '300 generations per month',
-            'Save 25% vs monthly',
-            'All languages (EN, AR, FR)',
-            'All enhancement modes',
-            'Fast processing speed',
-            'Priority support',
-            'Advanced features'
-        ],
-        badge: 'Best Value'
-    },
-
-    business_annual: {
-        id: 'business_annual',
-        name: 'Business Annual',
-        price: 513, // 57 * 12 * 0.75
-        generations: 1500,
-        duration: 'year',
-        features: [
-            '1500 generations per month',
-            'Save 25% vs monthly',
-            'All languages (EN, AR, FR)',
-            'All enhancement modes',
-            'Fast processing speed',
-            'Dedicated support',
-            'Advanced features',
-        ]
-    }
-};
+export const SUBSCRIPTION_TIERS: Record<SubscriptionTier, SubscriptionTierConfig> =
+  Object.fromEntries(
+    SUBSCRIPTION_TIER_IDS.map((id) => [id, tierToConfig(TIER_DEFINITIONS[id])])
+  ) as Record<SubscriptionTier, SubscriptionTierConfig>
 
 /**
  * Subscription database model
  */
 export interface Subscription {
-    id: string;
-    user_id: string;
-    created_at: string;
-    updated_at: string;
-    lemon_squeezy_id: string;
-    status: SubscriptionStatus;
-    tier: SubscriptionTier;
-    current_period_start: string;
-    current_period_end: string;
-    cancel_at: string | null;
-    trial_started_at: string | null;
-    trial_expires_at: string | null;
-    monthly_quota: number;
-    quota_used_this_month: number;
-    quota_reset_at: string | null;
-    cache_enabled: boolean;
+  id: string
+  user_id: string
+  created_at: string
+  updated_at: string
+  lemon_squeezy_id: string
+  status: SubscriptionStatus
+  tier: SubscriptionTier
+  current_period_start: string
+  current_period_end: string
+  cancel_at: string | null
+  trial_started_at: string | null
+  trial_expires_at: string | null
+  monthly_quota: number
+  quota_used_this_month: number
+  quota_reset_at: string | null
+  cache_enabled: boolean
 }
 
 /**
  * Usage quota information
  */
 export interface UsageQuota {
-    quota: number;
-    used: number;
-    remaining: number;
-    reset_at: string | null;
-    percentage_used: number;
+  quota: number
+  used: number
+  remaining: number
+  reset_at: string | null
+  percentage_used: number
 }
 
 /**
  * Lifetime slot information
  */
 export interface LifetimeSlotInfo {
-    total: number;
-    used: number;
-    remaining: number;
-    percentage: number;
-    available: boolean;
+  total: number
+  used: number
+  remaining: number
+  percentage: number
+  available: boolean
 }
 
-/**
- * Helper functions
- */
-
-/**
- * Get tier configuration by ID
- */
 export function getTierConfig(tier: SubscriptionTier): SubscriptionTierConfig {
-    return SUBSCRIPTION_TIERS[tier];
+  return SUBSCRIPTION_TIERS[tier]
 }
 
-/**
- * Check if tier is annual
- */
 export function isAnnualTier(tier: SubscriptionTier): boolean {
-    return tier.endsWith('_annual');
+  return tier.endsWith('_annual')
 }
 
-/**
- * Check if tier is monthly
- */
 export function isMonthlyTier(tier: SubscriptionTier): boolean {
-    return tier.endsWith('_monthly');
+  return tier.endsWith('_monthly')
 }
 
-/**
- * Check if tier is lifetime
- */
 export function isLifetimeTier(tier: SubscriptionTier): boolean {
-    return tier === 'lifetime_launch';
+  return tier === 'lifetime_launch'
 }
 
-/**
- * Check if tier is trial
- */
 export function isTrialTier(tier: SubscriptionTier): boolean {
-    return tier === 'trial';
+  return tier === 'trial'
 }
 
-/**
- * Get monthly equivalent price for annual tiers
- */
 export function getMonthlyEquivalent(tier: SubscriptionTier): number {
-    const config = getTierConfig(tier);
-    if (isAnnualTier(tier)) {
-        return Math.round(config.price / 12);
-    }
-    return config.price;
+  const config = getTierConfig(tier)
+  if (isAnnualTier(tier)) {
+    return Math.round(config.price / 12)
+  }
+  return config.price
 }
 
-/**
- * Calculate savings for annual tiers
- */
 export function calculateAnnualSavings(tier: SubscriptionTier): number {
-    if (!isAnnualTier(tier)) return 0;
+  if (!isAnnualTier(tier)) return 0
 
-    const config = getTierConfig(tier);
-    const monthlyEquivalent = getMonthlyEquivalent(tier);
-    const monthlyTotal = monthlyEquivalent * 12;
+  const config = getTierConfig(tier)
+  const monthlyEquivalent = getMonthlyEquivalent(tier)
+  const monthlyTotal = monthlyEquivalent * 12
 
-    return monthlyTotal - config.price;
+  return monthlyTotal - config.price
 }
 
-/**
- * Check if subscription is active
- */
 export function isSubscriptionActive(subscription: Subscription): boolean {
-    return subscription.status === 'active' || subscription.status === 'trial';
+  return subscription.status === 'active' || subscription.status === 'trial'
 }
 
-/**
- * Check if trial has expired
- */
 export function isTrialExpired(subscription: Subscription): boolean {
-    if (!subscription.trial_expires_at) return false;
-    return new Date(subscription.trial_expires_at) <= new Date();
+  if (!subscription.trial_expires_at) return false
+  return new Date(subscription.trial_expires_at) <= new Date()
 }
 
-/**
- * Check if quota is exceeded
- */
 export function isQuotaExceeded(subscription: Subscription): boolean {
-    return subscription.quota_used_this_month >= subscription.monthly_quota;
+  return subscription.quota_used_this_month >= subscription.monthly_quota
 }
 
-/**
- * Calculate quota percentage
- */
 export function calculateQuotaPercentage(subscription: Subscription): number {
-    if (subscription.monthly_quota === 0) return 0;
-    return Math.round((subscription.quota_used_this_month / subscription.monthly_quota) * 100);
+  if (subscription.monthly_quota === 0) return 0
+  return Math.round(
+    (subscription.quota_used_this_month / subscription.monthly_quota) * 100
+  )
 }
 
-/**
- * Get tier display name with badge
- */
 export function getTierDisplayName(tier: SubscriptionTier): string {
-    const config = getTierConfig(tier);
-    return config.badge ? `${config.name} - ${config.badge}` : config.name;
+  const config = getTierConfig(tier)
+  return config.badge ? `${config.name} - ${config.badge}` : config.name
 }
 
-/**
- * Sort tiers by price (for pricing page display)
- */
 export function getSortedTiers(): SubscriptionTierConfig[] {
-    return Object.values(SUBSCRIPTION_TIERS)
-        .filter(tier => tier.id !== 'trial') // Exclude trial from pricing page
-        .sort((a, b) => {
-            // Lifetime first
-            if (a.id === 'lifetime_launch') return -1;
-            if (b.id === 'lifetime_launch') return 1;
-
-            // Then by price
-            return a.price - b.price;
-        });
+  return Object.values(SUBSCRIPTION_TIERS)
+    .filter((tier) => tier.id !== 'trial')
+    .sort((a, b) => {
+      if (a.id === 'lifetime_launch') return -1
+      if (b.id === 'lifetime_launch') return 1
+      return a.price - b.price
+    })
 }

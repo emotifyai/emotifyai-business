@@ -143,6 +143,12 @@ Enhance text using AI.
 }
 ```
 
+### GET /api/billing/history
+
+Returns invoices, payment history, and subscription billing summary for paid users (server-side Lemon Squeezy + Supabase fallback).
+
+Requires: `LEMONSQUEEZY_API_KEY`, `LEMONSQUEEZY_STORE_ID`
+
 ### POST /api/webhooks/lemonsqueezy
 
 Webhook endpoint for Lemon Squeezy subscription events.

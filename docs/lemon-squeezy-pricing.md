@@ -15,8 +15,8 @@
 | حزمة صغيرة | دفعة واحدة | `small_bundle` | `LEMONSQUEEZY_SMALL_BUNDLE_VARIANT_ID` |
 | حزمة كبيرة | دفعة واحدة | `large_bundle` | `LEMONSQUEEZY_LARGE_BUNDLE_VARIANT_ID` |
 
-نصوص العرض (SAR / USD التقريبي): `apps/web/lib/pricing/plans.ts`  
-حدود التحويلات: `apps/web/lib/pricing/credits.ts`
+مصدر الحقيقة الواحد: `packages/config/src/pricing.ts`  
+إعادة التصدير في الويب: `apps/web/lib/pricing/plans.ts` و `apps/web/lib/pricing/credits.ts`
 
 ---
 
@@ -151,8 +151,7 @@ Custom data في Checkout:
 ## 9. تحديث الأسعار على الموقع
 
 1. عدّل السعر في Lemon Squeezy (نفس Variant IDs)
-2. حدّث `PRICING_PLANS` في `apps/web/lib/pricing/plans.ts`
-3. حدّث `TIER_CREDIT_LIMITS` في `apps/web/lib/pricing/credits.ts` إن تغيّرت التحويلات
+2. حدّث `PRICING_DISPLAY_PLANS` و `TIER_DEFINITIONS` في `packages/config/src/pricing.ts`
 4. أعد النشر
 
 ---
@@ -163,8 +162,9 @@ Custom data في Checkout:
 |---|---|
 | `apps/web/app/pricing/page.tsx` | صفحة الأسعار |
 | `apps/web/components/pricing/pricing-plans-table.tsx` | بطاقات الخطط |
-| `apps/web/lib/pricing/plans.ts` | نصوص العرض |
-| `apps/web/lib/pricing/credits.ts` | حدود التحويلات |
-| `apps/web/lib/lemonsqueezy/config.ts` | tier → variant |
+| `packages/config/src/pricing.ts` | خطط، أسعار، حدود، Lemon env keys |
+| `apps/web/lib/pricing/plans.ts` | إعادة تصدير عرض /pricing |
+| `apps/web/lib/pricing/credits.ts` | إعادة تصدير حدود التحويلات |
+| `apps/web/lib/lemonsqueezy/config.ts` | tier → `process.env` variant |
 | `apps/web/app/api/checkout/route.ts` | إنشاء checkout |
 | `apps/web/app/api/webhooks/lemonsqueezy/route.ts` | معالجة الأحداث |

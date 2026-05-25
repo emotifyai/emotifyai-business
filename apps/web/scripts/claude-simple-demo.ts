@@ -14,31 +14,31 @@ const realExamples = [
     title: "📧 Email to Boss",
     text: "hey can you approve my vacation request for next week? i really need the time off",
     language: 'en' as const,
-    tone: 'professional' as const
+    tone: 'marketing' as const
   },
   {
     title: "📱 Customer Support Response", 
     text: "sorry your order is delayed. we're working on it. will update you soon",
     language: 'en' as const,
-    tone: 'professional' as const
+    tone: 'marketing' as const
   },
   {
     title: "💼 LinkedIn Post",
     text: "just got promoted to senior developer! excited for new challenges ahead",
     language: 'en' as const,
-    tone: 'professional' as const
+    tone: 'marketing' as const
   },
   {
     title: "🌍 Arabic Business Message",
     text: "أريد أن أحجز اجتماع معك الأسبوع القادم لمناقشة المشروع",
     language: 'ar' as const,
-    tone: 'professional' as const
+    tone: 'marketing' as const
   },
   {
     title: "🇫🇷 French Casual Text",
     text: "salut! on se voit demain pour le projet? dis moi si ca marche pour toi",
     language: 'fr' as const,
-    tone: 'professional' as const
+    tone: 'marketing' as const
   }
 ]
 
@@ -81,8 +81,9 @@ async function runDemo() {
       const startTime = Date.now()
       const result = await enhanceText({
         text: example.text,
-        language: example.language,
-        tone: example.tone
+        outputLanguage: example.language === 'ar' ? 'ar_gulf' : 'en',
+        tone: example.tone,
+        platform: 'store',
       })
       const duration = Date.now() - startTime
       

@@ -805,3 +805,9 @@ BEGIN
     RETURN remaining <= 0;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- =============================================================================
+-- Prompt router analytics (usage_logs)
+-- =============================================================================
+ALTER TABLE public.usage_logs ADD COLUMN IF NOT EXISTS platform TEXT;
+ALTER TABLE public.usage_logs ADD COLUMN IF NOT EXISTS detected_route TEXT;

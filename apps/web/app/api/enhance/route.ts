@@ -1,12 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { RUNTIME_SUBSCRIPTION_DEFAULTS } from '@emotifyai/config/pricing'
 import { createClient } from '@/lib/supabase/server'
 import { canMakeEnhancement } from '@/lib/subscription/validation'
-import { enhanceText, mockEnhanceText, EnhanceOptions } from '@/lib/ai/claude'
-import { detectLanguage, validateOutputQuality, isLanguageSupported } from '@/lib/ai/language-detection'
+import { enhanceText, mockEnhanceText, type EnhanceOptions } from '@/lib/ai/claude'
+import { validateOutputQuality, isLanguageSupported } from '@/lib/ai/language-detection'
+import { detectAndRoute } from '@/lib/ai/language-router'
 import { EnhanceRequestSchema, ApiErrorCode } from '@/types/api'
 import { EnhancementMode, UsageLogInsert } from '@/types/database'
 
-const USE_MOCK = process.env.MOCK_AI_RESPONSES === 'true'
+function useMockAi(): boolean {
+  return process.env.MOCK_AI_RESPONSES === 'true'
+}
 
 type ErrorResponse = {
     code: ApiErrorCode
@@ -17,7 +21,13 @@ function createErrorResponse(error: ErrorResponse, status: number) {
     return NextResponse.json({ success: false, error }, { status })
 }
 
-function createSuccessResponse(data: { enhancedText: string; tokensUsed: number; language: string }) {
+function createSuccessResponse(data: {
+    enhancedText: string
+    tokensUsed: number
+    language: string
+    routeId?: string
+    detectionSummary?: string
+}) {
     return NextResponse.json({ success: true, data })
 }
 
@@ -43,47 +53,46 @@ export async function POST(request: NextRequest) {
             return createErrorResponse({ code: ApiErrorCode.INVALID_REQUEST, message: 'Invalid request data' }, 400)
         }
 
-        const { 
-            text, 
-            language: requestedLanguage, 
-            outputLanguage, 
-            tone, 
+        const {
+            text,
+            outputLanguage,
+            tone,
+            platform,
             strength,
-            isEditorSession 
+            isEditorSession,
         } = validation.data
-        
-        const language = requestedLanguage || detectLanguage(text)
-        const finalOutputLanguage = outputLanguage || language
 
-        if (!isLanguageSupported(language)) {
+        if (!isLanguageSupported(outputLanguage)) {
             return createErrorResponse({
                 code: ApiErrorCode.UNSUPPORTED_LANGUAGE,
-                message: `Language '${language}' is not supported`
+                message: `Output language '${outputLanguage}' is not supported`,
             }, 400)
         }
+
+        const { routeId, detection } = detectAndRoute(text, outputLanguage)
+
         const canEnhance = await canMakeEnhancement(user.id)
         if (!canEnhance.allowed) {
-            // If the reason is expired subscription, try to create a new free trial
             if (canEnhance.reason === 'SUBSCRIPTION_EXPIRED' || canEnhance.reason === 'NO_SUBSCRIPTION') {
                 try {
-                    // Create a new free trial subscription
+                    const trialDefaults = RUNTIME_SUBSCRIPTION_DEFAULTS.enhanceTrialInsert
                     const now = new Date()
-                    const freeEnd = new Date(now.getTime() + 10 * 24 * 60 * 60 * 1000) // 10 days
-                    const { error: createError } = await (supabase
-                        .from('subscriptions') as any)
-                        .insert({
-                            user_id: user.id,
-                            lemon_squeezy_id: `free_${user.id}_${Date.now()}`, // Make it unique
-                            status: 'trial',
-                            tier: 'trial',
-                            tier_name: 'free',
-                            credits_limit: 10,
-                            credits_used: 0,
-                            validity_days: 10,
-                            current_period_start: now.toISOString(),
-                            current_period_end: freeEnd.toISOString(),
-                        })
-                    
+                    const freeEnd = new Date(
+                      now.getTime() + trialDefaults.validityDays * 24 * 60 * 60 * 1000
+                    )
+                    const { error: createError } = await (supabase.from('subscriptions') as any).insert({
+                        user_id: user.id,
+                        lemon_squeezy_id: `free_${user.id}_${Date.now()}`,
+                        status: 'trial',
+                        tier: trialDefaults.tier,
+                        tier_name: 'free',
+                        credits_limit: trialDefaults.credits,
+                        credits_used: 0,
+                        validity_days: trialDefaults.validityDays,
+                        current_period_start: now.toISOString(),
+                        current_period_end: freeEnd.toISOString(),
+                    })
+
                     if (createError) {
                         return NextResponse.json({
                             success: false,
@@ -94,7 +103,6 @@ export async function POST(request: NextRequest) {
                             },
                         }, { status: 403 })
                     }
-                    // Continue with the enhancement since we just created a fresh trial
                 } catch {
                     return NextResponse.json({
                         success: false,
@@ -107,75 +115,69 @@ export async function POST(request: NextRequest) {
                     }, { status: 403 })
                 }
             } else {
-                const tier = canEnhance.creditStatus?.tier_name
                 return NextResponse.json({
                     success: false,
                     error: {
                         code: ApiErrorCode.USAGE_LIMIT_EXCEEDED,
                         message: 'Usage limit exceeded',
                         reason: canEnhance.reason,
-                        tier,
+                        tier: canEnhance.creditStatus?.tier_name,
                     },
                 }, { status: 403 })
             }
         }
 
-        const enhanceOptions: EnhanceOptions = { 
-            text, 
-            language, 
-            outputLanguage: finalOutputLanguage,
+        const enhanceOptions: EnhanceOptions = {
+            text,
+            outputLanguage,
             tone,
-            strength 
+            platform,
+            strength,
         }
-        
-        const result = USE_MOCK ? await mockEnhanceText(enhanceOptions) : await enhanceText(enhanceOptions)
 
-        const qualityCheck = validateOutputQuality(text, result.enhancedText, finalOutputLanguage)
-        
+        const result = useMockAi()
+            ? await mockEnhanceText(enhanceOptions)
+            : await enhanceText(enhanceOptions)
+
+        const qualityCheck = validateOutputQuality(text, result.enhancedText, outputLanguage)
+
         if (!qualityCheck.isValid) {
             return createErrorResponse({
                 code: ApiErrorCode.QUALITY_CHECK_FAILED,
-                message: 'Quality check failed'
+                message: qualityCheck.reason || 'Quality check failed',
             }, 500)
         }
-        // Use database function to consume credits
-        const { data: creditConsumed, error: consumeError } = await (supabase as any)
-            .rpc('consume_credits', { user_uuid: user.id, credits_to_consume: 1 })
-            .single()
-        
-        if (consumeError || !creditConsumed) {
-            // Continue anyway - we don't want to fail the request if credit consumption fails
-        } else {
-        }
+
+        await (supabase as any).rpc('consume_credits', { user_uuid: user.id, credits_to_consume: 1 }).single()
+
         const usageLogData: UsageLogInsert = {
             user_id: user.id,
             input_text: text,
             output_text: result.enhancedText,
-            language,
-            output_language: finalOutputLanguage !== language ? finalOutputLanguage : undefined,
+            language: detection.primaryScript === 'arabic' ? 'ar' : 'en',
+            output_language: outputLanguage,
             mode: EnhancementMode.ENHANCE,
             tokens_used: result.tokensUsed,
             success: true,
-            credits_consumed: 1, // Each enhancement consumes 1 credit
+            credits_consumed: 1,
             is_editor_session: isEditorSession || false,
             tone: tone || undefined,
-        };
-        // @ts-ignore
+            platform: platform || undefined,
+            detected_route: routeId || result.routeId || undefined,
+        } as UsageLogInsert
+
+        // @ts-expect-error Supabase generated types may lag schema migrations
         await supabase.from('usage_logs').insert(usageLogData)
-        const successResponse = {
+
+        return createSuccessResponse({
             enhancedText: result.enhancedText,
             tokensUsed: result.tokensUsed,
-            language: result.language
-        };
-        return createSuccessResponse(successResponse);
+            language: outputLanguage,
+            routeId: result.routeId ?? routeId,
+            detectionSummary: detection.inputSummaryAr,
+        })
     } catch (error) {
         console.error('Enhancement API error:', error)
-        // Log full error details
-        if (error instanceof Error) {
-            console.error('Error name:', error.name);
-            console.error('Error message:', error.message);
-            console.error('Error stack:', error.stack);
-        }
         return createErrorResponse({ code: ApiErrorCode.INTERNAL_ERROR, message: 'Internal error' }, 500)
     }
 }

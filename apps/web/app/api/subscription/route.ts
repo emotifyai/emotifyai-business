@@ -1,4 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
+import {
+  getTierLabelsAr,
+  getTierPriorityMap,
+  RUNTIME_SUBSCRIPTION_DEFAULTS,
+} from '@emotifyai/config/pricing'
 import { createClient } from '@/lib/supabase/server'
 import { SubscriptionTier, SubscriptionStatus } from '@/types/database'
 
@@ -38,36 +43,25 @@ export async function GET(request: NextRequest) {
 
         // If no active subscriptions found, return default free plan
         if (!subscriptions || subscriptions.length === 0) {
+            const empty = RUNTIME_SUBSCRIPTION_DEFAULTS.apiSubscriptionEmpty
+            const validityMs = (empty.validityDays ?? 10) * 24 * 60 * 60 * 1000
             return NextResponse.json({
                 success: true,
                 data: {
                     tier: SubscriptionTier.FREE,
                     status: SubscriptionStatus.TRIAL,
-                    credits_limit: 10,
+                    credits_limit: empty.credits,
                     credits_used: 0,
-                    credits_remaining: 10,
+                    credits_remaining: empty.credits,
                     credits_reset_date: null,
-                    validity_days: 10,
+                    validity_days: empty.validityDays,
                     tier_name: 'تجربة مجانية',
-                    current_period_end: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000).toISOString()
-                }
+                    current_period_end: new Date(Date.now() + validityMs).toISOString(),
+                },
             })
         }
 
-        // Define subscription tier priority (higher number = higher priority)
-        const tierPriority: Record<string, number> = {
-            'free': 1,
-            'trial': 2,
-            'basic_monthly': 3,
-            'basic_annual': 4,
-            'small_bundle': 3,
-            'large_bundle': 4,
-            'pro_monthly': 5,
-            'pro_annual': 6,
-            'business_monthly': 7,
-            'business_annual': 8,
-            'lifetime_launch': 10,
-        }
+        const tierPriority = getTierPriorityMap()
 
         // Select the best subscription (highest priority, then latest)
         // @ts-ignore - Safe to ignore as we know subscriptions array is not empty at this point
@@ -92,20 +86,7 @@ export async function GET(request: NextRequest) {
         // Calculate remaining credits
         const creditsRemaining = Math.max(0, (subscription as any).credits_limit - (subscription as any).credits_used)
 
-        // Format tier name for display
-        const tierNames: Record<SubscriptionTier, string> = {
-            [SubscriptionTier.TRIAL]: 'تجربة',
-            [SubscriptionTier.FREE]: 'مجاني',
-            [SubscriptionTier.LIFETIME_LAUNCH]: 'مدى الحياة',
-            [SubscriptionTier.BASIC_MONTHLY]: 'أساسي شهري',
-            [SubscriptionTier.PRO_MONTHLY]: 'Pro شهري',
-            [SubscriptionTier.BUSINESS_MONTHLY]: 'أعمال شهري',
-            [SubscriptionTier.BASIC_ANNUAL]: 'أساسي سنوي',
-            [SubscriptionTier.PRO_ANNUAL]: 'Pro سنوي',
-            [SubscriptionTier.BUSINESS_ANNUAL]: 'أعمال سنوي',
-            [SubscriptionTier.SMALL_BUNDLE]: 'حزمة صغيرة',
-            [SubscriptionTier.LARGE_BUNDLE]: 'حزمة كبيرة',
-        }
+        const tierNames = getTierLabelsAr()
 
         return NextResponse.json({
             success: true,

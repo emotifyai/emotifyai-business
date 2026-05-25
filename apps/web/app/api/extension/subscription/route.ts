@@ -1,4 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
+import {
+  getTierLabelsAr,
+  RUNTIME_SUBSCRIPTION_DEFAULTS,
+} from '@emotifyai/config/pricing'
 import { createClient } from '@supabase/supabase-js'
 import { SubscriptionTier, SubscriptionStatus } from '@/types/database'
 
@@ -58,9 +62,12 @@ export async function GET(request: NextRequest) {
         if (subscriptionError) {
             // If no subscription found, return default trial plan
             if (subscriptionError.code === 'PGRST116') {
+                const fallback = RUNTIME_SUBSCRIPTION_DEFAULTS.apiExtensionEmpty
                 const now = new Date()
-                const endDate = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
-                
+                const endDate = new Date(
+                  Date.now() + fallback.validityDays * 24 * 60 * 60 * 1000
+                )
+
                 return NextResponse.json({
                     success: true,
                     data: {
@@ -68,18 +75,17 @@ export async function GET(request: NextRequest) {
                         status: SubscriptionStatus.ACTIVE,
                         startDate: now.toISOString(),
                         endDate: endDate.toISOString(),
-                        usageLimit: 10,
+                        usageLimit: fallback.credits,
                         currentUsage: 0,
                         resetDate: null,
-                        // Legacy fields for backward compatibility
-                        credits_limit: 10,
+                        credits_limit: fallback.credits,
                         credits_used: 0,
-                        credits_remaining: 10,
+                        credits_remaining: fallback.credits,
                         credits_reset_date: null,
-                        validity_days: 30,
+                        validity_days: fallback.validityDays,
                         tier_name: 'تجربة',
-                        current_period_end: endDate.toISOString()
-                    }
+                        current_period_end: endDate.toISOString(),
+                    },
                 })
             }
             
@@ -89,20 +95,7 @@ export async function GET(request: NextRequest) {
         // Calculate remaining credits
         const creditsRemaining = Math.max(0, subscription.credits_limit - subscription.credits_used)
 
-        // Format tier name for display
-        const tierNames: Record<SubscriptionTier, string> = {
-            [SubscriptionTier.TRIAL]: 'تجربة',
-            [SubscriptionTier.FREE]: 'مجاني',
-            [SubscriptionTier.LIFETIME_LAUNCH]: 'مدى الحياة',
-            [SubscriptionTier.BASIC_MONTHLY]: 'أساسي شهري',
-            [SubscriptionTier.PRO_MONTHLY]: 'Pro شهري',
-            [SubscriptionTier.BUSINESS_MONTHLY]: 'أعمال شهري',
-            [SubscriptionTier.BASIC_ANNUAL]: 'أساسي سنوي',
-            [SubscriptionTier.PRO_ANNUAL]: 'Pro سنوي',
-            [SubscriptionTier.BUSINESS_ANNUAL]: 'أعمال سنوي',
-            [SubscriptionTier.SMALL_BUNDLE]: 'حزمة صغيرة',
-            [SubscriptionTier.LARGE_BUNDLE]: 'حزمة كبيرة',
-        }
+        const tierNames = getTierLabelsAr()
 
         // Ensure dates are valid ISO strings
         const now = new Date()

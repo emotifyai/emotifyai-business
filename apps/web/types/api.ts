@@ -9,10 +9,18 @@ import { EnhancementMode, SubscriptionTier } from './database'
 export const EnhanceRequestSchema = z.object({
     text: z.string().min(1).max(10000),
     mode: z.nativeEnum(EnhancementMode).optional().default(EnhancementMode.ENHANCE),
-    language: z.string().length(2).optional(), // ISO 639-1 code
-    outputLanguage: z.string().length(2).optional(), // ISO 639-1 code for output
-    tone: z.enum(['emotional', 'professional', 'marketing']).optional(),
-    strength: z.number().min(1).max(5).optional().default(3),
+    /** @deprecated Legacy ISO code; optional */
+    language: z.string().min(2).max(10).optional(),
+    outputLanguage: z
+        .enum(['ar_gulf', 'ar_msa', 'en'])
+        .optional()
+        .default('ar_gulf'),
+    tone: z.enum(['emotional', 'marketing', 'exclusive']).optional().default('marketing'),
+    platform: z
+        .enum(['store', 'whatsapp', 'instagram', 'facebook', 'snap', 'tiktok'])
+        .optional()
+        .default('store'),
+    strength: z.number().min(1).max(5).optional().default(5),
     isEditorSession: z.boolean().optional().default(false),
 })
 

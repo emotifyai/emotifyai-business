@@ -18,6 +18,7 @@
     "deploy:netlify-env": "node scripts/deploy-netlify-env.js"
   },
   "dependencies": {
+    "@emotifyai/config": "workspace:*",
     "@emotifyai/ui": "workspace:*",
     "@anthropic-ai/sdk": "^0.71.2",
     "@lemonsqueezy/lemonsqueezy.js": "^4.0.0",

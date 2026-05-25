@@ -136,6 +136,8 @@ export interface Database {
                     is_editor_session: boolean | null
                     tone: string | null
                     output_language: string | null
+                    platform: string | null
+                    detected_route: string | null
                 }
                 Insert: {
                     id?: string
@@ -155,6 +157,8 @@ export interface Database {
                     is_editor_session?: boolean | null
                     tone?: string | null
                     output_language?: string | null
+                    platform?: string | null
+                    detected_route?: string | null
                 }
                 Update: {
                     id?: string
@@ -174,6 +178,8 @@ export interface Database {
                     is_editor_session?: boolean | null
                     tone?: string | null
                     output_language?: string | null
+                    platform?: string | null
+                    detected_route?: string | null
                 }
             }
             api_keys: {

@@ -77,7 +77,7 @@ export function NavbarUserMenu({ user }: NavbarUserMenuProps) {
                     </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
-                    <Link href="/pricing" className="cursor-pointer">
+                    <Link href="/dashboard/subscription" className="cursor-pointer">
                         <BarChart3 className="me-2 h-4 w-4" />
                         الاشتراك
                     </Link>

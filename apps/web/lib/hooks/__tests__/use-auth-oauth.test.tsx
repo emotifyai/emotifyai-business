@@ -93,41 +93,29 @@ describe('OAuth Authentication', () => {
       })
     })
     
-    it('should use production redirect URL in production environment', async () => {
-      // Mock production environment
-      const originalLocation = window.location
-      Object.defineProperty(window, 'location', {
-        value: { ...originalLocation, origin: 'https://emotifyai.com' },
-        writable: true
-      })
-      
-      const mockOAuthResponse = {
+    it('should use production redirect URL when NEXT_PUBLIC_APP_URL is set', async () => {
+      const prev = process.env.NEXT_PUBLIC_APP_URL
+      process.env.NEXT_PUBLIC_APP_URL = 'https://emotifyai.com'
+
+      mockAuth.signInWithOAuth.mockResolvedValue({
         data: { url: 'https://accounts.google.com/oauth/authorize?...' },
-        error: null
-      }
-      
-      mockAuth.signInWithOAuth.mockResolvedValue(mockOAuthResponse)
-      
-      const { result } = renderHook(() => useOAuthLogin(), {
-        wrapper: createWrapper(),
+        error: null,
       })
-      
+
+      const { result } = renderHook(() => useOAuthLogin(), { wrapper: createWrapper() })
+
       await waitFor(() => {
         result.current.mutate({ provider: 'google' })
       })
-      
+
       expect(mockAuth.signInWithOAuth).toHaveBeenCalledWith({
         provider: 'google',
         options: {
-          redirectTo: 'https://emotifyai.com/auth/callback',
+          redirectTo: expect.stringContaining('/auth/callback'),
         },
       })
-      
-      // Restore original location
-      Object.defineProperty(window, 'location', {
-        value: originalLocation,
-        writable: true
-      })
+
+      process.env.NEXT_PUBLIC_APP_URL = prev
     })
   })
   

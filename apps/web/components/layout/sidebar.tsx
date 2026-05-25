@@ -36,6 +36,11 @@ const sidebarItems = [
         icon: BarChart3,
     },
     {
+        title: 'الاشتراك',
+        href: '/dashboard/subscription',
+        icon: CreditCard,
+    },
+    {
         title: 'الإعدادات',
         href: '/dashboard/settings',
         icon: Settings,
@@ -103,7 +108,7 @@ export function MobileSidebar() {
             <SheetContent side="right" className="pe-0">
                 <div className="px-7">
                     <Link href="/" className="flex items-center" onClick={() => setOpen(false)}>
-                        <span className="text-gradient-brand text-2xl font-bold">إيموتيف<span className="text-primary">اي</span></span>
+                        <span className="text-gradient-brand text-2xl font-bold">Emotify<span className="text-primary">AI</span></span>
                     </Link>
                 </div>
                 <Sidebar className="my-4 h-[calc(100vh-8rem)] pb-10 ps-6" />

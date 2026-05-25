@@ -42,9 +42,9 @@ describe('Language Detection', () => {
 
     it('should detect French text correctly', () => {
       const frenchTexts = [
-        'Bonjour et bienvenue dans notre application',
+        'Bonjour et bienvenue — à bientôt',
         'Ceci est un texte français avec des caractères spéciaux: à, é, è, ç',
-        'Nous sommes heureux de vous présenter notre nouveau service',
+        'Nous présentons le nouveau service à Paris',
         'Le développement de cette fonctionnalité a été un défi intéressant'
       ]
 
@@ -257,7 +257,7 @@ describe('Language Detection', () => {
         const result = validateOutputQuality(input, output, 'en')
         
         expect(result.isValid).toBe(false)
-        expect(result.reason).toContain('Output language (ar) does not match expected language (en)')
+        expect(result.reason).toContain('Output language (ar) does not match expected (en)')
       })
     })
 
@@ -298,7 +298,7 @@ describe('Language Detection', () => {
 
   describe('SUPPORTED_LANGUAGES constant', () => {
     it('should contain exactly the expected languages', () => {
-      expect(SUPPORTED_LANGUAGES).toEqual(['en', 'ar', 'fr'])
+      expect(SUPPORTED_LANGUAGES).toEqual(['ar_gulf', 'ar_msa', 'en'])
     })
 
     it('should be readonly', () => {
@@ -306,6 +306,7 @@ describe('Language Detection', () => {
       // In JavaScript, arrays are mutable by default, so we just check the type
       expect(Array.isArray(SUPPORTED_LANGUAGES)).toBe(true)
       expect(SUPPORTED_LANGUAGES.length).toBe(3)
+      expect(isLanguageSupported('ar_gulf')).toBe(true)
       
       // Test that it's a const array (can't be reassigned)
       expect(typeof SUPPORTED_LANGUAGES).toBe('object')

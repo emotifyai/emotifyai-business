@@ -445,7 +445,7 @@ export async function POST(request: NextRequest) {
                             current_period_start: new Date().toISOString(),
                             current_period_end: new Date(Date.now() + 100 * 365 * 24 * 60 * 60 * 1000).toISOString(), // 100 years
                             cancel_at: null,
-                            credits_limit: 1000,
+                            credits_limit: getCreditsForTier(SubscriptionTier.LIFETIME_LAUNCH),
                             credits_used: 0,
                             credits_reset_date: null, // Lifetime = no reset
                             validity_days: null,

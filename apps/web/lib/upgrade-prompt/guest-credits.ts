@@ -1,5 +1,7 @@
-const GUEST_STORAGE_KEY = 'emotifyai_guest_conversions'
-export const GUEST_CREDIT_LIMIT = 10
+import { GUEST_PRICING } from '@emotifyai/config/pricing'
+
+const GUEST_STORAGE_KEY = GUEST_PRICING.storageKey
+export const GUEST_CREDIT_LIMIT = GUEST_PRICING.creditLimit
 
 export function getGuestCreditsUsed(): number {
   if (typeof window === 'undefined') return 0

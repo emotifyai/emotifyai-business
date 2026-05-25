@@ -1,3 +1,4 @@
+import { TIER_DEFINITIONS, SUBSCRIPTION_TIER_IDS } from '@emotifyai/config/pricing'
 import { SubscriptionStatus, SubscriptionTier } from './database'
 
 // =============================================================================
@@ -5,129 +6,39 @@ import { SubscriptionStatus, SubscriptionTier } from './database'
 // =============================================================================
 
 export interface SubscriptionLimits {
-    enhancementsPerPeriod: number
-    rateLimit: number // requests per minute
-    features: {
-        advancedFeatures: boolean
-        prioritySupport: boolean
-        fastProcessing: boolean
-    }
+  enhancementsPerPeriod: number
+  rateLimit: number
+  features: {
+    advancedFeatures: boolean
+    prioritySupport: boolean
+    fastProcessing: boolean
+  }
 }
 
-export const SUBSCRIPTION_LIMITS: Record<SubscriptionTier, SubscriptionLimits> = {
-    [SubscriptionTier.TRIAL]: {
-        enhancementsPerPeriod: 10,
-        rateLimit: 5,
-        features: {
-            advancedFeatures: false,
-            prioritySupport: false,
-            fastProcessing: true,
-        },
-    },
-    [SubscriptionTier.FREE]: {
-        enhancementsPerPeriod: 10,
-        rateLimit: 5,
-        features: {
-            advancedFeatures: false,
-            prioritySupport: false,
-            fastProcessing: true,
-        },
-    },
-    [SubscriptionTier.LIFETIME_LAUNCH]: {
-        enhancementsPerPeriod: 1000,
-        rateLimit: 20,
-        features: {
-            advancedFeatures: true,
-            prioritySupport: true,
-            fastProcessing: true,
-        },
-    },
-    [SubscriptionTier.BASIC_MONTHLY]: {
-        enhancementsPerPeriod: 350,
-        rateLimit: 10,
-        features: {
-            advancedFeatures: false,
-            prioritySupport: false,
-            fastProcessing: true,
-        },
-    },
-    [SubscriptionTier.SMALL_BUNDLE]: {
-        enhancementsPerPeriod: 50,
-        rateLimit: 15,
-        features: {
-            advancedFeatures: true,
-            prioritySupport: false,
-            fastProcessing: true,
-        },
-    },
-    [SubscriptionTier.LARGE_BUNDLE]: {
-        enhancementsPerPeriod: 100,
-        rateLimit: 15,
-        features: {
-            advancedFeatures: true,
-            prioritySupport: false,
-            fastProcessing: true,
-        },
-    },
-    [SubscriptionTier.PRO_MONTHLY]: {
-        enhancementsPerPeriod: 300,
-        rateLimit: 15,
-        features: {
-            advancedFeatures: true,
-            prioritySupport: true,
-            fastProcessing: true,
-        },
-    },
-    [SubscriptionTier.BUSINESS_MONTHLY]: {
-        enhancementsPerPeriod: 1500,
-        rateLimit: 20,
-        features: {
-            advancedFeatures: true,
-            prioritySupport: true,
-            fastProcessing: true,
-        },
-    },
-    [SubscriptionTier.BASIC_ANNUAL]: {
-        enhancementsPerPeriod: 350,
-        rateLimit: 10,
-        features: {
-            advancedFeatures: false,
-            prioritySupport: false,
-            fastProcessing: true,
-        },
-    },
-    [SubscriptionTier.PRO_ANNUAL]: {
-        enhancementsPerPeriod: 300,
-        rateLimit: 15,
-        features: {
-            advancedFeatures: true,
-            prioritySupport: true,
-            fastProcessing: true,
-        },
-    },
-    [SubscriptionTier.BUSINESS_ANNUAL]: {
-        enhancementsPerPeriod: 1500,
-        rateLimit: 20,
-        features: {
-            advancedFeatures: true,
-            prioritySupport: true,
-            fastProcessing: true,
-        },
-    },
-}
+export const SUBSCRIPTION_LIMITS: Record<SubscriptionTier, SubscriptionLimits> =
+  Object.fromEntries(
+    SUBSCRIPTION_TIER_IDS.map((id) => [
+      id as SubscriptionTier,
+      {
+        enhancementsPerPeriod: TIER_DEFINITIONS[id].credits,
+        rateLimit: TIER_DEFINITIONS[id].rateLimitRpm,
+        features: TIER_DEFINITIONS[id].features,
+      },
+    ])
+  ) as Record<SubscriptionTier, SubscriptionLimits>
 
 export interface SubscriptionInfo {
-    tier: SubscriptionTier
-    status: SubscriptionStatus
-    currentPeriodStart: Date
-    currentPeriodEnd: Date
-    cancelAt: Date | null
-    limits: SubscriptionLimits
+  tier: SubscriptionTier
+  status: SubscriptionStatus
+  currentPeriodStart: Date
+  currentPeriodEnd: Date
+  cancelAt: Date | null
+  limits: SubscriptionLimits
 }
 
 export interface UsageInfo {
-    enhancementsUsed: number
-    enhancementsLimit: number
-    percentageUsed: number
-    resetDate: Date
+  enhancementsUsed: number
+  enhancementsLimit: number
+  percentageUsed: number
+  resetDate: Date
 }

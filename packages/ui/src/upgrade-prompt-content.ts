@@ -1,3 +1,4 @@
+import { UPGRADE_PROMPT_CREDIT_DEFAULTS } from '@emotifyai/config/pricing'
 import type { UpgradePromptContent, UpgradePromptVariant } from './upgrade-prompt-types'
 
 export const UPGRADE_PROMPT_CONTENT: Record<UpgradePromptVariant, UpgradePromptContent> = {
@@ -9,7 +10,7 @@ export const UPGRADE_PROMPT_CONTENT: Record<UpgradePromptVariant, UpgradePromptC
     secondaryCta: 'عرض الأسعار',
     badge: 'ضيف',
     showProgress: true,
-    defaultLimit: 10,
+    defaultLimit: UPGRADE_PROMPT_CREDIT_DEFAULTS.guest_exhausted,
   },
   trial_exhausted: {
     headline: 'انتهت تجربتك المجانية',
@@ -19,7 +20,7 @@ export const UPGRADE_PROMPT_CONTENT: Record<UpgradePromptVariant, UpgradePromptC
     secondaryCta: 'قارن الخطط',
     badge: 'تجربة',
     showProgress: true,
-    defaultLimit: 50,
+    defaultLimit: UPGRADE_PROMPT_CREDIT_DEFAULTS.trial_exhausted,
   },
   monthly_upsell_annual: {
     headline: 'وفر ٣ أشهر مع الاشتراك السنوي',
@@ -38,7 +39,7 @@ export const UPGRADE_PROMPT_CONTENT: Record<UpgradePromptVariant, UpgradePromptC
     secondaryCta: 'عرض الحزم',
     badge: 'Pro شهري',
     showProgress: true,
-    defaultLimit: 300,
+    defaultLimit: UPGRADE_PROMPT_CREDIT_DEFAULTS.pro_monthly_exhausted,
   },
   bundle_exhausted: {
     headline: 'انتهت تحويلات الحزمة',
@@ -48,7 +49,7 @@ export const UPGRADE_PROMPT_CONTENT: Record<UpgradePromptVariant, UpgradePromptC
     secondaryCta: 'اشترك Pro',
     badge: 'حزمة',
     showProgress: true,
-    defaultLimit: 50,
+    defaultLimit: UPGRADE_PROMPT_CREDIT_DEFAULTS.bundle_exhausted,
   },
   limit_reached: {
     headline: 'نفد رصيدك',

@@ -1,6 +1,6 @@
 'use client'
 
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import { SubscriptionTier, SubscriptionStatus } from '@/types/database'
 
 export interface SubscriptionData {
@@ -48,39 +48,49 @@ export function useSubscription() {
 }
 
 /**
- * Hook to create checkout session (placeholder implementation)
+ * Create Lemon Squeezy checkout for a tier
  */
 export function useCreateCheckout() {
-    return {
-        mutate: (tier: SubscriptionTier) => {
-            // TODO: Implement checkout creation
-            console.log('Creating checkout for tier:', tier)
+    return useMutation({
+        mutationFn: async (tier: SubscriptionTier) => {
+            const response = await fetch('/api/checkout', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify({ tier }),
+            })
+            const data = await response.json()
+            if (!response.ok) {
+                throw new Error(data.error ?? 'فشل إنشاء جلسة الدفع')
+            }
+            if (data.url) {
+                window.location.href = data.url
+            }
+            return data
         },
-        mutateAsync: async (tier: SubscriptionTier) => {
-            // TODO: Implement checkout creation
-            console.log('Creating checkout for tier:', tier)
-            throw new Error('Checkout creation not implemented yet')
-        },
-        isLoading: false
-    }
+    })
 }
 
 /**
- * Hook to access customer portal (placeholder implementation)
+ * Open Lemon Squeezy customer billing portal
  */
 export function useCustomerPortal() {
-    return {
-        mutate: () => {
-            // TODO: Implement customer portal access
-            console.log('Accessing customer portal')
+    return useMutation({
+        mutationFn: async () => {
+            const response = await fetch('/api/billing/portal', {
+                method: 'POST',
+                credentials: 'include',
+            })
+            const data = await response.json()
+            if (!response.ok) {
+                throw new Error(data.error ?? 'فشل فتح بوابة الفوترة')
+            }
+            if (data.url) {
+                window.location.href = data.url
+            }
+            return data
         },
-        mutateAsync: async () => {
-            // TODO: Implement customer portal access
-            console.log('Accessing customer portal')
-            throw new Error('Customer portal access not implemented yet')
-        },
-        isLoading: false
-    }
+    })
 }
 
 /**

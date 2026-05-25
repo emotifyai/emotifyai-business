@@ -15,7 +15,11 @@
         "noEmit": true,
         "esModuleInterop": true,
         "skipLibCheck": true,
-        "forceConsistentCasingInFileNames": true
+        "forceConsistentCasingInFileNames": true,
+        "paths": {
+            "@emotifyai/config": ["../config/src/index.ts"],
+            "@emotifyai/config/*": ["../config/src/*"]
+        }
     },
     "include": [
         "src"
