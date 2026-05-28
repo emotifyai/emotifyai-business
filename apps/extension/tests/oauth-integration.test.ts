@@ -29,16 +29,16 @@ vi.mock('import.meta.env', () => ({
   VITE_WEB_APP_URL: 'https://emotifyai.com',
   VITE_API_BASE_URL: 'https://emotifyai.com/api',
   VITE_MOCK_API_ENABLED: 'false'
-}))
+}));
 
 // Mock API client
 vi.mock('@/services/api/client', () => ({
   apiPost: vi.fn(),
   apiGet: vi.fn(),
-}))
+}));
 
 // Mock storage utilities
-vi.mock('@/utils/storage')
+vi.mock('@/utils/storage');
 
 // Mock logger
 // @ts-ignore
@@ -48,7 +48,7 @@ vi.mock('@/utils/logger', () => ({
     error: vi.fn(),
     warn: vi.fn(),
   }
-}))
+}));
 
 // Set up global browser mock
 (globalThis as any).browser = mockBrowser
@@ -56,6 +56,10 @@ vi.mock('@/utils/logger', () => ({
 describe('Extension OAuth Integration', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    vi.stubEnv('VITE_OAUTH_CLIENT_ID', 'test-oauth-client-id')
+    vi.stubEnv('VITE_WEB_APP_URL', 'https://emotifyai.com')
+    vi.stubEnv('VITE_API_BASE_URL', 'https://emotifyai.com/api')
+    vi.stubEnv('VITE_MOCK_API_ENABLED', 'false')
   })
 
   describe('OAuth Flow Configuration', () => {
@@ -259,6 +263,12 @@ describe('Extension OAuth Integration', () => {
 
   describe('Error Scenarios', () => {
     it('should handle network failures gracefully', async () => {
+      const mockRedirectUrl = 'chrome-extension://test-extension-id/'
+      mockBrowser.identity.getRedirectURL.mockReturnValue(mockRedirectUrl)
+      mockBrowser.identity.launchWebAuthFlow.mockResolvedValue(
+        `${mockRedirectUrl}#access_token=mock-token&token_type=Bearer`
+      )
+
       const { apiPost } = await import('@/services/api/client')
       vi.mocked(apiPost).mockRejectedValue(new Error('Network error'))
 

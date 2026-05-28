@@ -71,6 +71,8 @@ export async function loginWithGoogle(): Promise<void> {
             } else {
                 throw new Error('No access token returned from Google');
             }
+        } else {
+            throw new Error('User cancelled authorization flow');
         }
     } catch (error) {
         logger.error('Google login failed', error);

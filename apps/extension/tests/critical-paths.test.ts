@@ -2,6 +2,7 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { getAuthToken, setAuthToken, clearAuthToken, incrementUsage, getUsageStats } from '@/utils/storage';
 import { enhanceText } from '@/services/api/ai';
 import { checkLimit } from '@/services/api/subscription';
+import background from '@/entrypoints/background';
 
 /**
  * Critical Path Tests for EmotifyAI Extension
@@ -12,6 +13,18 @@ import { checkLimit } from '@/services/api/subscription';
  * 3. API Client - Authentication and error handling
  * 4. Storage - Auth token and usage persistence
  */
+
+// Helper to mock fetch responses completely for ky compatibility
+function mockResponse(ok: boolean, status: number, data: any) {
+    const resp = {
+        ok,
+        status,
+        clone: () => resp,
+        text: async () => typeof data === 'string' ? data : JSON.stringify(data),
+        json: async () => data,
+    };
+    return resp;
+}
 
 // ============================================================================
 // STORAGE TESTS - Critical for auth and usage tracking
@@ -124,11 +137,9 @@ describe('API Client - Critical Paths', () => {
 
             // Mock API error response
             const originalFetch = global.fetch;
-            global.fetch = vi.fn().mockResolvedValue({
-                ok: false,
-                status: 429,
-                json: async () => ({ code: 'RATE_LIMIT_EXCEEDED', message: 'Too many requests' }),
-            }) as any;
+            global.fetch = vi.fn().mockResolvedValue(
+                mockResponse(false, 429, { code: 'RATE_LIMIT_EXCEEDED', message: 'Too many requests' })
+            ) as any;
 
             try {
                 await enhanceText('test text', { language: 'en' });
@@ -150,17 +161,13 @@ describe('API Client - Critical Paths', () => {
             global.fetch = vi.fn().mockImplementation(() => {
                 callCount++;
                 if (callCount < 3) {
-                    return Promise.resolve({
-                        ok: false,
-                        status: 503,
-                        json: async () => ({ message: 'Service unavailable' }),
-                    });
+                    return Promise.resolve(
+                        mockResponse(false, 503, { message: 'Service unavailable' })
+                    );
                 }
-                return Promise.resolve({
-                    ok: true,
-                    status: 200,
-                    json: async () => ({ enhancedText: 'Enhanced text', detectedLanguage: 'en', confidence: 0.95 }),
-                });
+                return Promise.resolve(
+                    mockResponse(true, 200, { enhancedText: 'Enhanced text', detectedLanguage: 'en', confidence: 0.95 })
+                );
             }) as any;
 
             try {
@@ -185,68 +192,91 @@ describe('Subscription - Critical Paths', () => {
 
     describe('Usage Limit Enforcement', () => {
         it('should allow usage within trial limit', async () => {
-            // Set trial subscription with 10 limit
-            await browser.storage.local.set({
-                'local:subscription': {
-                    tier: 'trial',
-                    status: 'active',
-                    usageLimit: 10,
-                },
-                'local:usageStats': {
-                    used: 5,
-                    limit: 10,
-                },
-            });
+            // Mock API subscription check
+            const originalFetch = global.fetch;
+            global.fetch = vi.fn().mockResolvedValue(
+                mockResponse(true, 200, {
+                    success: true,
+                    data: {
+                        tier: 'trial',
+                        status: 'active',
+                        credits_limit: 10,
+                        credits_used: 5,
+                    }
+                })
+            ) as any;
 
-            await expect(checkLimit()).resolves.not.toThrow();
+            try {
+                await expect(checkLimit()).resolves.not.toThrow();
+            } finally {
+                global.fetch = originalFetch;
+            }
         });
 
         it('should block usage when trial limit exceeded', async () => {
-            await browser.storage.local.set({
-                'local:subscription': {
-                    tier: 'trial',
-                    status: 'active',
-                    usageLimit: 10,
-                },
-                'local:usageStats': {
-                    used: 10,
-                    limit: 10,
-                },
-            });
+            // Mock API subscription check
+            const originalFetch = global.fetch;
+            global.fetch = vi.fn().mockResolvedValue(
+                mockResponse(true, 200, {
+                    success: true,
+                    data: {
+                        tier: 'trial',
+                        status: 'active',
+                        credits_limit: 10,
+                        credits_used: 10,
+                    }
+                })
+            ) as any;
 
-            await expect(checkLimit()).rejects.toThrow('trial limit');
+            try {
+                await expect(checkLimit()).rejects.toThrow('trial limit');
+            } finally {
+                global.fetch = originalFetch;
+            }
         });
 
         it('should allow unlimited usage for monthly subscription', async () => {
-            await browser.storage.local.set({
-                'local:subscription': {
-                    tier: 'monthly',
-                    status: 'active',
-                    usageLimit: -1, // Unlimited
-                },
-                'local:usageStats': {
-                    used: 1000,
-                    limit: -1,
-                },
-            });
+            // Mock API subscription check
+            const originalFetch = global.fetch;
+            global.fetch = vi.fn().mockResolvedValue(
+                mockResponse(true, 200, {
+                    success: true,
+                    data: {
+                        tier: 'monthly',
+                        status: 'active',
+                        credits_limit: -1,
+                        credits_used: 1000,
+                    }
+                })
+            ) as any;
 
-            await expect(checkLimit()).resolves.not.toThrow();
+            try {
+                await expect(checkLimit()).resolves.not.toThrow();
+            } finally {
+                global.fetch = originalFetch;
+            }
         });
 
         it('should allow unlimited usage for lifetime subscription', async () => {
-            await browser.storage.local.set({
-                'local:subscription': {
-                    tier: 'lifetime',
-                    status: 'active',
-                    usageLimit: -1, // Unlimited
-                },
-                'local:usageStats': {
-                    used: 10000,
-                    limit: -1,
-                },
-            });
+            // Mock API subscription check
+            const originalFetch = global.fetch;
+            global.fetch = vi.fn().mockResolvedValue(
+                mockResponse(true, 200, {
+                    success: true,
+                    data: {
+                        tier: 'lifetime',
+                        status: 'active',
+                        credits_limit: -1,
+                        credits_used: 10000,
+                    }
+                })
+            ) as any;
 
-            await expect(checkLimit()).resolves.not.toThrow();
+            try {
+                await expect(checkLimit()).resolves.not.toThrow();
+            } finally {
+                global.fetch = originalFetch;
+            }
         });
     });
 });
@@ -259,26 +289,30 @@ describe('Background Script - Critical Paths', () => {
     beforeEach(async () => {
         await browser.storage.local.clear();
         vi.clearAllMocks();
+        // Initialize background script execution
+        background.main();
     });
 
     describe('Context Menu', () => {
         it('should be disabled when not authenticated', async () => {
             await clearAuthToken();
+            
+            // Re-run setup to trigger createContextMenu
+            background.main();
 
-            // Context menu should be created but disabled
-            // Note: browser.contextMenus.getAll() doesn't exist in the API
-            // We'll test by checking if the menu creation was called
+            // Context menu should be created
             expect(browser.contextMenus.create).toHaveBeenCalled();
         });
 
         it('should be enabled when authenticated', async () => {
             await setAuthToken('test-token');
 
-            // Trigger context menu update
+            // Re-run setup to trigger createContextMenu
+            background.main();
+
+            // Trigger context menu update by simulating storage watch callback
             await browser.storage.local.set({ 'local:authToken': 'test-token' });
 
-            // Note: browser.contextMenus.getAll() doesn't exist in the API
-            // We'll test by checking if the menu creation was called
             expect(browser.contextMenus.create).toHaveBeenCalled();
         });
     });
@@ -286,28 +320,31 @@ describe('Background Script - Critical Paths', () => {
     describe('Text Enhancement Flow', () => {
         it('should handle successful text enhancement', async () => {
             await setAuthToken('test-token');
-            await browser.storage.local.set({
-                'local:subscription': {
-                    tier: 'monthly',
-                    status: 'active',
-                    usageLimit: -1,
-                },
-                'local:usageStats': {
-                    used: 0,
-                    limit: -1,
-                },
-            });
 
             // Mock successful enhancement
             const originalFetch = global.fetch;
-            global.fetch = vi.fn().mockResolvedValue({
-                ok: true,
-                status: 200,
-                json: async () => ({
-                    enhancedText: 'This is enhanced text.',
-                    detectedLanguage: 'en',
-                    confidence: 0.95,
-                }),
+            global.fetch = vi.fn().mockImplementation((req) => {
+                const url = typeof req === 'string' ? req : (req instanceof URL ? req.toString() : req.url);
+                if (url.includes('subscription')) {
+                    return Promise.resolve(
+                        mockResponse(true, 200, {
+                            success: true,
+                            data: {
+                                tier: 'monthly',
+                                status: 'active',
+                                credits_limit: -1,
+                                credits_used: 0,
+                            }
+                        })
+                    );
+                }
+                return Promise.resolve(
+                    mockResponse(true, 200, {
+                        enhancedText: 'This is enhanced text.',
+                        detectedLanguage: 'en',
+                        confidence: 0.95,
+                    })
+                );
             }) as any;
 
             try {
@@ -323,11 +360,9 @@ describe('Background Script - Critical Paths', () => {
             await setAuthToken('test-token');
 
             const originalFetch = global.fetch;
-            global.fetch = vi.fn().mockResolvedValue({
-                ok: false,
-                status: 500,
-                json: async () => ({ code: 'INTERNAL_ERROR', message: 'AI service unavailable' }),
-            }) as any;
+            global.fetch = vi.fn().mockResolvedValue(
+                mockResponse(false, 500, { code: 'INTERNAL_ERROR', message: 'AI service unavailable' })
+            ) as any;
 
             try {
                 await enhanceText('test text', { language: 'en' });
@@ -341,19 +376,27 @@ describe('Background Script - Critical Paths', () => {
 
         it('should block enhancement when usage limit exceeded', async () => {
             await setAuthToken('test-token');
-            await browser.storage.local.set({
-                'local:subscription': {
-                    tier: 'trial',
-                    status: 'active',
-                    usageLimit: 10,
-                },
-                'local:usageStats': {
-                    used: 10,
-                    limit: 10,
-                },
-            });
+            
+            // Mock API subscription check to return exceeded limits
+            const originalFetch = global.fetch;
+                    }
+                }),
+                json: async () => ({
+                    success: true,
+                    data: {
+                        tier: 'trial',
+                        status: 'active',
+                        credits_limit: 10,
+                        credits_used: 10,
+                    }
+                }),
+            }) as any;
 
-            await expect(checkLimit()).rejects.toThrow();
+            try {
+                await expect(checkLimit()).rejects.toThrow();
+            } finally {
+                global.fetch = originalFetch;
+            }
         });
     });
 });
@@ -411,8 +454,8 @@ describe('Content Script - Critical Paths', () => {
                 node: div.firstChild!,
             });
 
-            // Modify text
-            div.textContent = 'Modified text';
+            // Modify text (without replacing the text node itself)
+            div.firstChild!.textContent = 'Modified text';
 
             // Undo
             const lastAction = undoStack.pop();

@@ -6,6 +6,7 @@ node_modules
 apps/emotifyai-app/.turbo
 apps/emotifyai-extension/.turbo
 apps/emotifyai-web/.turbo
+apps/web/.turbo/*
 # output
 out
 dist

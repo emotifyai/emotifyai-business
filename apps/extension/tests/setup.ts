@@ -64,6 +64,10 @@ declare global {
             remove: vi.fn(),
             clear: vi.fn(),
         },
+        onChanged: {
+            addListener: vi.fn(),
+            removeListener: vi.fn(),
+        },
     },
     contextMenus: {
         create: vi.fn(),
@@ -90,7 +94,7 @@ declare global {
             removeListener: vi.fn(),
         },
         onInstalled: {
-            addListener: vi.fn(),
+            addListener: vi.fn((callback) => callback()),
             removeListener: vi.fn(),
         },
         getURL: vi.fn((path) => `chrome-extension://mock-id/${path}`),
@@ -121,3 +125,10 @@ beforeEach(() => {
     global.__mockStorage__ = {};
     vi.clearAllMocks();
 });
+
+// Mock WXT background script macro
+(global as any).defineBackground = (callback: any) => {
+    return {
+        main: callback,
+    };
+};
