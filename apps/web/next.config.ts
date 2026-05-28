@@ -11,8 +11,6 @@ const nextConfig: NextConfig = {
   outputFileTracingRoot: monorepoRoot,
   experimental: {
     optimizePackageImports: ["@emotifyai/ui"],
-    // Windows / corporate proxies: Turbopack must use OS CA store to fetch Google Fonts at build time.
-    turbopackUseSystemTlsCerts: true,
   },
   productionBrowserSourceMaps: false,
   images: {
