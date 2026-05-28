@@ -1,48 +1,15 @@
 -- =============================================================================
--- CLEAN MIGRATION - DROPS AND RECREATES ALL TABLES
--- =============================================================================
--- This script will drop all existing tables and recreate them fresh
--- Safe to run since there's no real data to preserve
-
--- =============================================================================
--- DROP EVERYTHING FIRST
+-- FULL SCHEMA - CLEAN VERSION
 -- =============================================================================
 
--- Drop tables in correct order (reverse dependency order)
-DROP TABLE IF EXISTS public.usage_logs CASCADE;
-DROP TABLE IF EXISTS public.api_keys CASCADE;
-DROP TABLE IF EXISTS public.lifetime_subscribers CASCADE;
-DROP TABLE IF EXISTS public.subscriptions CASCADE;
-DROP TABLE IF EXISTS public.profiles CASCADE;
-
--- Drop functions
-DROP FUNCTION IF EXISTS public.can_use_credits(UUID) CASCADE;
-DROP FUNCTION IF EXISTS public.get_user_credit_status(UUID) CASCADE;
-DROP FUNCTION IF EXISTS public.consume_credits(UUID, INTEGER) CASCADE;
-DROP FUNCTION IF EXISTS public.handle_new_user() CASCADE;
-DROP FUNCTION IF EXISTS public.get_lifetime_subscriber_count() CASCADE;
-DROP FUNCTION IF EXISTS public.get_remaining_lifetime_slots() CASCADE;
-DROP FUNCTION IF EXISTS public.reserve_lifetime_subscriber_slot(UUID) CASCADE;
-DROP FUNCTION IF EXISTS public.is_lifetime_offer_available() CASCADE;
-DROP FUNCTION IF EXISTS public.get_lifetime_offer_status() CASCADE;
-DROP FUNCTION IF EXISTS public.reset_user_credits(UUID) CASCADE;
-DROP FUNCTION IF EXISTS public.auto_reset_credits() CASCADE;
-DROP FUNCTION IF EXISTS update_updated_at_column() CASCADE;
-
--- Drop enums
-DROP TYPE IF EXISTS enhancement_mode CASCADE;
-DROP TYPE IF EXISTS subscription_tier CASCADE;
-DROP TYPE IF EXISTS subscription_status CASCADE;
-
--- =============================================================================
--- CREATE EVERYTHING FRESH
--- =============================================================================
-
--- Enable required extensions
+-- Extensions
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
--- Create enums
+-- =============================================================================
+-- ENUMS
+-- =============================================================================
+
 CREATE TYPE subscription_status AS ENUM (
     'active',
     'cancelled',
@@ -71,10 +38,9 @@ CREATE TYPE enhancement_mode AS ENUM (
 );
 
 -- =============================================================================
--- CREATE TABLES
+-- TABLES
 -- =============================================================================
 
--- Profiles table
 CREATE TABLE public.profiles (
     id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
@@ -85,26 +51,25 @@ CREATE TABLE public.profiles (
     CONSTRAINT profiles_email_check CHECK (email ~* '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$')
 );
 
--- Subscriptions table
 CREATE TABLE public.subscriptions (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     user_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    
+
     -- Lemon Squeezy integration
     lemon_squeezy_id TEXT NOT NULL UNIQUE,
-    
+
     -- Subscription details
     status subscription_status NOT NULL DEFAULT 'trial',
     tier subscription_tier NOT NULL DEFAULT 'free',
     tier_name TEXT,
-    
+
     -- Billing periods
     current_period_start TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     current_period_end TIMESTAMPTZ NOT NULL DEFAULT NOW() + INTERVAL '30 days',
     cancel_at TIMESTAMPTZ,
-    
+
     -- Legacy quota columns (for compatibility)
     trial_started_at TIMESTAMPTZ,
     trial_expires_at TIMESTAMPTZ,
@@ -112,49 +77,55 @@ CREATE TABLE public.subscriptions (
     quota_used_this_month INTEGER DEFAULT 0,
     quota_reset_at TIMESTAMPTZ,
     cache_enabled BOOLEAN DEFAULT true,
-    
+
     -- Credit-based system
     credits_limit INTEGER NOT NULL DEFAULT 10,
     credits_used INTEGER NOT NULL DEFAULT 0,
     credits_reset_date TIMESTAMPTZ,
     validity_days INTEGER,
-    
-    -- Constraints
+
     CONSTRAINT subscriptions_credits_check CHECK (credits_used >= 0 AND credits_used <= credits_limit),
     CONSTRAINT subscriptions_validity_check CHECK (validity_days IS NULL OR validity_days > 0)
 );
 
--- Usage logs table
 CREATE TABLE public.usage_logs (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     user_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    
+
     -- Enhancement details
     input_text TEXT NOT NULL,
     output_text TEXT NOT NULL,
     language TEXT NOT NULL DEFAULT 'en',
     mode enhancement_mode NOT NULL DEFAULT 'enhance',
-    
+    tone TEXT,
+    output_language TEXT,
+
     -- Token and credit tracking
     tokens_used INTEGER NOT NULL DEFAULT 0,
     credits_consumed INTEGER NOT NULL DEFAULT 1,
-    
+
     -- Request status
     success BOOLEAN NOT NULL DEFAULT true,
     error_message TEXT,
-    
+
     -- Legacy cache columns
     cached BOOLEAN DEFAULT false,
     tokens_saved INTEGER DEFAULT 0,
-    
-    -- Constraints
+
+    -- Editor history
+    editor_session_id UUID DEFAULT uuid_generate_v4(),
+    is_editor_session BOOLEAN DEFAULT false,
+
+    -- Prompt router analytics
+    platform TEXT,
+    detected_route TEXT,
+
     CONSTRAINT usage_logs_tokens_check CHECK (tokens_used >= 0),
     CONSTRAINT usage_logs_credits_check CHECK (credits_consumed > 0),
     CONSTRAINT usage_logs_text_check CHECK (length(input_text) > 0)
 );
 
--- Lifetime subscribers table
 CREATE TABLE public.lifetime_subscribers (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     user_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE UNIQUE,
@@ -164,7 +135,6 @@ CREATE TABLE public.lifetime_subscribers (
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
--- API keys table
 CREATE TABLE public.api_keys (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     user_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
@@ -177,11 +147,27 @@ CREATE TABLE public.api_keys (
 );
 
 -- =============================================================================
--- CREATE FUNCTIONS
+-- INDEXES
 -- =============================================================================
 
--- Function to update updated_at timestamp
-CREATE OR REPLACE FUNCTION update_updated_at_column()
+CREATE INDEX profiles_email_idx ON public.profiles(email);
+
+CREATE INDEX subscriptions_user_id_idx ON public.subscriptions(user_id);
+CREATE INDEX subscriptions_status_idx ON public.subscriptions(status);
+CREATE INDEX subscriptions_active_idx ON public.subscriptions(user_id, status)
+    WHERE status IN ('active', 'trial');
+
+CREATE INDEX usage_logs_user_id_idx ON public.usage_logs(user_id);
+CREATE INDEX usage_logs_created_at_idx ON public.usage_logs(created_at DESC);
+CREATE INDEX usage_logs_editor_history_idx ON public.usage_logs(user_id, created_at DESC)
+    WHERE is_editor_session = true;
+
+-- =============================================================================
+-- FUNCTIONS
+-- =============================================================================
+
+-- Trigger helper: auto-update updated_at
+CREATE OR REPLACE FUNCTION public.update_updated_at_column()
 RETURNS TRIGGER AS $$
 BEGIN
     NEW.updated_at = NOW();
@@ -189,13 +175,13 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- Function to create profile on user signup
+-- Create profile on user signup
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER AS $$
 BEGIN
     INSERT INTO public.profiles (id, email, display_name)
     VALUES (
-        NEW.id, 
+        NEW.id,
         NEW.email,
         COALESCE(NEW.raw_user_meta_data->>'display_name', NEW.raw_user_meta_data->>'full_name')
     );
@@ -203,462 +189,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
--- Function to check if user can use credits
-CREATE OR REPLACE FUNCTION public.can_use_credits(user_uuid UUID)
-RETURNS BOOLEAN AS $$
-DECLARE
-    sub_record RECORD;
-BEGIN
-    -- Get current subscription
-    SELECT * INTO sub_record
-    FROM public.subscriptions
-    WHERE user_id = user_uuid
-      AND status IN ('active', 'trial')
-    ORDER BY created_at DESC
-    LIMIT 1;
-    
-    IF NOT FOUND THEN
-        RETURN FALSE;
-    END IF;
-    
-    -- Check if free plan has expired
-    IF sub_record.tier_name = 'free' AND sub_record.validity_days IS NOT NULL THEN
-        IF sub_record.created_at + (sub_record.validity_days || ' days')::INTERVAL < NOW() THEN
-            RETURN FALSE;
-        END IF;
-    END IF;
-    
-    -- Check if credits are available
-    RETURN sub_record.credits_used < sub_record.credits_limit;
-END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
-
--- Function to get user credit status
-CREATE OR REPLACE FUNCTION public.get_user_credit_status(user_uuid UUID)
-RETURNS TABLE (
-    tier_name TEXT,
-    credits_limit INTEGER,
-    credits_used INTEGER,
-    credits_remaining INTEGER,
-    credits_reset_date TIMESTAMPTZ,
-    validity_days INTEGER,
-    is_expired BOOLEAN,
-    can_use BOOLEAN
-) AS $$
-DECLARE
-    sub_record RECORD;
-    is_free_expired BOOLEAN := FALSE;
-BEGIN
-    -- Get current subscription
-    SELECT * INTO sub_record
-    FROM public.subscriptions
-    WHERE user_id = user_uuid
-      AND status IN ('active', 'trial')
-    ORDER BY created_at DESC
-    LIMIT 1;
-    
-    IF NOT FOUND THEN
-        -- Return default free plan if no subscription
-        RETURN QUERY SELECT
-            'free'::TEXT,
-            10,
-            0,
-            10,
-            NULL::TIMESTAMPTZ,
-            10,
-            TRUE,
-            FALSE;
-        RETURN;
-    END IF;
-    
-    -- Check if free plan has expired
-    IF sub_record.tier_name = 'free' AND sub_record.validity_days IS NOT NULL THEN
-        is_free_expired := sub_record.created_at + (sub_record.validity_days || ' days')::INTERVAL < NOW();
-    END IF;
-    
-    RETURN QUERY SELECT
-        sub_record.tier_name,
-        sub_record.credits_limit,
-        sub_record.credits_used,
-        GREATEST(0, sub_record.credits_limit - sub_record.credits_used),
-        sub_record.credits_reset_date,
-        sub_record.validity_days,
-        is_free_expired,
-        (NOT is_free_expired AND sub_record.credits_used < sub_record.credits_limit);
-END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
-
--- Function to consume credits
-CREATE OR REPLACE FUNCTION public.consume_credits(user_uuid UUID, credits_to_consume INTEGER DEFAULT 1)
-RETURNS BOOLEAN AS $$
-DECLARE
-    sub_record RECORD;
-BEGIN
-    -- Get current subscription with row lock
-    SELECT * INTO sub_record
-    FROM public.subscriptions
-    WHERE user_id = user_uuid
-      AND status IN ('active', 'trial')
-    ORDER BY created_at DESC
-    LIMIT 1
-    FOR UPDATE;
-    
-    IF NOT FOUND THEN
-        RETURN FALSE;
-    END IF;
-    
-    -- Check if user can use credits
-    IF NOT public.can_use_credits(user_uuid) THEN
-        RETURN FALSE;
-    END IF;
-    
-    -- Check if enough credits available
-    IF sub_record.credits_used + credits_to_consume > sub_record.credits_limit THEN
-        RETURN FALSE;
-    END IF;
-    
-    -- Consume credits
-    UPDATE public.subscriptions
-    SET 
-        credits_used = credits_used + credits_to_consume,
-        updated_at = NOW()
-    WHERE id = sub_record.id;
-    
-    RETURN TRUE;
-END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
-
--- =============================================================================
--- CREATE TRIGGERS
--- =============================================================================
-
--- Updated_at triggers
-CREATE TRIGGER update_profiles_updated_at
-    BEFORE UPDATE ON public.profiles
-    FOR EACH ROW
-    EXECUTE FUNCTION update_updated_at_column();
-
-CREATE TRIGGER update_subscriptions_updated_at
-    BEFORE UPDATE ON public.subscriptions
-    FOR EACH ROW
-    EXECUTE FUNCTION update_updated_at_column();
-
-CREATE TRIGGER update_lifetime_subscribers_updated_at
-    BEFORE UPDATE ON public.lifetime_subscribers
-    FOR EACH ROW
-    EXECUTE FUNCTION update_updated_at_column();
-
--- Trigger to create profile when user signs up
-CREATE TRIGGER on_auth_user_created
-    AFTER INSERT ON auth.users
-    FOR EACH ROW
-    EXECUTE FUNCTION public.handle_new_user();
-
--- =============================================================================
--- ENABLE ROW LEVEL SECURITY
--- =============================================================================
-
-ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.subscriptions ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.usage_logs ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.lifetime_subscribers ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.api_keys ENABLE ROW LEVEL SECURITY;
-
--- =============================================================================
--- CREATE RLS POLICIES
--- =============================================================================
-
--- Profiles policies
-CREATE POLICY "Users can view own profile" ON public.profiles
-    FOR SELECT USING (auth.uid() = id);
-
-CREATE POLICY "Users can update own profile" ON public.profiles
-    FOR UPDATE USING (auth.uid() = id);
-
-CREATE POLICY "Service role can manage profiles" ON public.profiles
-    FOR ALL USING (auth.role() = 'service_role');
-
--- Subscriptions policies
-CREATE POLICY "Users can view own subscriptions" ON public.subscriptions
-    FOR SELECT USING (auth.uid() = user_id);
-
-CREATE POLICY "Service role can manage subscriptions" ON public.subscriptions
-    FOR ALL USING (auth.role() = 'service_role');
-
--- Usage logs policies
-CREATE POLICY "Users can view own usage logs" ON public.usage_logs
-    FOR SELECT USING (auth.uid() = user_id);
-
-CREATE POLICY "Users can insert own usage logs" ON public.usage_logs
-    FOR INSERT WITH CHECK (auth.uid() = user_id);
-
-CREATE POLICY "Service role can manage usage logs" ON public.usage_logs
-    FOR ALL USING (auth.role() = 'service_role');
-
--- Lifetime subscribers policies
-CREATE POLICY "Users can view own lifetime subscription" ON public.lifetime_subscribers
-    FOR SELECT USING (auth.uid() = user_id);
-
-CREATE POLICY "Service role can manage lifetime subscriptions" ON public.lifetime_subscribers
-    FOR ALL USING (auth.role() = 'service_role');
-
--- API keys policies
-CREATE POLICY "Users can manage own API keys" ON public.api_keys
-    FOR ALL USING (auth.uid() = user_id);
-
-CREATE POLICY "Service role can manage API keys" ON public.api_keys
-    FOR ALL USING (auth.role() = 'service_role');
-
--- =============================================================================
--- CREATE INDEXES
--- =============================================================================
-
-CREATE INDEX profiles_email_idx ON public.profiles(email);
-CREATE INDEX subscriptions_user_id_idx ON public.subscriptions(user_id);
-CREATE INDEX subscriptions_status_idx ON public.subscriptions(status);
-CREATE INDEX subscriptions_active_idx ON public.subscriptions(user_id, status) WHERE status IN ('active', 'trial');
-CREATE INDEX usage_logs_user_id_idx ON public.usage_logs(user_id);
-CREATE INDEX usage_logs_created_at_idx ON public.usage_logs(created_at DESC);
-
--- =============================================================================
--- DONE!
--- =============================================================================
-
--- Fix RLS policy to allow users to insert their own subscriptions
-
--- Drop existing subscription policies
-DROP POLICY IF EXISTS "Users can view own subscriptions" ON public.subscriptions;
-DROP POLICY IF EXISTS "Service role can manage subscriptions" ON public.subscriptions;
-
--- Create new policies that allow users to insert their own subscriptions
-CREATE POLICY "Users can view own subscriptions" ON public.subscriptions
-    FOR SELECT USING (auth.uid() = user_id);
-
-CREATE POLICY "Users can insert own subscriptions" ON public.subscriptions
-    FOR INSERT WITH CHECK (auth.uid() = user_id);
-
-CREATE POLICY "Users can update own subscriptions" ON public.subscriptions
-    FOR UPDATE USING (auth.uid() = user_id);
-
-CREATE POLICY "Service role can manage subscriptions" ON public.subscriptions
-    FOR ALL USING (auth.role() = 'service_role');
-
--- Add missing database functions
-
--- Function to get lifetime subscriber count
-CREATE OR REPLACE FUNCTION public.get_lifetime_subscriber_count()
-RETURNS INTEGER AS $$
-BEGIN
-    RETURN (SELECT COUNT(*) FROM public.lifetime_subscribers);
-END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
-
--- Function to get remaining lifetime slots
-CREATE OR REPLACE FUNCTION public.get_remaining_lifetime_slots()
-RETURNS INTEGER AS $$
-DECLARE
-    total_slots INTEGER := 500;
-    used_slots INTEGER;
-BEGIN
-    SELECT COUNT(*) INTO used_slots FROM public.lifetime_subscribers;
-    RETURN GREATEST(0, total_slots - used_slots);
-END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
-
--- Function to get lifetime offer status
-CREATE OR REPLACE FUNCTION public.get_lifetime_offer_status()
-RETURNS TABLE (
-    total_slots INTEGER,
-    used_slots INTEGER,
-    remaining_slots INTEGER,
-    is_available BOOLEAN,
-    show_urgency BOOLEAN
-) AS $$
-DECLARE
-    used_count INTEGER;
-    remaining_count INTEGER;
-BEGIN
-    SELECT public.get_lifetime_subscriber_count() INTO used_count;
-    SELECT public.get_remaining_lifetime_slots() INTO remaining_count;
-    
-    RETURN QUERY SELECT
-        500 as total_slots,
-        used_count as used_slots,
-        remaining_count as remaining_slots,
-        (remaining_count > 0) as is_available,
-        (remaining_count < 50 AND remaining_count > 0) as show_urgency;
-END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
-
--- Function to reserve a lifetime subscriber slot
-CREATE OR REPLACE FUNCTION public.reserve_lifetime_subscriber_slot(user_uuid UUID)
-RETURNS INTEGER AS $$
-DECLARE
-    current_count INTEGER;
-    new_subscriber_number INTEGER;
-BEGIN
-    -- Check current count
-    SELECT COUNT(*) INTO current_count FROM public.lifetime_subscribers;
-    
-    -- Check if slots are available
-    IF current_count >= 500 THEN
-        RAISE EXCEPTION 'All lifetime subscriber slots are taken';
-    END IF;
-    
-    -- Calculate new subscriber number
-    new_subscriber_number := current_count + 1;
-    
-    -- Insert the new lifetime subscriber
-    INSERT INTO public.lifetime_subscribers (user_id, subscriber_number)
-    VALUES (user_uuid, new_subscriber_number)
-    ON CONFLICT (user_id) DO NOTHING;
-    
-    -- Return the subscriber number
-    RETURN new_subscriber_number;
-END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
-
--- Function to check if lifetime offer is available
-CREATE OR REPLACE FUNCTION public.is_lifetime_offer_available()
-RETURNS BOOLEAN AS $$
-DECLARE
-    used_count INTEGER;
-BEGIN
-    SELECT COUNT(*) INTO used_count FROM public.lifetime_subscribers;
-    RETURN used_count < 500;
-END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
-
--- Create the missing function that matches what the TypeScript code expects
-CREATE OR REPLACE FUNCTION public.get_lifetime_slot_info()
-RETURNS TABLE (
-    total INTEGER,
-    used INTEGER,
-    remaining INTEGER,
-    percentage INTEGER
-) AS $$
-DECLARE
-    used_count INTEGER;
-    remaining_count INTEGER;
-BEGIN
-    SELECT COUNT(*) INTO used_count FROM public.lifetime_subscribers;
-    remaining_count := GREATEST(0, 500 - used_count);
-    
-    RETURN QUERY SELECT
-        500 as total,
-        used_count as used,
-        remaining_count as remaining,
-        CASE 
-            WHEN used_count > 0 THEN ROUND((used_count::NUMERIC / 500) * 100)::INTEGER
-            ELSE 0
-        END as percentage;
-END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
-
--- Grant execute permissions
-GRANT EXECUTE ON FUNCTION public.get_lifetime_subscriber_count() TO authenticated;
-GRANT EXECUTE ON FUNCTION public.get_lifetime_subscriber_count() TO anon;
-GRANT EXECUTE ON FUNCTION public.get_remaining_lifetime_slots() TO authenticated;
-GRANT EXECUTE ON FUNCTION public.get_remaining_lifetime_slots() TO anon;
-GRANT EXECUTE ON FUNCTION public.get_lifetime_offer_status() TO authenticated;
-GRANT EXECUTE ON FUNCTION public.get_lifetime_offer_status() TO anon;
-GRANT EXECUTE ON FUNCTION public.reserve_lifetime_subscriber_slot(UUID) TO authenticated;
-GRANT EXECUTE ON FUNCTION public.reserve_lifetime_subscriber_slot(UUID) TO service_role;
-GRANT EXECUTE ON FUNCTION public.is_lifetime_offer_available() TO authenticated;
-GRANT EXECUTE ON FUNCTION public.is_lifetime_offer_available() TO anon;
-GRANT EXECUTE ON FUNCTION public.get_lifetime_slot_info() TO authenticated;
-GRANT EXECUTE ON FUNCTION public.get_lifetime_slot_info() TO anon;
-
-
--- =============================================================================
--- EDITOR HISTORY MIGRATION
--- =============================================================================
--- Extends existing schema to support editor history with 7-day retention
-
--- Add new columns to usage_logs for editor history support
-ALTER TABLE public.usage_logs ADD COLUMN IF NOT EXISTS 
-  editor_session_id UUID DEFAULT uuid_generate_v4();
-
-ALTER TABLE public.usage_logs ADD COLUMN IF NOT EXISTS 
-  is_editor_session BOOLEAN DEFAULT false;
-
-ALTER TABLE public.usage_logs ADD COLUMN IF NOT EXISTS 
-  tone TEXT;
-
-ALTER TABLE public.usage_logs ADD COLUMN IF NOT EXISTS 
-  output_language TEXT;
-
--- Create index for efficient history queries
-CREATE INDEX IF NOT EXISTS usage_logs_editor_history_idx 
-  ON public.usage_logs(user_id, created_at DESC) 
-  WHERE is_editor_session = true;
-
--- Function to get user's editor history (last 7 days)
-CREATE OR REPLACE FUNCTION public.get_user_editor_history(user_uuid UUID)
-RETURNS TABLE (
-    id UUID,
-    created_at TIMESTAMPTZ,
-    input_text TEXT,
-    output_text TEXT,
-    language TEXT,
-    output_language TEXT,
-    tone TEXT,
-    editor_session_id UUID,
-    tokens_used INTEGER
-) AS $$
-BEGIN
-    RETURN QUERY SELECT
-        ul.id,
-        ul.created_at,
-        ul.input_text,
-        ul.output_text,
-        ul.language,
-        ul.output_language,
-        ul.tone,
-        ul.editor_session_id,
-        ul.tokens_used
-    FROM public.usage_logs ul
-    WHERE ul.user_id = user_uuid
-      AND ul.is_editor_session = true
-      AND ul.created_at >= NOW() - INTERVAL '7 days'
-      AND ul.success = true
-    ORDER BY ul.created_at DESC
-    LIMIT 50;
-END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
-
--- Function to clean up old editor history (7+ days old)
-CREATE OR REPLACE FUNCTION public.cleanup_old_editor_history()
-RETURNS INTEGER AS $$
-DECLARE
-    deleted_count INTEGER;
-BEGIN
-    DELETE FROM public.usage_logs
-    WHERE is_editor_session = true
-      AND created_at < NOW() - INTERVAL '7 days';
-    
-    GET DIAGNOSTICS deleted_count = ROW_COUNT;
-    RETURN deleted_count;
-END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
-
--- Grant permissions
-GRANT EXECUTE ON FUNCTION public.get_user_editor_history(UUID) TO authenticated;
-GRANT EXECUTE ON FUNCTION public.cleanup_old_editor_history() TO service_role;
-
--- Create a scheduled job to clean up old history (if using pg_cron extension)
--- This would typically be set up separately in production
--- SELECT cron.schedule('cleanup-editor-history', '0 2 * * *', 'SELECT public.cleanup_old_editor_history();');
-
--- =============================================================================
--- BUNDLE TIERS + AGGREGATED CREDITS (incremental migration)
--- Run on existing DBs that were created before small_bundle / large_bundle
--- =============================================================================
-
-ALTER TYPE subscription_tier ADD VALUE IF NOT EXISTS 'small_bundle';
-ALTER TYPE subscription_tier ADD VALUE IF NOT EXISTS 'large_bundle';
-
--- Prefer bundle credits first, then subscription credits (FIFO per row)
+-- Check if user can use credits (bundle-aware: bundles consumed first)
 CREATE OR REPLACE FUNCTION public.can_use_credits(user_uuid UUID)
 RETURNS BOOLEAN AS $$
 DECLARE
@@ -689,6 +220,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
+-- Get aggregated credit status across all active subscriptions
 CREATE OR REPLACE FUNCTION public.get_user_credit_status(user_uuid UUID)
 RETURNS TABLE (
     tier_name TEXT,
@@ -740,9 +272,7 @@ BEGIN
     END LOOP;
 
     IF NOT has_active THEN
-        RETURN QUERY SELECT
-            'free'::TEXT, 10, 0, 10,
-            NULL::TIMESTAMPTZ, 10, TRUE, FALSE;
+        RETURN QUERY SELECT 'free'::TEXT, 10, 0, 10, NULL::TIMESTAMPTZ, 10, TRUE, FALSE;
         RETURN;
     END IF;
 
@@ -758,6 +288,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
+-- Consume credits (FIFO: bundles first, then subscription)
 CREATE OR REPLACE FUNCTION public.consume_credits(user_uuid UUID, credits_to_consume INTEGER DEFAULT 1)
 RETURNS BOOLEAN AS $$
 DECLARE
@@ -806,8 +337,244 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
+-- Lifetime subscriber helpers
+CREATE OR REPLACE FUNCTION public.get_lifetime_subscriber_count()
+RETURNS INTEGER AS $$
+BEGIN
+    RETURN (SELECT COUNT(*) FROM public.lifetime_subscribers);
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+CREATE OR REPLACE FUNCTION public.get_remaining_lifetime_slots()
+RETURNS INTEGER AS $$
+DECLARE
+    total_slots INTEGER := 500;
+    used_slots INTEGER;
+BEGIN
+    SELECT COUNT(*) INTO used_slots FROM public.lifetime_subscribers;
+    RETURN GREATEST(0, total_slots - used_slots);
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+CREATE OR REPLACE FUNCTION public.is_lifetime_offer_available()
+RETURNS BOOLEAN AS $$
+DECLARE
+    used_count INTEGER;
+BEGIN
+    SELECT COUNT(*) INTO used_count FROM public.lifetime_subscribers;
+    RETURN used_count < 500;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+CREATE OR REPLACE FUNCTION public.get_lifetime_offer_status()
+RETURNS TABLE (
+    total_slots INTEGER,
+    used_slots INTEGER,
+    remaining_slots INTEGER,
+    is_available BOOLEAN,
+    show_urgency BOOLEAN
+) AS $$
+DECLARE
+    used_count INTEGER;
+    remaining_count INTEGER;
+BEGIN
+    SELECT public.get_lifetime_subscriber_count() INTO used_count;
+    SELECT public.get_remaining_lifetime_slots() INTO remaining_count;
+
+    RETURN QUERY SELECT
+        500,
+        used_count,
+        remaining_count,
+        (remaining_count > 0),
+        (remaining_count < 50 AND remaining_count > 0);
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+CREATE OR REPLACE FUNCTION public.get_lifetime_slot_info()
+RETURNS TABLE (
+    total INTEGER,
+    used INTEGER,
+    remaining INTEGER,
+    percentage INTEGER
+) AS $$
+DECLARE
+    used_count INTEGER;
+    remaining_count INTEGER;
+BEGIN
+    SELECT COUNT(*) INTO used_count FROM public.lifetime_subscribers;
+    remaining_count := GREATEST(0, 500 - used_count);
+
+    RETURN QUERY SELECT
+        500,
+        used_count,
+        remaining_count,
+        CASE
+            WHEN used_count > 0 THEN ROUND((used_count::NUMERIC / 500) * 100)::INTEGER
+            ELSE 0
+        END;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+CREATE OR REPLACE FUNCTION public.reserve_lifetime_subscriber_slot(user_uuid UUID)
+RETURNS INTEGER AS $$
+DECLARE
+    current_count INTEGER;
+    new_subscriber_number INTEGER;
+BEGIN
+    SELECT COUNT(*) INTO current_count FROM public.lifetime_subscribers;
+
+    IF current_count >= 500 THEN
+        RAISE EXCEPTION 'All lifetime subscriber slots are taken';
+    END IF;
+
+    new_subscriber_number := current_count + 1;
+
+    INSERT INTO public.lifetime_subscribers (user_id, subscriber_number)
+    VALUES (user_uuid, new_subscriber_number)
+    ON CONFLICT (user_id) DO NOTHING;
+
+    RETURN new_subscriber_number;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- Editor history helpers
+CREATE OR REPLACE FUNCTION public.get_user_editor_history(user_uuid UUID)
+RETURNS TABLE (
+    id UUID,
+    created_at TIMESTAMPTZ,
+    input_text TEXT,
+    output_text TEXT,
+    language TEXT,
+    output_language TEXT,
+    tone TEXT,
+    editor_session_id UUID,
+    tokens_used INTEGER
+) AS $$
+BEGIN
+    RETURN QUERY
+    SELECT
+        ul.id,
+        ul.created_at,
+        ul.input_text,
+        ul.output_text,
+        ul.language,
+        ul.output_language,
+        ul.tone,
+        ul.editor_session_id,
+        ul.tokens_used
+    FROM public.usage_logs ul
+    WHERE ul.user_id = user_uuid
+      AND ul.is_editor_session = true
+      AND ul.created_at >= NOW() - INTERVAL '7 days'
+      AND ul.success = true
+    ORDER BY ul.created_at DESC
+    LIMIT 50;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+CREATE OR REPLACE FUNCTION public.cleanup_old_editor_history()
+RETURNS INTEGER AS $$
+DECLARE
+    deleted_count INTEGER;
+BEGIN
+    DELETE FROM public.usage_logs
+    WHERE is_editor_session = true
+      AND created_at < NOW() - INTERVAL '7 days';
+
+    GET DIAGNOSTICS deleted_count = ROW_COUNT;
+    RETURN deleted_count;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
 -- =============================================================================
--- Prompt router analytics (usage_logs)
+-- TRIGGERS
 -- =============================================================================
-ALTER TABLE public.usage_logs ADD COLUMN IF NOT EXISTS platform TEXT;
-ALTER TABLE public.usage_logs ADD COLUMN IF NOT EXISTS detected_route TEXT;
+
+CREATE TRIGGER update_profiles_updated_at
+    BEFORE UPDATE ON public.profiles
+    FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+
+CREATE TRIGGER update_subscriptions_updated_at
+    BEFORE UPDATE ON public.subscriptions
+    FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+
+CREATE TRIGGER update_lifetime_subscribers_updated_at
+    BEFORE UPDATE ON public.lifetime_subscribers
+    FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+
+CREATE TRIGGER on_auth_user_created
+    AFTER INSERT ON auth.users
+    FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
+
+-- =============================================================================
+-- ROW LEVEL SECURITY
+-- =============================================================================
+
+ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.subscriptions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.usage_logs ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.lifetime_subscribers ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.api_keys ENABLE ROW LEVEL SECURITY;
+
+-- Profiles
+CREATE POLICY "Users can view own profile" ON public.profiles
+    FOR SELECT USING (auth.uid() = id);
+
+CREATE POLICY "Users can update own profile" ON public.profiles
+    FOR UPDATE USING (auth.uid() = id);
+
+CREATE POLICY "Service role can manage profiles" ON public.profiles
+    FOR ALL USING (auth.role() = 'service_role');
+
+-- Subscriptions
+CREATE POLICY "Users can view own subscriptions" ON public.subscriptions
+    FOR SELECT USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can insert own subscriptions" ON public.subscriptions
+    FOR INSERT WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "Users can update own subscriptions" ON public.subscriptions
+    FOR UPDATE USING (auth.uid() = user_id);
+
+CREATE POLICY "Service role can manage subscriptions" ON public.subscriptions
+    FOR ALL USING (auth.role() = 'service_role');
+
+-- Usage logs
+CREATE POLICY "Users can view own usage logs" ON public.usage_logs
+    FOR SELECT USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can insert own usage logs" ON public.usage_logs
+    FOR INSERT WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "Service role can manage usage logs" ON public.usage_logs
+    FOR ALL USING (auth.role() = 'service_role');
+
+-- Lifetime subscribers
+CREATE POLICY "Users can view own lifetime subscription" ON public.lifetime_subscribers
+    FOR SELECT USING (auth.uid() = user_id);
+
+CREATE POLICY "Service role can manage lifetime subscriptions" ON public.lifetime_subscribers
+    FOR ALL USING (auth.role() = 'service_role');
+
+-- API keys
+CREATE POLICY "Users can manage own API keys" ON public.api_keys
+    FOR ALL USING (auth.uid() = user_id);
+
+CREATE POLICY "Service role can manage API keys" ON public.api_keys
+    FOR ALL USING (auth.role() = 'service_role');
+
+-- =============================================================================
+-- GRANTS
+-- =============================================================================
+
+GRANT EXECUTE ON FUNCTION public.can_use_credits(UUID) TO authenticated;
+GRANT EXECUTE ON FUNCTION public.get_user_credit_status(UUID) TO authenticated;
+GRANT EXECUTE ON FUNCTION public.consume_credits(UUID, INTEGER) TO authenticated;
+GRANT EXECUTE ON FUNCTION public.get_lifetime_subscriber_count() TO authenticated, anon;
+GRANT EXECUTE ON FUNCTION public.get_remaining_lifetime_slots() TO authenticated, anon;
+GRANT EXECUTE ON FUNCTION public.get_lifetime_offer_status() TO authenticated, anon;
+GRANT EXECUTE ON FUNCTION public.is_lifetime_offer_available() TO authenticated, anon;
+GRANT EXECUTE ON FUNCTION public.get_lifetime_slot_info() TO authenticated, anon;
+GRANT EXECUTE ON FUNCTION public.reserve_lifetime_subscriber_slot(UUID) TO authenticated, service_role;
+GRANT EXECUTE ON FUNCTION public.get_user_editor_history(UUID) TO authenticated;
+GRANT EXECUTE ON FUNCTION public.cleanup_old_editor_history() TO service_role;
