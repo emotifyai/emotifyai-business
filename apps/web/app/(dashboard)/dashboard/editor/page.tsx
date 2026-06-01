@@ -26,6 +26,7 @@ import {
   Sparkles,
 } from 'lucide-react'
 import { useCopy } from '@/components/ui/copy-button'
+import { useFirstEnhanceConfetti } from '@/lib/confetti'
 import { RetryFeedbackModal } from '@/components/editor/retry-feedback-modal'
 import {
   trackRetryUsed,
@@ -120,6 +121,7 @@ export default function EditorPage() {
   const [showHistory, setShowHistory] = useState(false)
   const { copied: copiedOriginal, copy: copyOriginal } = useCopy(false)
   const { copied: copiedEnhanced, copy: copyEnhanced } = useCopy(true)
+  const { markFirstEnhance } = useFirstEnhanceConfetti()
   const [upgradeVariant, setUpgradeVariant] = useState<
     import('@emotifyai/ui').UpgradePromptVariant | undefined
   >(undefined)
@@ -362,6 +364,7 @@ export default function EditorPage() {
           void queryClient.invalidateQueries({ queryKey: ['usage-stats'] })
           void queryClient.invalidateQueries({ queryKey: ['subscription'] })
           trackTransformCompleted()
+          markFirstEnhance()
           toast.success('تم تحسين النص بنجاح!', {
             description: `تم استخدام ${data.tokensUsed || 0} رمزاً`,
           })

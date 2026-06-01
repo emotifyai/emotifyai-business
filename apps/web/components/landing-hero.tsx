@@ -21,6 +21,7 @@ import {
   isGuestCreditsExhausted,
 } from '@/lib/upgrade-prompt/guest-credits'
 import { CopyButton } from '@/components/ui/copy-button'
+import { useFirstEnhanceConfetti } from '@/lib/confetti'
 
 const DEMO_PAIRS: TextDemoPair[] = [
   {
@@ -79,6 +80,8 @@ export function LandingHero() {
   const [enhancedResult, setEnhancedResult] = React.useState<string | null>(null)
   const [showSadAnimation, setShowSadAnimation] = React.useState(false)
 
+  const { markFirstEnhance } = useFirstEnhanceConfetti()
+
   const handleGuestEnhance = async () => {
     if (isGuestCreditsExhausted()) {
       setShowSadAnimation(true)
@@ -111,6 +114,7 @@ export function LandingHero() {
       }
 
       consumeGuestCredit()
+      markFirstEnhance()
       setEnhancedResult(data.data.enhancedText)
       setText('')
     } catch (err) {
