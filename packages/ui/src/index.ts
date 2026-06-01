@@ -48,7 +48,7 @@ export {
   DropdownMenuSeparator,
   DropdownMenuTrigger
 } from './dropdown-menu'
-export { Sheet, SheetContent, SheetTrigger } from './sheet'
+export { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetDescription } from './sheet'
 export { 
   Table,
   TableBody,

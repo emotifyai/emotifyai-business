@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { Home, Menu } from 'lucide-react'
-import { Button, Sheet, SheetContent, SheetTrigger } from '@emotifyai/ui'
+import { Button, Sheet, SheetContent, SheetTrigger, SheetTitle } from '@emotifyai/ui'
 import { ThemeToggle } from '@/components/layout/theme-toggle'
 import { NavbarUserMenu } from '@/components/layout/navbar-user-menu'
 import { DashboardSidebarNav } from '@/components/layout/sidebar'
@@ -33,7 +33,9 @@ export function DashboardHeader() {
             <SheetContent
               side="right"
               className="w-64 border-l border-sidebar-border bg-sidebar p-0 pt-8"
+              aria-describedby={undefined}
             >
+              <SheetTitle className="sr-only">قائمة لوحة التحكم</SheetTitle>
               <DashboardSidebarNav
                 className="px-4"
                 onNavigate={() => setMobileOpen(false)}

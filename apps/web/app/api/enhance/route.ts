@@ -77,7 +77,11 @@ async function ensureCanEnhance(
                       now.getTime() + freeDefaults.validityDays * 24 * 60 * 60 * 1000
                   ).toISOString()
                 : null
-            const { error: createError } = await (supabase.from('subscriptions') as any).insert({
+                
+            const { createAdminClient } = await import('@/lib/supabase/server')
+            const adminClient = await createAdminClient()
+            
+            const { error: createError } = await (adminClient.from('subscriptions') as any).insert({
                 user_id: userId,
                 lemon_squeezy_id: `free_${userId}_${Date.now()}`,
                 status: 'active',
@@ -93,6 +97,8 @@ async function ensureCanEnhance(
             if (!createError) {
                 return { ok: true }
             }
+
+            console.error('[DUCK enhance/free-plan-insert]', createError)
 
             return {
                 error: NextResponse.json({

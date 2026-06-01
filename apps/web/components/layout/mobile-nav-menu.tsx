@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Menu } from 'lucide-react'
 import { useState } from 'react'
-import { Button, Sheet, SheetContent, SheetTrigger } from '@emotifyai/ui'
+import { Button, Sheet, SheetContent, SheetTrigger, SheetTitle } from '@emotifyai/ui'
 import { cn } from '@/lib/utils'
 import { ThemeToggle } from './theme-toggle'
 
@@ -30,7 +30,8 @@ export function MobileNavMenu() {
           <Menu className="size-5" />
         </Button>
       </SheetTrigger>
-      <SheetContent side="right" className="safe-area-top w-full sm:max-w-sm">
+      <SheetContent side="right" className="safe-area-top w-full sm:max-w-sm" aria-describedby={undefined}>
+        <SheetTitle className="sr-only">القائمة الرئيسية</SheetTitle>
         <div className="flex flex-col gap-6 pt-2">
           <Link
             href="/"
