@@ -25,9 +25,9 @@ import {
   FileEdit,
   Sparkles,
 } from 'lucide-react'
+import { useCopy } from '@/components/ui/copy-button'
 import { RetryFeedbackModal } from '@/components/editor/retry-feedback-modal'
 import {
-  trackCopyClicked,
   trackRetryUsed,
   trackShareClicked,
   trackTransformCompleted,
@@ -118,7 +118,8 @@ export default function EditorPage() {
   // History state
   const [history, setHistory] = useState<HistoryItem[]>([])
   const [showHistory, setShowHistory] = useState(false)
-  const [copiedStates, setCopiedStates] = useState<{ [key: string]: boolean }>({})
+  const { copied: copiedOriginal, copy: copyOriginal } = useCopy(false)
+  const { copied: copiedEnhanced, copy: copyEnhanced } = useCopy(true)
   const [upgradeVariant, setUpgradeVariant] = useState<
     import('@emotifyai/ui').UpgradePromptVariant | undefined
   >(undefined)
@@ -425,19 +426,6 @@ export default function EditorPage() {
     }
   }, [])
 
-  const handleCopy = async (text: string, key: string) => {
-    try {
-      await navigator.clipboard.writeText(text)
-      if (key === 'enhanced') {
-        trackCopyClicked()
-      }
-      setCopiedStates(prev => ({ ...prev, [key]: true }))
-      toast.success('تم النسخ!')
-      setTimeout(() => setCopiedStates(prev => ({ ...prev, [key]: false })), 2000)
-    } catch (error) {
-      toast.error('فشل النسخ')
-    }
-  }
 
   const loadHistoryItem = (item: HistoryItem) => {
     const apiItem = item as HistoryItem & {
@@ -680,13 +668,13 @@ export default function EditorPage() {
                   size="icon"
                   className={cn(
                     editorToolbarIconButtonClass,
-                    copiedStates.original && 'text-primary'
+                    copiedOriginal && 'text-primary'
                   )}
-                  onClick={() => handleCopy(originalText, 'original')}
+                  onClick={() => copyOriginal(originalText)}
                   disabled={!originalText}
                   aria-label="نسخ النص الأصلي"
                 >
-                  {copiedStates.original ? (
+                  {copiedOriginal ? (
                     <Check className="h-4 w-4" />
                   ) : (
                     <Copy className="h-4 w-4" />
@@ -745,13 +733,13 @@ export default function EditorPage() {
                     size="icon"
                     className={cn(
                       editorToolbarIconButtonClass,
-                      copiedStates.enhanced && 'text-primary'
+                      copiedEnhanced && 'text-primary'
                     )}
-                    onClick={() => handleCopy(enhancedText, 'enhanced')}
+                    onClick={() => copyEnhanced(enhancedText)}
                     disabled={!enhancedText}
                     aria-label="نسخ النص المحسّن"
                   >
-                    {copiedStates.enhanced ? (
+                    {copiedEnhanced ? (
                       <Check className="h-4 w-4" />
                     ) : (
                       <Copy className="h-4 w-4" />

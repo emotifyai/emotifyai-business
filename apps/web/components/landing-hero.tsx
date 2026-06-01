@@ -20,6 +20,7 @@ import {
   consumeGuestCredit,
   isGuestCreditsExhausted,
 } from '@/lib/upgrade-prompt/guest-credits'
+import { CopyButton } from '@/components/ui/copy-button'
 
 const DEMO_PAIRS: TextDemoPair[] = [
   {
@@ -191,9 +192,12 @@ export function LandingHero() {
           ) : enhancedResult ? (
             <div className="animate-in fade-in slide-in-from-bottom-8 duration-1000 ease-out rounded-3xl border border-primary/40 bg-gradient-to-br from-primary/5 via-card/80 to-background p-6 shadow-2xl backdrop-blur-md text-right relative overflow-hidden group">
                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-primary/10 to-transparent -translate-x-full group-hover:animate-[shimmer_2.5s_infinite_ease-in-out]" />
-               <div className="flex items-center gap-2 mb-3 text-primary/80">
-                 <Sparkles className="size-4" />
-                 <span className="text-sm font-medium">النتيجة السحرية</span>
+               <div className="flex items-center justify-between mb-3">
+                 <div className="flex items-center gap-2 text-primary/80">
+                   <Sparkles className="size-4" />
+                   <span className="text-sm font-medium">النتيجة السحرية</span>
+                 </div>
+                 <CopyButton text={enhancedResult} track className="-mt-1 -me-2" />
                </div>
                <p className="text-lg leading-relaxed text-foreground">{enhancedResult}</p>
                <div className="mt-5 flex justify-end gap-3">
