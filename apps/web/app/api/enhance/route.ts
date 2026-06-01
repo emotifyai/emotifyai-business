@@ -268,6 +268,9 @@ function createEnhanceStreamResponse(
                 } else if (message === 'QUALITY_CHECK_FAILED') {
                     code = ApiErrorCode.QUALITY_CHECK_FAILED
                     userMessage = 'Quality check failed'
+                } else if (message === 'CONTENT_BLOCKED') {
+                    code = ApiErrorCode.CONTENT_BLOCKED
+                    userMessage = 'تم حظر المحتوى بواسطة فلاتر الأمان' // Content blocked by safety filters
                 }
 
                 send('error', {
@@ -424,6 +427,12 @@ export async function POST(request: NextRequest) {
         })
     } catch (error) {
         console.error('Enhancement API error:', error)
+        if (error instanceof Error && error.message === 'CONTENT_BLOCKED') {
+            return createErrorResponse({ 
+                code: ApiErrorCode.CONTENT_BLOCKED, 
+                message: 'تم حظر المحتوى بواسطة فلاتر الأمان' 
+            }, 400)
+        }
         return createErrorResponse({ code: ApiErrorCode.INTERNAL_ERROR, message: 'Internal error' }, 500)
     }
 }

@@ -310,6 +310,11 @@ export default function EditorPage() {
             description: 'انتظر لحظة قبل المحاولة مرة أخرى',
           })
           break
+        case ApiErrorCode.CONTENT_BLOCKED:
+          toast.error('محتوى محظور', {
+            description: 'تم حظر النص بواسطة فلاتر الأمان للذكاء الاصطناعي. يرجى تجربة نص مختلف.',
+          })
+          break
         default:
           toast.error('فشل التحسين', {
             description: errorMessage,

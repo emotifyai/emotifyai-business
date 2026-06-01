@@ -8,12 +8,20 @@ import {
 import { completePurification } from './output-purifier'
 import type { UserGenerationOptions } from './prompts/types'
 
+// Always connect to Anthropic directly. System-level proxies (e.g. agentrouter.org)
+// can intercept requests and block benign content. We explicitly bypass them here.
+// Note: Bun does NOT override system env vars with .env.local values, so we hardcode
+// the real Anthropic endpoint and use a dedicated env var name to avoid conflicts.
+const ANTHROPIC_BASE_URL = 'https://api.anthropic.com'
+const ANTHROPIC_API_KEY = process.env.ANTHROPIC_DIRECT_KEY || process.env.ANTHROPIC_API_KEY || ''
+
 const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY || '',
+  apiKey: ANTHROPIC_API_KEY,
+  baseURL: ANTHROPIC_BASE_URL,
   dangerouslyAllowBrowser: process.env.NODE_ENV === 'test',
 })
 
-const MODEL = process.env.ANTHROPIC_MODEL || 'claude-3-5-sonnet-20241022'
+const MODEL = process.env.ANTHROPIC_MODEL || 'claude-sonnet-4-6'
 const MAX_TOKENS = parseInt(process.env.ANTHROPIC_MAX_TOKENS || '1024', 10)
 
 export interface EnhanceOptions {
@@ -125,6 +133,13 @@ export async function enhanceText(options: EnhanceOptions): Promise<EnhanceResul
           await new Promise((resolve) => setTimeout(resolve, delay))
           continue
         }
+        
+        const errorBody = error.error as any
+        if (error.status === 400 && (errorBody?.error?.code === 'content-blocked' || errorBody?.code === 'content-blocked')) {
+          console.error('Anthropic API content blocked:', error)
+          throw new Error('CONTENT_BLOCKED')
+        }
+
         console.error('Anthropic API error:', error)
         throw new Error('AI_SERVICE_ERROR')
       }
@@ -170,6 +185,14 @@ export async function enhanceTextStream(
   while (retries < maxRetries) {
     try {
       const { systemPrompt, userPrompt, routeId } = buildEnhancementPrompts(text, userOptions)
+
+      console.log('[DUCK ai/prompts] Sending to Anthropic:', {
+        model: MODEL,
+        systemLen: systemPrompt.text.length,
+        userLen: userPrompt.text.length,
+        systemPreview: systemPrompt.text.slice(0, 100) + '...',
+        userPreview: userPrompt.text.slice(0, 100) + '...',
+      })
 
       const stream = anthropic.messages.stream({
         model: MODEL,
@@ -236,6 +259,13 @@ export async function enhanceTextStream(
           await new Promise((resolve) => setTimeout(resolve, delay))
           continue
         }
+        
+        const errorBody = error.error as any
+        if (error.status === 400 && (errorBody?.error?.code === 'content-blocked' || errorBody?.code === 'content-blocked')) {
+          console.error('Anthropic API content blocked:', error)
+          throw new Error('CONTENT_BLOCKED')
+        }
+
         console.error('Anthropic API error:', error)
         throw new Error('AI_SERVICE_ERROR')
       }
