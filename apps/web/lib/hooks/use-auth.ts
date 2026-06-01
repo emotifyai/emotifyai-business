@@ -4,6 +4,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { getOAuthAvatarUrl, resolveUserAvatarUrl } from '@/lib/auth/oauth-avatar'
 import { createClient } from '@/lib/supabase/client'
 import type { Database } from '@/types/database'
+import { EDITOR_SESSION_KEY } from '@/lib/editor/session'
 
 /**
  * Hook to get current authenticated user
@@ -194,6 +195,10 @@ export function useLogout() {
         onSuccess: () => {
             // Clear all queries on logout
             queryClient.clear()
+            // Clear editor session so content doesn't leak to other accounts
+            if (typeof sessionStorage !== 'undefined') {
+                sessionStorage.removeItem(EDITOR_SESSION_KEY)
+            }
         },
     })
 }

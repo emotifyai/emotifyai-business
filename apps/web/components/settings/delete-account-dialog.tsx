@@ -18,6 +18,7 @@ import {
 import { getDeleteAccountConfirmationPhrase } from '@/lib/account/delete-account'
 import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
+import { EDITOR_SESSION_KEY } from '@/lib/editor/session'
 
 type DeleteAccountDialogProps = {
   displayName: string
@@ -69,6 +70,9 @@ export function DeleteAccountDialog({ displayName, email }: DeleteAccountDialogP
       }
 
       queryClient.clear()
+      if (typeof sessionStorage !== 'undefined') {
+        sessionStorage.removeItem(EDITOR_SESSION_KEY)
+      }
       toast.success('تم حذف حسابك نهائياً')
       setOpen(false)
       router.push('/')
