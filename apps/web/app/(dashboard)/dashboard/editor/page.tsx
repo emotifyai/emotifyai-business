@@ -39,6 +39,7 @@ import type { RetryReasonValue } from '@/types/api'
 import { REGISTERED_FREE_CREDIT_TOTAL } from '@emotifyai/config/pricing'
 import { useSubscription } from '@/lib/hooks/use-subscription'
 import { useUsageStats } from '@/lib/hooks/use-usage'
+import { useUser } from '@/lib/hooks/use-auth'
 import { toast } from 'sonner'
 import {
   ConnectedUpgradePrompt,
@@ -88,6 +89,7 @@ export default function EditorPage() {
   const queryClient = useQueryClient()
   const { data: subscription, isLoading: isSubscriptionLoading } = useSubscription()
   const { data: usage, isLoading: isUsageLoading } = useUsageStats()
+  const { data: authUser } = useUser()
 
   const isCreditsReady = !isSubscriptionLoading && !isUsageLoading
 
@@ -121,7 +123,7 @@ export default function EditorPage() {
   const [showHistory, setShowHistory] = useState(false)
   const { copied: copiedOriginal, copy: copyOriginal } = useCopy(false)
   const { copied: copiedEnhanced, copy: copyEnhanced } = useCopy(true)
-  const { markFirstEnhance } = useFirstEnhanceConfetti()
+  const { markFirstEnhance } = useFirstEnhanceConfetti(authUser?.id ?? null)
   const [upgradeVariant, setUpgradeVariant] = useState<
     import('@emotifyai/ui').UpgradePromptVariant | undefined
   >(undefined)

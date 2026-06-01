@@ -80,7 +80,7 @@ export function LandingHero() {
   const [enhancedResult, setEnhancedResult] = React.useState<string | null>(null)
   const [showSadAnimation, setShowSadAnimation] = React.useState(false)
 
-  const { markFirstEnhance } = useFirstEnhanceConfetti()
+  const { markFirstEnhance } = useFirstEnhanceConfetti(null) // null = guest scope
 
   const handleGuestEnhance = async () => {
     if (isGuestCreditsExhausted()) {
@@ -185,9 +185,6 @@ export function LandingHero() {
                   لقد استنفدت المحاولات المتاحة للضيوف. أنشئ حسابك الآن لفتح المحرر ومواصلة تحويل نصوصك إلى نسخ تبيع!
                 </p>
                 <div className="flex gap-3 justify-center">
-                  <Button onClick={() => setShowSadAnimation(false)} variant="outline">
-                      تراجع
-                  </Button>
                   <Button onClick={() => router.push(buildSignupRedirectUrl())} className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg shadow-primary/30">
                       إنشاء حساب مجاني
                   </Button>
@@ -264,7 +261,7 @@ export function LandingHero() {
               key={chip.id}
               type="button"
               onClick={() => applyPreset(chip.id, chip.config)}
-              className={`inline-flex min-h-11 items-center gap-2 rounded-full border px-4 py-2 text-sm transition-colors ${
+              className={`inline-flex min-h-11 cursor-pointer items-center gap-2 rounded-full border px-4 py-2 text-sm transition-colors ${
                 activeChipId === chip.id
                   ? 'border-primary/60 bg-primary/10 text-foreground'
                   : 'border-border/50 bg-card/60 text-muted-foreground hover:border-primary/40 hover:text-foreground'

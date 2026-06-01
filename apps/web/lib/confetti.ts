@@ -83,25 +83,31 @@ export function fireSchoolPrideConfetti() {
 }
 
 // ---------------------------------------------------------------------------
-// localStorage key for first-enhance tracking
+// localStorage key for first-enhance tracking (per account identity)
 // ---------------------------------------------------------------------------
-const FIRST_ENHANCE_KEY = 'emotifyai:first_enhance_done'
+function getFirstEnhanceKey(userId?: string | null): string {
+  // Guests share one key; authenticated users get their own
+  return `emotifyai:first_enhance_done:${userId ?? 'guest'}`
+}
 
 /**
  * Hook: fires celebration confetti only on the very first successful
- * enhancement the user has ever made (tracked in localStorage).
+ * enhancement the user has ever made, scoped by account identity.
+ *
+ * @param userId - Supabase user id for authenticated users, or null/undefined for guests
  *
  * Returns a `markFirstEnhance` callback — call it right after a successful
  * enhance response.
  */
-export function useFirstEnhanceConfetti() {
+export function useFirstEnhanceConfetti(userId?: string | null) {
   const markFirstEnhance = useCallback(() => {
     if (typeof window === 'undefined') return
-    if (localStorage.getItem(FIRST_ENHANCE_KEY)) return // already celebrated
+    const key = getFirstEnhanceKey(userId)
+    if (localStorage.getItem(key)) return // already celebrated for this account
 
-    localStorage.setItem(FIRST_ENHANCE_KEY, '1')
+    localStorage.setItem(key, '1')
     fireCelebrationConfetti()
-  }, [])
+  }, [userId])
 
   return { markFirstEnhance }
 }
