@@ -79,7 +79,7 @@ CREATE TABLE public.subscriptions (
 
     -- Billing periods
     current_period_start TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    current_period_end TIMESTAMPTZ NOT NULL DEFAULT NOW() + INTERVAL '30 days',
+    current_period_end TIMESTAMPTZ,
     cancel_at TIMESTAMPTZ,
 
     -- Legacy quota columns (for compatibility)
