@@ -7,6 +7,8 @@ import { useState } from 'react'
 import { toast } from 'sonner'
 import { SubscriptionTier } from '@/lib/subscription/types'
 import { LoadingSpinner } from '@emotifyai/ui'
+import { trackUpgradeClicked } from '@/lib/analytics/ga'
+import { buildCheckoutThankYouUrl } from '@/lib/checkout/thank-you-redirect'
 
 interface PricingButtonProps {
     tier: SubscriptionTier
@@ -39,6 +41,7 @@ export function PricingButton({
     const [isLoading, setIsLoading] = useState(false)
 
     const handleCheckout = async () => {
+        trackUpgradeClicked(`pricing_button_${tier}`)
         setIsLoading(true)
         try {
             const response = await fetch('/api/checkout', {
@@ -48,7 +51,7 @@ export function PricingButton({
                 },
                 body: JSON.stringify({
                     tier,
-                    redirectUrl: window.location.origin + '/dashboard',
+                    redirectUrl: buildCheckoutThankYouUrl(window.location.origin, tier),
                 }),
             })
 
@@ -119,7 +122,7 @@ export function PricingButton({
         }
         return (
             <Button className="w-full" variant={variant} asChild>
-                <Link href="/signup?plan=trial">
+                <Link href="/signup">
                     {buttonText}
                 </Link>
             </Button>

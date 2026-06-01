@@ -35,24 +35,26 @@ export interface SubscriptionTierConfig {
 }
 
 function billingToDuration(
-  billing: TierDefinition['billing']
+  billing: TierDefinition['billing'],
+  tierId: SubscriptionTierId
 ): SubscriptionTierConfig['duration'] {
+  if (tierId === 'lifetime_launch') return 'lifetime'
   switch (billing) {
     case 'subscription_monthly':
       return 'month'
     case 'subscription_annual':
       return 'year'
-    case 'lifetime':
-      return 'lifetime'
+    case 'one_time':
+      return undefined
     case 'none':
-      return 'trial'
+      return undefined
     default:
       return undefined
   }
 }
 
 function tierToConfig(def: TierDefinition): SubscriptionTierConfig {
-  const duration = billingToDuration(def.billing)
+  const duration = billingToDuration(def.billing, def.id)
   const features = [
     `${def.credits} ${def.billing === 'one_time' ? 'one-time conversions' : 'generations per month'}`,
     ...Object.entries(def.features)
@@ -218,10 +220,6 @@ export function getTierDisplayName(tier: SubscriptionTier): string {
 
 export function getSortedTiers(): SubscriptionTierConfig[] {
   return Object.values(SUBSCRIPTION_TIERS)
-    .filter((tier) => tier.id !== 'trial')
-    .sort((a, b) => {
-      if (a.id === 'lifetime_launch') return -1
-      if (b.id === 'lifetime_launch') return 1
-      return a.price - b.price
-    })
+    .filter((tier) => tier.id !== 'trial' && tier.id !== 'lifetime_launch')
+    .sort((a, b) => a.price - b.price)
 }

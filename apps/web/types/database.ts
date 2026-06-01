@@ -138,6 +138,8 @@ export interface Database {
                     output_language: string | null
                     platform: string | null
                     detected_route: string | null
+                    retry_used: boolean
+                    is_retry: boolean
                 }
                 Insert: {
                     id?: string
@@ -159,6 +161,8 @@ export interface Database {
                     output_language?: string | null
                     platform?: string | null
                     detected_route?: string | null
+                    retry_used?: boolean
+                    is_retry?: boolean
                 }
                 Update: {
                     id?: string
@@ -177,9 +181,37 @@ export interface Database {
                     editor_session_id?: string | null
                     is_editor_session?: boolean | null
                     tone?: string | null
+                    retry_used?: boolean
+                    is_retry?: boolean
                     output_language?: string | null
                     platform?: string | null
                     detected_route?: string | null
+                }
+            }
+            retries: {
+                Row: {
+                    id: string
+                    user_id: string
+                    usage_log_id: string
+                    created_at: string
+                    retry_reason: string
+                    retry_reason_other: string | null
+                }
+                Insert: {
+                    id?: string
+                    user_id: string
+                    usage_log_id: string
+                    created_at?: string
+                    retry_reason: string
+                    retry_reason_other?: string | null
+                }
+                Update: {
+                    id?: string
+                    user_id?: string
+                    usage_log_id?: string
+                    created_at?: string
+                    retry_reason?: string
+                    retry_reason_other?: string | null
                 }
             }
             api_keys: {
@@ -297,12 +329,14 @@ export enum EnhancementMode {
 export type Profile = Database['public']['Tables']['profiles']['Row']
 export type Subscription = Database['public']['Tables']['subscriptions']['Row']
 export type UsageLog = Database['public']['Tables']['usage_logs']['Row']
+export type Retry = Database['public']['Tables']['retries']['Row']
 export type ApiKey = Database['public']['Tables']['api_keys']['Row']
 export type LifetimeSubscriber = Database['public']['Tables']['lifetime_subscribers']['Row']
 
 export type ProfileInsert = Database['public']['Tables']['profiles']['Insert']
 export type SubscriptionInsert = Database['public']['Tables']['subscriptions']['Insert']
 export type UsageLogInsert = Database['public']['Tables']['usage_logs']['Insert']
+export type RetryInsert = Database['public']['Tables']['retries']['Insert']
 export type ApiKeyInsert = Database['public']['Tables']['api_keys']['Insert']
 export type LifetimeSubscriberInsert = Database['public']['Tables']['lifetime_subscribers']['Insert']
 

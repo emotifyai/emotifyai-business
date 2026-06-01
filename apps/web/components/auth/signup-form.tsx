@@ -26,9 +26,13 @@ export function SignupForm() {
             
             const source = searchParams.get('source')
             const redirectTo = searchParams.get('redirect_to')
-            
-            if (source === 'extension' && redirectTo) {
-                toast.success('تم إنشاء الحساب بنجاح! جاري إعداد الإضافة…')
+
+            if (redirectTo) {
+                toast.success(
+                    source === 'extension'
+                        ? 'تم إنشاء الحساب بنجاح! جاري إعداد الإضافة…'
+                        : 'تم إنشاء الحساب بنجاح! جاري فتح المحرر…'
+                )
                 router.push(redirectTo)
             } else {
                 toast.success('تم إنشاء الحساب بنجاح! اختر خطتك للبدء.')

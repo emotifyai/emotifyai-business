@@ -1,7 +1,7 @@
-import { GUEST_PRICING } from '@emotifyai/config/pricing'
+import { GUEST_FREE_ATTEMPTS, GUEST_PRICING } from '@emotifyai/config/pricing'
 
 const GUEST_STORAGE_KEY = GUEST_PRICING.storageKey
-export const GUEST_CREDIT_LIMIT = GUEST_PRICING.creditLimit
+export const GUEST_CREDIT_LIMIT = GUEST_FREE_ATTEMPTS
 
 export function getGuestCreditsUsed(): number {
   if (typeof window === 'undefined') return 0

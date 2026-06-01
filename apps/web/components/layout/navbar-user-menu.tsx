@@ -10,8 +10,9 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from '@emotifyai/ui'
-import { User, LogOut, Settings, BarChart3 } from 'lucide-react'
+import { LogOut, Settings, BarChart3 } from 'lucide-react'
 import { useLogout } from '@/lib/hooks/use-auth'
+import { UserAvatar } from '@/components/user-avatar'
 import { useSubscription } from '@/lib/hooks/use-subscription'
 import { useRouter } from 'next/navigation'
 
@@ -37,19 +38,17 @@ export function NavbarUserMenu({ user }: NavbarUserMenuProps) {
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                <Button 
-                    variant="ghost" 
-                    className="relative h-9 w-9 rounded-full cursor-pointer hover:bg-accent transition-colors"
+                <Button
+                    variant="ghost"
+                    size="icon"
+                    className="relative size-9 shrink-0 overflow-hidden rounded-full p-0 hover:bg-accent"
                 >
-                    {user.avatar_url ? (
-                        <img
-                            src={user.avatar_url}
-                            alt={user.display_name || 'مستخدم'}
-                            className="h-9 w-9 rounded-full object-cover"
-                        />
-                    ) : (
-                        <User className="h-5 w-5" />
-                    )}
+                    <UserAvatar
+                        avatarUrl={user.avatar_url}
+                        seed={user.id || user.email}
+                        alt={user.display_name || 'مستخدم'}
+                        className="size-full"
+                    />
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent 

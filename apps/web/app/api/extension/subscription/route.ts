@@ -60,21 +60,23 @@ export async function GET(request: NextRequest) {
             .limit(1)
             .single()
         if (subscriptionError) {
-            // If no subscription found, return default trial plan
+            // If no subscription found, return default free plan
             if (subscriptionError.code === 'PGRST116') {
                 const fallback = RUNTIME_SUBSCRIPTION_DEFAULTS.apiExtensionEmpty
                 const now = new Date()
-                const endDate = new Date(
-                  Date.now() + fallback.validityDays * 24 * 60 * 60 * 1000
-                )
+                const endDate = fallback.validityDays
+                  ? new Date(
+                        Date.now() + fallback.validityDays * 24 * 60 * 60 * 1000
+                    ).toISOString()
+                  : null
 
                 return NextResponse.json({
                     success: true,
                     data: {
-                        tier: SubscriptionTier.TRIAL,
+                        tier: SubscriptionTier.FREE,
                         status: SubscriptionStatus.ACTIVE,
                         startDate: now.toISOString(),
-                        endDate: endDate.toISOString(),
+                        endDate,
                         usageLimit: fallback.credits,
                         currentUsage: 0,
                         resetDate: null,
@@ -83,8 +85,8 @@ export async function GET(request: NextRequest) {
                         credits_remaining: fallback.credits,
                         credits_reset_date: null,
                         validity_days: fallback.validityDays,
-                        tier_name: 'تجربة',
-                        current_period_end: endDate.toISOString(),
+                        tier_name: 'مجاني',
+                        current_period_end: endDate,
                     },
                 })
             }

@@ -17,26 +17,47 @@ import { POST } from '../route'
 import { NextRequest } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { canMakeEnhancement } from '@/lib/subscription/validation'
-import { enhanceText, mockEnhanceText as mockEnhanceTextFn } from '@/lib/ai/claude'
+import {
+  enhanceText,
+  enhanceTextStream,
+  mockEnhanceText as mockEnhanceTextFn,
+  mockEnhanceTextStream,
+} from '@/lib/ai/claude'
 import { validateOutputQuality, isLanguageSupported } from '@/lib/ai/language-detection'
 import { ApiErrorCode } from '@/types/api'
 
 jest.mock('@/lib/supabase/server')
 jest.mock('@/lib/subscription/validation')
-jest.mock('@/lib/ai/claude')
+jest.mock('@/lib/ai/claude', () => ({
+  enhanceText: jest.fn(),
+  enhanceTextStream: jest.fn(),
+  mockEnhanceText: jest.fn(),
+  mockEnhanceTextStream: jest.fn(),
+}))
 jest.mock('@/lib/ai/language-detection')
 
 const mockCreateClient = createClient as jest.MockedFunction<typeof createClient>
 const mockCanMakeEnhancement = canMakeEnhancement as jest.MockedFunction<typeof canMakeEnhancement>
-const mockEnhanceText = enhanceText as jest.MockedFunction<typeof enhanceText>
-const mockMockEnhanceText = mockEnhanceTextFn as jest.MockedFunction<typeof mockEnhanceTextFn>
+const mockedEnhanceText = enhanceText as jest.MockedFunction<typeof enhanceText>
+const mockedEnhanceTextStream = enhanceTextStream as jest.MockedFunction<typeof enhanceTextStream>
+const mockedMockEnhanceText = mockEnhanceTextFn as jest.MockedFunction<typeof mockEnhanceTextFn>
+const mockedMockEnhanceTextStream = mockEnhanceTextStream as jest.MockedFunction<
+  typeof mockEnhanceTextStream
+>
 const mockValidateOutputQuality = validateOutputQuality as jest.MockedFunction<typeof validateOutputQuality>
 const mockIsLanguageSupported = isLanguageSupported as jest.MockedFunction<typeof isLanguageSupported>
 
 const mockSupabase = {
   auth: { getUser: jest.fn() },
   from: jest.fn(() => ({
-    insert: jest.fn().mockResolvedValue({ error: null }),
+    insert: jest.fn(() => ({
+      select: jest.fn(() => ({
+        single: jest.fn().mockResolvedValue({
+          data: { id: 'usage-log-1', retry_used: false },
+          error: null,
+        }),
+      })),
+    })),
   })),
   rpc: jest.fn(() => ({
     single: jest.fn().mockResolvedValue({ data: null, error: null }),
@@ -52,6 +73,23 @@ function createMockRequest(body: unknown): NextRequest {
 
 async function parseResponse(response: Response) {
   return JSON.parse(await response.text())
+}
+
+async function parseSSEResponse(response: Response) {
+  const text = await response.text()
+  const events: { event: string; data: unknown }[] = []
+  for (const block of text.split('\n\n')) {
+    if (!block.trim()) continue
+    const eventLine = block.split('\n').find((l) => l.startsWith('event:'))
+    const dataLine = block.split('\n').find((l) => l.startsWith('data:'))
+    if (eventLine && dataLine) {
+      events.push({
+        event: eventLine.slice(6).trim(),
+        data: JSON.parse(dataLine.slice(5).trim()),
+      })
+    }
+  }
+  return events
 }
 
 function assertResponse(response: unknown): Response {
@@ -97,7 +135,7 @@ describe('/api/enhance POST', () => {
         error: null,
       })
       mockCanMakeEnhancement.mockResolvedValue({ allowed: true })
-      mockEnhanceText.mockResolvedValue({
+      mockedEnhanceText.mockResolvedValue({
         enhancedText: 'Enhanced text',
         tokensUsed: 50,
         language: 'en',
@@ -189,7 +227,7 @@ describe('/api/enhance POST', () => {
 
     it('should use real AI when MOCK_AI_RESPONSES is false', async () => {
       process.env.MOCK_AI_RESPONSES = 'false'
-      mockEnhanceText.mockResolvedValue({
+      mockedEnhanceText.mockResolvedValue({
         enhancedText: 'Enhanced marketing copy.',
         tokensUsed: 75,
         language: 'en',
@@ -204,19 +242,19 @@ describe('/api/enhance POST', () => {
         })
       )
 
-      expect(mockEnhanceText).toHaveBeenCalledWith({
+      expect(mockedEnhanceText).toHaveBeenCalledWith({
         text: 'this is original text',
         outputLanguage: 'en',
         tone: 'marketing',
         platform: 'store',
         strength: 5,
       })
-      expect(mockMockEnhanceText).not.toHaveBeenCalled()
+      expect(mockedMockEnhanceText).not.toHaveBeenCalled()
     })
 
     it('should use mock AI when MOCK_AI_RESPONSES is true', async () => {
       process.env.MOCK_AI_RESPONSES = 'true'
-      mockMockEnhanceText.mockResolvedValue({
+      mockedMockEnhanceText.mockResolvedValue({
         enhancedText: '[ENHANCED] this is original text',
         tokensUsed: 100,
         language: 'en',
@@ -228,7 +266,7 @@ describe('/api/enhance POST', () => {
       )
       const data = await parseResponse(response)
 
-      expect(mockMockEnhanceText).toHaveBeenCalled()
+      expect(mockedMockEnhanceText).toHaveBeenCalled()
       expect(data.data.enhancedText).toBe('[ENHANCED] this is original text')
     })
   })
@@ -240,7 +278,7 @@ describe('/api/enhance POST', () => {
         error: null,
       })
       mockCanMakeEnhancement.mockResolvedValue({ allowed: true })
-      mockEnhanceText.mockResolvedValue({
+      mockedEnhanceText.mockResolvedValue({
         enhancedText: 'Low quality output',
         tokensUsed: 50,
         language: 'en',
@@ -268,7 +306,7 @@ describe('/api/enhance POST', () => {
     })
 
     it('should handle AI service errors', async () => {
-      mockEnhanceText.mockRejectedValue(new Error('AI service unavailable'))
+      mockedEnhanceText.mockRejectedValue(new Error('AI service unavailable'))
       const response = assertResponse(await POST(createMockRequest(validBody)))
       expect((await parseResponse(response)).error.code).toBe(ApiErrorCode.INTERNAL_ERROR)
     })
@@ -281,7 +319,7 @@ describe('/api/enhance POST', () => {
         error: null,
       })
       mockCanMakeEnhancement.mockResolvedValue({ allowed: true })
-      mockEnhanceText.mockResolvedValue({
+      mockedEnhanceText.mockResolvedValue({
         enhancedText: 'Enhanced text output',
         tokensUsed: 75,
         language: 'en',
@@ -301,7 +339,95 @@ describe('/api/enhance POST', () => {
           language: 'en',
           routeId: expect.any(String),
           detectionSummary: expect.any(String),
+          usageLogId: 'usage-log-1',
+          retryUsed: false,
         },
+      })
+    })
+  })
+
+  describe('Streaming', () => {
+    beforeEach(() => {
+      mockSupabase.auth.getUser.mockResolvedValue({
+        data: { user: { id: 'user-123' } },
+        error: null,
+      })
+      mockCanMakeEnhancement.mockResolvedValue({ allowed: true })
+    })
+
+    it('should stream deltas and a done event when stream is true', async () => {
+      mockedEnhanceTextStream.mockImplementation(async (_opts, onDelta) => {
+        await onDelta('Hello ')
+        await onDelta('world')
+        return {
+          enhancedText: 'Hello world',
+          tokensUsed: 42,
+          language: 'en',
+          routeId: 'en',
+        }
+      })
+
+      const response = assertResponse(
+        await POST(createMockRequest({ ...validBody, stream: true }))
+      )
+
+      expect(response.headers.get('content-type')).toContain('text/event-stream')
+      const events = await parseSSEResponse(response)
+      expect(events.map((e) => e.event)).toEqual(['delta', 'delta', 'done'])
+      expect(events[0].data).toEqual({ text: 'Hello ' })
+      expect(events[2].data).toMatchObject({
+        success: true,
+        data: {
+          enhancedText: 'Hello world',
+          tokensUsed: 42,
+          language: 'en',
+        },
+      })
+      expect(mockedEnhanceTextStream).toHaveBeenCalled()
+      expect(mockedEnhanceText).not.toHaveBeenCalled()
+    })
+
+    it('should use mock stream when MOCK_AI_RESPONSES is true', async () => {
+      process.env.MOCK_AI_RESPONSES = 'true'
+      mockedMockEnhanceTextStream.mockImplementation(async (_opts, onDelta) => {
+        await onDelta('[ENHANCED] ')
+        return {
+          enhancedText: '[ENHANCED] test text',
+          tokensUsed: 100,
+          language: 'en',
+          routeId: 'ar-gulf',
+        }
+      })
+
+      const response = assertResponse(
+        await POST(createMockRequest({ ...validBody, stream: true }))
+      )
+      const events = await parseSSEResponse(response)
+
+      expect(mockedMockEnhanceTextStream).toHaveBeenCalled()
+      expect(events.some((e) => e.event === 'done')).toBe(true)
+    })
+
+    it('should emit error event when quality check fails during stream', async () => {
+      mockedEnhanceTextStream.mockResolvedValue({
+        enhancedText: 'Low quality output',
+        tokensUsed: 50,
+        language: 'en',
+      })
+      mockValidateOutputQuality.mockReturnValue({
+        isValid: false,
+        reason: 'Output quality is too low',
+      })
+
+      const response = assertResponse(
+        await POST(createMockRequest({ ...validBody, stream: true }))
+      )
+      const events = await parseSSEResponse(response)
+
+      expect(events.some((e) => e.event === 'error')).toBe(true)
+      expect(events.find((e) => e.event === 'error')?.data).toMatchObject({
+        success: false,
+        error: { code: ApiErrorCode.QUALITY_CHECK_FAILED },
       })
     })
   })

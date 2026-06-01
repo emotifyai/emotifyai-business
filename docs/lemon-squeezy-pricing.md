@@ -72,12 +72,14 @@ LEMONSQUEEZY_LARGE_BUNDLE_VARIANT_ID=
 
 ---
 
-## 4. خطط التجربة (بدون Lemon Squeezy)
+## 4. الخطة المجانية (بدون Lemon Squeezy)
 
 | الخطة | التحويلات | الآلية |
 |---|---|---|
-| فورية | 10 بدون تسجيل | حد ضيف في API |
-| مسجلة | 50 / 14 يوم | `trial` عند التسجيل (`/api/auth/login`) |
+| ضيف (فورية) | 5 بدون تسجيل | `localStorage` — `GUEST_PRICING` |
+| بعد التسجيل | 5 إضافية | صف `subscriptions` — `tier=free`, `status=active` عند `/auth/callback` |
+
+لا يوجد تجربة لمدة ١٤ يوماً ولا عرض مدى الحياة — المصدر: `packages/config/src/pricing.ts`.
 
 ---
 
@@ -96,8 +98,8 @@ LEMONSQUEEZY_PRO_ANNUAL_VARIANT_ID=
 LEMONSQUEEZY_SMALL_BUNDLE_VARIANT_ID=
 LEMONSQUEEZY_LARGE_BUNDLE_VARIANT_ID=
 
-# خطط قديمة (لا تزال في webhook إن وُجدت)
-LEMONSQUEEZY_LIFETIME_LAUNCH_VARIANT_ID=
+# خطط قديمة / متوقفة (اختياري — webhook يتجاهل lifetime)
+# LEMONSQUEEZY_LIFETIME_LAUNCH_VARIANT_ID=
 LEMONSQUEEZY_BASIC_MONTHLY_VARIANT_ID=
 LEMONSQUEEZY_BUSINESS_MONTHLY_VARIANT_ID=
 LEMONSQUEEZY_BASIC_ANNUAL_VARIANT_ID=
@@ -127,7 +129,7 @@ LEMONSQUEEZY_BUSINESS_ANNUAL_VARIANT_ID=
 |---|---|
 | `subscription_created` / `updated` | `subscriptions` — `lemon_squeezy_id` = معرف الاشتراك LS |
 | `order_created` (حزمة) | صف جديد — `order_<id>`، رصيد ثابت |
-| `order_created` (lifetime) | صف + `lifetime_subscribers` |
+| `order_created` (lifetime) | **متوقف** — يُتجاهل في webhook |
 
 Custom data في Checkout:
 

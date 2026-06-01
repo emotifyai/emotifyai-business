@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { RUNTIME_SUBSCRIPTION_DEFAULTS } from '@emotifyai/config/pricing'
 import { createClient } from '@/lib/supabase/server'
 import { z } from 'zod'
 import type { ProfileInsert } from '@/types/database'
@@ -74,17 +75,27 @@ export async function POST(request: NextRequest) {
             .eq('user_id', user.id)
             .single()
 
-        // If no subscription, create trial
+        // If no subscription, create free tier
         if (!subscription) {
+            const freeDefaults = RUNTIME_SUBSCRIPTION_DEFAULTS.createFreeSubscription
+            const periodEnd = freeDefaults.validityDays
+                ? new Date(
+                      Date.now() + freeDefaults.validityDays * 24 * 60 * 60 * 1000
+                  ).toISOString()
+                : null
             const { data: newSubscription, error: subError } = await (supabase
                 .from('subscriptions') as any)
                 .insert({
                     user_id: user.id,
-                    lemon_squeezy_id: `trial-${user.id}`,
-                    tier: 'trial',
+                    lemon_squeezy_id: `free_${user.id}`,
+                    tier: 'free',
+                    tier_name: 'free',
                     status: 'active',
+                    credits_limit: freeDefaults.credits,
+                    credits_used: 0,
+                    validity_days: freeDefaults.validityDays,
                     current_period_start: new Date().toISOString(),
-                    current_period_end: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+                    current_period_end: periodEnd,
                 })
                 .select()
                 .single()

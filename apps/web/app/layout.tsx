@@ -1,11 +1,14 @@
 import type { Metadata, Viewport } from "next";
 import "@emotifyai/ui/styles/globals.css";
+import { GoogleAnalytics } from "@next/third-parties/google";
 import { ThemeProvider } from "next-themes";
 
 import { arabicFontClassName } from "@/lib/fonts";
 import { QueryProvider } from "@/lib/query-provider";
 import { Toaster } from "@emotifyai/ui";
 import React from "react";
+
+const gaMeasurementId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
 
 export const metadata: Metadata = {
   title: "إيموتيفاي — تحسين نصوص المنتجات بالذكاء الاصطناعي",
@@ -37,6 +40,7 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <body className="min-h-dvh overflow-x-hidden font-sans antialiased" suppressHydrationWarning>
+        {gaMeasurementId ? <GoogleAnalytics gaId={gaMeasurementId} /> : null}
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"

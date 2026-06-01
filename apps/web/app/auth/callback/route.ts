@@ -1,4 +1,7 @@
-import { RUNTIME_SUBSCRIPTION_DEFAULTS } from '@emotifyai/config/pricing'
+import {
+  RUNTIME_SUBSCRIPTION_DEFAULTS,
+  SIGNUP_BONUS_ATTEMPTS,
+} from '@emotifyai/config/pricing'
 import { createClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
 
@@ -43,7 +46,7 @@ export async function GET(request: Request) {
                     }
                 }
 
-                // Check if user has subscription, create trial if not
+                // Check if user has subscription, create free tier if not
                 const { data: subscription } = await supabase
                     .from('subscriptions')
                     .select('id')
@@ -51,30 +54,33 @@ export async function GET(request: Request) {
                     .single()
 
                 if (!subscription) {
-                    console.log(`Creating trial subscription for new user: ${data.user.email}`)
+                    console.log(`Creating free subscription for new user: ${data.user.email}`)
 
-                    // Create trial subscription for all new users
                     const authDefaults = RUNTIME_SUBSCRIPTION_DEFAULTS.authCallbackNewUser
-                    const trialLimit = parseInt(
+                    const signupCredits = parseInt(
                       process.env.TRIAL_ENHANCEMENT_LIMIT ||
                         String(authDefaults.credits),
                       10
-                    )
-                    const trialDays = trialLimit
-                    const trialEndDate = new Date()
-                    trialEndDate.setDate(trialEndDate.getDate() + trialDays)
+                    ) || SIGNUP_BONUS_ATTEMPTS
+                    const periodEnd = authDefaults.validityDays
+                      ? (() => {
+                          const end = new Date()
+                          end.setDate(end.getDate() + authDefaults.validityDays!)
+                          return end.toISOString()
+                        })()
+                      : null
 
                     const { error: subError } = await (supabase.from('subscriptions') as any).insert({
                         user_id: data.user.id,
                         lemon_squeezy_id: `free_${data.user.id}_${Date.now()}`,
                         tier: 'free',
                         tier_name: 'free',
-                        status: 'trial',
-                        credits_limit: trialLimit,
+                        status: 'active',
+                        credits_limit: signupCredits,
                         credits_used: 0,
-                        validity_days: trialDays,
+                        validity_days: authDefaults.validityDays,
                         current_period_start: new Date().toISOString(),
-                        current_period_end: trialEndDate.toISOString(),
+                        current_period_end: periodEnd,
                     })
 
                     if (subError) {

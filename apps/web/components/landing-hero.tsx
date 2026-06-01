@@ -1,9 +1,25 @@
 'use client'
 
+import * as React from 'react'
 import Link from 'next/link'
-import { Plus, Mic, Sparkles, Pencil, Globe } from 'lucide-react'
-import { Button, TextDemoCarousel, type TextDemoPair } from '@emotifyai/ui'
+import { useRouter } from 'next/navigation'
+import { ArrowDown, Sparkles } from 'lucide-react'
+import { Button, EnhanceTextInput, TextDemoCarousel, type TextDemoPair } from '@emotifyai/ui'
 import { useUser } from '@/lib/hooks/use-auth'
+import {
+  LANDING_PRESET_CHIPS,
+  type EditorEnhanceConfig,
+} from '@/lib/editor/constants'
+import {
+  EDITOR_PATH,
+  buildSignupRedirectUrl,
+  saveEditorSession,
+} from '@/lib/editor/session'
+import { trackUpgradeClicked } from '@/lib/analytics/ga'
+import {
+  consumeGuestCredit,
+  isGuestCreditsExhausted,
+} from '@/lib/upgrade-prompt/guest-credits'
 
 const DEMO_PAIRS: TextDemoPair[] = [
   {
@@ -44,76 +60,130 @@ const DEMO_PAIRS: TextDemoPair[] = [
   },
 ]
 
-const QUICK_ACTIONS = [
-  { icon: Sparkles, label: 'إنشاء صورة' },
-  { icon: Pencil, label: 'كتابة أو تعديل' },
-  { icon: Globe, label: 'بحث عن شيء' },
-] as const
+const DEFAULT_CONFIG: EditorEnhanceConfig = {
+  tone: 'marketing',
+  outputLanguage: 'ar_gulf',
+  platform: 'store',
+}
 
 export function LandingHero() {
+  const router = useRouter()
   const { data: user, isLoading } = useUser()
   const isAuthenticated = !!user
 
-  const greeting = isAuthenticated
-    ? user?.display_name
-      ? `مرحباً ${user.display_name}، `
-      : 'مرحباً بعودتك، '
-    : ''
+  const [text, setText] = React.useState('')
+  const [config, setConfig] = React.useState<EditorEnhanceConfig>(DEFAULT_CONFIG)
+  const [activeChipId, setActiveChipId] = React.useState<string | null>(null)
+
+  const continueToEditor = () => {
+    saveEditorSession({
+      originalText: text.trim(),
+      enhancedText: '',
+      ...config,
+    })
+    if (isAuthenticated) {
+      router.push(EDITOR_PATH)
+      return
+    }
+    if (isGuestCreditsExhausted()) {
+      router.push('/signup?from=guest')
+      return
+    }
+    consumeGuestCredit()
+    router.push(buildSignupRedirectUrl())
+  }
+
+  const applyPreset = (chipId: string, preset: EditorEnhanceConfig) => {
+    setActiveChipId(chipId)
+    setConfig(preset)
+  }
+
+  const settingsHintHref = isAuthenticated ? EDITOR_PATH : buildSignupRedirectUrl()
 
   return (
     <section className="page-container py-10 sm:py-16 md:py-24">
       <div className="mx-auto flex max-w-3xl flex-col items-center text-center">
-        <h1 className="mb-6 text-3xl font-bold leading-tight tracking-tight sm:mb-8 sm:text-4xl md:text-5xl">
-          {greeting}
-          ما الذي يدور في ذهنك اليوم؟
+        <h1
+          className="mb-6 text-3xl font-bold leading-tight tracking-tight [font-family:var(--font-display)] sm:mb-8 sm:text-4xl md:text-5xl"
+          dir="rtl"
+        >
+          {isAuthenticated ? (
+            <>
+              <span className="block text-foreground">
+                {user?.display_name ? `مرحباً ${user.display_name}،` : 'مرحباً بعودتك،'}
+              </span>
+              <span className="block text-gradient-brand">واصل تحويل نصوصك التقنية</span>
+              <span className="block text-primary">إلى نسخ تبيع</span>
+            </>
+          ) : (
+            <>
+              <span className="block text-foreground">حوّل النص التقني الجاف إلى</span>
+              <span className="block text-gradient-brand">نصاً عاطفياً مقنعاً</span>
+              <span className="block text-primary">يبيع</span>
+            </>
+          )}
         </h1>
 
-        <div className="mb-8 w-full max-w-2xl rounded-full border border-border/60 bg-card/80 p-2 shadow-xl shadow-black/20 backdrop-blur-sm sm:p-3">
-          <div className="flex items-center gap-2 rounded-full bg-background/60 px-3 py-2 sm:px-4 sm:py-3">
-            <button
-              type="button"
-              className="flex size-9 shrink-0 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-              aria-label="إضافة"
-            >
-              <Plus className="size-5" />
-            </button>
-            <span className="min-w-0 flex-1 text-start text-base text-muted-foreground sm:text-lg">
-              اسأل أي شيء…
-            </span>
-            <button
-              type="button"
-              className="flex size-9 shrink-0 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-              aria-label="إدخال صوتي"
-            >
-              <Mic className="size-5" />
-            </button>
-            <Button
-              size="icon"
-              variant="glow"
-              className="size-10 shrink-0 rounded-full sm:size-11"
-              asChild
-            >
-              <Link
-                href={isAuthenticated ? '/dashboard/editor' : '/signup'}
+        <form
+          className="mb-4 w-full max-w-2xl"
+          onSubmit={(e) => {
+            e.preventDefault()
+            if (text.trim()) continueToEditor()
+          }}
+        >
+          <div className="rounded-full border border-border/60 bg-card/80 p-2 shadow-xl shadow-black/20 backdrop-blur-sm sm:p-3">
+            <div className="flex items-end gap-2 rounded-full bg-background/60 px-3 py-2 sm:items-center sm:px-4 sm:py-3">
+              <EnhanceTextInput
+                variant="hero"
+                value={text}
+                onChange={setText}
+                showCharCount={false}
+                placeholder="اكتب أو الصق نص المنتج أو الرسالة…"
+                onSubmit={continueToEditor}
+                aria-label="نص للتحسين"
+                rows={1}
+                className="min-w-0 flex-1"
+              />
+              <Button
+                type="submit"
+                size="icon"
+                variant="glow"
+                className="size-10 shrink-0 rounded-full sm:size-11"
+                disabled={!text.trim()}
                 aria-label="ابدأ التحسين"
               >
                 <Sparkles className="size-5" />
-              </Link>
-            </Button>
+              </Button>
+            </div>
           </div>
-        </div>
+        </form>
 
-        <div className="mb-10 flex w-full max-w-2xl flex-wrap items-center justify-center gap-2 sm:gap-3">
-          {QUICK_ACTIONS.map(({ icon: Icon, label }) => (
+        <div className="mb-6 flex w-full max-w-2xl flex-wrap items-center justify-center gap-2 sm:gap-3" dir="rtl">
+          {LANDING_PRESET_CHIPS.map((chip) => (
             <button
-              key={label}
+              key={chip.id}
               type="button"
-              className="inline-flex min-h-11 items-center gap-2 rounded-full border border-border/50 bg-card/60 px-4 py-2 text-sm text-muted-foreground transition-colors hover:border-primary/40 hover:text-foreground"
+              onClick={() => applyPreset(chip.id, chip.config)}
+              className={`inline-flex min-h-11 items-center gap-2 rounded-full border px-4 py-2 text-sm transition-colors ${
+                activeChipId === chip.id
+                  ? 'border-primary/60 bg-primary/10 text-foreground'
+                  : 'border-border/50 bg-card/60 text-muted-foreground hover:border-primary/40 hover:text-foreground'
+              }`}
             >
-              <Icon className="size-4 shrink-0 text-primary" aria-hidden />
-              <span>{label}</span>
+              <Sparkles className="size-4 shrink-0 text-primary" aria-hidden />
+              <span>{chip.label}</span>
             </button>
           ))}
+        </div>
+
+        <div className="mb-10 flex w-full max-w-2xl flex-col items-center gap-1 text-sm text-muted-foreground" dir="rtl">
+          <p>لضبط لغة المخرج والنبرة والمنصة بالتفصيل</p>
+          <ArrowDown className="size-4 text-primary" aria-hidden />
+          <p>
+            <Link href={settingsHintHref} className="font-medium text-primary hover:underline">
+              {isAuthenticated ? 'افتح المحرر' : 'سجّل مجاناً وافتح المحرر'}
+            </Link>
+          </p>
         </div>
 
         <div className="mb-10 w-full max-w-3xl">
@@ -122,13 +192,19 @@ export function LandingHero() {
 
         {!isLoading && (
           <div className="flex w-full flex-col gap-3 sm:flex-row sm:justify-center sm:gap-4">
-            <Button size="lg" variant="glow" className="w-full sm:w-auto" asChild>
-              <Link href={isAuthenticated ? '/dashboard' : '/signup'}>
-                {isAuthenticated ? 'لوحة التحكم' : 'ابدأ مجاناً — ١٠ تحويلات'}
-              </Link>
+            <Button
+              size="lg"
+              variant="glow"
+              className="w-full sm:w-auto"
+              disabled={!text.trim()}
+              onClick={continueToEditor}
+            >
+              {isAuthenticated ? 'متابعة إلى المحرر' : 'ابدأ مجاناً — ٥ تحويلات'}
             </Button>
             <Button size="lg" variant="outline" className="w-full sm:w-auto" asChild>
-              <Link href="/pricing">عرض الأسعار</Link>
+              <Link href="/pricing" onClick={() => trackUpgradeClicked('landing_hero_pricing')}>
+                عرض الأسعار
+              </Link>
             </Button>
           </div>
         )}

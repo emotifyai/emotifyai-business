@@ -11,6 +11,7 @@ import { SubscriptionTier } from '@/types/database'
 import { Skeleton } from '@emotifyai/ui'
 import { PRICING_PLANS } from '@/lib/pricing/plans'
 import { hasActivePaidSubscription } from '@/lib/billing/paid-tier'
+import { cn } from '@/lib/utils'
 
 const UPGRADE_PLANS = PRICING_PLANS.filter((p) => p.checkoutTier)
 
@@ -38,8 +39,8 @@ export default function SubscriptionPage() {
                 </p>
             </div>
 
-            <div className="grid gap-8 lg:grid-cols-2">
-                <div className="space-y-6">
+            <div className="grid gap-8 lg:grid-cols-2 lg:items-start">
+                <div className="flex flex-col gap-6">
                     <h3 className="text-lg font-medium">الخطة الحالية</h3>
                     <SubscriptionCard
                         tier={subscription.tier}
@@ -67,17 +68,18 @@ export default function SubscriptionPage() {
                     )}
                 </div>
 
-                <div className="space-y-6">
+                <div className="flex flex-col gap-6">
                     <h3 className="text-lg font-medium">الخطط المتاحة</h3>
-                    <div className="grid gap-4">
+                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                         {UPGRADE_PLANS.map((plan) => {
                             const tier = plan.checkoutTier as SubscriptionTier
                             return (
                                 <Card
                                     key={plan.id}
-                                    className={
-                                        subscription.tier === tier ? 'border-primary' : ''
-                                    }
+                                    className={cn(
+                                        'h-full',
+                                        subscription.tier === tier && 'border-primary'
+                                    )}
                                 >
                                     <CardHeader>
                                         <CardTitle>{plan.name}</CardTitle>
@@ -93,23 +95,23 @@ export default function SubscriptionPage() {
                                             ) : null}
                                         </CardDescription>
                                     </CardHeader>
-                                    <CardContent>
-                                        <p className="text-sm text-muted-foreground mb-3">
+                                    <CardContent className="flex flex-1 flex-col">
+                                        <p className="mb-3 text-sm text-muted-foreground">
                                             {plan.details}
                                         </p>
-                                        <ul className="grid gap-2 text-sm">
+                                        <ul className="flex flex-1 flex-col gap-2 text-sm">
                                             {plan.features.map((feature) => (
                                                 <li
                                                     key={feature}
-                                                    className="flex items-center gap-2"
+                                                    className="flex items-start gap-2"
                                                 >
-                                                    <Check className="h-4 w-4 text-primary shrink-0" />
+                                                    <Check className="h-4 w-4 shrink-0 text-primary" />
                                                     {feature}
                                                 </li>
                                             ))}
                                         </ul>
                                     </CardContent>
-                                    <CardFooter>
+                                    <CardFooter className="mt-auto w-full">
                                         {subscription.tier === tier ? (
                                             <Button className="w-full" disabled>
                                                 خطتك الحالية
@@ -159,11 +161,13 @@ function SubscriptionSkeleton() {
                 <Skeleton className="h-8 w-[200px]" />
                 <Skeleton className="h-4 w-[300px]" />
             </div>
-            <div className="grid gap-8 lg:grid-cols-2">
+            <div className="grid gap-8 lg:grid-cols-2 lg:items-start">
                 <Skeleton className="h-[300px]" />
-                <div className="space-y-4">
-                    <Skeleton className="h-[250px]" />
-                    <Skeleton className="h-[250px]" />
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                    <Skeleton className="h-[280px]" />
+                    <Skeleton className="h-[280px]" />
+                    <Skeleton className="h-[280px]" />
+                    <Skeleton className="h-[280px]" />
                 </div>
             </div>
             <Skeleton className="h-[400px]" />

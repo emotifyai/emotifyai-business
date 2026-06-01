@@ -2,6 +2,7 @@
 
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { SubscriptionTier, SubscriptionStatus } from '@/types/database'
+import { buildCheckoutThankYouUrl } from '@/lib/checkout/thank-you-redirect'
 
 export interface SubscriptionData {
     tier: SubscriptionTier
@@ -57,7 +58,10 @@ export function useCreateCheckout() {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'include',
-                body: JSON.stringify({ tier }),
+                body: JSON.stringify({
+                    tier,
+                    redirectUrl: buildCheckoutThankYouUrl(window.location.origin, tier),
+                }),
             })
             const data = await response.json()
             if (!response.ok) {

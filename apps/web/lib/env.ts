@@ -35,9 +35,8 @@ export const env = createEnv({
         }),
 
         // Lemon Squeezy Product Variant IDs
-        LEMONSQUEEZY_LIFETIME_LAUNCH_VARIANT_ID: z.string().min(1, {
-            message: 'LEMONSQUEEZY_LIFETIME_LAUNCH_VARIANT_ID is required',
-        }),
+        /** @deprecated Lifetime offer retired — optional for legacy webhooks only */
+        LEMONSQUEEZY_LIFETIME_LAUNCH_VARIANT_ID: z.string().optional(),
         LEMONSQUEEZY_BASIC_MONTHLY_VARIANT_ID: z.string().min(1, {
             message: 'LEMONSQUEEZY_BASIC_MONTHLY_VARIANT_ID is required',
         }),
@@ -65,9 +64,10 @@ export const env = createEnv({
         ANTHROPIC_MAX_TOKENS: z.coerce.number().int().min(1).max(4096).default(1024),
 
         // Usage Limits
-        TRIAL_ENHANCEMENT_LIMIT: z.coerce.number().int().positive().default(10),
+        TRIAL_ENHANCEMENT_LIMIT: z.coerce.number().int().positive().default(5),
         MONTHLY_ENHANCEMENT_LIMIT: z.coerce.number().int().default(1000),
-        LIFETIME_ENHANCEMENT_LIMIT: z.coerce.number().int().default(-1),
+        /** @deprecated */
+        LIFETIME_ENHANCEMENT_LIMIT: z.coerce.number().int().default(-1).optional(),
 
         // Rate Limiting
         RATE_LIMIT_RPM: z.coerce.number().int().positive().default(10),
@@ -125,6 +125,9 @@ export const env = createEnv({
             .string()
             .optional()
             .transform((val) => val === 'true' ? true : val === 'false' ? false : undefined),
+
+        // Google Analytics 4 (optional — omit to disable tracking scripts)
+        NEXT_PUBLIC_GA_MEASUREMENT_ID: z.string().optional(),
     },
 
     /**
@@ -167,6 +170,7 @@ export const env = createEnv({
         NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
         NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
         NEXT_PUBLIC_ENABLE_SHOPIFY_APP: process.env.NEXT_PUBLIC_ENABLE_SHOPIFY_APP,
+        NEXT_PUBLIC_GA_MEASUREMENT_ID: process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID,
     },
 
     /**

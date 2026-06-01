@@ -32,9 +32,9 @@ export default function SubscriptionLoading() {
             {/* Pricing Plans */}
             <div>
                 <Skeleton className="h-6 w-48 mb-4" />
-                <div className="grid gap-4 md:grid-cols-3">
-                    {[1, 2, 3].map((i) => (
-                        <Card key={i}>
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                    {[1, 2, 3, 4].map((i) => (
+                        <Card key={i} className="h-full">
                             <CardHeader>
                                 <Skeleton className="h-6 w-24 mb-2" />
                                 <Skeleton className="h-8 w-32" />

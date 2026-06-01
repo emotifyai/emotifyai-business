@@ -15,20 +15,20 @@ function SarPrice({ plan }: { plan: PricingPlanRow }) {
       <div className="flex flex-wrap items-baseline gap-1.5">
         <span
           className={cn(
-            'font-bold leading-none tracking-tight text-[#36ad8e]',
+            'font-bold leading-none tracking-tight text-primary',
             isFree ? 'text-2xl sm:text-3xl' : 'text-3xl sm:text-4xl'
           )}
         >
           {plan.sarPrice}
         </span>
         {plan.sarSuffix && (
-          <span className="text-lg font-semibold text-[#36ad8e] sm:text-xl">
+          <span className="text-lg font-semibold text-primary sm:text-xl">
             {plan.sarSuffix}
           </span>
         )}
       </div>
       {plan.usdApprox && (
-        <span className="text-xs text-[#7e8596] sm:text-sm">≈ {plan.usdApprox}</span>
+        <span className="text-xs text-muted-foreground sm:text-sm">≈ {plan.usdApprox}</span>
       )}
     </div>
   )
@@ -51,16 +51,16 @@ function PlanCard({
   return (
     <article
       className={cn(
-        'relative flex h-full flex-col rounded-2xl border bg-[#1a1e2b] p-5 shadow-sm transition-shadow sm:p-6',
+        'relative flex h-full flex-col rounded-2xl border bg-card p-5 text-card-foreground shadow-sm transition-shadow sm:p-6',
         plan.highlighted
-          ? 'border-[#36ad8e]/50 shadow-[0_0_40px_-12px_rgba(54,173,142,0.35)]'
-          : 'border-white/8 hover:border-white/12',
-        isCurrent && 'ring-2 ring-[#36ad8e]/40'
+          ? 'border-primary/50 shadow-[0_0_40px_-12px] shadow-primary/35'
+          : 'border-border hover:border-primary/25',
+        isCurrent && 'ring-2 ring-primary/40'
       )}
     >
       {plan.highlighted && (
         <div
-          className="pointer-events-none absolute inset-x-0 top-0 h-24 rounded-t-2xl bg-gradient-to-b from-[#36ad8e]/12 to-transparent"
+          className="pointer-events-none absolute inset-x-0 top-0 h-24 rounded-t-2xl bg-gradient-to-b from-primary/12 to-transparent"
           aria-hidden
         />
       )}
@@ -68,7 +68,7 @@ function PlanCard({
       <div className="relative mb-4 flex items-start justify-between gap-2">
         <h3 className="text-lg font-semibold text-foreground">{plan.name}</h3>
         {plan.badge && (
-          <span className="shrink-0 rounded-full bg-[#36ad8e]/15 px-2.5 py-0.5 text-xs font-medium text-[#36ad8e]">
+          <span className="shrink-0 rounded-full bg-primary/15 px-2.5 py-0.5 text-xs font-medium text-primary">
             {plan.badge}
           </span>
         )}
@@ -78,13 +78,13 @@ function PlanCard({
         <SarPrice plan={plan} />
       </div>
 
-      <p className="mb-4 text-sm text-[#7e8596]">{plan.details}</p>
+      <p className="mb-4 text-sm text-muted-foreground">{plan.details}</p>
 
       <ul className="mb-6 flex flex-1 flex-col gap-2 text-sm text-muted-foreground">
         {plan.features.map((feature) => (
           <li key={feature} className="flex items-start gap-2">
             <span
-              className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[#36ad8e]"
+              className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-primary"
               aria-hidden
             />
             <span>{feature}</span>
@@ -116,7 +116,7 @@ export function PricingPlansTable({
   return (
     <div className="mx-auto w-full max-w-6xl">
       <div
-        className="mb-10 rounded-2xl border border-white/8 bg-[#1a1e2b] px-4 py-3.5 text-center text-sm text-[#7e8596] sm:px-6 sm:text-base"
+        className="mb-10 rounded-2xl border border-border bg-card px-4 py-3.5 text-center text-sm text-muted-foreground sm:px-6 sm:text-base"
         role="note"
       >
         {PRICING_CURRENCY_NOTE}
@@ -142,7 +142,7 @@ export function PricingPlansTable({
                   {section.title}
                 </h2>
                 {section.subtitle && (
-                  <p className="mt-2 text-sm text-[#7e8596] sm:text-base">
+                  <p className="mt-2 text-sm text-muted-foreground sm:text-base">
                     {section.subtitle}
                   </p>
                 )}

@@ -22,7 +22,34 @@ export const EnhanceRequestSchema = z.object({
         .default('store'),
     strength: z.number().min(1).max(5).optional().default(5),
     isEditorSession: z.boolean().optional().default(false),
+    /** When true (or Accept: text/event-stream), response is SSE — see lib/api/enhance-sse.ts */
+    stream: z.boolean().optional().default(false),
 })
+
+export const RETRY_REASON_VALUES = [
+    'too_robotic',
+    'wrong_platform',
+    'wrong_tone',
+    'missing_something',
+    'other',
+] as const
+
+export type RetryReasonValue = (typeof RETRY_REASON_VALUES)[number]
+
+export const EnhanceRetryRequestSchema = z.object({
+    parentLogId: z.string().uuid(),
+    retryReason: z.enum(RETRY_REASON_VALUES),
+    retryReasonOther: z.string().max(500).optional(),
+    text: z.string().min(1).max(10000),
+    outputLanguage: z.enum(['ar_gulf', 'ar_msa', 'en']).default('ar_gulf'),
+    tone: z.enum(['emotional', 'marketing', 'exclusive']).default('marketing'),
+    platform: z
+        .enum(['store', 'whatsapp', 'instagram', 'facebook', 'snap', 'tiktok'])
+        .default('store'),
+    strength: z.number().min(1).max(5).optional().default(5),
+})
+
+export type EnhanceRetryRequest = z.infer<typeof EnhanceRetryRequestSchema>
 
 export type EnhanceRequest = z.infer<typeof EnhanceRequestSchema>
 
@@ -152,6 +179,8 @@ export enum ApiErrorCode {
     // AI errors
     AI_SERVICE_ERROR = 'AI_SERVICE_ERROR',
     QUALITY_CHECK_FAILED = 'QUALITY_CHECK_FAILED',
+    RETRY_ALREADY_USED = 'RETRY_ALREADY_USED',
+    RETRY_NOT_ALLOWED = 'RETRY_NOT_ALLOWED',
 
     // Server errors
     INTERNAL_ERROR = 'INTERNAL_ERROR',

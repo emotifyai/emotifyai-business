@@ -1,5 +1,15 @@
 import '@testing-library/jest-dom'
 import { cleanup } from '@testing-library/react'
+import { TextDecoder, TextEncoder } from 'util'
+import { ReadableStream } from 'stream/web'
+
+if (!global.TextEncoder) {
+  global.TextEncoder = TextEncoder as typeof global.TextEncoder
+  global.TextDecoder = TextDecoder as typeof global.TextDecoder
+}
+if (!global.ReadableStream) {
+  global.ReadableStream = ReadableStream as typeof global.ReadableStream
+}
 
 // Mock fetch API for test environment
 global.fetch = jest.fn(() => Promise.resolve({
@@ -39,8 +49,20 @@ global.Response = class MockResponse {
     return Promise.resolve(typeof this.body === 'string' ? JSON.parse(this.body) : this.body)
   }
 
-  text() {
-    return Promise.resolve(typeof this.body === 'string' ? this.body : JSON.stringify(this.body))
+  async text() {
+    if (typeof this.body === 'string') return this.body
+    if (this.body instanceof ReadableStream) {
+      const reader = this.body.getReader()
+      const decoder = new TextDecoder()
+      let result = ''
+      while (true) {
+        const { done, value } = await reader.read()
+        if (done) break
+        result += decoder.decode(value)
+      }
+      return result
+    }
+    return JSON.stringify(this.body ?? '')
   }
 } as typeof Response
 

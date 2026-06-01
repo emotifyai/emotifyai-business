@@ -25,7 +25,9 @@ jest.mock('@/lib/supabase/server')
 jest.mock('@/lib/subscription/validation')
 jest.mock('@/lib/ai/claude', () => ({
   enhanceText: jest.fn(),
+  enhanceTextStream: jest.fn(),
   mockEnhanceText: jest.fn(),
+  mockEnhanceTextStream: jest.fn(),
 }))
 
 const mockCreateClient = createClient as jest.MockedFunction<typeof createClient>

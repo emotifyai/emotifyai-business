@@ -158,21 +158,21 @@ export async function createFreeSubscription(userId: string): Promise<void> {
 
     const defaults = RUNTIME_SUBSCRIPTION_DEFAULTS.createFreeSubscription
     const now = new Date()
-    const freeEnd = new Date(
-      now.getTime() + defaults.validityDays * 24 * 60 * 60 * 1000
-    )
+    const freeEnd = defaults.validityDays
+      ? new Date(now.getTime() + defaults.validityDays * 24 * 60 * 60 * 1000).toISOString()
+      : null
 
     await (supabase.from('subscriptions') as any).insert({
         user_id: userId,
         lemon_squeezy_id: `free_${userId}`,
-        status: 'trial' as SubscriptionStatus,
-        tier: 'free' as any, // Will be handled by tier_name
+        status: 'active' as SubscriptionStatus,
+        tier: 'free' as any,
         tier_name: 'free',
         credits_limit: defaults.credits,
         credits_used: 0,
         validity_days: defaults.validityDays,
         current_period_start: now.toISOString(),
-        current_period_end: freeEnd.toISOString(),
+        current_period_end: freeEnd,
     })
 }
 

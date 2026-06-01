@@ -8,7 +8,8 @@ import { Label } from '@emotifyai/ui'
 import { Switch } from '@emotifyai/ui'
 import { Skeleton } from '@emotifyai/ui'
 import { toast } from 'sonner'
-import React from "react";
+import React from "react"
+import { UserAvatar } from '@/components/user-avatar'
 
 export default function SettingsPage() {
     const { data: user, isLoading } = useUser()
@@ -43,6 +44,17 @@ export default function SettingsPage() {
                     </CardHeader>
                     <CardContent>
                         <form onSubmit={handleSaveProfile} className="space-y-4">
+                            <div className="flex items-center gap-4">
+                                <UserAvatar
+                                    avatarUrl={user.avatar_url}
+                                    seed={user.id || user.email}
+                                    alt={user.display_name || 'مستخدم'}
+                                    size="lg"
+                                />
+                                <p className="text-sm text-muted-foreground">
+                                    صورة ملفك من مزود تسجيل الدخول أو رمز تعبيري تلقائي
+                                </p>
+                            </div>
                             <div className="grid gap-2">
                                 <Label htmlFor="name">اسم العرض</Label>
                                 <Input id="name" defaultValue={user.display_name || ''} />

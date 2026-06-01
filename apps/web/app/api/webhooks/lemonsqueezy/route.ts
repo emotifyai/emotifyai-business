@@ -42,10 +42,9 @@ function mapSubscriptionStatus(lsStatus: string): SubscriptionStatus {
 /**
  * Determine subscription tier from variant ID
  */
-function getSubscriptionTier(variantId: string): SubscriptionTier {
-    // Lifetime Launch Offer
+function getSubscriptionTier(variantId: string): SubscriptionTier | null {
     if (variantId === process.env.LEMONSQUEEZY_LIFETIME_LAUNCH_VARIANT_ID) {
-        return SubscriptionTier.LIFETIME_LAUNCH
+        return null
     }
 
     // Monthly Plans
@@ -199,6 +198,12 @@ export async function POST(request: NextRequest) {
                 }
 
                 const tier = getSubscriptionTier(variantId)
+                if (!tier) {
+                    console.warn(
+                        `[Webhook] Ignoring ${eventName} — lifetime offer retired (variant ${variantId})`
+                    )
+                    return NextResponse.json({ received: true, ignored: 'lifetime_retired' })
+                }
 
                 const subscriptionData = {
                     // @ts-ignore
@@ -222,45 +227,7 @@ export async function POST(request: NextRequest) {
                             : tier.includes('annual')
                               ? new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString()
                               : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
-                    validity_days: tier === SubscriptionTier.FREE ? 10 : null,
-                }
-
-                // For lifetime subscriptions, reserve a slot
-                if (tier === SubscriptionTier.LIFETIME_LAUNCH && eventName === 'subscription_created') {
-                    try {
-                        // @ts-ignore
-                        const { data: subscriberNumber, error: slotError } = await supabase
-                            // @ts-ignore
-                            .rpc('reserve_lifetime_subscriber_slot', { user_uuid: profile.id })
-                            .single()
-
-                        if (slotError) {
-                            console.error('Error reserving lifetime slot:', slotError)
-                            return NextResponse.json({ error: 'Lifetime slots exhausted' }, { status: 400 })
-                        }
-
-                        // @ts-ignore
-                        console.log(`Reserved lifetime slot #${subscriberNumber} for user ${profile.id}`)
-
-                        // Check if we've hit the limit (500 subscribers)
-                        // Import the product manager at the top of the file
-                        const { disableLifetimeProduct } = await import('@/lib/lemonsqueezy/product-manager')
-
-                        // @ts-ignore
-                        if (subscriberNumber >= 500) {
-                            console.log('[Lifetime Slots] SOLD OUT! Disabling lifetime product in Lemon Squeezy...')
-                            const disabled = await disableLifetimeProduct()
-
-                            if (disabled) {
-                                console.log('[Lifetime Slots] Successfully disabled lifetime product')
-                            } else {
-                                console.error('[Lifetime Slots] Failed to disable lifetime product - manual intervention required!')
-                            }
-                        }
-                    } catch (error) {
-                        console.error('Error reserving lifetime slot:', error)
-                        return NextResponse.json({ error: 'Lifetime slots exhausted' }, { status: 400 })
-                    }
+                    validity_days: null,
                 }
 
                 // Upsert subscription
@@ -298,8 +265,12 @@ export async function POST(request: NextRequest) {
                 console.log(`Processing order_created for email: ${userEmail}, variant: ${variantId}`)
 
                 const bundleTier = variantId ? getBundleTierFromVariant(variantId) : null
-                const isLifetimeVariant =
-                    variantId === process.env.LEMONSQUEEZY_LIFETIME_LAUNCH_VARIANT_ID
+                if (variantId === process.env.LEMONSQUEEZY_LIFETIME_LAUNCH_VARIANT_ID) {
+                    console.warn(
+                        `[Webhook] Ignoring order_created — lifetime offer retired (variant ${variantId})`
+                    )
+                    return NextResponse.json({ received: true, ignored: 'lifetime_retired' })
+                }
 
                 if (bundleTier) {
                     // @ts-ignore
@@ -345,162 +316,6 @@ export async function POST(request: NextRequest) {
                     }
 
                     console.log(`Bundle order processed: ${bundleTier} for ${userEmail}`)
-                } else if (isLifetimeVariant) {
-                    console.log(`Processing Lifetime Launch order for ${userEmail}`)
-
-                    // Find the user by email - try multiple approaches
-                    let foundProfile = null
-                    
-                    // Try case-insensitive search first
-                    // @ts-ignore
-                    const { data: profile1 } = await supabase
-                        .from('profiles')
-                        .select('id, email')
-                        .ilike('email', userEmail as string)
-                        .single()
-
-                    if (profile1) {
-                        foundProfile = profile1
-                        console.log('Found user with case-insensitive search:', {
-                            searchedEmail: userEmail,
-                            // @ts-ignore
-                            foundEmail: profile1.email,
-                            // @ts-ignore
-                            userId: profile1.id
-                        })
-                    } else {
-                        // Try exact match as fallback
-                        // @ts-ignore
-                        const { data: profile2 } = await supabase
-                            .from('profiles')
-                            .select('id, email')
-                            // @ts-ignore
-                            .eq('email', attrs.user_email)
-                            .single()
-
-                        if (profile2) {
-                            foundProfile = profile2
-                            console.log('Found user with exact match:', {
-                                searchedEmail: userEmail,
-                                // @ts-ignore
-                                originalEmail: attrs.user_email,
-                                // @ts-ignore
-                                foundEmail: profile2.email,
-                                // @ts-ignore
-                                userId: profile2.id
-                            })
-                        }
-                    }
-
-                    if (!foundProfile) {
-                        // Try to get all profiles for debugging
-                        // @ts-ignore
-                        const { data: allProfiles } = await supabase
-                            .from('profiles')
-                            .select('id, email')
-                            .limit(10)
-
-                        console.error(`User not found for lifetime order: ${userEmail}`, {
-                            email: userEmail,
-                            // @ts-ignore
-                            originalEmail: attrs.user_email,
-                            // @ts-ignore
-                            allProfiles: allProfiles?.map(p => ({ id: p.id, email: p.email })) || []
-                        })
-                        return NextResponse.json({ 
-                            error: 'User not found', 
-                            // @ts-ignore
-                            details: `Please ensure user ${attrs.user_email} has signed up and has a profile in the system`,
-                            // @ts-ignore
-                            userEmail: attrs.user_email,
-                            // @ts-ignore
-                            availableEmails: allProfiles?.map(p => p.email) || []
-                        }, { status: 404 })
-                    }
-
-                    // Reserve a lifetime subscriber slot
-                    try {
-                        // @ts-ignore
-                        const { data: subscriberNumber, error: slotError } = await supabase
-                            // @ts-ignore
-                            .rpc('reserve_lifetime_subscriber_slot', { user_uuid: foundProfile.id })
-                            .single()
-
-                        if (slotError) {
-                            console.error('Error reserving lifetime slot:', slotError)
-                            return NextResponse.json({ error: 'Lifetime slots exhausted' }, { status: 400 })
-                        }
-
-                        // @ts-ignore
-                        console.log(`Reserved lifetime slot #${subscriberNumber} for user ${foundProfile.id}`)
-
-                        // Create subscription record for the lifetime purchase
-                        const subscriptionData = {
-                            // @ts-ignore
-                            user_id: foundProfile.id,
-                            lemon_squeezy_id: `order_${payload.data.id}`, // Prefix to distinguish from subscription IDs
-                            status: SubscriptionStatus.ACTIVE,
-                            tier: SubscriptionTier.LIFETIME_LAUNCH,
-                            tier_name: SubscriptionTier.LIFETIME_LAUNCH,
-                            current_period_start: new Date().toISOString(),
-                            current_period_end: new Date(Date.now() + 100 * 365 * 24 * 60 * 60 * 1000).toISOString(), // 100 years
-                            cancel_at: null,
-                            credits_limit: getCreditsForTier(SubscriptionTier.LIFETIME_LAUNCH),
-                            credits_used: 0,
-                            credits_reset_date: null, // Lifetime = no reset
-                            validity_days: null,
-                        }
-
-                        console.log('Creating lifetime subscription:', {
-                            // @ts-ignore
-                            userId: foundProfile.id,
-                            // @ts-ignore
-                            userEmail: foundProfile.email
-                        })
-
-                        // @ts-ignore
-                        const { error: insertError } = await supabase
-                            .from('subscriptions')
-                            // @ts-ignore
-                            .upsert(subscriptionData, {
-                                onConflict: 'lemon_squeezy_id',
-                            })
-
-                        if (insertError) {
-                            console.error('Error creating lifetime subscription:', {
-                                error: insertError.message,
-                                // @ts-ignore
-                                userId: foundProfile.id
-                            })
-                            console.error('Error creating lifetime subscription:', insertError)
-                            return NextResponse.json({ error: 'Database error', details: insertError.message }, { status: 500 })
-                        }
-
-                        console.log('Successfully created lifetime subscription:', {
-                            // @ts-ignore
-                            userId: foundProfile.id,
-                            // @ts-ignore
-                            userEmail: foundProfile.email,
-                            subscriberNumber: subscriberNumber
-                        })
-
-                        // Check if we've hit the limit and disable product
-                        // @ts-ignore
-                        if (subscriberNumber >= 500) {
-                            console.log('[Lifetime Slots] SOLD OUT! Disabling lifetime product in Lemon Squeezy...')
-                            const { disableLifetimeProduct } = await import('@/lib/lemonsqueezy/product-manager')
-                            const disabled = await disableLifetimeProduct()
-
-                            if (disabled) {
-                                console.log('[Lifetime Slots] Successfully disabled lifetime product')
-                            } else {
-                                console.error('[Lifetime Slots] Failed to disable lifetime product - manual intervention required!')
-                            }
-                        }
-                    } catch (error) {
-                        console.error('Error processing lifetime order:', error)
-                        return NextResponse.json({ error: 'Failed to process order' }, { status: 500 })
-                    }
                 } else {
                     console.log(`Ignoring order - variant ${variantId} not configured`)
                 }

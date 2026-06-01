@@ -119,7 +119,7 @@ export function ExtensionSuccessClient() {
                 </h1>
                 
                 <p className="text-gray-600 mb-6 leading-relaxed">
-                    حسابك جاهز مع تجربة مجانية (١٠ تحسينات).
+                    حسابك جاهز — ٥ تحويلات مجانية بعد التسجيل.
                     {notificationSent 
                         ? ' يجب أن تكون إضافتك متصلة تلقائياً!'
                         : ' أغلق هذا التبويب وانقر أيقونة الإضافة لإكمال الإعداد.'

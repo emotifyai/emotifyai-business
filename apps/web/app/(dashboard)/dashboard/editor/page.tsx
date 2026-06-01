@@ -5,9 +5,19 @@ import { useSearchParams } from 'next/navigation'
 import { Button } from '@emotifyai/ui'
 import { Card, CardContent } from '@emotifyai/ui'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@emotifyai/ui'
-import { Textarea } from '@emotifyai/ui'
+import { EnhanceTextInput, EnhanceTextOutput } from '@emotifyai/ui'
 import { Badge } from '@emotifyai/ui'
-import { Loader2, Wand2, RotateCcw, History, Copy, Check, ChevronDown } from 'lucide-react'
+import { Loader2, Wand2, RotateCcw, History, Copy, Check, ChevronDown, RefreshCw, Share2 } from 'lucide-react'
+import { RetryFeedbackModal } from '@/components/editor/retry-feedback-modal'
+import {
+  trackCopyClicked,
+  trackRetryUsed,
+  trackShareClicked,
+  trackTransformCompleted,
+  trackUpgradeClicked,
+} from '@/lib/analytics/ga'
+import { getRetryReasonLabel } from '@/lib/editor/retry-reasons'
+import type { RetryReasonValue } from '@/types/api'
 import { useSubscription } from '@/lib/hooks/use-subscription'
 import { useUsageStats } from '@/lib/hooks/use-usage'
 import { SubscriptionTier } from '@/types/database'
@@ -17,6 +27,19 @@ import {
   resolveUpgradeVariant,
 } from '@/components/upgrade-prompt'
 import { detectInputLanguage } from '@/lib/ai/language-detection'
+import {
+  OUTPUT_LANGUAGES,
+  TONE_OPTIONS,
+  PLATFORM_OPTIONS,
+} from '@/lib/editor/constants'
+import {
+  labelForOutputLanguage,
+  labelForPlatform,
+  labelForTone,
+} from '@/lib/editor/labels'
+import { EDITOR_SESSION_KEY } from '@/lib/editor/session'
+import { consumeEnhanceSSE } from '@/lib/api/enhance-sse'
+import { ApiErrorCode } from '@/types/api'
 
 interface HistoryItem {
   id: string
@@ -26,28 +49,8 @@ interface HistoryItem {
   outputLanguage: string
   platform?: string
   createdAt: string
+  retryUsed?: boolean
 }
-
-const OUTPUT_LANGUAGES = [
-  { value: 'ar_gulf', label: 'عربي خليجي' },
-  { value: 'ar_msa', label: 'عربي فصيح' },
-  { value: 'en', label: 'إنجليزي' },
-] as const
-
-const TONE_OPTIONS = [
-  { value: 'emotional', label: 'عاطفي' },
-  { value: 'marketing', label: 'تسويقي' },
-  { value: 'exclusive', label: 'حصري' },
-] as const
-
-const PLATFORM_OPTIONS = [
-  { value: 'store', label: 'متجر' },
-  { value: 'whatsapp', label: 'واتساب' },
-  { value: 'instagram', label: 'إنستغرام' },
-  { value: 'facebook', label: 'فيسبوك' },
-  { value: 'snap', label: 'سناب' },
-  { value: 'tiktok', label: 'تيك توك' },
-] as const
 
 const LOADING_MESSAGES = [
   'جاري تحليل النص…',
@@ -88,10 +91,15 @@ export default function EditorPage() {
   const [upgradeVariant, setUpgradeVariant] = useState<
     import('@emotifyai/ui').UpgradePromptVariant | undefined
   >(undefined)
+  const [sessionHydrated, setSessionHydrated] = useState(false)
+  const [currentUsageLogId, setCurrentUsageLogId] = useState<string | null>(null)
+  const [retryUsed, setRetryUsed] = useState(false)
+  const [retryModalOpen, setRetryModalOpen] = useState(false)
+  const [isRetrying, setIsRetrying] = useState(false)
 
-  // Load cached session data on mount
+  // Load cached session data on mount (landing → editor handoff)
   useEffect(() => {
-    const cached = sessionStorage.getItem('editor_session')
+    const cached = sessionStorage.getItem(EDITOR_SESSION_KEY)
     if (cached) {
       try {
         const data = JSON.parse(cached)
@@ -104,13 +112,15 @@ export default function EditorPage() {
         console.error('Failed to parse cached session:', e)
       }
     }
+    setSessionHydrated(true)
   }, [])
 
-  // Save to session cache when editor state changes
+  // Save to session cache when editor state changes (after hydration)
   useEffect(() => {
+    if (!sessionHydrated) return
     const data = { originalText, enhancedText, tone, outputLanguage, platform }
-    sessionStorage.setItem('editor_session', JSON.stringify(data))
-  }, [originalText, enhancedText, tone, outputLanguage, platform])
+    sessionStorage.setItem(EDITOR_SESSION_KEY, JSON.stringify(data))
+  }, [originalText, enhancedText, tone, outputLanguage, platform, sessionHydrated])
 
   useEffect(() => {
     const textParam = searchParams.get('text')
@@ -128,7 +138,28 @@ export default function EditorPage() {
       const response = await fetch('/api/user/history')
       if (response.ok) {
         const data = await response.json()
-        setHistory(data.history || [])
+        const items = (data.history || []).map(
+          (row: {
+            id: string
+            input_text: string
+            output_text: string
+            tone?: string
+            output_language?: string
+            platform?: string
+            created_at: string
+            retry_used?: boolean
+          }) => ({
+            id: row.id,
+            originalText: row.input_text,
+            enhancedText: row.output_text,
+            tone: row.tone || 'marketing',
+            outputLanguage: row.output_language || 'ar_gulf',
+            platform: row.platform,
+            createdAt: row.created_at,
+            retryUsed: row.retry_used ?? false,
+          })
+        )
+        setHistory(items)
       }
     } catch (error) {
       console.error('Failed to load history:', error)
@@ -148,7 +179,6 @@ export default function EditorPage() {
 
   const canGenerate = () => {
     if (!subscription) return false
-    if (subscription.tier === SubscriptionTier.LIFETIME_LAUNCH) return true
     if (!usage) return false
     return isUnlimited || usage.credits_remaining > 0
   }
@@ -167,13 +197,16 @@ export default function EditorPage() {
           creditsLimit: totalCredits || subscription?.credits_limit,
         }) ?? 'limit_reached'
       )
+      trackUpgradeClicked('editor_generate_blocked')
       return
     }
 
     setIsGenerating(true)
+    setEnhancedText('')
+    setCurrentUsageLogId(null)
+    setRetryUsed(false)
     setLoadingMessage(LOADING_MESSAGES[0])
-    
-    // Cycle through loading messages
+
     const messageInterval = setInterval(() => {
       setLoadingMessage(prev => {
         const currentIndex = LOADING_MESSAGES.indexOf(prev)
@@ -182,80 +215,97 @@ export default function EditorPage() {
       })
     }, 1500)
 
+    const handleEnhanceError = (errorCode: string | undefined, errorMessage: string, tier?: string) => {
+      switch (errorCode) {
+        case ApiErrorCode.USAGE_LIMIT_EXCEEDED:
+          setUpgradeVariant(
+            resolveUpgradeVariant({
+              isAuthenticated: true,
+              tier: tier ?? subscription?.tier,
+              creditsRemaining: 0,
+              creditsLimit: totalCredits || subscription?.credits_limit,
+            }) ?? 'limit_reached'
+          )
+          trackUpgradeClicked('editor_limit_reached')
+          break
+        case ApiErrorCode.UNAUTHORIZED:
+          toast.error('انتهت الجلسة', {
+            description: 'يرجى تسجيل الدخول مرة أخرى للمتابعة',
+            action: {
+              label: 'تسجيل الدخول',
+              onClick: () => window.location.href = '/login',
+            },
+          })
+          break
+        case ApiErrorCode.QUALITY_CHECK_FAILED:
+          toast.error('فشل فحص الجودة', {
+            description: 'لم يلبِ مخرجات الذكاء الاصطناعي معايير الجودة. حاول مرة أخرى.',
+          })
+          break
+        case ApiErrorCode.UNSUPPORTED_LANGUAGE:
+          toast.error('لغة المخرج غير مدعومة', {
+            description: 'اختر عربي خليجي أو فصيح أو إنجليزي',
+          })
+          break
+        case ApiErrorCode.RATE_LIMIT_EXCEEDED:
+          toast.error('طلبات كثيرة جداً', {
+            description: 'انتظر لحظة قبل المحاولة مرة أخرى',
+          })
+          break
+        default:
+          toast.error('فشل التحسين', {
+            description: errorMessage,
+          })
+      }
+    }
+
     try {
       const response = await fetch('/api/enhance', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'text/event-stream',
+        },
         body: JSON.stringify({
           text: originalText,
           tone,
           outputLanguage,
           platform,
           isEditorSession: true,
+          stream: true,
         }),
       })
 
-      const data = await response.json()
-      
-      if (data.success) {
-        setEnhancedText(data.data.enhancedText)
-        toast.success('تم تحسين النص بنجاح!', {
-          description: `تم استخدام ${data.data.tokensUsed || 0} رمزاً`
-        })
-        const newHistoryItem: HistoryItem = {
-          id: Date.now().toString(),
-          originalText,
-          enhancedText: data.data.enhancedText,
-          tone,
-          outputLanguage,
-          platform,
-          createdAt: new Date().toISOString(),
-        }
-        setHistory(prev => [newHistoryItem, ...prev])
-      } else {
-        // Handle specific error codes
-        const errorCode = data.error?.code
-        const errorMessage = data.error?.message || 'Enhancement failed'
-        
-        switch (errorCode) {
-          case 'USAGE_LIMIT_EXCEEDED':
-            setUpgradeVariant(
-              resolveUpgradeVariant({
-                isAuthenticated: true,
-                tier: data.error?.tier ?? subscription?.tier,
-                creditsRemaining: 0,
-                creditsLimit: totalCredits || subscription?.credits_limit,
-              }) ?? 'limit_reached'
-            )
-            break
-          case 'UNAUTHORIZED':
-            toast.error('انتهت الجلسة', {
-              description: 'يرجى تسجيل الدخول مرة أخرى للمتابعة',
-              action: {
-                label: 'تسجيل الدخول',
-                onClick: () => window.location.href = '/login'
-              }
-            })
-            break
-          case 'QUALITY_CHECK_FAILED':
-            toast.error('فشل فحص الجودة', {
-              description: 'لم يلبِ مخرجات الذكاء الاصطناعي معايير الجودة. حاول مرة أخرى.'
-            })
-            break
-          case 'UNSUPPORTED_LANGUAGE':
-            toast.error('لغة المخرج غير مدعومة', {
-              description: 'اختر عربي خليجي أو فصيح أو إنجليزي',
-            })
-            break
-          case 'RATE_LIMIT_EXCEEDED':
-            toast.error('طلبات كثيرة جداً', {
-              description: 'انتظر لحظة قبل المحاولة مرة أخرى'
-            })
-            break
-          default:
-            toast.error('فشل التحسين', {
-              description: errorMessage
-            })
+      let streamFailed = false
+
+      await consumeEnhanceSSE(response, {
+        onDelta: (chunk) => {
+          setEnhancedText((prev) => prev + chunk)
+        },
+        onDone: (data) => {
+          setEnhancedText(data.enhancedText)
+          if (data.usageLogId) {
+            setCurrentUsageLogId(data.usageLogId)
+          }
+          setRetryUsed(data.retryUsed ?? false)
+          trackTransformCompleted()
+          toast.success('تم تحسين النص بنجاح!', {
+            description: `تم استخدام ${data.tokensUsed || 0} رمزاً`,
+          })
+          void loadHistory()
+        },
+        onError: (error) => {
+          streamFailed = true
+          handleEnhanceError(error.code, error.message, error.tier)
+        },
+      })
+
+      if (!response.ok && !streamFailed) {
+        try {
+          const data = await response.clone().json()
+          handleEnhanceError(data.error?.code, data.error?.message ?? 'Enhancement failed', data.error?.tier)
+        } catch {
+          handleEnhanceError(undefined, response.statusText)
         }
       }
     } catch (error) {
@@ -269,9 +319,29 @@ export default function EditorPage() {
     }
   }
 
+  const handleShare = async (text: string) => {
+    if (!text.trim()) return
+    try {
+      if (navigator.share) {
+        await navigator.share({ text })
+        trackShareClicked()
+      } else {
+        await navigator.clipboard.writeText(text)
+        trackShareClicked()
+        toast.success('تم نسخ النص للمشاركة')
+      }
+    } catch (error) {
+      if (error instanceof Error && error.name === 'AbortError') return
+      toast.error('تعذرت المشاركة')
+    }
+  }
+
   const handleCopy = async (text: string, key: string) => {
     try {
       await navigator.clipboard.writeText(text)
+      if (key === 'enhanced') {
+        trackCopyClicked()
+      }
       setCopiedStates(prev => ({ ...prev, [key]: true }))
       toast.success('تم النسخ!')
       setTimeout(() => setCopiedStates(prev => ({ ...prev, [key]: false })), 2000)
@@ -281,13 +351,99 @@ export default function EditorPage() {
   }
 
   const loadHistoryItem = (item: HistoryItem) => {
-    // Handle both local history format and API format
-    setOriginalText(item.originalText || (item as any).input_text || '')
-    setEnhancedText(item.enhancedText || (item as any).output_text || '')
+    const apiItem = item as HistoryItem & {
+      input_text?: string
+      output_text?: string
+      output_language?: string
+      created_at?: string
+      retry_used?: boolean
+    }
+    setOriginalText(item.originalText || apiItem.input_text || '')
+    setEnhancedText(item.enhancedText || apiItem.output_text || '')
     setTone(item.tone || 'marketing')
-    setOutputLanguage(item.outputLanguage || (item as any).output_language || 'ar_gulf')
-    setPlatform(item.platform || (item as any).platform || 'store')
+    setOutputLanguage(item.outputLanguage || apiItem.output_language || 'ar_gulf')
+    setPlatform(item.platform || apiItem.platform || 'store')
+    setCurrentUsageLogId(item.id)
+    setRetryUsed(item.retryUsed ?? apiItem.retry_used ?? false)
     setShowHistory(false)
+  }
+
+  const canShowRetry =
+    Boolean(enhancedText) &&
+    Boolean(currentUsageLogId) &&
+    !retryUsed &&
+    !isGenerating &&
+    !isRetrying
+
+  const handleRetrySubmit = async (reason: RetryReasonValue, otherText?: string) => {
+    if (!currentUsageLogId || !originalText.trim()) return
+
+    const parentLogId = currentUsageLogId
+    setIsRetrying(true)
+    trackRetryUsed(getRetryReasonLabel(reason))
+
+    try {
+      const response = await fetch('/api/enhance/retry', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          parentLogId,
+          retryReason: reason,
+          retryReasonOther: otherText,
+          text: originalText,
+          tone,
+          outputLanguage,
+          platform,
+        }),
+      })
+
+      const data = await response.json()
+
+      if (data.success) {
+        setEnhancedText(data.data.enhancedText)
+        setRetryModalOpen(false)
+        setRetryUsed(false)
+        if (data.data.usageLogId) {
+          setCurrentUsageLogId(data.data.usageLogId)
+        }
+        toast.success('تمت إعادة التحسين مجاناً', {
+          description: 'لم يُخصم أي رصيد',
+        })
+        setHistory((prev) =>
+          prev.map((h) =>
+            h.id === parentLogId ? { ...h, retryUsed: true } : h
+          )
+        )
+        const newHistoryItem: HistoryItem = {
+          id: data.data.usageLogId ?? Date.now().toString(),
+          originalText,
+          enhancedText: data.data.enhancedText,
+          tone,
+          outputLanguage,
+          platform,
+          createdAt: new Date().toISOString(),
+          retryUsed: false,
+        }
+        setHistory((prev) => [newHistoryItem, ...prev])
+      } else {
+        const errorCode = data.error?.code
+        if (errorCode === 'RETRY_ALREADY_USED') {
+          setRetryUsed(true)
+          setRetryModalOpen(false)
+          toast.error('تم استخدام إعادة المحاولة مسبقاً')
+        } else {
+          toast.error('فشلت إعادة المحاولة', {
+            description: data.error?.message || 'حاول مرة أخرى',
+          })
+        }
+      }
+    } catch {
+      toast.error('خطأ في الاتصال', {
+        description: 'تحقق من اتصالك بالإنترنت وحاول مرة أخرى',
+      })
+    } finally {
+      setIsRetrying(false)
+    }
   }
 
   return (
@@ -376,26 +532,27 @@ export default function EditorPage() {
         {/* Original Text */}
         <Card className="border-2 border-gray-300 dark:border-border shadow-sm bg-white dark:bg-card">
           <CardContent className="p-3">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-sm font-medium">النص الأصلي</span>
-              <div className="flex items-center gap-2">
-                <span className="text-xs text-muted-foreground">{originalText.length} حرف</span>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-6 w-6"
-                  onClick={() => handleCopy(originalText, 'original')}
-                  disabled={!originalText}
-                >
-                  {copiedStates.original ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
-                </Button>
-              </div>
-            </div>
-            <Textarea
-              placeholder="اكتب أو الصق النص، أو استخدم إضافة المتصفح لتحديد النص…"
+            <EnhanceTextInput
+              variant="editor"
               value={originalText}
-              onChange={(e) => setOriginalText(e.target.value)}
-              className="min-h-[280px] resize-none text-sm border-2 border-gray-300 dark:border-border bg-gray-50/30 dark:bg-background focus:bg-white dark:focus:bg-background"
+              onChange={setOriginalText}
+              onSubmit={handleGenerate}
+              expandTitle="النص الأصلي"
+              headerSlot={
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-medium">النص الأصلي</span>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-9 w-9 sm:h-8 sm:w-8"
+                    onClick={() => handleCopy(originalText, 'original')}
+                    disabled={!originalText}
+                    aria-label="نسخ النص الأصلي"
+                  >
+                    {copiedStates.original ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+                  </Button>
+                </div>
+              }
             />
           </CardContent>
         </Card>
@@ -403,38 +560,60 @@ export default function EditorPage() {
         {/* Enhanced Text */}
         <Card className="border-2 border-gray-300 dark:border-border shadow-sm relative bg-white dark:bg-card">
           <CardContent className="p-3">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-sm font-medium">النص المحسّن</span>
-              <div className="flex items-center gap-2">
-                <span className="text-xs text-muted-foreground">{enhancedText.length} حرف</span>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-6 w-6"
-                  onClick={() => handleCopy(enhancedText, 'enhanced')}
-                  disabled={!enhancedText}
-                >
-                  {copiedStates.enhanced ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
-                </Button>
-              </div>
-            </div>
-            <div className="relative">
-              <Textarea
-                placeholder="سيظهر النص المحسّن هنا…"
-                value={enhancedText}
-                onChange={(e) => setEnhancedText(e.target.value)}
-                className={`min-h-[280px] resize-none text-sm border-2 border-gray-300 dark:border-border bg-gray-50/30 dark:bg-background focus:bg-white dark:focus:bg-background ${!canGenerate() && !enhancedText ? 'opacity-50' : ''}`}
-              />
-              {(!canGenerate() || upgradeVariant) && !enhancedText && (
-                <ConnectedUpgradePrompt
-                  variant={upgradeVariant}
-                  layout="overlay"
-                  creditsUsed={usage?.credits_used}
-                  creditsLimit={totalCredits || undefined}
-                  remainingCredits={usage?.credits_remaining}
-                />
-              )}
-            </div>
+            <EnhanceTextOutput
+              value={enhancedText}
+              onChange={setEnhancedText}
+              expandTitle="النص المحسّن"
+              textareaClassName={!canGenerate() && !enhancedText ? 'opacity-50' : ''}
+              headerSlot={
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="text-sm font-medium">النص المحسّن</span>
+                  {canShowRetry && (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      className="h-8 text-xs"
+                      onClick={() => setRetryModalOpen(true)}
+                    >
+                      <RefreshCw className="me-1 h-3.5 w-3.5" />
+                      أعد المحاولة
+                    </Button>
+                  )}
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-9 w-9 sm:h-8 sm:w-8"
+                    onClick={() => void handleShare(enhancedText)}
+                    disabled={!enhancedText}
+                    aria-label="مشاركة النص المحسّن"
+                  >
+                    <Share2 className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-9 w-9 sm:h-8 sm:w-8"
+                    onClick={() => handleCopy(enhancedText, 'enhanced')}
+                    disabled={!enhancedText}
+                    aria-label="نسخ النص المحسّن"
+                  >
+                    {copiedStates.enhanced ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+                  </Button>
+                </div>
+              }
+              overlay={
+                (!canGenerate() || upgradeVariant) && !enhancedText ? (
+                  <ConnectedUpgradePrompt
+                    variant={upgradeVariant}
+                    layout="overlay"
+                    creditsUsed={usage?.credits_used}
+                    creditsLimit={totalCredits || undefined}
+                    remainingCredits={usage?.credits_remaining}
+                  />
+                ) : undefined
+              }
+            />
           </CardContent>
         </Card>
       </div>
@@ -461,7 +640,12 @@ export default function EditorPage() {
           variant="outline"
           size="icon"
           className="shrink-0"
-          onClick={() => { setOriginalText(''); setEnhancedText('') }}
+          onClick={() => {
+            setOriginalText('')
+            setEnhancedText('')
+            setCurrentUsageLogId(null)
+            setRetryUsed(false)
+          }}
           disabled={!originalText && !enhancedText}
           aria-label="مسح"
         >
@@ -489,13 +673,25 @@ export default function EditorPage() {
         </Button>
         <Button
           variant="outline"
-          onClick={() => { setOriginalText(''); setEnhancedText('') }}
+          onClick={() => {
+            setOriginalText('')
+            setEnhancedText('')
+            setCurrentUsageLogId(null)
+            setRetryUsed(false)
+          }}
           disabled={!originalText && !enhancedText}
         >
           <RotateCcw className="me-2 h-4 w-4" />
           مسح
         </Button>
       </div>
+
+      <RetryFeedbackModal
+        open={retryModalOpen}
+        onOpenChange={setRetryModalOpen}
+        onSubmit={handleRetrySubmit}
+        isSubmitting={isRetrying}
+      />
 
       {/* History - Collapsible */}
       <Card className="border-2 border-gray-300 dark:border-border shadow-sm overflow-hidden bg-white dark:bg-card">
@@ -527,16 +723,19 @@ export default function EditorPage() {
               ) : (
                 <div className="divide-y">
                   {history.map((item) => {
-                    // Handle both local history format and API format
-                    const originalText = item.originalText || (item as any).input_text || ''
-                    const tone = item.tone || 'marketing'
-                    const createdAt = item.createdAt || (item as any).created_at
-                    const outputLang = item.outputLanguage || (item as any).output_language || 'ar_gulf'
-                    const langLabel = OUTPUT_LANGUAGES.find(l => l.value === outputLang)?.label || outputLang
-                    const platformLabel =
-                      PLATFORM_OPTIONS.find((p) => p.value === (item.platform || (item as any).platform))
-                        ?.label || 'متجر'
-                    
+                    const row = item as HistoryItem & {
+                      input_text?: string
+                      output_language?: string
+                      created_at?: string
+                      platform?: string
+                    }
+                    const previewText = row.originalText || row.input_text || ''
+                    const createdAt = row.createdAt || row.created_at
+                    const outputLang =
+                      row.outputLanguage || row.output_language || 'ar_gulf'
+                    const toneValue = row.tone || 'marketing'
+                    const platformValue = row.platform || 'store'
+
                     return (
                       <div
                         key={item.id}
@@ -546,17 +745,25 @@ export default function EditorPage() {
                         <div className="flex items-start justify-between gap-4">
                           <div className="flex-1 min-w-0">
                             <div className="text-xs text-muted-foreground mb-1">
-                              {createdAt ? new Date(createdAt).toLocaleString() : 'Unknown date'}
+                              {createdAt
+                                ? new Date(createdAt).toLocaleString('ar-SA')
+                                : '—'}
                             </div>
                             <div className="text-sm truncate">
-                              {originalText.substring(0, 80)}
-                              {originalText.length > 80 && '...'}
+                              {previewText.substring(0, 80)}
+                              {previewText.length > 80 && '...'}
                             </div>
                           </div>
-                          <div className="flex gap-1 flex-shrink-0 flex-wrap justify-end">
-                            <Badge variant="outline" className="text-xs">{tone}</Badge>
-                            <Badge variant="outline" className="text-xs">{langLabel}</Badge>
-                            <Badge variant="outline" className="text-xs">{platformLabel}</Badge>
+                          <div className="flex flex-shrink-0 flex-wrap justify-end gap-1">
+                            <Badge variant="outline" className="text-xs" title="لغة المخرج">
+                              {labelForOutputLanguage(outputLang)}
+                            </Badge>
+                            <Badge variant="outline" className="text-xs" title="النبرة">
+                              {labelForTone(toneValue)}
+                            </Badge>
+                            <Badge variant="outline" className="text-xs" title="المنصة">
+                              {labelForPlatform(platformValue)}
+                            </Badge>
                           </div>
                         </div>
                       </div>

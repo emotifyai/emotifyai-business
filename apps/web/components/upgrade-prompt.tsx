@@ -21,6 +21,7 @@ import {
   resolveUpgradeVariant,
 } from '@/lib/upgrade-prompt/resolve-variant'
 import type { SubscriptionTier } from '@/lib/subscription/types'
+import { trackUpgradeClicked } from '@/lib/analytics/ga'
 
 export type { UpgradePromptVariant }
 
@@ -85,9 +86,7 @@ export function ConnectedUpgradePrompt({
   const checkoutTier = getPrimaryCheckoutTier(resolvedVariant) as SubscriptionTier
 
   const signupHref =
-    resolvedVariant === 'guest_exhausted'
-      ? '/signup?plan=trial'
-      : '/signup'
+    resolvedVariant === 'guest_exhausted' ? '/signup?from=guest' : '/signup'
 
   const pricingHref = '/pricing'
 
@@ -96,8 +95,9 @@ export function ConnectedUpgradePrompt({
       <Link
         href={signupHref}
         className="inline-flex w-full min-h-11 items-center justify-center rounded-md bg-[#36ad8e] px-4 text-sm font-semibold text-[#0f121d] hover:bg-[#36ad8e]/90"
+        onClick={() => trackUpgradeClicked(`upgrade_prompt_${resolvedVariant}`)}
       >
-        سجّل مجاناً
+        سجّل للحصول على ٥ إضافية
       </Link>
     ) : (
       <PricingButton
@@ -124,7 +124,10 @@ export function ConnectedUpgradePrompt({
     <Link
       href={pricingHref}
       className="inline-flex w-full min-h-10 items-center justify-center gap-1 rounded-md text-sm text-white/80 transition-colors hover:bg-white/5 hover:text-white"
-      onClick={onDismiss}
+      onClick={() => {
+        trackUpgradeClicked(`upgrade_prompt_secondary_${resolvedVariant}`)
+        onDismiss?.()
+      }}
     >
       {resolvedVariant === 'guest_exhausted' ? 'عرض الأسعار' : 'قارن الخطط'}
     </Link>

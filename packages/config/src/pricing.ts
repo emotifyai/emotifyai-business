@@ -1,9 +1,18 @@
 /**
  * EmotifyAI pricing — single source of truth
  *
- * Tier count: 10 subscription tiers in DB + 2 marketing-only offers on /pricing.
- * Checkout tiers: 9 paid (all except trial/free). Active pricing page: Pro + bundles (+ free offers).
+ * Free funnel: 5 guest attempts → signup for 5 more → paid monthly/annual + bundles.
+ * No two-week trial. Lifetime launch offer retired (legacy DB rows may remain).
  */
+
+/** Anonymous attempts before email/signup prompt */
+export const GUEST_FREE_ATTEMPTS = 5
+
+/** Additional attempts granted when the user creates an account */
+export const SIGNUP_BONUS_ATTEMPTS = 5
+
+/** @deprecated Two-week / 50-credit trial — disabled for new users */
+export const FREE_TRIAL_ENABLED = false
 
 /** DB / Lemon Squeezy `tier` values */
 export const SUBSCRIPTION_TIER_IDS = [
@@ -27,11 +36,9 @@ export type BillingKind =
   | 'subscription_monthly'
   | 'subscription_annual'
   | 'one_time'
-  | 'lifetime'
 
 /** Lemon Squeezy variant ID env var name (value read at runtime in apps/web) */
 export type LemonVariantEnvKey =
-  | 'LEMONSQUEEZY_LIFETIME_LAUNCH_VARIANT_ID'
   | 'LEMONSQUEEZY_BASIC_MONTHLY_VARIANT_ID'
   | 'LEMONSQUEEZY_PRO_MONTHLY_VARIANT_ID'
   | 'LEMONSQUEEZY_BUSINESS_MONTHLY_VARIANT_ID'
@@ -42,31 +49,21 @@ export type LemonVariantEnvKey =
   | 'LEMONSQUEEZY_LARGE_BUNDLE_VARIANT_ID'
 
 export interface TierDefinition {
-  /** DB enum value / checkout custom data `tier` */
   id: SubscriptionTierId
-  /** Conversions (credits) per period or one-time pool */
   credits: number
-  /** USD charged in Lemon Squeezy */
   priceUsd: number
-  /** Approx SAR shown on marketing (÷3.75); null = free */
   priceSarDisplay: number | null
   billing: BillingKind
-  /** Requires active Lemon Squeezy purchase to access */
   requiresPaidCheckout: boolean
-  /** Must have any paid subscription (excludes guest) */
   requiresSubscription: boolean
-  /** Higher wins when multiple active rows exist */
   priority: number
   labelAr: string
   labelEn: string
   lemonVariantEnvKey?: LemonVariantEnvKey
-  /** Pro/lifetime: credits reset each billing month */
   creditsResetMonthly: boolean
-  /** Bundle credits do not expire by date */
   creditsNeverExpire: boolean
-  /** Trial/free validity; null = no expiry rule in app layer */
   validityDays: number | null
-  /** lifetime_launch cap */
+  /** @deprecated Lifetime offer retired */
   maxLifetimeSlots?: number
   rateLimitRpm: number
   features: {
@@ -76,9 +73,8 @@ export interface TierDefinition {
   }
 }
 
-/** Paid tiers available via POST /api/checkout */
+/** Paid tiers available via POST /api/checkout (no lifetime) */
 export const CHECKOUT_TIER_IDS = [
-  'lifetime_launch',
   'basic_monthly',
   'pro_monthly',
   'business_monthly',
@@ -94,18 +90,18 @@ export type CheckoutTierId = (typeof CHECKOUT_TIER_IDS)[number]
 export const TIER_DEFINITIONS: Record<SubscriptionTierId, TierDefinition> = {
   trial: {
     id: 'trial',
-    credits: 50,
+    credits: SIGNUP_BONUS_ATTEMPTS,
     priceUsd: 0,
     priceSarDisplay: null,
     billing: 'none',
     requiresPaidCheckout: false,
     requiresSubscription: false,
     priority: 2,
-    labelAr: 'تجربة',
-    labelEn: 'Registered Trial',
+    labelAr: 'مجاني (قديم)',
+    labelEn: 'Legacy trial',
     creditsResetMonthly: false,
     creditsNeverExpire: false,
-    validityDays: 14,
+    validityDays: null,
     rateLimitRpm: 5,
     features: {
       advancedFeatures: false,
@@ -115,7 +111,7 @@ export const TIER_DEFINITIONS: Record<SubscriptionTierId, TierDefinition> = {
   },
   free: {
     id: 'free',
-    credits: 10,
+    credits: SIGNUP_BONUS_ATTEMPTS,
     priceUsd: 0,
     priceSarDisplay: null,
     billing: 'none',
@@ -126,7 +122,7 @@ export const TIER_DEFINITIONS: Record<SubscriptionTierId, TierDefinition> = {
     labelEn: 'Free',
     creditsResetMonthly: false,
     creditsNeverExpire: false,
-    validityDays: 10,
+    validityDays: null,
     rateLimitRpm: 5,
     features: {
       advancedFeatures: false,
@@ -139,17 +135,15 @@ export const TIER_DEFINITIONS: Record<SubscriptionTierId, TierDefinition> = {
     credits: 1000,
     priceUsd: 97,
     priceSarDisplay: null,
-    billing: 'lifetime',
-    requiresPaidCheckout: true,
-    requiresSubscription: true,
-    priority: 10,
-    labelAr: 'مدى الحياة',
-    labelEn: 'Lifetime Launch Offer',
-    lemonVariantEnvKey: 'LEMONSQUEEZY_LIFETIME_LAUNCH_VARIANT_ID',
+    billing: 'none',
+    requiresPaidCheckout: false,
+    requiresSubscription: false,
+    priority: 0,
+    labelAr: 'مدى الحياة (متوقف)',
+    labelEn: 'Lifetime (retired)',
     creditsResetMonthly: true,
     creditsNeverExpire: false,
     validityDays: null,
-    maxLifetimeSlots: 500,
     rateLimitRpm: 20,
     features: {
       advancedFeatures: true,
@@ -335,45 +329,37 @@ export const TIER_DEFINITIONS: Record<SubscriptionTierId, TierDefinition> = {
   },
 }
 
-/** Guest / instant trial (no account) — localStorage only */
+/** Guest usage — localStorage only */
 export const GUEST_PRICING = {
-  creditLimit: 10,
+  creditLimit: GUEST_FREE_ATTEMPTS,
   storageKey: 'emotifyai_guest_conversions',
   requiresSubscription: false,
 } as const
 
-/**
- * Endpoint-specific defaults (preserves legacy behavior where paths differ).
- * Prefer TIER_DEFINITIONS for new code.
- */
 export const RUNTIME_SUBSCRIPTION_DEFAULTS = {
-  /** GET /api/subscription when user has no row */
   apiSubscriptionEmpty: {
     tier: 'free' as const,
     credits: TIER_DEFINITIONS.free.credits,
-    validityDays: TIER_DEFINITIONS.free.validityDays ?? 10,
+    validityDays: TIER_DEFINITIONS.free.validityDays,
   },
-  /** GET /api/extension/subscription when no row */
   apiExtensionEmpty: {
-    tier: 'trial' as const,
-    credits: 10,
-    validityDays: 30,
+    tier: 'free' as const,
+    credits: SIGNUP_BONUS_ATTEMPTS,
+    validityDays: null as number | null,
   },
-  /** enhance route inserts trial row */
-  enhanceTrialInsert: {
-    tier: 'trial' as const,
-    credits: 10,
-    validityDays: 10,
+  /** First authenticated enhance when user has no subscription row */
+  enhanceFreeInsert: {
+    tier: 'free' as const,
+    credits: SIGNUP_BONUS_ATTEMPTS,
+    validityDays: null as number | null,
   },
-  /** validation.createFreeSubscription */
   createFreeSubscription: {
-    credits: 50,
-    validityDays: 10,
+    credits: SIGNUP_BONUS_ATTEMPTS,
+    validityDays: null as number | null,
   },
-  /** auth/callback new user; credits & days overridden by TRIAL_ENHANCEMENT_LIMIT env when set */
   authCallbackNewUser: {
-    credits: 10,
-    validityDays: 10,
+    credits: SIGNUP_BONUS_ATTEMPTS,
+    validityDays: null as number | null,
   },
 } as const
 
@@ -384,7 +370,7 @@ export const PRICING_CURRENCY_NOTE =
 
 export type PricingOfferId =
   | 'instant_trial'
-  | 'registered_trial'
+  | 'registered_signup_bonus'
   | 'pro_monthly'
   | 'pro_annual'
   | 'small_bundle'
@@ -408,7 +394,7 @@ export interface PricingPlanRow {
 }
 
 export const PRICING_SECTIONS: { id: PricingSection; title: string; subtitle?: string }[] = [
-  { id: 'free', title: 'ابدأ مجاناً', subtitle: 'جرّب التحويلات بدون التزام' },
+  { id: 'free', title: 'ابدأ مجاناً', subtitle: '٥ تحويلات للضيف، ثم ٥ إضافية بعد التسجيل' },
   {
     id: 'pro',
     title: 'Pro',
@@ -423,17 +409,17 @@ export const PRICING_DISPLAY_PLANS: PricingPlanRow[] = [
     section: 'free',
     name: 'تجربة فورية',
     sarPrice: 'مجاني',
-    details: `${GUEST_PRICING.creditLimit} تحويلات — بدون تسجيل`,
+    details: `${GUEST_FREE_ATTEMPTS} تحويلات — بدون تسجيل`,
     features: ['بدون حساب', 'مناسبة للتجربة السريعة', 'جميع اللغات المدعومة'],
     cta: 'جرّب الآن',
   },
   {
-    id: 'registered_trial',
+    id: 'registered_signup_bonus',
     section: 'free',
-    name: 'تجربة مسجلة',
+    name: 'بعد التسجيل',
     sarPrice: 'مجاني',
-    details: `${TIER_DEFINITIONS.trial.credits} تحويل — ${TIER_DEFINITIONS.trial.validityDays} يوماً`,
-    features: ['حساب مجاني', 'حفظ السجل في لوحة التحكم', 'جميع أوضاع التحسين'],
+    details: `${SIGNUP_BONUS_ATTEMPTS} تحويلات إضافية — حفظ السجل ومشاركة النتائج`,
+    features: ['حساب مجاني بالبريد', 'لوحة تحكم وسجل التحويلات', 'جميع أوضاع التحسين'],
     cta: 'سجّل مجاناً',
   },
   {
@@ -497,10 +483,9 @@ export const PRICING_DISPLAY_PLANS: PricingPlanRow[] = [
   },
 ]
 
-/** Upgrade prompt default limits keyed by variant */
 export const UPGRADE_PROMPT_CREDIT_DEFAULTS = {
-  guest_exhausted: GUEST_PRICING.creditLimit,
-  trial_exhausted: TIER_DEFINITIONS.trial.credits,
+  guest_exhausted: GUEST_FREE_ATTEMPTS,
+  trial_exhausted: TIER_DEFINITIONS.free.credits,
   pro_monthly_exhausted: TIER_DEFINITIONS.pro_monthly.credits,
   bundle_exhausted: TIER_DEFINITIONS.small_bundle.credits,
 } as const
@@ -514,7 +499,7 @@ export function getTierDefinition(tier: SubscriptionTierId): TierDefinition {
 }
 
 export function getCreditsForTier(tier: SubscriptionTierId): number {
-  return TIER_DEFINITIONS[tier]?.credits ?? GUEST_PRICING.creditLimit
+  return TIER_DEFINITIONS[tier]?.credits ?? GUEST_FREE_ATTEMPTS
 }
 
 export function isBundleTier(tier: SubscriptionTierId): boolean {
@@ -553,4 +538,8 @@ export function getLemonVariantEnvKey(
   tier: SubscriptionTierId
 ): LemonVariantEnvKey | undefined {
   return TIER_DEFINITIONS[tier].lemonVariantEnvKey
+}
+
+export function isLifetimeTier(tier: string): boolean {
+  return tier === 'lifetime_launch'
 }

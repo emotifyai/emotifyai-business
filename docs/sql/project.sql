@@ -1,6 +1,14 @@
 -- =============================================================================
 -- FULL SCHEMA - CLEAN VERSION
 -- =============================================================================
+--
+-- Migration notes (2026-06): Free funnel is 5 guest + 5 signup bonus (see packages/config/src/pricing.ts).
+--   - New subscriptions: status 'active', tier 'free', credits_limit 5, validity_days NULL.
+--   - Two-week / 50-credit trial and lifetime_launch checkout are retired (enum values kept for legacy rows).
+--   - lifetime_subscribers table retained for historical data; new purchases must not reserve slots.
+--   ALTER TABLE subscriptions ALTER COLUMN credits_limit SET DEFAULT 5;
+--   ALTER TABLE subscriptions ALTER COLUMN status SET DEFAULT 'active';
+--
 
 -- Extensions
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
@@ -61,7 +69,7 @@ CREATE TABLE public.subscriptions (
     lemon_squeezy_id TEXT NOT NULL UNIQUE,
 
     -- Subscription details
-    status subscription_status NOT NULL DEFAULT 'trial',
+    status subscription_status NOT NULL DEFAULT 'active',
     tier subscription_tier NOT NULL DEFAULT 'free',
     tier_name TEXT,
 
@@ -79,7 +87,7 @@ CREATE TABLE public.subscriptions (
     cache_enabled BOOLEAN DEFAULT true,
 
     -- Credit-based system
-    credits_limit INTEGER NOT NULL DEFAULT 10,
+    credits_limit INTEGER NOT NULL DEFAULT 5,
     credits_used INTEGER NOT NULL DEFAULT 0,
     credits_reset_date TIMESTAMPTZ,
     validity_days INTEGER,
@@ -121,9 +129,25 @@ CREATE TABLE public.usage_logs (
     platform TEXT,
     detected_route TEXT,
 
+    -- Free retry (one per transformation)
+    retry_used BOOLEAN NOT NULL DEFAULT false,
+    is_retry BOOLEAN NOT NULL DEFAULT false,
+
     CONSTRAINT usage_logs_tokens_check CHECK (tokens_used >= 0),
-    CONSTRAINT usage_logs_credits_check CHECK (credits_consumed > 0),
+    CONSTRAINT usage_logs_credits_check CHECK (credits_consumed >= 0),
     CONSTRAINT usage_logs_text_check CHECK (length(input_text) > 0)
+);
+
+-- Retry feedback: one row per original usage_log (enforced by UNIQUE)
+CREATE TABLE public.retries (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    user_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
+    usage_log_id UUID NOT NULL REFERENCES public.usage_logs(id) ON DELETE CASCADE,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    retry_reason TEXT NOT NULL,
+    retry_reason_other TEXT,
+    CONSTRAINT retries_reason_check CHECK (length(retry_reason) > 0),
+    CONSTRAINT retries_one_per_log UNIQUE (usage_log_id)
 );
 
 CREATE TABLE public.lifetime_subscribers (
@@ -161,6 +185,9 @@ CREATE INDEX usage_logs_user_id_idx ON public.usage_logs(user_id);
 CREATE INDEX usage_logs_created_at_idx ON public.usage_logs(created_at DESC);
 CREATE INDEX usage_logs_editor_history_idx ON public.usage_logs(user_id, created_at DESC)
     WHERE is_editor_session = true;
+
+CREATE INDEX retries_user_id_idx ON public.retries(user_id);
+CREATE INDEX retries_usage_log_id_idx ON public.retries(usage_log_id);
 
 -- =============================================================================
 -- FUNCTIONS
@@ -272,7 +299,7 @@ BEGIN
     END LOOP;
 
     IF NOT has_active THEN
-        RETURN QUERY SELECT 'free'::TEXT, 10, 0, 10, NULL::TIMESTAMPTZ, 10, TRUE, FALSE;
+        RETURN QUERY SELECT 'free'::TEXT, 5, 0, 5, NULL::TIMESTAMPTZ, NULL::INTEGER, TRUE, FALSE;
         RETURN;
     END IF;
 
@@ -447,8 +474,10 @@ RETURNS TABLE (
     language TEXT,
     output_language TEXT,
     tone TEXT,
+    platform TEXT,
     editor_session_id UUID,
-    tokens_used INTEGER
+    tokens_used INTEGER,
+    retry_used BOOLEAN
 ) AS $$
 BEGIN
     RETURN QUERY
@@ -460,8 +489,10 @@ BEGIN
         ul.language,
         ul.output_language,
         ul.tone,
+        ul.platform,
         ul.editor_session_id,
-        ul.tokens_used
+        ul.tokens_used,
+        ul.retry_used
     FROM public.usage_logs ul
     WHERE ul.user_id = user_uuid
       AND ul.is_editor_session = true
@@ -546,7 +577,21 @@ CREATE POLICY "Users can view own usage logs" ON public.usage_logs
 CREATE POLICY "Users can insert own usage logs" ON public.usage_logs
     FOR INSERT WITH CHECK (auth.uid() = user_id);
 
+CREATE POLICY "Users can update own usage logs" ON public.usage_logs
+    FOR UPDATE USING (auth.uid() = user_id)
+    WITH CHECK (auth.uid() = user_id);
+
 CREATE POLICY "Service role can manage usage logs" ON public.usage_logs
+    FOR ALL USING (auth.role() = 'service_role');
+
+-- Retries (feedback)
+CREATE POLICY "Users can view own retries" ON public.retries
+    FOR SELECT USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can insert own retries" ON public.retries
+    FOR INSERT WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "Service role can manage retries" ON public.retries
     FOR ALL USING (auth.role() = 'service_role');
 
 -- Lifetime subscribers
@@ -578,3 +623,13 @@ GRANT EXECUTE ON FUNCTION public.get_lifetime_slot_info() TO authenticated, anon
 GRANT EXECUTE ON FUNCTION public.reserve_lifetime_subscriber_slot(UUID) TO authenticated, service_role;
 GRANT EXECUTE ON FUNCTION public.get_user_editor_history(UUID) TO authenticated;
 GRANT EXECUTE ON FUNCTION public.cleanup_old_editor_history() TO service_role;
+
+-- =============================================================================
+-- MIGRATION (existing databases) — run once if tables already exist
+-- =============================================================================
+-- ALTER TABLE public.usage_logs ADD COLUMN IF NOT EXISTS retry_used BOOLEAN NOT NULL DEFAULT false;
+-- ALTER TABLE public.usage_logs ADD COLUMN IF NOT EXISTS is_retry BOOLEAN NOT NULL DEFAULT false;
+-- ALTER TABLE public.usage_logs DROP CONSTRAINT IF EXISTS usage_logs_credits_check;
+-- ALTER TABLE public.usage_logs ADD CONSTRAINT usage_logs_credits_check CHECK (credits_consumed >= 0);
+-- CREATE TABLE IF NOT EXISTS public.retries (...); — see CREATE TABLE above
+-- Recreate get_user_editor_history after column changes (see function definition above).

@@ -44,19 +44,21 @@ export async function GET(request: NextRequest) {
         // If no active subscriptions found, return default free plan
         if (!subscriptions || subscriptions.length === 0) {
             const empty = RUNTIME_SUBSCRIPTION_DEFAULTS.apiSubscriptionEmpty
-            const validityMs = (empty.validityDays ?? 10) * 24 * 60 * 60 * 1000
+            const periodEnd = empty.validityDays
+                ? new Date(Date.now() + empty.validityDays * 24 * 60 * 60 * 1000).toISOString()
+                : null
             return NextResponse.json({
                 success: true,
                 data: {
                     tier: SubscriptionTier.FREE,
-                    status: SubscriptionStatus.TRIAL,
+                    status: SubscriptionStatus.ACTIVE,
                     credits_limit: empty.credits,
                     credits_used: 0,
                     credits_remaining: empty.credits,
                     credits_reset_date: null,
                     validity_days: empty.validityDays,
-                    tier_name: 'تجربة مجانية',
-                    current_period_end: new Date(Date.now() + validityMs).toISOString(),
+                    tier_name: 'مجاني',
+                    current_period_end: periodEnd,
                 },
             })
         }

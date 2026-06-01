@@ -3,19 +3,19 @@ import type { UpgradePromptContent, UpgradePromptVariant } from './upgrade-promp
 
 export const UPGRADE_PROMPT_CONTENT: Record<UpgradePromptVariant, UpgradePromptContent> = {
   guest_exhausted: {
-    headline: 'استخدمت تحويلاتك العشرة المجانية',
+    headline: 'استخدمت تحويلاتك المجانية الخمس',
     subtext:
-      'سجّل مجاناً للحصول على ٥٠ تحويل إضافية خلال ١٤ يوماً — بدون بطاقة ائتمان. استمر بتحسين نصوصك باحترافية.',
-    primaryCta: 'سجّل مجاناً',
+      'سجّل بالبريد مجاناً للحصول على ٥ تحويلات إضافية — مع حفظ السجل ومشاركة النتائج. بدون بطاقة ائتمان.',
+    primaryCta: 'سجّل للحصول على ٥ إضافية',
     secondaryCta: 'عرض الأسعار',
     badge: 'ضيف',
     showProgress: true,
     defaultLimit: UPGRADE_PROMPT_CREDIT_DEFAULTS.guest_exhausted,
   },
   trial_exhausted: {
-    headline: 'انتهت تجربتك المجانية',
+    headline: 'انتهى رصيدك المجاني',
     subtext:
-      'اشترك في Pro للحصول على ٣٠٠ تحويل شهرياً — إعادة تعيين تلقائية كل شهر. جاهز للعمل اليومي على نصوصك.',
+      'استنفدت تحويلاتك بعد التسجيل. اشترك في Pro للحصول على ٣٠٠ تحويل شهرياً — إعادة تعيين تلقائية كل شهر.',
     primaryCta: 'اشترك Pro شهري',
     secondaryCta: 'قارن الخطط',
     badge: 'تجربة',

@@ -1,5 +1,6 @@
 import type { User, Subscription, UsageStats } from '@/types';
 import { browser } from 'wxt/browser';
+import { UserAvatar } from '@/components/UserAvatar';
 
 interface DashboardProps {
     user: User;
@@ -24,14 +25,14 @@ function Dashboard({ user, subscription, usage, onLogout, onOpenSettings }: Dash
             {/* Header */}
             <div className="flex justify-between items-start mb-6">
                 <div className="flex gap-3 items-center">
-                    <div className="w-12 h-12 rounded-full overflow-hidden">
-                        {user.avatarUrl ? (
-                            <img src={user.avatarUrl} alt={user.name} />
-                        ) : (
-                            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground text-xl font-bold">
-                                {user.name.charAt(0).toUpperCase()}
-                            </div>
-                        )}
+                    <div className="size-12 shrink-0 overflow-hidden rounded-full">
+                        <UserAvatar
+                            avatarUrl={user.avatarUrl}
+                            seed={user.id || user.email}
+                            alt={user.name}
+                            size="lg"
+                            className="size-full"
+                        />
                     </div>
                     <div className="flex-1">
                         <h2 className="text-lg font-semibold m-0 text-foreground">{user.name}</h2>

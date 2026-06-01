@@ -18,10 +18,12 @@
     "deploy:netlify-env": "node scripts/deploy-netlify-env.js"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.100.0",
     "@emotifyai/config": "workspace:*",
     "@emotifyai/ui": "workspace:*",
-    "@anthropic-ai/sdk": "^0.100.0",
     "@lemonsqueezy/lemonsqueezy.js": "^4.0.0",
+    "@netlify/plugin-nextjs": "^5.15.11",
+    "@next/third-parties": "16.2.6",
     "@supabase/ssr": "^0.10.3",
     "@supabase/supabase-js": "^2.106.2",
     "@t3-oss/env-nextjs": "^0.13.11",
@@ -34,8 +36,7 @@
     "react": "catalog:",
     "react-dom": "catalog:",
     "recharts": "^3.8.1",
-    "zod": "catalog:",
-    "@netlify/plugin-nextjs": "^5.15.11"
+    "zod": "catalog:"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.1.18",

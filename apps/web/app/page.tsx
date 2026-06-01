@@ -75,7 +75,7 @@ export default async function Home() {
               <CardDescription className="text-base">
                 {isAuthenticated
                   ? 'ادخل لوحة التحكم لإدارة اشتراكك ومراجعة الاستخدام.'
-                  : 'ابدأ بـ ١٠ تحويلات مجانية — بدون بطاقة ائتمان.'}
+                  : 'ابدأ بـ ٥ تحويلات مجانية — ثم ٥ إضافية بعد التسجيل. بدون بطاقة.'}
               </CardDescription>
               <Button size="lg" variant="glow" className="mt-4 w-full sm:mx-auto sm:w-auto" asChild>
                 <Link href={isAuthenticated ? '/dashboard' : '/signup'}>

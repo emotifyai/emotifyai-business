@@ -35,7 +35,7 @@ export function PricingPlanAction({
           <Link href="/">{plan.cta}</Link>
         </Button>
       )
-    case 'registered_trial':
+    case 'registered_signup_bonus':
       return (
         <Button className={className} variant="outline" asChild>
           <Link href="/signup">{plan.cta}</Link>

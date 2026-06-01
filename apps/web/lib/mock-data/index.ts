@@ -302,6 +302,8 @@ export const mockUsageLogs: UsageLog[] = [
         output_language: null,
         platform: null,
         detected_route: null,
+        retry_used: false,
+        is_retry: false,
     },
     {
         id: 'log-2',
@@ -323,6 +325,8 @@ export const mockUsageLogs: UsageLog[] = [
         output_language: null,
         platform: null,
         detected_route: null,
+        retry_used: false,
+        is_retry: false,
     },
     {
         id: 'log-3',
@@ -344,6 +348,8 @@ export const mockUsageLogs: UsageLog[] = [
         output_language: null,
         platform: null,
         detected_route: null,
+        retry_used: false,
+        is_retry: false,
     },
 ]
 

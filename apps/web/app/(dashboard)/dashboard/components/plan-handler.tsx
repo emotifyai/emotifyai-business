@@ -4,6 +4,8 @@ import { useEffect, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { toast } from 'sonner'
 import { LoadingSpinner } from '@emotifyai/ui'
+import { buildCheckoutThankYouUrl } from '@/lib/checkout/thank-you-redirect'
+import type { SubscriptionTier } from '@/lib/subscription/types'
 
 /**
  * PlanHandler Component
@@ -34,7 +36,10 @@ export function PlanHandler() {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 tier: plan,
-                redirectUrl: window.location.origin + '/dashboard',
+                redirectUrl: buildCheckoutThankYouUrl(
+                    window.location.origin,
+                    plan as SubscriptionTier
+                ),
             }),
         })
             .then(res => res.json())

@@ -25,9 +25,13 @@ export function LoginForm() {
             
             const source = searchParams.get('source')
             const redirectTo = searchParams.get('redirect_to')
-            
-            if (source === 'extension' && redirectTo) {
-                toast.success('تم تسجيل الدخول بنجاح! جاري الاتصال بالإضافة…')
+
+            if (redirectTo) {
+                toast.success(
+                    source === 'extension'
+                        ? 'تم تسجيل الدخول بنجاح! جاري الاتصال بالإضافة…'
+                        : 'تم تسجيل الدخول بنجاح'
+                )
                 router.push(redirectTo)
             } else {
                 toast.success('تم تسجيل الدخول بنجاح')

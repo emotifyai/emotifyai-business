@@ -2,6 +2,7 @@ import { createCheckout } from '@lemonsqueezy/lemonsqueezy.js'
 import { getVariantId, LEMONSQUEEZY_CONFIG } from './config'
 import { SubscriptionTier } from '@/lib/subscription/types'
 import { configureLemonSqueezy } from './client'
+import { buildCheckoutThankYouUrl } from '@/lib/checkout/thank-you-redirect'
 
 // Ensure Lemon Squeezy is initialized
 configureLemonSqueezy()
@@ -43,7 +44,12 @@ export async function createSubscriptionCheckout({
             },
             productOptions: {
                 enabledVariants: [parseInt(variantId)],
-                redirectUrl: redirectUrl || `${process.env.NEXT_PUBLIC_APP_URL}/dashboard`,
+                redirectUrl:
+                    redirectUrl ||
+                    buildCheckoutThankYouUrl(
+                        process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000',
+                        tier
+                    ),
                 receiptButtonText: 'Go to Dashboard',
                 receiptThankYouNote: 'Thank you for subscribing to EmotifyAI!',
             },

@@ -32,6 +32,11 @@ export function Footer() {
                                     التوثيق
                                 </Link>
                             </li>
+                            <li>
+                                <Link href="/vs-chatgpt" className="touch-target inline-flex items-center text-muted-foreground transition-colors hover:text-primary active:text-primary">
+                                    مقارنة مع ChatGPT
+                                </Link>
+                            </li>
                         </ul>
                     </div>
 

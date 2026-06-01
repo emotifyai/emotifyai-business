@@ -63,9 +63,11 @@ describe('NavbarUserMenu', () => {
         const triggerButton = screen.getByRole('button')
         expect(triggerButton).toBeInTheDocument()
         
-        // Check if User icon is displayed (since no avatar_url)
-        const userIcon = document.querySelector('.lucide-user')
-        expect(userIcon).toBeInTheDocument()
+        const avatar = screen.getByRole('img', { name: 'Test User' })
+        expect(avatar).toHaveAttribute(
+            'src',
+            expect.stringContaining('api.dicebear.com/7.x/fun-emoji')
+        )
     })
 
     it('renders with subscription data', () => {

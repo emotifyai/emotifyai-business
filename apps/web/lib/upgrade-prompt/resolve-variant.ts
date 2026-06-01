@@ -4,7 +4,6 @@ import { SubscriptionTier } from '@/types/database'
 const RECURRING_MAX_TIERS: SubscriptionTier[] = [
   SubscriptionTier.PRO_ANNUAL,
   SubscriptionTier.BUSINESS_ANNUAL,
-  SubscriptionTier.LIFETIME_LAUNCH,
 ]
 
 const BUNDLE_TIERS: SubscriptionTier[] = [
