@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
+import { SubscriptionStatus as SubscriptionStatusValue } from '@/types/database'
 import { RUNTIME_SUBSCRIPTION_DEFAULTS } from '@emotifyai/config/pricing'
 import {
     type Subscription,
@@ -32,7 +33,7 @@ export async function getUserSubscription(userId: string): Promise<Subscription 
         .from('subscriptions')
         .select('*')
         .eq('user_id', userId)
-        .in('status', ['active', 'trial'])
+        .in('status', [SubscriptionStatusValue.ACTIVE, SubscriptionStatusValue.TRIAL])
         .order('created_at', { ascending: false })
         .limit(1)
         .single()

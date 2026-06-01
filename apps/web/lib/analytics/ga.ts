@@ -8,9 +8,24 @@ function isGADebugMode(): boolean {
   return false
 }
 
+function isGAEnabled(): boolean {
+  return Boolean(process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID)
+}
+
+function safeSendGAEvent(payload: { event: string; [key: string]: unknown }): void {
+  if (!isGAEnabled()) {
+    if (process.env.NODE_ENV === 'development') {
+      console.warn('[analytics] GA not configured — event skipped:', payload.event)
+    }
+    return
+  }
+
+  sendGAEvent(payload)
+}
+
 /** Central GA4 event helper — all client analytics should go through here. */
 export function trackGAEvent(event: string, params?: Record<string, unknown>): void {
-  sendGAEvent({
+  safeSendGAEvent({
     event,
     ...params,
     ...(isGADebugMode() ? { debug_mode: true } : {}),
@@ -19,7 +34,7 @@ export function trackGAEvent(event: string, params?: Record<string, unknown>): v
 
 /** Free retry submitted — `value` is the Arabic label (e.g. "آلياً"). */
 export function trackRetryUsed(feedbackReasonLabel: string): void {
-  sendGAEvent({
+  safeSendGAEvent({
     event: 'retry_used',
     value: feedbackReasonLabel,
     ...(isGADebugMode() ? { debug_mode: true } : {}),

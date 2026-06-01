@@ -11,6 +11,15 @@ export const GUEST_FREE_ATTEMPTS = 5
 /** Additional attempts granted when the user creates an account */
 export const SIGNUP_BONUS_ATTEMPTS = 5
 
+/** Total free pool for a registered user (guest trial + signup bonus) */
+export const REGISTERED_FREE_CREDIT_TOTAL =
+  GUEST_FREE_ATTEMPTS + SIGNUP_BONUS_ATTEMPTS
+
+/** Arabic display for dashboard credit breakdown (e.g. ٥ + ٥) */
+export function formatRegisteredCreditsBreakdownAr(): string {
+  return `${GUEST_FREE_ATTEMPTS} + ${SIGNUP_BONUS_ATTEMPTS}`
+}
+
 /** @deprecated Two-week / 50-credit trial — disabled for new users */
 export const FREE_TRIAL_ENABLED = false
 

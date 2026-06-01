@@ -7,6 +7,9 @@ import { cn } from '@/lib/utils'
 import { createClient } from '@/lib/supabase/server'
 import { EDITOR_PATH } from '@/lib/editor/session'
 
+/** Auth-aware CTA — must not be statically cached without session cookies */
+export const dynamic = 'force-dynamic'
+
 export const metadata: Metadata = {
   title: 'إيموتيفاي vs ChatGPT — أيهما يبيع أكثر؟',
   description:
@@ -154,7 +157,17 @@ export default async function VsChatGptPage() {
   const {
     data: { user },
   } = await supabase.auth.getUser()
-  const ctaHref = user ? EDITOR_PATH : '/'
+
+  console.log('[DUCK vs-chatgpt] auth.getUser', {
+    hasUser: Boolean(user),
+    userId: user?.id ?? null,
+  })
+
+  const isAuthenticated = Boolean(user)
+  const ctaHref = isAuthenticated ? EDITOR_PATH : '/'
+  const ctaLabel = isAuthenticated
+    ? 'افتح المحرر — حسابك جاهز'
+    : 'جرب مجاناً — ٥ تحويلات بدون تسجيل'
 
   return (
     <div className="flex min-h-dvh flex-col overflow-x-hidden bg-background text-foreground" dir="rtl">
@@ -257,7 +270,7 @@ export default async function VsChatGptPage() {
 
             <div className="flex justify-center pt-2">
               <Button size="lg" variant="glow" asChild>
-                <Link href={ctaHref}>جرب مجاناً — ٥ تحويلات بدون تسجيل</Link>
+                <Link href={ctaHref}>{ctaLabel}</Link>
               </Button>
             </div>
           </div>

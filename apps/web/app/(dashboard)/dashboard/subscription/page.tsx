@@ -53,6 +53,7 @@ export default function SubscriptionPage() {
                                 ? (usedCredits / totalCredits) * 100
                                 : 0,
                         }}
+                        bundles={subscription.bundles}
                     />
                     {isPaidActive && subscription.tier !== SubscriptionTier.LIFETIME_LAUNCH && (
                         <Button

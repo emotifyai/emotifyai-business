@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { useTheme } from 'next-themes';
 
 interface Block {
   row: number;
@@ -22,9 +23,18 @@ interface Particle {
 }
 
 const AnimatedELetter = () => {
+  const { resolvedTheme } = useTheme();
+  const isDark = resolvedTheme === 'dark';
   const [blocks, setBlocks] = useState<Block[]>([]);
   const [particles, setParticles] = useState<Particle[]>([]);
   const [animationPhase, setAnimationPhase] = useState(0);
+
+  const blockGradient = isDark
+    ? 'linear-gradient(135deg, #a78bfa 0%, #7c3aed 50%, #6d28d9 100%)'
+    : 'linear-gradient(135deg, #5eead4 0%, #36ad8e 45%, #2d8f75 100%)';
+  const blockShadow = isDark
+    ? '0 0 20px rgba(139, 92, 246, 0.5)'
+    : '0 0 24px rgba(54, 173, 142, 0.35)';
 
   // Define the V shape using a grid - much bigger and steeper
   const eShape = [
@@ -137,7 +147,7 @@ const AnimatedELetter = () => {
           {blocks.map((block) => (
             <div
               key={`glow-${block.id}`}
-              className="absolute bg-purple-500"
+              className="absolute bg-primary/50 dark:bg-purple-500"
               style={{
                 left: `${block.col * (blockSize + gap) + 130}px`,
                 top: `${block.row * (blockSize + gap) + 30}px`,
@@ -162,12 +172,12 @@ const AnimatedELetter = () => {
               top: `${block.row * (blockSize + gap) + 30}px`,
               width: `${blockSize}px`,
               height: `${blockSize}px`,
-              background: 'linear-gradient(135deg, #a78bfa 0%, #7c3aed 50%, #6d28d9 100%)',
+              background: blockGradient,
               transform: `translate(${block.offsetX}px, ${block.offsetY}px) scale(${block.scale}) rotate(${block.rotation}deg)`,
               opacity: block.visible ? 1 : 0,
               transition: `all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1)`,
               transitionDelay: `${block.delay}ms`,
-              boxShadow: '0 0 20px rgba(139, 92, 246, 0.5)',
+              boxShadow: blockShadow,
             }}
           />
         ))}
@@ -177,7 +187,7 @@ const AnimatedELetter = () => {
           {particles.map((particle) => (
             <div
               key={`particle-${particle.id}`}
-              className="absolute w-1 h-1 bg-purple-400 rounded-full animate-float"
+              className="absolute h-1 w-1 rounded-full bg-primary/70 animate-float dark:bg-purple-400"
               style={{
                 left: `${particle.left}%`,
                 top: `${particle.top}%`,

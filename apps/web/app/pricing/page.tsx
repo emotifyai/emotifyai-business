@@ -4,6 +4,7 @@ import { Footer } from '@/components/layout/footer'
 import { PricingPlansTable } from '@/components/pricing/pricing-plans-table'
 import { getTierLabelAr, getTierPriorityMap } from '@emotifyai/config/pricing'
 import { createClient } from '@/lib/supabase/server'
+import { SubscriptionStatus } from '@/types/database'
 
 export const metadata: Metadata = {
   title: 'الأسعار - إيموتيفاي',
@@ -31,7 +32,7 @@ export default async function PricingPage({ searchParams }: PricingPageProps) {
       .from('subscriptions')
       .select('tier, status, created_at')
       .eq('user_id', user.id)
-      .eq('status', 'active')
+      .eq('status', SubscriptionStatus.ACTIVE)
       .order('created_at', { ascending: false })
 
     if (subscriptions?.length) {

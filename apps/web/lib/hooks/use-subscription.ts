@@ -4,6 +4,14 @@ import { useMutation, useQuery } from '@tanstack/react-query'
 import { SubscriptionTier, SubscriptionStatus } from '@/types/database'
 import { buildCheckoutThankYouUrl } from '@/lib/checkout/thank-you-redirect'
 
+export interface SubscriptionBundleRow {
+    tier: string
+    credits_limit: number
+    credits_used: number
+    credits_remaining: number
+    label_ar: string
+}
+
 export interface SubscriptionData {
     tier: SubscriptionTier
     status: SubscriptionStatus
@@ -14,6 +22,7 @@ export interface SubscriptionData {
     validity_days: number | null
     tier_name: string
     current_period_end: string
+    bundles?: SubscriptionBundleRow[]
 }
 
 /**

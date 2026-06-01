@@ -1,7 +1,9 @@
 import {
+  REGISTERED_FREE_CREDIT_TOTAL,
   RUNTIME_SUBSCRIPTION_DEFAULTS,
-  SIGNUP_BONUS_ATTEMPTS,
 } from '@emotifyai/config/pricing'
+import { getOAuthAvatarUrl } from '@/lib/auth/oauth-avatar'
+import { syncProfileAvatarFromAuth } from '@/lib/auth/sync-profile-avatar'
 import { createClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
 
@@ -30,19 +32,26 @@ export async function GET(request: Request) {
                     .eq('id', data.user.id)
                     .single()
 
+                const oauthAvatar = getOAuthAvatarUrl(data.user)
+
                 if (!profile) {
                     console.log(`Creating profile for new user: ${data.user.email}`)
 
-                    // Create user profile
                     const { error: profileError } = await (supabase.from('profiles') as any).insert({
                         id: data.user.id,
                         email: data.user.email!,
                         display_name: data.user.user_metadata?.full_name || data.user.email?.split('@')[0] || 'User',
-                        avatar_url: data.user.user_metadata?.avatar_url || null,
+                        avatar_url: oauthAvatar,
                     })
 
                     if (profileError) {
                         console.error('Error creating profile:', profileError)
+                    }
+                } else if (oauthAvatar) {
+                    try {
+                        await syncProfileAvatarFromAuth(supabase, data.user.id, data.user)
+                    } catch (avatarErr) {
+                        console.error('Error syncing OAuth avatar:', avatarErr)
                     }
                 }
 
@@ -59,9 +68,9 @@ export async function GET(request: Request) {
                     const authDefaults = RUNTIME_SUBSCRIPTION_DEFAULTS.authCallbackNewUser
                     const signupCredits = parseInt(
                       process.env.TRIAL_ENHANCEMENT_LIMIT ||
-                        String(authDefaults.credits),
+                        String(REGISTERED_FREE_CREDIT_TOTAL),
                       10
-                    ) || SIGNUP_BONUS_ATTEMPTS
+                    ) || REGISTERED_FREE_CREDIT_TOTAL
                     const periodEnd = authDefaults.validityDays
                       ? (() => {
                           const end = new Date()

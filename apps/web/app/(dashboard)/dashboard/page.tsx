@@ -8,7 +8,13 @@ import { StatsCard } from '@/components/dashboard/stats-card'
 import { UsageChart } from '@/components/dashboard/usage-chart'
 import { SubscriptionCard } from '@/components/dashboard/subscription-card'
 import { PlanHandler } from './components/plan-handler'
-import { BarChart3, Zap, CreditCard, Activity, AlertCircle, RefreshCw, CheckCircle } from 'lucide-react'
+import { BarChart3, Zap, CreditCard, Activity, AlertCircle, RefreshCw } from 'lucide-react'
+import {
+    getDashboardPlanLabelAr,
+    getRegisteredCreditsDescriptionAr,
+} from '@/lib/billing/tier-labels'
+import { SubscriptionTier } from '@/types/database'
+import { Card, CardContent, CardHeader, CardTitle } from '@emotifyai/ui'
 import { Skeleton } from '@emotifyai/ui'
 import { Alert, AlertDescription } from '@emotifyai/ui'
 import { Button } from '@emotifyai/ui'
@@ -85,6 +91,11 @@ export default function DashboardPage() {
     // Calculate usage percentage
     const totalCredits = usage.credits_used + usage.credits_remaining
     const usagePercentage = totalCredits > 0 ? (usage.credits_used / totalCredits) * 100 : 0
+    const isFreeRegistered =
+        subscription.tier === SubscriptionTier.FREE ||
+        subscription.tier === SubscriptionTier.TRIAL
+    const planLabel = getDashboardPlanLabelAr(subscription.tier)
+    const bundles = subscription.bundles ?? []
 
     // Transform history data for chart
     const chartData = historyPages?.pages.flatMap((page: any) =>
@@ -131,9 +142,13 @@ export default function DashboardPage() {
                 />
                 <StatsCard
                     title="الخطة الحالية"
-                    value={subscription.tier.toUpperCase()}
+                    value={planLabel}
                     icon={CreditCard}
-                    description={subscription.status}
+                    description={
+                        isFreeRegistered
+                            ? getRegisteredCreditsDescriptionAr(subscription.credits_limit)
+                            : subscription.tier_name || subscription.status
+                    }
                 />
                 <StatsCard
                     title="الاستخدام اليومي"
@@ -142,6 +157,31 @@ export default function DashboardPage() {
                     description="آخر ٢٤ ساعة"
                 />
             </div>
+
+            {bundles.length > 0 && (
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="text-lg">حزم</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <ul className="space-y-3">
+                            {bundles.map((bundle) => (
+                                <li
+                                    key={bundle.tier}
+                                    className="flex items-center justify-between text-sm"
+                                >
+                                    <span className="font-medium">{bundle.label_ar}</span>
+                                    <span className="text-muted-foreground">
+                                        {bundle.credits_used} / {bundle.credits_limit} مستخدم
+                                        {' — '}
+                                        {bundle.credits_remaining} متبقي
+                                    </span>
+                                </li>
+                            ))}
+                        </ul>
+                    </CardContent>
+                </Card>
+            )}
 
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
                 <div className="col-span-4">
@@ -157,6 +197,7 @@ export default function DashboardPage() {
                             limit: totalCredits,
                             percentage: usagePercentage
                         }}
+                        bundles={bundles}
                     />
                 </div>
             </div>

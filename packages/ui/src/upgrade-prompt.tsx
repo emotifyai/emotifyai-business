@@ -44,10 +44,11 @@ export function UpgradePrompt({
   const content = getUpgradePromptContent(variant)
   const limit = creditsLimit ?? content.defaultLimit ?? 0
   const used =
-    creditsUsed ??
-    (limit > 0 && remainingCredits !== undefined
-      ? Math.max(0, limit - remainingCredits)
-      : limit)
+    creditsUsed !== undefined
+      ? creditsUsed
+      : limit > 0 && remainingCredits !== undefined
+        ? Math.max(0, limit - remainingCredits)
+        : 0
   const progressValue =
     limit > 0 ? Math.min(100, Math.round((used / limit) * 100)) : 100
 
@@ -62,14 +63,14 @@ export function UpgradePrompt({
       className={cn(
         "text-right font-sans",
         isOverlay &&
-          "absolute inset-0 z-10 flex items-center justify-center rounded-xl bg-[#0f121d]/90 p-4 backdrop-blur-md sm:p-6",
+          "absolute inset-0 z-10 flex items-center justify-center rounded-xl bg-background/80 p-4 backdrop-blur-md sm:p-6",
         className
       )}
     >
       <div
         className={cn(
-          "w-full max-w-md rounded-2xl border border-[#36ad8e]/25 bg-gradient-to-b from-[#1a1e2b] to-[#0f121d] p-5 shadow-2xl shadow-black/40 sm:p-6",
-          isOverlay && "border-[#36ad8e]/30",
+          "w-full max-w-md rounded-2xl border border-border bg-card p-5 text-card-foreground shadow-lg sm:p-6",
+          isOverlay && "shadow-xl",
           !isOverlay && "mx-auto"
         )}
       >
@@ -78,14 +79,14 @@ export function UpgradePrompt({
             className={cn(
               "flex size-11 shrink-0 items-center justify-center rounded-full",
               isBestPlan
-                ? "bg-[#36ad8e]/15 text-[#36ad8e]"
-                : "bg-[#36ad8e]/20 text-[#36ad8e]"
+                ? "bg-primary/15 text-primary"
+                : "bg-primary/20 text-primary"
             )}
           >
             <Sparkles className="size-5" aria-hidden />
           </div>
           {content.badge && (
-            <span className="rounded-full border border-[#36ad8e]/30 bg-[#36ad8e]/10 px-2.5 py-0.5 text-[11px] font-medium text-[#36ad8e]">
+            <span className="rounded-full border border-primary/30 bg-primary/10 px-2.5 py-0.5 text-[11px] font-medium text-primary">
               {content.badge}
             </span>
           )}
@@ -93,26 +94,26 @@ export function UpgradePrompt({
 
         <h3
           id="upgrade-prompt-heading"
-          className="mb-2 text-lg font-bold leading-snug text-white sm:text-xl"
+          className="mb-2 text-lg font-bold leading-snug text-foreground sm:text-xl"
         >
           {content.headline}
         </h3>
-        <p className="mb-4 text-sm leading-relaxed text-white/70">
+        <p className="mb-4 text-sm leading-relaxed text-muted-foreground">
           {content.subtext}
         </p>
 
         {content.showProgress && limit > 0 && (
           <div className="mb-5 space-y-2">
-            <div className="flex items-center justify-between text-xs text-white/60">
+            <div className="flex items-center justify-between text-xs text-muted-foreground">
               <span>الاستخدام</span>
-              <span className="tabular-nums font-medium text-white/80">
+              <span className="tabular-nums font-medium text-foreground">
                 {used} / {limit}
               </span>
             </div>
             <Progress
               value={progressValue}
-              className="h-2 bg-white/10"
-              indicatorClassName="bg-[#36ad8e]"
+              className="h-2 bg-muted"
+              indicatorClassName="bg-primary"
             />
           </div>
         )}
@@ -122,7 +123,7 @@ export function UpgradePrompt({
             <Button
               type="button"
               variant="default"
-              className="w-full min-h-11 bg-[#36ad8e] text-[#0f121d] hover:bg-[#36ad8e]/90 font-semibold"
+              className="w-full min-h-11 font-semibold"
               onClick={onPrimaryClick}
             >
               {content.primaryCta}
@@ -133,7 +134,7 @@ export function UpgradePrompt({
               <Button
                 type="button"
                 variant="ghost"
-                className="w-full min-h-10 text-white/80 hover:bg-white/5 hover:text-white"
+                className="w-full min-h-10 text-muted-foreground hover:bg-muted hover:text-foreground"
                 onClick={onSecondaryClick}
               >
                 <ArrowLeft className="ms-1 size-4 rotate-180" aria-hidden />

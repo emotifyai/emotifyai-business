@@ -36,6 +36,7 @@ export default function RootLayout({
     <html
       lang="ar"
       dir="rtl"
+      data-scroll-behavior="smooth"
       className={arabicFontClassName}
       suppressHydrationWarning
     >

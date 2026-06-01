@@ -2,6 +2,10 @@
 -- FULL SCHEMA - CLEAN VERSION
 -- =============================================================================
 --
+-- Invoices dashboard (/dashboard/invoices): no billing_events table required.
+--   Invoice rows are built server-side from Lemon Squeezy (subscription invoices + orders)
+--   with fallback to public.subscriptions (RLS: user sees own rows).
+--
 -- Migration notes (2026-06): Free funnel is 5 guest + 5 signup bonus (see packages/config/src/pricing.ts).
 --   - New subscriptions: status 'active', tier 'free', credits_limit 5, validity_days NULL.
 --   - Two-week / 50-credit trial and lifetime_launch checkout are retired (enum values kept for legacy rows).
@@ -206,11 +210,15 @@ $$ LANGUAGE plpgsql;
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER AS $$
 BEGIN
-    INSERT INTO public.profiles (id, email, display_name)
+    INSERT INTO public.profiles (id, email, display_name, avatar_url)
     VALUES (
         NEW.id,
         NEW.email,
-        COALESCE(NEW.raw_user_meta_data->>'display_name', NEW.raw_user_meta_data->>'full_name')
+        COALESCE(NEW.raw_user_meta_data->>'display_name', NEW.raw_user_meta_data->>'full_name'),
+        COALESCE(
+            NULLIF(TRIM(NEW.raw_user_meta_data->>'avatar_url'), ''),
+            NULLIF(TRIM(NEW.raw_user_meta_data->>'picture'), '')
+        )
     );
     RETURN NEW;
 END;
@@ -625,11 +633,25 @@ GRANT EXECUTE ON FUNCTION public.get_user_editor_history(UUID) TO authenticated;
 GRANT EXECUTE ON FUNCTION public.cleanup_old_editor_history() TO service_role;
 
 -- =============================================================================
--- MIGRATION (existing databases) — run once if tables already exist
+-- MIGRATION (existing databases) — run once in Supabase SQL Editor
+-- Copy from: supabase/migrations/20250601000000_usage_logs_retry_columns.sql
 -- =============================================================================
--- ALTER TABLE public.usage_logs ADD COLUMN IF NOT EXISTS retry_used BOOLEAN NOT NULL DEFAULT false;
--- ALTER TABLE public.usage_logs ADD COLUMN IF NOT EXISTS is_retry BOOLEAN NOT NULL DEFAULT false;
+ALTER TABLE public.usage_logs ADD COLUMN IF NOT EXISTS retry_used BOOLEAN NOT NULL DEFAULT false;
+ALTER TABLE public.usage_logs ADD COLUMN IF NOT EXISTS is_retry BOOLEAN NOT NULL DEFAULT false;
+
+CREATE TABLE IF NOT EXISTS public.retries (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    user_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
+    usage_log_id UUID NOT NULL REFERENCES public.usage_logs(id) ON DELETE CASCADE,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    retry_reason TEXT NOT NULL,
+    retry_reason_other TEXT,
+    CONSTRAINT retries_reason_check CHECK (length(retry_reason) > 0),
+    CONSTRAINT retries_one_per_log UNIQUE (usage_log_id)
+);
+
+-- Optional: relax credits constraint on legacy rows
 -- ALTER TABLE public.usage_logs DROP CONSTRAINT IF EXISTS usage_logs_credits_check;
 -- ALTER TABLE public.usage_logs ADD CONSTRAINT usage_logs_credits_check CHECK (credits_consumed >= 0);
--- CREATE TABLE IF NOT EXISTS public.retries (...); — see CREATE TABLE above
+
 -- Recreate get_user_editor_history after column changes (see function definition above).

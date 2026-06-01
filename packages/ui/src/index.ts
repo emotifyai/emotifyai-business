@@ -25,6 +25,10 @@ export { Input } from './input'
 export { Textarea } from './textarea'
 export { EnhanceTextInput, type EnhanceTextInputProps } from './enhance-text-input'
 export { EnhanceTextOutput, type EnhanceTextOutputProps } from './enhance-text-output'
+export {
+  editorTextAreaWrapperClass,
+  editorToolbarIconButtonClass,
+} from './lib/editor-text-area-wrapper'
 export { Checkbox } from './checkbox'
 export { Switch } from './switch'
 export { 

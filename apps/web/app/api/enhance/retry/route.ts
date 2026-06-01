@@ -5,6 +5,7 @@ import { validateOutputQuality, isLanguageSupported } from '@/lib/ai/language-de
 import { detectAndRoute } from '@/lib/ai/language-router'
 import { EnhanceRetryRequestSchema, ApiErrorCode } from '@/types/api'
 import { EnhancementMode, type RetryInsert, type UsageLogInsert } from '@/types/database'
+import { insertUsageLog, isMissingColumnError } from '@/lib/usage/usage-logs'
 
 function useMockAi(): boolean {
   return process.env.MOCK_AI_RESPONSES === 'true'
@@ -64,12 +65,36 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const { data: parentLog, error: parentError } = await (supabase as any)
+    let parentLog: {
+      id: string
+      user_id: string
+      retry_used?: boolean
+      is_editor_session?: boolean
+    } | null = null
+    let parentError: { code?: string; message?: string } | null = null
+
+    const parentWithRetry = await (supabase as any)
       .from('usage_logs')
       .select('id, user_id, retry_used, is_editor_session')
       .eq('id', parentLogId)
       .eq('user_id', user.id)
       .single()
+
+    parentLog = parentWithRetry.data
+    parentError = parentWithRetry.error
+
+    if (parentError && isMissingColumnError(parentError)) {
+      const parentFallback = await (supabase as any)
+        .from('usage_logs')
+        .select('id, user_id, is_editor_session')
+        .eq('id', parentLogId)
+        .eq('user_id', user.id)
+        .single()
+      parentLog = parentFallback.data
+        ? { ...parentFallback.data, retry_used: false }
+        : null
+      parentError = parentFallback.error
+    }
 
     if (parentError || !parentLog) {
       return createErrorResponse(
@@ -77,6 +102,12 @@ export async function POST(request: NextRequest) {
         404
       )
     }
+
+    console.log('[DUCK retry] parent log', {
+      parentLogId,
+      retry_used: parentLog.retry_used,
+      userId: user.id,
+    })
 
     if (parentLog.retry_used) {
       return createErrorResponse(
@@ -114,12 +145,15 @@ export async function POST(request: NextRequest) {
       .eq('id', parentLogId)
       .eq('user_id', user.id)
 
-    if (markUsedError) {
+    if (markUsedError && !isMissingColumnError(markUsedError)) {
       console.error('Mark retry_used error:', markUsedError)
       return createErrorResponse(
         { code: ApiErrorCode.DATABASE_ERROR, message: 'Failed to update transformation' },
         500
       )
+    }
+    if (markUsedError && isMissingColumnError(markUsedError)) {
+      console.warn('[DUCK retry] retry_used column missing — skipping mark; run Supabase migration')
     }
 
     const { routeId, detection } = detectAndRoute(text, outputLanguage)
@@ -166,13 +200,9 @@ export async function POST(request: NextRequest) {
       retry_used: false,
     }
 
-    const { data: insertedLog, error: logError } = await (supabase as any)
-      .from('usage_logs')
-      .insert(usageLogData)
-      .select('id')
-      .single()
+    const { usageLogId, error: logError } = await insertUsageLog(supabase as any, usageLogData)
 
-    if (logError) {
+    if (logError || !usageLogId) {
       console.error('Retry usage log error:', logError)
       return createErrorResponse(
         { code: ApiErrorCode.DATABASE_ERROR, message: 'Failed to log retry enhancement' },
@@ -188,7 +218,7 @@ export async function POST(request: NextRequest) {
         language: outputLanguage,
         routeId: result.routeId ?? routeId,
         detectionSummary: detection.inputSummaryAr,
-        usageLogId: insertedLog?.id,
+        usageLogId,
         parentLogId,
         retryUsed: true,
       },

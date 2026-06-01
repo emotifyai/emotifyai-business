@@ -40,6 +40,7 @@ export interface Database {
                     display_name?: string | null
                     avatar_url?: string | null
                 }
+                Relationships: []
             }
             subscriptions: {
                 Row: {
@@ -113,6 +114,7 @@ export interface Database {
                     credits_reset_date?: string | null
                     validity_days?: number | null
                 }
+                Relationships: []
             }
             usage_logs: {
                 Row: {
@@ -187,6 +189,7 @@ export interface Database {
                     platform?: string | null
                     detected_route?: string | null
                 }
+                Relationships: []
             }
             retries: {
                 Row: {
@@ -213,6 +216,7 @@ export interface Database {
                     retry_reason?: string
                     retry_reason_other?: string | null
                 }
+                Relationships: []
             }
             api_keys: {
                 Row: {
@@ -242,6 +246,7 @@ export interface Database {
                     last_used_at?: string | null
                     revoked?: boolean
                 }
+                Relationships: []
             }
             lifetime_subscribers: {
                 Row: {
@@ -268,13 +273,34 @@ export interface Database {
                     created_at?: string
                     updated_at?: string
                 }
+                Relationships: []
             }
         }
         Views: {
             [_ in never]: never
         }
         Functions: {
-            [_ in never]: never
+            get_lifetime_slot_info: {
+                Args: Record<string, never>
+                Returns: {
+                    total: number
+                    used: number
+                    remaining: number
+                    percentage: number
+                }
+            }
+            reserve_lifetime_slot: {
+                Args: Record<string, never>
+                Returns: boolean
+            }
+            is_lifetime_offer_available: {
+                Args: Record<string, never>
+                Returns: boolean
+            }
+            get_lifetime_offer_status: {
+                Args: Record<string, never>
+                Returns: Json
+            }
         }
         Enums: {
             subscription_status: SubscriptionStatus

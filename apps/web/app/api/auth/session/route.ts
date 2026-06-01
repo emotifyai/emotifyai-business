@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { resolveUserAvatarUrl } from '@/lib/auth/oauth-avatar'
 import { createClient } from '@/lib/supabase/server'
 
 /**
@@ -46,7 +47,7 @@ export async function GET(request: NextRequest) {
                 id: user.id,
                 email: user.email!,
                 name: (profile as any)?.display_name || user.email?.split('@')[0] || 'User',
-                avatar: (profile as any)?.avatar_url || user.user_metadata?.avatar_url || null,
+                avatar: resolveUserAvatarUrl((profile as { avatar_url?: string | null } | null)?.avatar_url, user),
             },
             token: session.access_token,
         }

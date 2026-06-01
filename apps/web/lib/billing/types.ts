@@ -62,3 +62,29 @@ export interface BillingHistoryResponse {
   invoices: BillingInvoice[]
   payments: BillingPayment[]
 }
+
+/** خطة (subscription) vs حزمة (bundle) */
+export type InvoicePurchaseType = 'plan' | 'bundle'
+
+export interface BillingInvoiceRow {
+  id: string
+  date: string
+  amountFormatted: string
+  currency: string
+  status: string
+  statusLabel: string
+  planName: string
+  tier: SubscriptionTier | null
+  purchaseType: InvoicePurchaseType
+  purchaseTypeLabel: string
+  documentUrl: string | null
+  source: 'subscription_invoice' | 'order' | 'subscription_row'
+}
+
+export interface BillingInvoicesResponse {
+  success: boolean
+  hasBillingHistory: boolean
+  lemonConfigured: boolean
+  message?: string
+  invoices: BillingInvoiceRow[]
+}

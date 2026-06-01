@@ -1,13 +1,29 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { Button } from '@emotifyai/ui'
-import { Card, CardContent } from '@emotifyai/ui'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@emotifyai/ui'
-import { EnhanceTextInput, EnhanceTextOutput } from '@emotifyai/ui'
+import {
+  EnhanceTextInput,
+  EnhanceTextOutput,
+  editorToolbarIconButtonClass,
+} from '@emotifyai/ui'
+import { cn } from '@/lib/utils'
 import { Badge } from '@emotifyai/ui'
-import { Loader2, Wand2, RotateCcw, History, Copy, Check, ChevronDown, RefreshCw, Share2 } from 'lucide-react'
+import {
+  Loader2,
+  Wand2,
+  RotateCcw,
+  History,
+  Copy,
+  Check,
+  ChevronDown,
+  RefreshCw,
+  Share2,
+  FileEdit,
+  Sparkles,
+} from 'lucide-react'
 import { RetryFeedbackModal } from '@/components/editor/retry-feedback-modal'
 import {
   trackCopyClicked,
@@ -18,9 +34,9 @@ import {
 } from '@/lib/analytics/ga'
 import { getRetryReasonLabel } from '@/lib/editor/retry-reasons'
 import type { RetryReasonValue } from '@/types/api'
+import { REGISTERED_FREE_CREDIT_TOTAL } from '@emotifyai/config/pricing'
 import { useSubscription } from '@/lib/hooks/use-subscription'
 import { useUsageStats } from '@/lib/hooks/use-usage'
-import { SubscriptionTier } from '@/types/database'
 import { toast } from 'sonner'
 import {
   ConnectedUpgradePrompt,
@@ -67,11 +83,24 @@ const LOADING_MESSAGES = [
 
 export default function EditorPage() {
   const searchParams = useSearchParams()
-  const { data: subscription } = useSubscription()
-  const { data: usage } = useUsageStats()
+  const { data: subscription, isLoading: isSubscriptionLoading } = useSubscription()
+  const { data: usage, isLoading: isUsageLoading } = useUsageStats()
 
-  const totalCredits = usage ? usage.credits_used + usage.credits_remaining : 0
-  const isUnlimited = usage?.credits_remaining === -1
+  const isCreditsReady = !isSubscriptionLoading && !isUsageLoading
+
+  const creditsUsed = usage?.credits_used ?? subscription?.credits_used ?? 0
+  const creditsRemaining =
+    usage?.credits_remaining ?? subscription?.credits_remaining
+  const creditsLimit =
+    subscription?.credits_limit ??
+    (usage != null ? usage.credits_used + usage.credits_remaining : undefined) ??
+    REGISTERED_FREE_CREDIT_TOTAL
+  const totalCredits =
+    creditsLimit > 0 ? creditsLimit : creditsUsed + (creditsRemaining ?? 0)
+  const isUnlimited = creditsRemaining === -1
+  const canUseCredits =
+    isCreditsReady &&
+    (isUnlimited || (creditsRemaining !== undefined && creditsRemaining > 0))
 
   // Editor state
   const [originalText, setOriginalText] = useState('')
@@ -96,6 +125,7 @@ export default function EditorPage() {
   const [retryUsed, setRetryUsed] = useState(false)
   const [retryModalOpen, setRetryModalOpen] = useState(false)
   const [isRetrying, setIsRetrying] = useState(false)
+  const shareInProgressRef = useRef(false)
 
   // Load cached session data on mount (landing → editor handoff)
   useEffect(() => {
@@ -133,11 +163,42 @@ export default function EditorPage() {
     loadHistory()
   }, [])
 
+  useEffect(() => {
+    if (canUseCredits && upgradeVariant) {
+      setUpgradeVariant(undefined)
+    }
+  }, [canUseCredits, upgradeVariant])
+
+  useEffect(() => {
+    if (!isCreditsReady) return
+    console.log('[DUCK editor/credits]', {
+      creditsUsed,
+      creditsLimit,
+      creditsRemaining,
+      canUseCredits,
+      upgradeVariant,
+      tier: subscription?.tier,
+    })
+  }, [
+    isCreditsReady,
+    creditsUsed,
+    creditsLimit,
+    creditsRemaining,
+    canUseCredits,
+    upgradeVariant,
+    subscription?.tier,
+  ])
+
   const loadHistory = async () => {
     try {
       const response = await fetch('/api/user/history')
+      console.log('[DUCK editor/history] fetch status', response.status)
       if (response.ok) {
         const data = await response.json()
+        console.log('[DUCK editor/history] rows', {
+          count: data.history?.length ?? 0,
+          ids: (data.history ?? []).slice(0, 3).map((r: { id: string }) => r.id),
+        })
         const items = (data.history || []).map(
           (row: {
             id: string
@@ -160,9 +221,12 @@ export default function EditorPage() {
           })
         )
         setHistory(items)
+      } else {
+        const errBody = await response.json().catch(() => ({}))
+        console.log('[DUCK editor/history] fetch failed', errBody)
       }
     } catch (error) {
-      console.error('Failed to load history:', error)
+      console.error('[DUCK editor/history] Failed to load history:', error)
     }
   }
 
@@ -177,24 +241,18 @@ export default function EditorPage() {
     setDetectionConfidence(detection.confidence)
   }, [originalText])
 
-  const canGenerate = () => {
-    if (!subscription) return false
-    if (!usage) return false
-    return isUnlimited || usage.credits_remaining > 0
-  }
-
   const handleGenerate = async () => {
     if (!originalText.trim()) {
       toast.error('يرجى إدخال نص للتحسين')
       return
     }
-    if (!canGenerate()) {
+    if (!canUseCredits) {
       setUpgradeVariant(
         resolveUpgradeVariant({
           isAuthenticated: true,
           tier: subscription?.tier,
-          creditsRemaining: usage?.credits_remaining ?? 0,
-          creditsLimit: totalCredits || subscription?.credits_limit,
+          creditsRemaining: creditsRemaining ?? 0,
+          creditsLimit,
         }) ?? 'limit_reached'
       )
       trackUpgradeClicked('editor_generate_blocked')
@@ -223,7 +281,7 @@ export default function EditorPage() {
               isAuthenticated: true,
               tier: tier ?? subscription?.tier,
               creditsRemaining: 0,
-              creditsLimit: totalCredits || subscription?.credits_limit,
+              creditsLimit,
             }) ?? 'limit_reached'
           )
           trackUpgradeClicked('editor_limit_reached')
@@ -288,6 +346,10 @@ export default function EditorPage() {
             setCurrentUsageLogId(data.usageLogId)
           }
           setRetryUsed(data.retryUsed ?? false)
+          console.log('[DUCK editor/generate] done', {
+            usageLogId: data.usageLogId ?? null,
+            retryUsed: data.retryUsed ?? false,
+          })
           trackTransformCompleted()
           toast.success('تم تحسين النص بنجاح!', {
             description: `تم استخدام ${data.tokensUsed || 0} رمزاً`,
@@ -319,22 +381,39 @@ export default function EditorPage() {
     }
   }
 
-  const handleShare = async (text: string) => {
-    if (!text.trim()) return
+  const handleShare = useCallback(async (text: string) => {
+    if (!text.trim() || shareInProgressRef.current) {
+      console.log('[DUCK editor/share] skipped', {
+        empty: !text.trim(),
+        inProgress: shareInProgressRef.current,
+      })
+      return
+    }
+    shareInProgressRef.current = true
+    const textToShare = text
+    console.log('[DUCK editor/share] start', { len: textToShare.length })
     try {
-      if (navigator.share) {
-        await navigator.share({ text })
+      if (typeof navigator !== 'undefined' && typeof navigator.share === 'function') {
+        await navigator.share({ text: textToShare })
         trackShareClicked()
+        console.log('[DUCK editor/share] native share ok')
       } else {
-        await navigator.clipboard.writeText(text)
+        await navigator.clipboard.writeText(textToShare)
         trackShareClicked()
         toast.success('تم نسخ النص للمشاركة')
+        console.log('[DUCK editor/share] clipboard fallback ok')
       }
     } catch (error) {
-      if (error instanceof Error && error.name === 'AbortError') return
+      if (error instanceof Error && error.name === 'AbortError') {
+        console.log('[DUCK editor/share] user dismissed')
+        return
+      }
+      console.log('[DUCK editor/share] error', error)
       toast.error('تعذرت المشاركة')
+    } finally {
+      shareInProgressRef.current = false
     }
-  }
+  }, [])
 
   const handleCopy = async (text: string, key: string) => {
     try {
@@ -374,6 +453,28 @@ export default function EditorPage() {
     !retryUsed &&
     !isGenerating &&
     !isRetrying
+
+  useEffect(() => {
+    console.log('[DUCK editor/retry-btn]', {
+      visible: canShowRetry,
+      usageLogId: currentUsageLogId,
+      retryUsed,
+      hasEnhancedText: Boolean(enhancedText),
+      isGenerating,
+      isRetrying,
+      hiddenBecause: !enhancedText
+        ? 'no_output'
+        : !currentUsageLogId
+          ? 'no_usage_log_id'
+          : retryUsed
+            ? 'retry_already_used'
+            : isGenerating
+              ? 'generating'
+              : isRetrying
+                ? 'retrying'
+                : null,
+    })
+  }, [canShowRetry, currentUsageLogId, retryUsed, enhancedText, isGenerating, isRetrying])
 
   const handleRetrySubmit = async (reason: RetryReasonValue, otherText?: string) => {
     if (!currentUsageLogId || !originalText.trim()) return
@@ -446,92 +547,110 @@ export default function EditorPage() {
     }
   }
 
+  const selectTriggerClass =
+    'h-8 min-w-[7rem] border-0 bg-muted text-sm shadow-none focus:ring-1 focus:ring-ring rounded-lg px-3'
+
+  const handleClear = () => {
+    setOriginalText('')
+    setEnhancedText('')
+    setCurrentUsageLogId(null)
+    setRetryUsed(false)
+  }
+
+  const generateButtonLabel = isGenerating
+    ? loadingMessage || 'جاري التوليد…'
+    : enhancedText
+      ? 'إعادة التوليد'
+      : 'توليد'
+
   return (
     <div className="mx-auto w-full min-w-0 max-w-6xl overflow-x-hidden">
-      <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+      <header className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="min-w-0">
-          <h1 className="text-xl font-bold sm:text-2xl">محرر النصوص</h1>
-          <p className="text-sm text-muted-foreground">حسّن نصوصك بالذكاء الاصطناعي</p>
+          <h1 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
+            محرر النصوص
+          </h1>
+          <p className="mt-1 text-sm text-muted-foreground">حسّن نصوصك بالذكاء الاصطناعي</p>
         </div>
         {usage && (
-          <div className="flex items-center gap-2">
-            <span className="text-sm text-muted-foreground">
+          <div className="flex flex-col items-start sm:items-end">
+            <span className="text-xs text-muted-foreground">الاستخدام</span>
+            <span className="text-sm font-bold text-primary">
               {usage.credits_used} / {isUnlimited ? '∞' : totalCredits} مستخدم
             </span>
           </div>
         )}
-      </div>
+      </header>
 
-      <Card className="mb-4 border-2 border-gray-300 dark:border-border shadow-sm bg-gray-50/50 dark:bg-card">
-        <CardContent className="pt-4">
-          <p className="mb-3 text-xs text-muted-foreground">
+      <div className="mb-6 flex flex-col overflow-hidden rounded-xl border border-border bg-card">
+        <div className="flex flex-wrap items-center gap-3 border-b border-border bg-muted/50 px-4 py-3 sm:gap-4 sm:px-6">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <label className="text-xs font-medium text-muted-foreground">لغة المخرج:</label>
+            <Select value={outputLanguage} onValueChange={setOutputLanguage}>
+              <SelectTrigger className={selectTriggerClass}>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {OUTPUT_LANGUAGES.map((lang) => (
+                  <SelectItem key={lang.value} value={lang.value}>
+                    {lang.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="hidden h-6 w-px bg-border md:block" aria-hidden />
+
+          <div className="flex items-center gap-2 sm:gap-3">
+            <label className="text-xs font-medium text-muted-foreground">النبرة:</label>
+            <Select value={tone} onValueChange={setTone}>
+              <SelectTrigger className={selectTriggerClass}>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {TONE_OPTIONS.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="hidden h-6 w-px bg-border md:block" aria-hidden />
+
+          <div className="flex items-center gap-2 sm:gap-3">
+            <label className="text-xs font-medium text-muted-foreground">المنصة:</label>
+            <Select value={platform} onValueChange={setPlatform}>
+              <SelectTrigger className={selectTriggerClass}>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {PLATFORM_OPTIONS.map((p) => (
+                  <SelectItem key={p.value} value={p.value}>
+                    {p.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <p className="hidden text-xs italic text-muted-foreground/70 lg:ms-auto lg:block">
             المدخل: أي لغة — يُحوَّل تلقائياً إلى لغة المخرج المختارة
           </p>
-          <div className="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-center">
-            <div className="flex w-full flex-col gap-1.5 sm:w-auto sm:flex-row sm:items-center sm:gap-2">
-              <span className="text-sm font-medium text-muted-foreground">لغة المخرج:</span>
-              <Select value={outputLanguage} onValueChange={setOutputLanguage}>
-                <SelectTrigger className="h-11 w-full border-2 border-gray-300 bg-white dark:border-border dark:bg-background sm:h-9 sm:w-[140px]">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {OUTPUT_LANGUAGES.map((lang) => (
-                    <SelectItem key={lang.value} value={lang.value}>
-                      {lang.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
 
-            <div className="flex w-full flex-col gap-1.5 sm:w-auto sm:flex-row sm:items-center sm:gap-2">
-              <span className="text-sm font-medium text-muted-foreground">النبرة:</span>
-              <Select value={tone} onValueChange={setTone}>
-                <SelectTrigger className="h-11 w-full border-2 border-gray-300 bg-white dark:border-border dark:bg-background sm:h-9 sm:w-[120px]">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {TONE_OPTIONS.map((option) => (
-                    <SelectItem key={option.value} value={option.value}>
-                      {option.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+          {detectedInputLabel && (
+            <Badge variant="secondary" className="text-xs">
+              مدخل: {detectedInputLabel}
+              {detectionConfidence != null &&
+                ` — ثقة ${Math.round(detectionConfidence * 100)}٪`}
+            </Badge>
+          )}
+        </div>
 
-            <div className="flex w-full flex-col gap-1.5 sm:w-auto sm:flex-row sm:items-center sm:gap-2">
-              <span className="text-sm font-medium text-muted-foreground">المنصة:</span>
-              <Select value={platform} onValueChange={setPlatform}>
-                <SelectTrigger className="h-11 w-full border-2 border-gray-300 bg-white dark:border-border dark:bg-background sm:h-9 sm:w-[130px]">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {PLATFORM_OPTIONS.map((p) => (
-                    <SelectItem key={p.value} value={p.value}>
-                      {p.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            {detectedInputLabel && (
-              <Badge variant="secondary" className="text-xs">
-                مدخل: {detectedInputLabel}
-                {detectionConfidence != null &&
-                  ` — ثقة ${Math.round(detectionConfidence * 100)}٪`}
-              </Badge>
-            )}
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Dual Editor */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
-        {/* Original Text */}
-        <Card className="border-2 border-gray-300 dark:border-border shadow-sm bg-white dark:bg-card">
-          <CardContent className="p-3">
+        <div className="flex min-h-[min(450px,70dvh)] flex-col divide-y divide-border md:flex-row md:divide-x md:divide-x-reverse md:divide-y-0">
+          <div className="flex min-h-[280px] flex-1 flex-col bg-muted/20 p-4 sm:p-6 md:min-h-0">
             <EnhanceTextInput
               variant="editor"
               value={originalText}
@@ -539,35 +658,50 @@ export default function EditorPage() {
               onSubmit={handleGenerate}
               expandTitle="النص الأصلي"
               headerSlot={
-                <div className="flex items-center gap-2">
-                  <span className="text-sm font-medium">النص الأصلي</span>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-9 w-9 sm:h-8 sm:w-8"
-                    onClick={() => handleCopy(originalText, 'original')}
-                    disabled={!originalText}
-                    aria-label="نسخ النص الأصلي"
-                  >
-                    {copiedStates.original ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
-                  </Button>
-                </div>
+                <h3 className="flex items-center gap-2 text-base font-semibold text-foreground">
+                  <FileEdit className="h-5 w-5 shrink-0 text-primary" aria-hidden />
+                  النص الأصلي
+                </h3>
+              }
+              trailingActions={
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className={cn(
+                    editorToolbarIconButtonClass,
+                    copiedStates.original && 'text-primary'
+                  )}
+                  onClick={() => handleCopy(originalText, 'original')}
+                  disabled={!originalText}
+                  aria-label="نسخ النص الأصلي"
+                >
+                  {copiedStates.original ? (
+                    <Check className="h-4 w-4" />
+                  ) : (
+                    <Copy className="h-4 w-4" />
+                  )}
+                </Button>
               }
             />
-          </CardContent>
-        </Card>
+          </div>
 
-        {/* Enhanced Text */}
-        <Card className="border-2 border-gray-300 dark:border-border shadow-sm relative bg-white dark:bg-card">
-          <CardContent className="p-3">
+          <div className="relative flex min-h-[280px] flex-1 flex-col p-4 sm:p-6 md:min-h-0">
             <EnhanceTextOutput
               value={enhancedText}
               onChange={setEnhancedText}
               expandTitle="النص المحسّن"
-              textareaClassName={!canGenerate() && !enhancedText ? 'opacity-50' : ''}
+              textareaClassName={
+                isCreditsReady && !canUseCredits && !enhancedText ? 'opacity-50' : ''
+              }
               headerSlot={
-                <div className="flex flex-wrap items-center gap-2">
-                  <span className="text-sm font-medium">النص المحسّن</span>
+                <h3 className="flex items-center gap-2 text-base font-semibold text-foreground">
+                  <Sparkles className="h-5 w-5 shrink-0 text-primary" aria-hidden />
+                  النص المحسّن
+                </h3>
+              }
+              trailingActions={
+                <>
                   {canShowRetry && (
                     <Button
                       type="button"
@@ -581,109 +715,91 @@ export default function EditorPage() {
                     </Button>
                   )}
                   <Button
+                    type="button"
                     variant="ghost"
                     size="icon"
-                    className="h-9 w-9 sm:h-8 sm:w-8"
-                    onClick={() => void handleShare(enhancedText)}
+                    className={editorToolbarIconButtonClass}
+                    onClick={(e) => {
+                      e.preventDefault()
+                      e.stopPropagation()
+                      void handleShare(enhancedText)
+                    }}
                     disabled={!enhancedText}
                     aria-label="مشاركة النص المحسّن"
                   >
                     <Share2 className="h-4 w-4" />
                   </Button>
                   <Button
+                    type="button"
                     variant="ghost"
                     size="icon"
-                    className="h-9 w-9 sm:h-8 sm:w-8"
+                    className={cn(
+                      editorToolbarIconButtonClass,
+                      copiedStates.enhanced && 'text-primary'
+                    )}
                     onClick={() => handleCopy(enhancedText, 'enhanced')}
                     disabled={!enhancedText}
                     aria-label="نسخ النص المحسّن"
                   >
-                    {copiedStates.enhanced ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+                    {copiedStates.enhanced ? (
+                      <Check className="h-4 w-4" />
+                    ) : (
+                      <Copy className="h-4 w-4" />
+                    )}
                   </Button>
-                </div>
+                </>
               }
               overlay={
-                (!canGenerate() || upgradeVariant) && !enhancedText ? (
+                isCreditsReady && !canUseCredits && !enhancedText ? (
                   <ConnectedUpgradePrompt
                     variant={upgradeVariant}
                     layout="overlay"
-                    creditsUsed={usage?.credits_used}
-                    creditsLimit={totalCredits || undefined}
-                    remainingCredits={usage?.credits_remaining}
+                    creditsUsed={creditsUsed}
+                    creditsLimit={creditsLimit}
+                    remainingCredits={creditsRemaining}
                   />
                 ) : undefined
               }
             />
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
 
-      <div className="sticky bottom-[calc(4rem+env(safe-area-inset-bottom,0px))] z-20 -mx-1 mb-4 flex gap-3 border-t bg-background/95 p-3 backdrop-blur sm:static sm:bottom-auto sm:mx-0 sm:border-0 sm:bg-transparent sm:p-0 md:hidden">
-        <Button
-          onClick={handleGenerate}
-          disabled={!originalText.trim() || isGenerating || !canGenerate()}
-          className="relative min-h-12 flex-1 overflow-hidden"
-        >
-          {isGenerating ? (
-            <span className="flex items-center">
-              <Loader2 className="me-2 h-4 w-4 animate-spin" />
-              <span className="animate-pulse">{loadingMessage || 'جاري التوليد…'}</span>
-            </span>
-          ) : (
-            <>
-              <Wand2 className="me-2 h-4 w-4" />
-              {enhancedText ? 'إعادة التوليد' : 'توليد'}
-            </>
-          )}
-        </Button>
-        <Button
-          variant="outline"
-          size="icon"
-          className="shrink-0"
-          onClick={() => {
-            setOriginalText('')
-            setEnhancedText('')
-            setCurrentUsageLogId(null)
-            setRetryUsed(false)
-          }}
-          disabled={!originalText && !enhancedText}
-          aria-label="مسح"
-        >
-          <RotateCcw className="h-4 w-4" />
-        </Button>
-      </div>
-
-      <div className="mb-4 hidden gap-3 md:flex">
-        <Button
-          onClick={handleGenerate}
-          disabled={!originalText.trim() || isGenerating || !canGenerate()}
-          className="relative min-h-11 flex-1 overflow-hidden"
-        >
-          {isGenerating ? (
-            <span className="flex items-center">
-              <Loader2 className="me-2 h-4 w-4 animate-spin" />
-              <span className="animate-pulse">{loadingMessage || 'جاري التوليد…'}</span>
-            </span>
-          ) : (
-            <>
-              <Wand2 className="me-2 h-4 w-4" />
-              {enhancedText ? 'إعادة التوليد' : 'توليد'}
-            </>
-          )}
-        </Button>
-        <Button
-          variant="outline"
-          onClick={() => {
-            setOriginalText('')
-            setEnhancedText('')
-            setCurrentUsageLogId(null)
-            setRetryUsed(false)
-          }}
-          disabled={!originalText && !enhancedText}
-        >
-          <RotateCcw className="me-2 h-4 w-4" />
-          مسح
-        </Button>
+      <div className="mb-6 flex flex-col items-center gap-4">
+        <div className="flex w-full max-w-2xl flex-wrap items-center justify-center gap-3 sm:gap-4">
+          <Button
+            type="button"
+            variant="outline"
+            className="gap-2 rounded-xl border-border bg-card px-6 py-3 hover:bg-muted"
+            onClick={handleClear}
+            disabled={!originalText && !enhancedText}
+          >
+            <RotateCcw className="h-4 w-4" />
+            مسح
+          </Button>
+          <Button
+            type="button"
+            onClick={handleGenerate}
+            disabled={
+              !originalText.trim() ||
+              isGenerating ||
+              (isCreditsReady && !canUseCredits)
+            }
+            className="relative min-h-[3.25rem] max-w-md flex-1 gap-3 rounded-xl px-8 py-4 text-base font-semibold shadow-lg shadow-primary/10"
+          >
+            {isGenerating ? (
+              <span className="flex items-center">
+                <Loader2 className="me-2 h-5 w-5 animate-spin" />
+                <span className="animate-pulse">{generateButtonLabel}</span>
+              </span>
+            ) : (
+              <>
+                <Wand2 className="h-5 w-5" />
+                {generateButtonLabel}
+              </>
+            )}
+          </Button>
+        </div>
       </div>
 
       <RetryFeedbackModal
@@ -693,93 +809,85 @@ export default function EditorPage() {
         isSubmitting={isRetrying}
       />
 
-      {/* History - Collapsible */}
-      <Card className="border-2 border-gray-300 dark:border-border shadow-sm overflow-hidden bg-white dark:bg-card">
-        <CardContent className="p-0">
-          <button
-            onClick={() => setShowHistory(!showHistory)}
-            className="w-full flex items-center justify-between p-3 hover:bg-muted/50 transition-colors"
-          >
-            <div className="flex items-center gap-2">
-              <History className="h-4 w-4" />
-              <span className="text-sm font-medium">السجل</span>
-              {history.length > 0 && (
-                <Badge variant="secondary" className="text-xs">{history.length}</Badge>
-              )}
-            </div>
-            <ChevronDown className={`h-4 w-4 transition-transform duration-200 ${showHistory ? 'rotate-180' : ''}`} />
-          </button>
-          
-          <div 
-            className={`border-t overflow-hidden transition-all duration-300 ease-in-out ${
-              showHistory ? 'max-h-[300px] opacity-100' : 'max-h-0 opacity-0 border-t-0'
-            }`}
-          >
-            <div className="max-h-[300px] overflow-y-auto">
-              {history.length === 0 ? (
-                <p className="text-sm text-muted-foreground text-center py-6">
-                  لا يوجد سجل بعد
-                </p>
-              ) : (
-                <div className="divide-y">
-                  {history.map((item) => {
-                    const row = item as HistoryItem & {
-                      input_text?: string
-                      output_language?: string
-                      created_at?: string
-                      platform?: string
-                    }
-                    const previewText = row.originalText || row.input_text || ''
-                    const createdAt = row.createdAt || row.created_at
-                    const outputLang =
-                      row.outputLanguage || row.output_language || 'ar_gulf'
-                    const toneValue = row.tone || 'marketing'
-                    const platformValue = row.platform || 'store'
-
-                    return (
-                      <div
-                        key={item.id}
-                        className="p-3 cursor-pointer hover:bg-muted/50 transition-colors"
-                        onClick={() => loadHistoryItem(item)}
-                      >
-                        <div className="flex items-start justify-between gap-4">
-                          <div className="flex-1 min-w-0">
-                            <div className="text-xs text-muted-foreground mb-1">
-                              {createdAt
-                                ? new Date(createdAt).toLocaleString('ar-SA')
-                                : '—'}
-                            </div>
-                            <div className="text-sm truncate">
-                              {previewText.substring(0, 80)}
-                              {previewText.length > 80 && '...'}
-                            </div>
-                          </div>
-                          <div className="flex flex-shrink-0 flex-wrap justify-end gap-1">
-                            <Badge variant="outline" className="text-xs" title="لغة المخرج">
-                              {labelForOutputLanguage(outputLang)}
-                            </Badge>
-                            <Badge variant="outline" className="text-xs" title="النبرة">
-                              {labelForTone(toneValue)}
-                            </Badge>
-                            <Badge variant="outline" className="text-xs" title="المنصة">
-                              {labelForPlatform(platformValue)}
-                            </Badge>
-                          </div>
-                        </div>
-                      </div>
-                    )
-                  })}
-                </div>
-              )}
-              {history.length > 0 && (
-                <div className="text-xs text-muted-foreground text-center py-2 border-t bg-muted/30">
-                  يُحفظ السجل لمدة ٧ أيام
-                </div>
-              )}
-            </div>
+      <section className="overflow-hidden rounded-xl border border-border bg-card">
+        <button
+          type="button"
+          onClick={() => setShowHistory(!showHistory)}
+          className="flex w-full items-center justify-between px-4 py-4 text-start transition-colors hover:bg-muted/50 sm:px-6"
+        >
+          <div className="flex items-center gap-3">
+            <History className="h-5 w-5 text-primary" aria-hidden />
+            <h3 className="text-base font-semibold text-foreground">السجل</h3>
+            {history.length > 0 && (
+              <Badge variant="secondary" className="text-xs">
+                {history.length}
+              </Badge>
+            )}
           </div>
-        </CardContent>
-      </Card>
+          <ChevronDown
+            className={`h-5 w-5 text-muted-foreground transition-transform duration-200 ${showHistory ? 'rotate-180' : ''}`}
+            aria-hidden
+          />
+        </button>
+
+        <div
+          className={`overflow-hidden border-t border-border transition-all duration-300 ease-in-out ${
+            showHistory ? 'max-h-[320px] opacity-100' : 'max-h-0 opacity-0 border-t-0'
+          }`}
+        >
+          <div className="max-h-[300px] space-y-3 overflow-y-auto px-4 pb-4 sm:px-6 sm:pb-6">
+            {history.length === 0 ? (
+              <p className="py-6 text-center text-sm text-muted-foreground">لا يوجد سجل بعد</p>
+            ) : (
+              history.map((item) => {
+                const row = item as HistoryItem & {
+                  input_text?: string
+                  output_language?: string
+                  created_at?: string
+                  platform?: string
+                }
+                const previewText = row.originalText || row.input_text || ''
+                const createdAt = row.createdAt || row.created_at
+                const outputLang = row.outputLanguage || row.output_language || 'ar_gulf'
+                const toneValue = row.tone || 'marketing'
+                const platformValue = row.platform || 'store'
+
+                return (
+                  <button
+                    key={item.id}
+                    type="button"
+                    onClick={() => loadHistoryItem(item)}
+                    className="group flex w-full items-start justify-between gap-4 rounded-lg border border-border bg-muted/30 p-4 text-start transition-colors hover:bg-muted/50"
+                  >
+                    <div className="min-w-0 flex-1 space-y-1">
+                      <p className="line-clamp-1 text-sm text-foreground">
+                        {previewText.substring(0, 80)}
+                        {previewText.length > 80 && '...'}
+                      </p>
+                      <span className="text-xs text-muted-foreground">
+                        {createdAt
+                          ? new Date(createdAt).toLocaleString('ar-SA')
+                          : '—'}
+                        {' • '}
+                        {labelForTone(toneValue)}
+                        {' • '}
+                        {labelForOutputLanguage(outputLang)}
+                        {' • '}
+                        {labelForPlatform(platformValue)}
+                      </span>
+                    </div>
+                  </button>
+                )
+              })
+            )}
+            {history.length > 0 && (
+              <p className="border-t border-border pt-3 text-center text-xs text-muted-foreground">
+                يُحفظ السجل لمدة ٧ أيام
+              </p>
+            )}
+          </div>
+        </div>
+      </section>
     </div>
   )
 }

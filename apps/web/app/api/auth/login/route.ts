@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { RUNTIME_SUBSCRIPTION_DEFAULTS } from '@emotifyai/config/pricing'
+import { getOAuthAvatarUrl, resolveUserAvatarUrl } from '@/lib/auth/oauth-avatar'
+import { syncProfileAvatarFromAuth } from '@/lib/auth/sync-profile-avatar'
 import { createClient } from '@/lib/supabase/server'
 import { z } from 'zod'
 import type { ProfileInsert } from '@/types/database'
@@ -44,13 +46,17 @@ export async function POST(request: NextRequest) {
             )
         }
 
+        const oauthAvatar = getOAuthAvatarUrl(user)
+        const existingProfile = profile as { avatar_url?: string | null } | null
+        const resolvedAvatar = resolveUserAvatarUrl(existingProfile?.avatar_url, user)
+
         // Create profile if it doesn't exist
         if (!profile) {
             const profileData: ProfileInsert = {
                 id: user.id,
                 email: user.email!,
                 display_name: user.user_metadata?.full_name || user.email?.split('@')[0] || 'User',
-                avatar_url: user.user_metadata?.avatar_url || null,
+                avatar_url: oauthAvatar,
             }
             
             const { data: newProfile, error: createError } = await (supabase
@@ -65,6 +71,12 @@ export async function POST(request: NextRequest) {
                     { error: 'Failed to create user profile' },
                     { status: 500 }
                 )
+            }
+        } else if (oauthAvatar && existingProfile?.avatar_url !== oauthAvatar) {
+            try {
+                await syncProfileAvatarFromAuth(supabase, user.id, user)
+            } catch (syncErr) {
+                console.error('Error syncing OAuth avatar:', syncErr)
             }
         }
 
@@ -110,7 +122,7 @@ export async function POST(request: NextRequest) {
                     id: user.id,
                     email: user.email!,
                     name: user.user_metadata?.full_name || user.email?.split('@')[0] || 'User',
-                    avatar: user.user_metadata?.avatar_url || null,
+                    avatar: oauthAvatar,
                 },
                 subscription: newSubscription || {
                     tier: 'trial',
@@ -134,7 +146,7 @@ export async function POST(request: NextRequest) {
                 id: user.id,
                 email: user.email!,
                 name: user.user_metadata?.full_name || user.email?.split('@')[0] || 'User',
-                avatar: user.user_metadata?.avatar_url || null,
+                avatar: resolvedAvatar,
             },
             subscription: {
                 tier: (subscription as any).tier,

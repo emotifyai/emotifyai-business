@@ -1,7 +1,9 @@
 'use client'
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { getOAuthAvatarUrl, resolveUserAvatarUrl } from '@/lib/auth/oauth-avatar'
 import { createClient } from '@/lib/supabase/client'
+import type { Database } from '@/types/database'
 
 /**
  * Hook to get current authenticated user
@@ -23,11 +25,18 @@ export function useUser() {
                 .eq('id', user.id)
                 .single()
 
+            const profileAvatar = (profile as { avatar_url?: string | null } | null)?.avatar_url
+            const avatar_url = resolveUserAvatarUrl(profileAvatar, user)
+
+            if (!profileAvatar && getOAuthAvatarUrl(user)) {
+                void fetch('/api/user/profile/sync-avatar', { method: 'POST' }).catch(() => {})
+            }
+
             return {
                 id: user.id,
                 email: user.email!,
                 display_name: (profile as any)?.display_name || user.user_metadata?.full_name || user.email?.split('@')[0] || 'User',
-                avatar_url: (profile as any)?.avatar_url || user.user_metadata?.avatar_url || null,
+                avatar_url,
             }
         },
         retry: false,
@@ -126,6 +135,46 @@ export function useOAuthLogin() {
             })
             if (error) throw error
             return data
+        },
+    })
+}
+
+/**
+ * Update profile display name in Supabase
+ */
+export function useUpdateProfile() {
+    const queryClient = useQueryClient()
+
+    return useMutation({
+        mutationFn: async ({ displayName }: { displayName: string }) => {
+            const supabase = createClient()
+            const {
+                data: { user },
+                error: userError,
+            } = await supabase.auth.getUser()
+
+            if (userError || !user) {
+                throw new Error('يرجى تسجيل الدخول')
+            }
+
+            const trimmed = displayName.trim()
+            if (!trimmed) {
+                throw new Error('اسم العرض مطلوب')
+            }
+            if (trimmed.length > 80) {
+                throw new Error('اسم العرض طويل جداً (٨٠ حرفاً كحد أقصى)')
+            }
+
+            const { error } = await supabase
+                .from('profiles')
+                .update({ display_name: trimmed } satisfies Database['public']['Tables']['profiles']['Update'])
+                .eq('id', user.id)
+
+            if (error) throw error
+            return trimmed
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['user'] })
         },
     })
 }

@@ -73,15 +73,19 @@ export function ConnectedUpgradePrompt({
     subscription?.credits_limit ??
     (resolvedVariant === 'guest_exhausted' ? GUEST_CREDIT_LIMIT : undefined)
 
-  const used =
-    creditsUsed ??
-    subscription?.credits_used ??
-    (resolvedVariant === 'guest_exhausted' ? getGuestCreditsUsed() : undefined)
-
   const remaining =
     remainingCredits ??
     subscription?.credits_remaining ??
     (resolvedVariant === 'guest_exhausted' ? getGuestCreditsRemaining() : undefined)
+
+  const used =
+    creditsUsed ??
+    subscription?.credits_used ??
+    (resolvedVariant === 'guest_exhausted'
+      ? getGuestCreditsUsed()
+      : limit !== undefined && remaining !== undefined
+        ? Math.max(0, limit - remaining)
+        : undefined)
 
   const checkoutTier = getPrimaryCheckoutTier(resolvedVariant) as SubscriptionTier
 
@@ -94,7 +98,7 @@ export function ConnectedUpgradePrompt({
     resolvedVariant === 'guest_exhausted' ? (
       <Link
         href={signupHref}
-        className="inline-flex w-full min-h-11 items-center justify-center rounded-md bg-[#36ad8e] px-4 text-sm font-semibold text-[#0f121d] hover:bg-[#36ad8e]/90"
+        className="inline-flex w-full min-h-11 items-center justify-center rounded-md bg-primary px-4 text-sm font-semibold text-primary-foreground hover:bg-primary/90"
         onClick={() => trackUpgradeClicked(`upgrade_prompt_${resolvedVariant}`)}
       >
         سجّل للحصول على ٥ إضافية
@@ -123,7 +127,7 @@ export function ConnectedUpgradePrompt({
   const secondaryAction = (
     <Link
       href={pricingHref}
-      className="inline-flex w-full min-h-10 items-center justify-center gap-1 rounded-md text-sm text-white/80 transition-colors hover:bg-white/5 hover:text-white"
+      className="inline-flex w-full min-h-10 items-center justify-center gap-1 rounded-md text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
       onClick={() => {
         trackUpgradeClicked(`upgrade_prompt_secondary_${resolvedVariant}`)
         onDismiss?.()

@@ -3,6 +3,10 @@
 import * as React from "react"
 import { Maximize2 } from "lucide-react"
 import { cn } from "../lib/utils/cn"
+import {
+  editorTextAreaWrapperClass,
+  editorToolbarIconButtonClass,
+} from "./lib/editor-text-area-wrapper"
 import { scrollbarHideClass } from "./lib/scrollbar-hide"
 import { TextExpandDialog } from "./text-expand-dialog"
 import { Button } from "./button"
@@ -15,6 +19,8 @@ export interface EnhanceTextOutputProps
   showCharCount?: boolean
   charCountLabel?: string
   headerSlot?: React.ReactNode
+  /** Actions shown beside char count in the panel header (copy, share, retry, etc.). */
+  trailingActions?: React.ReactNode
   textareaClassName?: string
   expandable?: boolean
   expandTitle?: string
@@ -30,6 +36,7 @@ export const EnhanceTextOutput = React.forwardRef<HTMLTextAreaElement, EnhanceTe
       showCharCount = true,
       charCountLabel = "حرف",
       headerSlot,
+      trailingActions,
       className,
       textareaClassName,
       expandable = true,
@@ -43,24 +50,26 @@ export const EnhanceTextOutput = React.forwardRef<HTMLTextAreaElement, EnhanceTe
     const [expandOpen, setExpandOpen] = React.useState(false)
 
     return (
-      <div className={cn("w-full", className)}>
-        {(headerSlot || showCharCount || expandable) && (
-          <div className="mb-2 flex items-center justify-between gap-2">
+      <div className={cn("flex min-h-0 w-full flex-1 flex-col", className)}>
+        {(headerSlot || showCharCount || trailingActions || expandable) && (
+          <div className="flex shrink-0 items-center justify-between gap-3">
             {headerSlot ? <div className="min-w-0 flex-1">{headerSlot}</div> : <span />}
-            <div className="flex shrink-0 items-center gap-1">
+            <div className="flex shrink-0 flex-wrap items-center justify-end gap-2 sm:gap-3">
               {showCharCount && (
                 <span className="text-xs text-muted-foreground">
                   {value.length} {charCountLabel}
                 </span>
               )}
+              {trailingActions}
               {expandable && (
                 <Button
                   type="button"
                   variant="ghost"
                   size="icon"
-                  className="h-9 w-9 sm:h-8 sm:w-8"
+                  title="توسيع"
+                  className={editorToolbarIconButtonClass}
                   onClick={() => setExpandOpen(true)}
-                  aria-label="توسيع النص المحسّن"
+                  aria-label="توسيع"
                 >
                   <Maximize2 className="h-4 w-4" />
                 </Button>
@@ -68,7 +77,7 @@ export const EnhanceTextOutput = React.forwardRef<HTMLTextAreaElement, EnhanceTe
             </div>
           </div>
         )}
-        <div className="relative">
+        <div className={editorTextAreaWrapperClass}>
           <Textarea
             ref={ref}
             dir="auto"
@@ -76,7 +85,7 @@ export const EnhanceTextOutput = React.forwardRef<HTMLTextAreaElement, EnhanceTe
             onChange={(e) => onChange(e.target.value)}
             placeholder={placeholder}
             className={cn(
-              "min-h-[280px] max-h-[280px] resize-none text-sm border-2 border-gray-300 dark:border-border bg-gray-50/30 dark:bg-background focus:bg-white dark:focus:bg-background",
+              "min-h-0 h-full flex-1 resize-none text-base border-0 bg-transparent shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none p-0",
               scrollbarHideClass,
               textareaClassName
             )}

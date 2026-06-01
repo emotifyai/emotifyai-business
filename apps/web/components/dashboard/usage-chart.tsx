@@ -1,5 +1,6 @@
 'use client'
 
+import { useEffect, useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@emotifyai/ui'
 import { Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 
@@ -11,6 +12,12 @@ interface UsageChartProps {
 }
 
 export function UsageChart({ data }: UsageChartProps) {
+    const [chartReady, setChartReady] = useState(false)
+
+    useEffect(() => {
+        setChartReady(true)
+    }, [])
+
     // We can use CSS variables for colors to match theme
     // But for Recharts we often need hex values. 
     // Since we are using CSS variables in globals.css, we might need to extract them or use hardcoded brand colors that match.
@@ -25,8 +32,9 @@ export function UsageChart({ data }: UsageChartProps) {
                 </CardDescription>
             </CardHeader>
             <CardContent className="ps-2">
-                <div className="h-[350px] w-full">
-                    <ResponsiveContainer width="100%" height="100%">
+                <div className="min-h-[300px] h-[350px] w-full">
+                    {chartReady ? (
+                    <ResponsiveContainer width="100%" height={350} minHeight={300}>
                         <LineChart data={data}>
                             <XAxis
                                 dataKey="date"
@@ -64,6 +72,7 @@ export function UsageChart({ data }: UsageChartProps) {
                             />
                         </LineChart>
                     </ResponsiveContainer>
+                    ) : null}
                 </div>
             </CardContent>
         </Card>

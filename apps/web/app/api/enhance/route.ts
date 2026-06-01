@@ -31,6 +31,13 @@ function createErrorResponse(error: ErrorResponse, status: number) {
     return NextResponse.json({ success: false, error }, { status })
 }
 
+function isMissingColumnError(error: { code?: string; message?: string } | null): boolean {
+    return (
+        error?.code === '42703' ||
+        (typeof error?.message === 'string' && error.message.includes('does not exist'))
+    )
+}
+
 function createSuccessResponse(data: {
     enhancedText: string
     tokensUsed: number
@@ -158,14 +165,44 @@ async function persistEnhancement(params: {
         detected_route: routeId || result.routeId || undefined,
     } as UsageLogInsert
 
-    const { data: insertedLog, error: logError } = await (supabase as any)
+    console.log('[DUCK enhance/persist] inserting usage_log', {
+        userId,
+        isEditorSession,
+        inputLen: text.length,
+    })
+
+    let insertedLog: { id?: string; retry_used?: boolean } | null = null
+    let logError: { code?: string; message?: string } | null = null
+
+    const insertWithRetry = await (supabase as any)
         .from('usage_logs')
-        .insert(usageLogData)
+        .insert({ ...usageLogData, retry_used: false })
         .select('id, retry_used')
         .single()
 
+    insertedLog = insertWithRetry.data
+    logError = insertWithRetry.error
+
+    if (logError && isMissingColumnError(logError)) {
+        console.warn(
+            '[DUCK enhance/persist] usage_logs.retry_used missing — insert without retry columns; run Supabase migration'
+        )
+        const fallback = await (supabase as any)
+            .from('usage_logs')
+            .insert(usageLogData)
+            .select('id')
+            .single()
+        insertedLog = fallback.data
+        logError = fallback.error
+    }
+
     if (logError) {
-        console.error('Usage log insert error:', logError)
+        console.error('[DUCK enhance/persist] Usage log insert error:', logError)
+    } else {
+        console.log('[DUCK enhance/persist] insert ok', {
+            usageLogId: insertedLog?.id,
+            retry_used: insertedLog?.retry_used,
+        })
     }
 
     return {

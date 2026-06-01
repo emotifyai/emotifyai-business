@@ -9,6 +9,12 @@ import { Progress } from '@emotifyai/ui'
 import { Check } from 'lucide-react'
 import { SubscriptionTier } from '@/types/database'
 import { formatDate } from '@/lib/utils'
+import {
+    getDashboardPlanLabelAr,
+    getRegisteredCreditsDescriptionAr,
+    getUsageLabelAr,
+} from '@/lib/billing/tier-labels'
+import type { SubscriptionBundleRow } from '@/lib/hooks/use-subscription'
 
 interface SubscriptionCardProps {
     tier: SubscriptionTier
@@ -19,11 +25,16 @@ interface SubscriptionCardProps {
         limit: number
         percentage: number
     }
+    bundles?: SubscriptionBundleRow[]
 }
 
-export function SubscriptionCard({ tier, status, currentPeriodEnd, usage }: SubscriptionCardProps) {
-    const isPro = tier !== SubscriptionTier.TRIAL
+export function SubscriptionCard({ tier, status, currentPeriodEnd, usage, bundles = [] }: SubscriptionCardProps) {
+    const isFreeRegistered =
+        tier === SubscriptionTier.FREE || tier === SubscriptionTier.TRIAL
+    const isPro = !isFreeRegistered
     const isLifetime = tier === SubscriptionTier.LIFETIME_LAUNCH
+    const planLabel = getDashboardPlanLabelAr(tier)
+    const usageLabel = getUsageLabelAr(tier)
 
     const [isLoading, setIsLoading] = useState(false)
 
@@ -53,7 +64,7 @@ export function SubscriptionCard({ tier, status, currentPeriodEnd, usage }: Subs
                 <div className="flex items-center justify-between">
                     <CardTitle>الخطة الحالية</CardTitle>
                     <Badge variant={isPro ? "default" : "secondary"}>
-                        {tier.toUpperCase()}
+                        {planLabel}
                     </Badge>
                 </div>
                 <CardDescription>
@@ -66,13 +77,37 @@ export function SubscriptionCard({ tier, status, currentPeriodEnd, usage }: Subs
             <CardContent className="space-y-4">
                 <div className="space-y-2">
                     <div className="flex items-center justify-between text-sm">
-                        <span className="text-muted-foreground">الاستخدام الشهري</span>
+                        <span className="text-muted-foreground">{usageLabel}</span>
                         <span className="font-medium">
                             {usage.used} / {isLifetime ? "∞" : usage.limit}
                         </span>
                     </div>
+                    {isFreeRegistered && (
+                        <p className="text-xs text-muted-foreground">
+                            {getRegisteredCreditsDescriptionAr(usage.limit)}
+                        </p>
+                    )}
                     <Progress value={usage.percentage} className="h-2" />
                 </div>
+
+                {bundles.length > 0 && (
+                    <div className="space-y-2 border-t pt-4">
+                        <p className="text-sm font-medium">حزم</p>
+                        <ul className="space-y-2">
+                            {bundles.map((bundle) => (
+                                <li
+                                    key={bundle.tier}
+                                    className="flex items-center justify-between text-sm"
+                                >
+                                    <span className="text-muted-foreground">{bundle.label_ar}</span>
+                                    <span className="font-medium">
+                                        {bundle.credits_used} / {bundle.credits_limit}
+                                    </span>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+                )}
 
                 <div className="grid gap-2">
                     <div className="flex items-center gap-2 text-sm">

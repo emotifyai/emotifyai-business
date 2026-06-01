@@ -50,15 +50,19 @@ export function RetryFeedbackModal({
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="max-w-sm" dir="rtl">
-        <DialogHeader className="text-right sm:text-right">
-          <DialogTitle>لماذا لم يعجبك النص؟</DialogTitle>
-          <DialogDescription>
+      <DialogContent className="max-w-sm gap-0 p-0 sm:p-0" dir="rtl">
+        <DialogHeader className="gap-3 space-y-0 px-6 pt-6 pb-4 pe-12 text-start sm:text-start">
+          <DialogTitle className="leading-snug">لماذا لم يعجبك النص؟</DialogTitle>
+          <DialogDescription className="leading-relaxed">
             اختر السبب الأقرب — سنعيد التحسين مجاناً مرة واحدة
           </DialogDescription>
         </DialogHeader>
 
-        <div className="flex flex-col gap-2 py-1" role="radiogroup" aria-label="سبب إعادة المحاولة">
+        <div
+          className="flex flex-col gap-2.5 px-6 py-4"
+          role="radiogroup"
+          aria-label="سبب إعادة المحاولة"
+        >
           {RETRY_REASON_OPTIONS.map((option) => (
             <button
               key={option.value}
@@ -80,7 +84,7 @@ export function RetryFeedbackModal({
         </div>
 
         {selected === 'other' && (
-          <div className="space-y-1.5">
+          <div className="space-y-2 px-6 pb-2">
             <Label htmlFor="retry-other" className="text-sm text-muted-foreground">
               وضّح (اختياري)
             </Label>
@@ -96,7 +100,7 @@ export function RetryFeedbackModal({
           </div>
         )}
 
-        <DialogFooter className="flex-row-reverse gap-2 sm:flex-row-reverse">
+        <DialogFooter className="flex-col-reverse gap-3 px-6 pb-6 pt-4 sm:flex-row-reverse sm:justify-start sm:gap-3 [&>button]:w-full sm:[&>button]:w-auto">
           <Button
             type="button"
             onClick={handleSubmit}

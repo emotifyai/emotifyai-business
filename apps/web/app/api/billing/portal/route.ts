@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { getSubscription } from '@lemonsqueezy/lemonsqueezy.js'
 import { configureLemonSqueezy } from '@/lib/lemonsqueezy/client'
+import { SubscriptionStatus } from '@/types/database'
 
 configureLemonSqueezy()
 
@@ -22,7 +23,7 @@ export async function POST(request: NextRequest) {
             .from('subscriptions')
             .select('lemon_squeezy_id')
             .eq('user_id', user.id)
-            .in('status', ['active', 'past_due', 'paused'])
+            .in('status', [SubscriptionStatus.ACTIVE, SubscriptionStatus.PAST_DUE, SubscriptionStatus.PAUSED])
             .order('created_at', { ascending: false })
             .limit(1)
             .single()

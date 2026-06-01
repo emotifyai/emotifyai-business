@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { isBundleTier, type SubscriptionTierId } from '@emotifyai/config/pricing'
 import { z } from 'zod'
+import { SubscriptionTier } from '@/types/database'
 
 interface SubscriptionVerifyRow {
   tier: string
@@ -85,7 +86,7 @@ export async function GET(request: NextRequest) {
       .limit(5)
 
     if (tier) {
-      query = query.eq('tier', tier)
+      query = query.eq('tier', tier as SubscriptionTier)
     }
 
     const { data: rows, error } = await query

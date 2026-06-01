@@ -3,116 +3,117 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
-import { Button } from '@emotifyai/ui'
-import {
-    LayoutDashboard,
-    Wand2,
-    BarChart3,
-    CreditCard,
-    Key,
-    Settings,
-    LogOut,
-    Menu,
-} from 'lucide-react'
+import { LogOut } from 'lucide-react'
 import { useLogout } from '@/lib/hooks/use-auth'
 import { useRouter } from 'next/navigation'
-import { Sheet, SheetContent, SheetTrigger } from '@emotifyai/ui'
-import { useState } from 'react'
+import {
+  dashboardNavItems,
+  isDashboardNavActive,
+} from '@/components/layout/dashboard-nav'
 
-const sidebarItems = [
-    {
-        title: 'نظرة عامة',
-        href: '/dashboard',
-        icon: LayoutDashboard,
-    },
-    {
-        title: 'المحرر',
-        href: '/dashboard/editor',
-        icon: Wand2,
-    },
-    {
-        title: 'الاستخدام',
-        href: '/dashboard/usage',
-        icon: BarChart3,
-    },
-    {
-        title: 'الاشتراك',
-        href: '/dashboard/subscription',
-        icon: CreditCard,
-    },
-    {
-        title: 'الإعدادات',
-        href: '/dashboard/settings',
-        icon: Settings,
-    },
-]
-
-export function Sidebar({ className }: { className?: string }) {
-    const pathname = usePathname()
-    const logout = useLogout()
-    const router = useRouter()
-
-    const handleLogout = async () => {
-        await logout.mutateAsync()
-        router.push('/')
-    }
-
-    return (
-        <div className={cn('pb-12', className)}>
-            <div className="space-y-4 py-4">
-                <div className="px-3 py-2">
-                    <div className="space-y-1">
-                        {sidebarItems.map((item) => (
-                            <Button
-                                key={item.href}
-                                variant={pathname === item.href ? 'secondary' : 'ghost'}
-                                className="w-full justify-start"
-                                asChild
-                            >
-                                <Link href={item.href}>
-                                    <item.icon className="me-2 h-4 w-4" />
-                                    {item.title}
-                                </Link>
-                            </Button>
-                        ))}
-                    </div>
-                </div>
-                <div className="px-3 py-2">
-                    <div className="space-y-1">
-                        <Button
-                            variant="ghost"
-                            className="w-full justify-start text-destructive hover:text-destructive hover:bg-destructive/10"
-                            onClick={handleLogout}
-                        >
-                            <LogOut className="me-2 h-4 w-4" />
-                            تسجيل الخروج
-                        </Button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    )
+type DashboardSidebarNavProps = {
+  className?: string
+  onNavigate?: () => void
 }
 
-export function MobileSidebar() {
-    const [open, setOpen] = useState(false)
+export function DashboardSidebarBrand() {
+  return (
+    <Link
+      href="/"
+      className="mb-10 block rounded-lg px-4 py-2 transition-colors hover:bg-muted/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-sidebar"
+      aria-label="EmotifyAI — الصفحة الرئيسية"
+    >
+      <h1 className="text-xl font-bold tracking-tight">
+        <span className="text-gradient-brand">Emotify</span>
+        <span className="text-primary">AI</span>
+      </h1>
+      <p className="mt-1 text-xs tracking-wide text-muted-foreground/80">
+        لوحة التحكم
+      </p>
+    </Link>
+  )
+}
 
-    return (
-        <Sheet open={open} onOpenChange={setOpen}>
-            <SheetTrigger asChild>
-                <Button variant="ghost" className="me-2 px-0 text-base hover:bg-transparent focus-visible:bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 md:hidden">
-                    <Menu className="h-6 w-6" />
-                    <span className="sr-only">فتح القائمة</span>
-                </Button>
-            </SheetTrigger>
-            <SheetContent side="right" className="pe-0">
-                <div className="px-7">
-                    <Link href="/" className="flex items-center" onClick={() => setOpen(false)}>
-                        <span className="text-gradient-brand text-2xl font-bold">Emotify<span className="text-primary">AI</span></span>
-                    </Link>
-                </div>
-                <Sidebar className="my-4 h-[calc(100vh-8rem)] pb-10 ps-6" />
-            </SheetContent>
-        </Sheet>
-    )
+export function DashboardSidebarNav({
+  className,
+  onNavigate,
+}: DashboardSidebarNavProps) {
+  const pathname = usePathname()
+  const logout = useLogout()
+  const router = useRouter()
+
+  const handleLogout = async () => {
+    await logout.mutateAsync()
+    onNavigate?.()
+    router.push('/')
+  }
+
+  return (
+    <div className={cn('flex h-full flex-col', className)}>
+      <DashboardSidebarBrand />
+      <nav className="flex-1 space-y-2" aria-label="لوحة التحكم">
+        {dashboardNavItems.map((item) => {
+          const isActive = isDashboardNavActive(pathname, item.href)
+          const Icon = item.icon
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              onClick={onNavigate}
+              className={cn(
+                'flex items-center gap-3 rounded-lg px-4 py-3 text-sm transition-colors duration-200',
+                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-sidebar',
+                isActive
+                  ? 'bg-secondary font-bold text-secondary-foreground'
+                  : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+              )}
+              aria-current={isActive ? 'page' : undefined}
+            >
+              <Icon className="size-5 shrink-0" aria-hidden />
+              <span>{item.title}</span>
+            </Link>
+          )
+        })}
+      </nav>
+      <div className="mt-auto border-t border-sidebar-border pt-6 px-4">
+        <button
+          type="button"
+          onClick={handleLogout}
+          disabled={logout.isPending}
+          className={cn(
+            'flex w-full items-center gap-3 rounded-lg px-0 py-1 text-sm text-destructive transition-opacity',
+            'hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-destructive/50 focus-visible:ring-offset-2 focus-visible:ring-offset-sidebar',
+            logout.isPending && 'pointer-events-none opacity-60'
+          )}
+        >
+          <LogOut className="size-5 shrink-0" aria-hidden />
+          <span>تسجيل الخروج</span>
+        </button>
+      </div>
+    </div>
+  )
+}
+
+export function DashboardSidebar({ className }: { className?: string }) {
+  return (
+    <aside
+      className={cn(
+        'fixed inset-y-0 right-0 z-50 hidden w-64 flex-col border-l border-sidebar-border bg-sidebar py-8 px-4 md:flex',
+        className
+      )}
+      aria-label="القائمة الجانبية"
+    >
+      <DashboardSidebarNav />
+    </aside>
+  )
+}
+
+/** @deprecated Use DashboardSidebarNav inside DashboardMobileNav */
+export function Sidebar(props: DashboardSidebarNavProps) {
+  return <DashboardSidebarNav {...props} />
+}
+
+/** @deprecated Use DashboardMobileNav from dashboard-header */
+export function MobileSidebar() {
+  return <DashboardSidebarNav className="px-2" />
 }

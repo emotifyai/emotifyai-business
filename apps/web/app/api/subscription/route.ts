@@ -2,8 +2,10 @@ import { NextRequest, NextResponse } from 'next/server'
 import {
   getTierLabelsAr,
   getTierPriorityMap,
+  REGISTERED_FREE_CREDIT_TOTAL,
   RUNTIME_SUBSCRIPTION_DEFAULTS,
 } from '@emotifyai/config/pricing'
+import { isBundleSubscriptionTier } from '@/lib/billing/tier-labels'
 import { createClient } from '@/lib/supabase/server'
 import { SubscriptionTier, SubscriptionStatus } from '@/types/database'
 
@@ -34,7 +36,7 @@ export async function GET(request: NextRequest) {
             .from('subscriptions')
             .select('*')
             .eq('user_id', user.id)
-            .in('status', ['active', 'trial'])
+            .in('status', [SubscriptionStatus.ACTIVE, SubscriptionStatus.TRIAL])
             .order('created_at', { ascending: false })
 
         if (subscriptionError) {
@@ -52,13 +54,14 @@ export async function GET(request: NextRequest) {
                 data: {
                     tier: SubscriptionTier.FREE,
                     status: SubscriptionStatus.ACTIVE,
-                    credits_limit: empty.credits,
+                    credits_limit: REGISTERED_FREE_CREDIT_TOTAL,
                     credits_used: 0,
-                    credits_remaining: empty.credits,
+                    credits_remaining: REGISTERED_FREE_CREDIT_TOTAL,
                     credits_reset_date: null,
                     validity_days: empty.validityDays,
-                    tier_name: 'مجاني',
+                    tier_name: 'مسجل',
                     current_period_end: periodEnd,
+                    bundles: [],
                 },
             })
         }
@@ -89,19 +92,39 @@ export async function GET(request: NextRequest) {
         const creditsRemaining = Math.max(0, (subscription as any).credits_limit - (subscription as any).credits_used)
 
         const tierNames = getTierLabelsAr()
+        const primaryTier = (subscription as any).tier as SubscriptionTier
+
+        const bundleRows = subscriptions
+            .filter(
+                (s: { tier: string; status: string }) =>
+                    isBundleSubscriptionTier(s.tier) && s.status === 'active'
+            )
+            .map((s: { tier: string; credits_limit: number; credits_used: number }) => ({
+                tier: s.tier,
+                credits_limit: s.credits_limit,
+                credits_used: s.credits_used,
+                credits_remaining: Math.max(0, s.credits_limit - s.credits_used),
+                label_ar: tierNames[s.tier as SubscriptionTier] ?? s.tier,
+            }))
+
+        console.log('[DUCK subscription] user', user.id, {
+            primaryTier,
+            bundleCount: bundleRows.length,
+        })
 
         return NextResponse.json({
             success: true,
             data: {
-                tier: (subscription as any).tier,
+                tier: primaryTier,
                 status: (subscription as any).status,
                 credits_limit: (subscription as any).credits_limit,
                 credits_used: (subscription as any).credits_used,
                 credits_remaining: creditsRemaining,
                 credits_reset_date: (subscription as any).credits_reset_date,
                 validity_days: (subscription as any).validity_days,
-                tier_name: tierNames[(subscription as any).tier as SubscriptionTier] || (subscription as any).tier_name || 'خطة غير معروفة',
-                current_period_end: (subscription as any).current_period_end
+                tier_name: tierNames[primaryTier] || (subscription as any).tier_name || 'خطة غير معروفة',
+                current_period_end: (subscription as any).current_period_end,
+                bundles: bundleRows,
             }
         })
 
