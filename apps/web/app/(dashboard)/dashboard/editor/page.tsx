@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef, useCallback } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
 import { useSearchParams } from 'next/navigation'
 import { Button } from '@emotifyai/ui'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@emotifyai/ui'
@@ -83,6 +84,7 @@ const LOADING_MESSAGES = [
 
 export default function EditorPage() {
   const searchParams = useSearchParams()
+  const queryClient = useQueryClient()
   const { data: subscription, isLoading: isSubscriptionLoading } = useSubscription()
   const { data: usage, isLoading: isUsageLoading } = useUsageStats()
 
@@ -355,6 +357,9 @@ export default function EditorPage() {
             usageLogId: data.usageLogId ?? null,
             retryUsed: data.retryUsed ?? false,
           })
+          // Invalidate usage and subscription caches so the counter updates immediately
+          void queryClient.invalidateQueries({ queryKey: ['usage-stats'] })
+          void queryClient.invalidateQueries({ queryKey: ['subscription'] })
           trackTransformCompleted()
           toast.success('تم تحسين النص بنجاح!', {
             description: `تم استخدام ${data.tokensUsed || 0} رمزاً`,

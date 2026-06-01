@@ -1,6 +1,6 @@
 import { TextEncoder } from 'node:util'
 import { NextRequest, NextResponse } from 'next/server'
-import { RUNTIME_SUBSCRIPTION_DEFAULTS } from '@emotifyai/config/pricing'
+import { RUNTIME_SUBSCRIPTION_DEFAULTS, REGISTERED_FREE_CREDIT_TOTAL } from '@emotifyai/config/pricing'
 import { createClient } from '@/lib/supabase/server'
 import { canMakeEnhancement } from '@/lib/subscription/validation'
 import {
@@ -87,8 +87,10 @@ async function ensureCanEnhance(
                 status: 'active',
                 tier: freeDefaults.tier,
                 tier_name: 'free',
-                credits_limit: freeDefaults.credits,
+                // Registered users get the full combined pool (guest + signup bonus)
+                credits_limit: REGISTERED_FREE_CREDIT_TOTAL,
                 credits_used: 0,
+                credits_remaining: REGISTERED_FREE_CREDIT_TOTAL,
                 validity_days: freeDefaults.validityDays,
                 current_period_start: now.toISOString(),
                 current_period_end: periodEnd,
