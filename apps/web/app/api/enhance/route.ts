@@ -15,7 +15,7 @@ import { detectAndRoute } from '@/lib/ai/language-router'
 import { formatEnhanceSSE, wantsEnhanceStream } from '@/lib/api/enhance-sse'
 import { EnhanceRequestSchema, ApiErrorCode } from '@/types/api'
 import { EnhancementMode, UsageLogInsert } from '@/types/database'
-import { checkGuestRateLimit } from '@/lib/upstash/ratelimit'
+import { checkGuestRateLimit, recordGuestSessionUsage } from '@/lib/upstash/ratelimit'
 
 function useMockAi(): boolean {
     return process.env.MOCK_AI_RESPONSES === 'true'
@@ -156,7 +156,7 @@ async function persistEnhancement(params: {
         isEditorSession,
     } = params
 
-    await (supabase as any).rpc('consume_credits', { user_uuid: userId, credits_to_consume: 1 }).single()
+    await supabase.rpc('consume_credits', { user_uuid: userId, credits_to_consume: 1 }).single()
 
     const usageLogData: UsageLogInsert = {
         user_id: userId,
@@ -311,6 +311,7 @@ export async function POST(request: NextRequest) {
             strength,
             isEditorSession,
             isGuest,
+            guestToken,
             stream: requestStream,
         } = validation.data
 
@@ -344,6 +345,13 @@ export async function POST(request: NextRequest) {
                     })
                 }
                 return NextResponse.json(errorBody, { status: 429 })
+            }
+
+            if (guestToken) {
+                // Track usage against the per-browser token so it can be merged after signup
+                await recordGuestSessionUsage(guestToken).catch((err) => {
+                    console.error('[DUCK enhance/guest-token] failed to record:', err)
+                })
             }
         } else {
             const authResult = await authenticateUser()

@@ -3,6 +3,7 @@
 import { DashboardHeader } from '@/components/layout/dashboard-header'
 import { DashboardSidebar } from '@/components/layout/sidebar'
 import ProtectedRoute from '@/components/auth/protected-route'
+import { GuestSessionMerger } from '@/components/auth/guest-session-merger'
 import React from 'react'
 
 export default function DashboardLayout({
@@ -12,6 +13,7 @@ export default function DashboardLayout({
 }) {
   return (
     <ProtectedRoute>
+      <GuestSessionMerger />
       <div className="min-h-dvh bg-background">
         <DashboardSidebar />
         <div className="flex min-h-dvh flex-col md:mr-64">

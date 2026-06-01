@@ -19,6 +19,7 @@ import { trackUpgradeClicked } from '@/lib/analytics/ga'
 import {
   consumeGuestCredit,
   isGuestCreditsExhausted,
+  getGuestToken,
 } from '@/lib/upgrade-prompt/guest-credits'
 import { CopyButton } from '@/components/ui/copy-button'
 import { useFirstEnhanceConfetti } from '@/lib/confetti'
@@ -98,6 +99,7 @@ export function LandingHero() {
         body: JSON.stringify({
           text: text.trim(),
           isGuest: true,
+          guestToken: getGuestToken(),
           ...config,
         }),
       })

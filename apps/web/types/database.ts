@@ -301,6 +301,34 @@ export interface Database {
                 Args: Record<string, never>
                 Returns: Json
             }
+            consume_credits: {
+                Args: {
+                    user_uuid: string
+                    credits_to_consume?: number
+                }
+                Returns: boolean
+            }
+            can_use_credits: {
+                Args: {
+                    user_uuid: string
+                }
+                Returns: boolean
+            }
+            get_user_credit_status: {
+                Args: {
+                    user_uuid: string
+                }
+                Returns: {
+                    tier_name: string
+                    credits_limit: number
+                    credits_used: number
+                    credits_remaining: number
+                    credits_reset_date: string
+                    validity_days: number
+                    is_expired: boolean
+                    can_use: boolean
+                }
+            }
         }
         Enums: {
             subscription_status: SubscriptionStatus
