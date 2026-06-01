@@ -22,6 +22,7 @@ export const EnhanceRequestSchema = z.object({
         .default('store'),
     strength: z.number().min(1).max(5).optional().default(5),
     isEditorSession: z.boolean().optional().default(false),
+    isGuest: z.boolean().optional().default(false),
     /** When true (or Accept: text/event-stream), response is SSE — see lib/api/enhance-sse.ts */
     stream: z.boolean().optional().default(false),
 })

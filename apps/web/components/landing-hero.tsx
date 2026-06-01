@@ -74,23 +74,66 @@ export function LandingHero() {
   const [text, setText] = React.useState('')
   const [config, setConfig] = React.useState<EditorEnhanceConfig>(DEFAULT_CONFIG)
   const [activeChipId, setActiveChipId] = React.useState<string | null>(null)
+  const [isEnhancing, setIsEnhancing] = React.useState(false)
+  const [enhancedResult, setEnhancedResult] = React.useState<string | null>(null)
+  const [showSadAnimation, setShowSadAnimation] = React.useState(false)
+
+  const handleGuestEnhance = async () => {
+    if (isGuestCreditsExhausted()) {
+      setShowSadAnimation(true)
+      return
+    }
+
+    setIsEnhancing(true)
+    setEnhancedResult(null)
+
+    try {
+      const res = await fetch('/api/enhance', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          text: text.trim(),
+          isGuest: true,
+          ...config,
+        }),
+      })
+
+      const data = await res.json()
+
+      if (!res.ok || !data.success) {
+        if (res.status === 429) {
+          setShowSadAnimation(true)
+        } else {
+          console.error('Enhance error:', data)
+        }
+        return
+      }
+
+      consumeGuestCredit()
+      setEnhancedResult(data.data.enhancedText)
+      setText('')
+    } catch (err) {
+      console.error(err)
+    } finally {
+      setIsEnhancing(false)
+    }
+  }
 
   const continueToEditor = () => {
     saveEditorSession({
       originalText: text.trim(),
-      enhancedText: '',
+      enhancedText: enhancedResult || '',
       ...config,
     })
+    router.push(EDITOR_PATH)
+  }
+
+  const handleAction = () => {
     if (isAuthenticated) {
-      router.push(EDITOR_PATH)
-      return
+      continueToEditor()
+    } else {
+      handleGuestEnhance()
     }
-    if (isGuestCreditsExhausted()) {
-      router.push('/signup?from=guest')
-      return
-    }
-    consumeGuestCredit()
-    router.push(buildSignupRedirectUrl())
   }
 
   const applyPreset = (chipId: string, preset: EditorEnhanceConfig) => {
@@ -124,39 +167,88 @@ export function LandingHero() {
           )}
         </h1>
 
-        <form
-          className="mb-4 w-full max-w-2xl"
-          onSubmit={(e) => {
-            e.preventDefault()
-            if (text.trim()) continueToEditor()
-          }}
-        >
-          <div className="rounded-full border border-border/60 bg-card/80 p-2 shadow-xl shadow-black/20 backdrop-blur-sm sm:p-3">
-            <div className="flex items-end gap-2 rounded-full bg-background/60 px-3 py-2 sm:items-center sm:px-4 sm:py-3">
-              <EnhanceTextInput
-                variant="hero"
-                value={text}
-                onChange={setText}
-                showCharCount={false}
-                placeholder="اكتب أو الصق نص المنتج أو الرسالة…"
-                onSubmit={continueToEditor}
-                aria-label="نص للتحسين"
-                rows={1}
-                className="min-w-0 flex-1"
-              />
-              <Button
-                type="submit"
-                size="icon"
-                variant="glow"
-                className="size-10 shrink-0 rounded-full sm:size-11"
-                disabled={!text.trim()}
-                aria-label="ابدأ التحسين"
-              >
-                <Sparkles className="size-5" />
-              </Button>
+        <div className="mb-4 w-full max-w-2xl relative min-h-[80px] flex flex-col justify-center">
+          {showSadAnimation ? (
+             <div className="animate-in fade-in zoom-in-95 duration-500 rounded-3xl border-2 border-destructive/30 bg-gradient-to-b from-destructive/10 to-transparent p-6 shadow-2xl backdrop-blur-md">
+                <div className="mb-3 flex justify-center">
+                   <div className="rounded-full bg-destructive/20 p-3 animate-bounce">
+                     <span className="text-3xl">😢</span>
+                   </div>
+                </div>
+                <h3 className="text-destructive font-bold text-xl mb-2">انتهت محاولاتك المجانية!</h3>
+                <p className="text-muted-foreground mb-6 text-sm sm:text-base">
+                  لقد استنفدت المحاولات المتاحة للضيوف. أنشئ حسابك الآن لفتح المحرر ومواصلة تحويل نصوصك إلى نسخ تبيع!
+                </p>
+                <div className="flex gap-3 justify-center">
+                  <Button onClick={() => setShowSadAnimation(false)} variant="outline">
+                      تراجع
+                  </Button>
+                  <Button onClick={() => router.push(buildSignupRedirectUrl())} className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg shadow-primary/30">
+                      إنشاء حساب مجاني
+                  </Button>
+                </div>
+             </div>
+          ) : enhancedResult ? (
+            <div className="animate-in fade-in slide-in-from-bottom-8 duration-1000 ease-out rounded-3xl border border-primary/40 bg-gradient-to-br from-primary/5 via-card/80 to-background p-6 shadow-2xl backdrop-blur-md text-right relative overflow-hidden group">
+               <div className="absolute inset-0 bg-gradient-to-r from-transparent via-primary/10 to-transparent -translate-x-full group-hover:animate-[shimmer_2.5s_infinite_ease-in-out]" />
+               <div className="flex items-center gap-2 mb-3 text-primary/80">
+                 <Sparkles className="size-4" />
+                 <span className="text-sm font-medium">النتيجة السحرية</span>
+               </div>
+               <p className="text-lg leading-relaxed text-foreground">{enhancedResult}</p>
+               <div className="mt-5 flex justify-end gap-3">
+                 <Button onClick={() => setEnhancedResult(null)} variant="outline" size="sm" className="rounded-full">
+                    تحويل نص جديد
+                 </Button>
+                 <Button onClick={continueToEditor} variant="glow" size="sm" className="rounded-full">
+                    متابعة في المحرر
+                 </Button>
+               </div>
             </div>
-          </div>
-        </form>
+          ) : (
+            <form
+              onSubmit={(e) => {
+                e.preventDefault()
+                if (text.trim()) handleAction()
+              }}
+              className="w-full"
+            >
+              <div className="rounded-full border border-border/60 bg-card/80 p-2 shadow-xl shadow-black/20 backdrop-blur-sm sm:p-3 relative overflow-hidden transition-all duration-500 hover:shadow-primary/10">
+                {isEnhancing && (
+                    <div className="absolute inset-0 bg-gradient-to-r from-primary/10 via-primary/30 to-primary/10 animate-pulse pointer-events-none" />
+                )}
+                <div className={`flex items-end gap-2 rounded-full bg-background/60 px-3 py-2 sm:items-center sm:px-4 sm:py-3 transition-opacity duration-500 ${isEnhancing ? 'opacity-60' : 'opacity-100'}`}>
+                  <EnhanceTextInput
+                    variant="hero"
+                    value={text}
+                    onChange={setText}
+                    showCharCount={false}
+                    placeholder="اكتب أو الصق نص المنتج أو الرسالة…"
+                    onSubmit={handleAction}
+                    aria-label="نص للتحسين"
+                    rows={1}
+                    className="min-w-0 flex-1 bg-transparent"
+                    disabled={isEnhancing}
+                  />
+                  <Button
+                    type="submit"
+                    size="icon"
+                    variant="glow"
+                    className={`size-10 shrink-0 rounded-full sm:size-11 transition-all duration-500 ${isEnhancing ? 'bg-primary/90 scale-95 shadow-[0_0_15px_rgba(var(--primary),0.6)]' : ''}`}
+                    disabled={!text.trim() || isEnhancing}
+                    aria-label="ابدأ التحسين"
+                  >
+                    {isEnhancing ? (
+                       <Sparkles className="size-5 animate-[spin_3s_linear_infinite]" />
+                    ) : (
+                       <Sparkles className="size-5" />
+                    )}
+                  </Button>
+                </div>
+              </div>
+            </form>
+          )}
+        </div>
 
         <div className="mb-6 flex w-full max-w-2xl flex-wrap items-center justify-center gap-2 sm:gap-3" dir="rtl">
           {LANDING_PRESET_CHIPS.map((chip) => (

@@ -15,6 +15,7 @@ import { detectAndRoute } from '@/lib/ai/language-router'
 import { formatEnhanceSSE, wantsEnhanceStream } from '@/lib/api/enhance-sse'
 import { EnhanceRequestSchema, ApiErrorCode } from '@/types/api'
 import { EnhancementMode, UsageLogInsert } from '@/types/database'
+import { checkGuestRateLimit } from '@/lib/upstash/ratelimit'
 
 function useMockAi(): boolean {
     return process.env.MOCK_AI_RESPONSES === 'true'
@@ -296,11 +297,6 @@ function createEnhanceStreamResponse(
 
 export async function POST(request: NextRequest) {
     try {
-        const authResult = await authenticateUser()
-        if ('error' in authResult) {
-            return authResult.error
-        }
-        const { user, supabase } = authResult
         const body = await request.json()
         const validation = EnhanceRequestSchema.safeParse(body)
         if (!validation.success) {
@@ -314,6 +310,7 @@ export async function POST(request: NextRequest) {
             platform,
             strength,
             isEditorSession,
+            isGuest,
             stream: requestStream,
         } = validation.data
 
@@ -322,6 +319,40 @@ export async function POST(request: NextRequest) {
             request.headers.get('accept')
         )
 
+        let user: any = null
+        let supabase: any = null
+
+        if (isGuest) {
+            // Enforce IP-based rate limit via Upstash Redis
+            const rawIp = request.headers.get('x-forwarded-for') ?? '127.0.0.1'
+            const ip = rawIp.split(',')[0].trim()
+            const limitCheck = await checkGuestRateLimit(ip)
+
+            if (!limitCheck.success) {
+                const errorBody = {
+                    success: false,
+                    error: {
+                        code: ApiErrorCode.RATE_LIMIT_EXCEEDED,
+                        message: 'استنفدت محاولات الضيف. يرجى تسجيل الدخول للمتابعة.',
+                        tier: 'guest',
+                    },
+                }
+                if (useStream) {
+                    return new Response(formatEnhanceSSE('error', errorBody), {
+                        status: 429,
+                        headers: { 'Content-Type': 'text/event-stream; charset=utf-8' },
+                    })
+                }
+                return NextResponse.json(errorBody, { status: 429 })
+            }
+        } else {
+            const authResult = await authenticateUser()
+            if ('error' in authResult) {
+                return authResult.error
+            }
+            user = authResult.user
+            supabase = authResult.supabase
+        }
         if (!isLanguageSupported(outputLanguage)) {
             return createErrorResponse({
                 code: ApiErrorCode.UNSUPPORTED_LANGUAGE,
@@ -331,16 +362,18 @@ export async function POST(request: NextRequest) {
 
         const { routeId, detection } = detectAndRoute(text, outputLanguage)
 
-        const subscriptionCheck = await ensureCanEnhance(user.id, supabase)
-        if ('error' in subscriptionCheck) {
-            if (useStream) {
-                const limitBody = await subscriptionCheck.error.json()
-                return new Response(formatEnhanceSSE('error', limitBody), {
-                    status: subscriptionCheck.error.status,
-                    headers: { 'Content-Type': 'text/event-stream; charset=utf-8' },
-                })
+        if (!isGuest) {
+            const subscriptionCheck = await ensureCanEnhance(user.id, supabase)
+            if ('error' in subscriptionCheck) {
+                if (useStream) {
+                    const limitBody = await subscriptionCheck.error.json()
+                    return new Response(formatEnhanceSSE('error', limitBody), {
+                        status: subscriptionCheck.error.status,
+                        headers: { 'Content-Type': 'text/event-stream; charset=utf-8' },
+                    })
+                }
+                return subscriptionCheck.error
             }
-            return subscriptionCheck.error
         }
 
         const enhanceOptions: EnhanceOptions = {
@@ -372,6 +405,14 @@ export async function POST(request: NextRequest) {
                         throw new Error('QUALITY_CHECK_FAILED')
                     }
 
+                    if (isGuest) {
+                        // Guest results are not persisted — credits are enforced by Upstash Redis
+                        return {
+                            enhancedText: result.enhancedText,
+                            tokensUsed: result.tokensUsed,
+                            routeId: result.routeId,
+                        }
+                    }
                     const persisted = await persistEnhancement({
                         supabase,
                         userId: user.id,
@@ -403,6 +444,16 @@ export async function POST(request: NextRequest) {
                 code: ApiErrorCode.QUALITY_CHECK_FAILED,
                 message: qualityCheck.reason || 'Quality check failed',
             }, 500)
+        }
+
+        if (isGuest) {
+            return createSuccessResponse({
+                enhancedText: result.enhancedText,
+                tokensUsed: result.tokensUsed,
+                language: outputLanguage,
+                routeId: result.routeId ?? routeId,
+                detectionSummary: detection.inputSummaryAr,
+            })
         }
 
         const persisted = await persistEnhancement({

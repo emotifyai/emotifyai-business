@@ -69,6 +69,14 @@ export const env = createEnv({
         /** @deprecated */
         LIFETIME_ENHANCEMENT_LIMIT: z.coerce.number().int().default(-1).optional(),
 
+        // Upstash Redis (guest rate limiting)
+        UPSTASH_REDIS_REST_URL: z.string().url({
+            message: 'UPSTASH_REDIS_REST_URL must be a valid URL',
+        }),
+        UPSTASH_REDIS_REST_TOKEN: z.string().min(1, {
+            message: 'UPSTASH_REDIS_REST_TOKEN is required',
+        }),
+
         // Rate Limiting
         RATE_LIMIT_RPM: z.coerce.number().int().positive().default(10),
         RATE_LIMIT_WINDOW: z.coerce.number().int().positive().default(60),
@@ -153,6 +161,8 @@ export const env = createEnv({
         TRIAL_ENHANCEMENT_LIMIT: process.env.TRIAL_ENHANCEMENT_LIMIT,
         MONTHLY_ENHANCEMENT_LIMIT: process.env.MONTHLY_ENHANCEMENT_LIMIT,
         LIFETIME_ENHANCEMENT_LIMIT: process.env.LIFETIME_ENHANCEMENT_LIMIT,
+        UPSTASH_REDIS_REST_URL: process.env.UPSTASH_REDIS_REST_URL,
+        UPSTASH_REDIS_REST_TOKEN: process.env.UPSTASH_REDIS_REST_TOKEN,
         RATE_LIMIT_RPM: process.env.RATE_LIMIT_RPM,
         RATE_LIMIT_WINDOW: process.env.RATE_LIMIT_WINDOW,
         EMAIL_PROVIDER: process.env.EMAIL_PROVIDER,
