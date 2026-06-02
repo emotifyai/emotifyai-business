@@ -372,9 +372,7 @@ export default function EditorPage() {
           void queryClient.invalidateQueries({ queryKey: ['subscription'] })
           trackTransformCompleted()
           markFirstEnhance()
-          toast.success('تم تحسين النص بنجاح!', {
-            description: `تم استخدام ${data.tokensUsed || 0} رمزاً`,
-          })
+          toast.success('تم تحسين النص بنجاح!')
           void loadHistory()
         },
         onError: (error) => {
