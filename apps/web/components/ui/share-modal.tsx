@@ -40,11 +40,11 @@ export function ShareModal({ isOpen, onClose, text }: ShareModalProps) {
   }
 
   const handleLinkedIn = () => {
-    // LinkedIn requires a URL, but we can pass text in summary/body depending on the endpoint.
-    window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${appUrl}`, '_blank')
+    window.open(`https://www.linkedin.com/feed/?shareActive=true&text=${encodedText}`, '_blank')
   }
 
-  const handleFacebook = () => {
+  const handleFacebook = async () => {
+    await handleCopy(false)
     window.open(`https://www.facebook.com/sharer/sharer.php?u=${appUrl}&quote=${encodedText}`, '_blank')
   }
 
