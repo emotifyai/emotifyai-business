@@ -27,6 +27,7 @@ import {
 } from 'lucide-react'
 import { useCopy } from '@/components/ui/copy-button'
 import { useFirstEnhanceConfetti } from '@/lib/confetti'
+import { ShareModal } from '@/components/ui/share-modal'
 import { RetryFeedbackModal } from '@/components/editor/retry-feedback-modal'
 import {
   trackRetryUsed,
@@ -120,6 +121,10 @@ export default function EditorPage() {
 
   // History state
   const [history, setHistory] = useState<HistoryItem[]>([])
+  const [shareModalData, setShareModalData] = useState<{ isOpen: boolean; text: string }>({
+    isOpen: false,
+    text: '',
+  })
   const [showHistory, setShowHistory] = useState(false)
   const { copied: copiedOriginal, copy: copyOriginal } = useCopy(false)
   const { copied: copiedEnhanced, copy: copyEnhanced } = useCopy(true)
@@ -409,15 +414,17 @@ export default function EditorPage() {
     const textToShare = text
     console.log('[DUCK editor/share] start', { len: textToShare.length })
     try {
-      if (typeof navigator !== 'undefined' && typeof navigator.share === 'function') {
+      const isMobile = typeof navigator !== 'undefined' && 
+        /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+        
+      if (isMobile && typeof navigator.share === 'function') {
         await navigator.share({ text: textToShare })
         trackShareClicked()
         console.log('[DUCK editor/share] native share ok')
       } else {
-        await navigator.clipboard.writeText(textToShare)
+        setShareModalData({ isOpen: true, text: textToShare })
         trackShareClicked()
-        toast.success('تم نسخ النص للمشاركة')
-        console.log('[DUCK editor/share] clipboard fallback ok')
+        console.log('[DUCK editor/share] opened share modal')
       }
     } catch (error) {
       if (error instanceof Error && error.name === 'AbortError') {
@@ -891,6 +898,11 @@ export default function EditorPage() {
           </div>
         </div>
       </section>
+      <ShareModal
+        isOpen={shareModalData.isOpen}
+        onClose={() => setShareModalData({ ...shareModalData, isOpen: false })}
+        text={shareModalData.text}
+      />
     </div>
   )
 }
