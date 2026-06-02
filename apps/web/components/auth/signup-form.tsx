@@ -8,7 +8,7 @@ import { Input } from '@emotifyai/ui'
 import { Label } from '@emotifyai/ui'
 import { OAuthButtons } from './oauth-buttons'
 import { LoadingSpinner } from '@emotifyai/ui'
-import { toast } from 'sonner'
+import { toast } from '@emotifyai/ui'
 
 export function SignupForm() {
     const router = useRouter()

@@ -16,7 +16,7 @@ import {
   Label,
 } from '@emotifyai/ui'
 import { getDeleteAccountConfirmationPhrase } from '@/lib/account/delete-account'
-import { toast } from 'sonner'
+import { toast } from '@emotifyai/ui'
 import { cn } from '@/lib/utils'
 import { EDITOR_SESSION_KEY } from '@/lib/editor/session'
 

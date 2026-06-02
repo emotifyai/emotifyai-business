@@ -18,7 +18,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@emotifyai/ui'
 import { Skeleton } from '@emotifyai/ui'
 import { Alert, AlertDescription } from '@emotifyai/ui'
 import { Button } from '@emotifyai/ui'
-import { toast } from 'sonner'
+import { toast } from '@emotifyai/ui'
 
 export default function DashboardPage() {
     const [isRefreshing, setIsRefreshing] = useState(false)

@@ -3,7 +3,7 @@
 import { useState, useCallback } from 'react'
 import { Copy, Check } from 'lucide-react'
 import { Button } from '@emotifyai/ui'
-import { toast } from 'sonner'
+import { toast } from '@emotifyai/ui'
 import { trackCopyClicked } from '@/lib/analytics/ga'
 
 /**

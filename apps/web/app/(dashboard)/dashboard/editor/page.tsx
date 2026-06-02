@@ -41,7 +41,7 @@ import { REGISTERED_FREE_CREDIT_TOTAL } from '@emotifyai/config/pricing'
 import { useSubscription } from '@/lib/hooks/use-subscription'
 import { useUsageStats } from '@/lib/hooks/use-usage'
 import { useUser } from '@/lib/hooks/use-auth'
-import { toast } from 'sonner'
+import { toast } from '@emotifyai/ui'
 import {
   ConnectedUpgradePrompt,
   resolveUpgradeVariant,

@@ -25,7 +25,7 @@ import { Label } from '@emotifyai/ui'
 import { Badge } from '@emotifyai/ui'
 import { Loader2, Plus, Trash2, Copy, Check } from 'lucide-react'
 import { formatDate } from '@/lib/utils'
-import { toast } from 'sonner'
+import { toast } from '@emotifyai/ui'
 
 // ============================================================================
 // Types

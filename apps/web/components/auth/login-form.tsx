@@ -7,7 +7,7 @@ import { Button } from '@emotifyai/ui'
 import { Input } from '@emotifyai/ui'
 import { Label } from '@emotifyai/ui'
 import { OAuthButtons } from './oauth-buttons'
-import { toast } from 'sonner'
+import { toast } from '@emotifyai/ui'
 import Link from 'next/link'
 
 export function LoginForm() {

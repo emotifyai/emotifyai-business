@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react'
 import { X, Copy, Twitter, Linkedin, Facebook, Instagram } from 'lucide-react'
-import { toast } from 'sonner'
+import { toast } from '@emotifyai/ui'
 
 interface ShareModalProps {
   isOpen: boolean
@@ -22,12 +22,16 @@ export function ShareModal({ isOpen, onClose, text }: ShareModalProps) {
   const encodedText = encodeURIComponent(text)
   const appUrl = encodeURIComponent('https://emotifyai.com')
 
-  const handleCopy = async () => {
+  const handleCopy = async (showToast: boolean = true) => {
     try {
       await navigator.clipboard.writeText(text)
-      toast.success('تم نسخ النص للمشاركة')
+      if (showToast) {
+        toast.success('تم نسخ النص للمشاركة')
+      }
     } catch {
-      toast.error('فشل النسخ')
+      if (showToast) {
+        toast.error('فشل النسخ')
+      }
     }
   }
 
@@ -45,7 +49,7 @@ export function ShareModal({ isOpen, onClose, text }: ShareModalProps) {
   }
 
   const handleInstagram = async () => {
-    await handleCopy()
+    await handleCopy(false)
     toast.success('تم نسخ النص! افتح انستجرام للصق.')
   }
 

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { toast } from 'sonner'
+import { toast } from '@emotifyai/ui'
 import { LoadingSpinner } from '@emotifyai/ui'
 import { buildCheckoutThankYouUrl } from '@/lib/checkout/thank-you-redirect'
 import type { SubscriptionTier } from '@/lib/subscription/types'

@@ -7,7 +7,7 @@ import { Input } from '@emotifyai/ui'
 import { Label } from '@emotifyai/ui'
 import { UserAvatar } from '@/components/user-avatar'
 import { useUpdateProfile } from '@/lib/hooks/use-auth'
-import { toast } from 'sonner'
+import { toast } from '@emotifyai/ui'
 import { cn } from '@/lib/utils'
 
 type ProfileSettingsFormProps = {
