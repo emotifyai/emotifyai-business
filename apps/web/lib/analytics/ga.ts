@@ -21,14 +21,9 @@ function safeSendGAEvent(payload: { event: string; [key: string]: unknown }): vo
   }
 
   const { event, ...params } = payload
-  console.info('[DUCK analytics] 👉 SENDING TO GA:', event, params)
   
   if (typeof window !== 'undefined') {
-    console.info('[DUCK analytics] (Browser check passed, executing sendGAEvent)')
-    // Third argument must be the object
     sendGAEvent('event', event, params)
-  } else {
-    console.warn('[DUCK analytics] ⚠️ Skipping sendGAEvent: not in browser environment')
   }
 }
 
@@ -47,17 +42,14 @@ export function trackRetryUsed(feedbackReasonLabel: string): void {
 }
 
 export function trackTransformCompleted(): void {
-  console.info('[DUCK analytics] 🏃‍♂️ trackTransformCompleted called')
   trackGAEvent('transform_completed')
 }
 
 export function trackCopyClicked(): void {
-  console.info('[DUCK analytics] 🏃‍♂️ trackCopyClicked called')
   trackGAEvent('copy_clicked')
 }
 
 export function trackShareClicked(): void {
-  console.info('[DUCK analytics] 🏃‍♂️ trackShareClicked called')
   trackGAEvent('share_clicked')
 }
 

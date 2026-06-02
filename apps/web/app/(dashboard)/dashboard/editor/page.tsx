@@ -462,28 +462,6 @@ export default function EditorPage() {
     !isGenerating &&
     !isRetrying
 
-  useEffect(() => {
-    console.log('[DUCK editor/retry-btn]', {
-      visible: canShowRetry,
-      usageLogId: currentUsageLogId,
-      retryUsed,
-      hasEnhancedText: Boolean(enhancedText),
-      isGenerating,
-      isRetrying,
-      hiddenBecause: !enhancedText
-        ? 'no_output'
-        : !currentUsageLogId
-          ? 'no_usage_log_id'
-          : retryUsed
-            ? 'retry_already_used'
-            : isGenerating
-              ? 'generating'
-              : isRetrying
-                ? 'retrying'
-                : null,
-    })
-  }, [canShowRetry, currentUsageLogId, retryUsed, enhancedText, isGenerating, isRetrying])
-
   const handleRetrySubmit = async (reason: RetryReasonValue, otherText?: string) => {
     if (!currentUsageLogId || !originalText.trim()) return
 
