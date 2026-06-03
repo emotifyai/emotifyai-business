@@ -237,10 +237,9 @@ BEGIN
           AND status IN ('active', 'trial')
           AND credits_used < credits_limit
         ORDER BY
-            CASE tier::text
-                WHEN 'small_bundle' THEN 1
-                WHEN 'large_bundle' THEN 2
-                ELSE 3
+            CASE
+                WHEN tier::text IN ('small_bundle', 'large_bundle') THEN 2
+                ELSE 1
             END,
             created_at ASC
     LOOP
@@ -341,10 +340,9 @@ BEGIN
           AND status IN ('active', 'trial')
           AND credits_used < credits_limit
         ORDER BY
-            CASE tier::text
-                WHEN 'small_bundle' THEN 1
-                WHEN 'large_bundle' THEN 2
-                ELSE 3
+            CASE
+                WHEN tier::text IN ('small_bundle', 'large_bundle') THEN 2
+                ELSE 1
             END,
             created_at ASC
         FOR UPDATE
