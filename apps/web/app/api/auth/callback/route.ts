@@ -12,10 +12,12 @@ import { createClient } from '@/lib/supabase/server'
  * then redirect the user to the correct destination.
  */
 export async function GET(request: NextRequest) {
-    const { searchParams, origin } = new URL(request.url)
+    const { searchParams } = new URL(request.url)
     const code = searchParams.get('code')
     const type = searchParams.get('type') // 'recovery' for password reset
     const next = searchParams.get('next') ?? '/dashboard'
+    // Use the canonical app URL from env to avoid Netlify deploy-preview subdomains
+    const origin = process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, '') || new URL(request.url).origin
 
     if (!code) {
         // No code present — redirect to login with an error

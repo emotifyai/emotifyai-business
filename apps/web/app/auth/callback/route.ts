@@ -13,7 +13,9 @@ export async function GET(request: Request) {
     // https://supabase.com/docs/guides/auth/server-side/nextjs
     const requestUrl = new URL(request.url)
     const code = requestUrl.searchParams.get('code')
-    const origin = requestUrl.origin
+    // Use the canonical app URL from env to avoid Netlify deploy-preview subdomains
+    // being used as the redirect origin (e.g. 6a2016f6--app.netlify.app instead of emotifyai.com)
+    const origin = process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, '') || requestUrl.origin
     const redirectTo = requestUrl.searchParams.get('redirect_to')?.toString()
     const source = requestUrl.searchParams.get('source')?.toString()
     const plan = requestUrl.searchParams.get('plan')?.toString()
