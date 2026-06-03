@@ -160,20 +160,38 @@ export async function POST(request: NextRequest) {
                 const attrs = payload.data.attributes
 
                 // Extract user ID from custom data or email
+                const customData = payload.meta.custom_data
+                const customUserId = customData?.user_id
                 // @ts-ignore
                 const userEmail = attrs.user_email
                 // @ts-ignore
                 const variantId = attrs.variant_id.toString()
 
-                console.log(`Processing ${eventName} for email: ${userEmail}, variant: ${variantId}`)
+                console.log(`Processing ${eventName} for email: ${userEmail}, variant: ${variantId}, userId: ${customUserId}`)
 
-                // Find the user by email (case-insensitive)
-                // @ts-ignore
-                const { data: profile, error: profileError } = await supabase
-                    .from('profiles')
-                    .select('id, email')
-                    .ilike('email', userEmail as string)
-                    .single()
+                let profile = null
+                let profileError = null
+
+                if (customUserId) {
+                    const { data, error } = await supabase
+                        .from('profiles')
+                        .select('id, email')
+                        .eq('id', customUserId)
+                        .single()
+                    profile = data
+                    profileError = error
+                }
+
+                // Fallback to finding the user by email (case-insensitive) if no custom_data.user_id
+                if (!profile) {
+                    const { data, error } = await supabase
+                        .from('profiles')
+                        .select('id, email')
+                        .ilike('email', userEmail as string)
+                        .single()
+                    profile = data
+                    profileError = error
+                }
 
                 if (!profile || profileError) {
                     // Try to get all profiles for debugging
@@ -274,12 +292,31 @@ export async function POST(request: NextRequest) {
                 }
 
                 if (bundleTier) {
-                    // @ts-ignore
-                    const { data: profile, error: profileError } = await supabase
-                        .from('profiles')
-                        .select('id, email')
-                        .ilike('email', userEmail as string)
-                        .single()
+                    const customData = payload.meta.custom_data
+                    const customUserId = customData?.user_id
+
+                    let profile = null
+                    let profileError = null
+
+                    if (customUserId) {
+                        const { data, error } = await supabase
+                            .from('profiles')
+                            .select('id, email')
+                            .eq('id', customUserId)
+                            .single()
+                        profile = data
+                        profileError = error
+                    }
+
+                    if (!profile) {
+                        const { data, error } = await supabase
+                            .from('profiles')
+                            .select('id, email')
+                            .ilike('email', userEmail as string)
+                            .single()
+                        profile = data
+                        profileError = error
+                    }
 
                     if (!profile || profileError) {
                         console.error(`User not found for bundle order: ${userEmail}`, profileError)
