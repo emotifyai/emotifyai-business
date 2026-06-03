@@ -653,3 +653,6 @@ CREATE TABLE IF NOT EXISTS public.retries (
 -- ALTER TABLE public.usage_logs ADD CONSTRAINT usage_logs_credits_check CHECK (credits_consumed >= 0);
 
 -- Recreate get_user_editor_history after column changes (see function definition above).
+
+ALTER TYPE subscription_tier ADD VALUE IF NOT EXISTS 'small_bundle';
+ALTER TYPE subscription_tier ADD VALUE IF NOT EXISTS 'large_bundle';
