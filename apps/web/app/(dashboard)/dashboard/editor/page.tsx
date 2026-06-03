@@ -678,7 +678,7 @@ export default function EditorPage() {
               onChange={setEnhancedText}
               expandTitle="النص المحسّن"
               textareaClassName={
-                isCreditsReady && !canUseCredits && !enhancedText ? 'opacity-50' : ''
+                upgradeVariant || (isCreditsReady && !canUseCredits && !enhancedText) ? 'opacity-50 blur-[2px] transition-all' : ''
               }
               headerSlot={
                 <h3 className="flex items-center gap-2 text-base font-semibold text-foreground">
@@ -736,13 +736,22 @@ export default function EditorPage() {
                 </>
               }
               overlay={
-                isCreditsReady && !canUseCredits && !enhancedText ? (
+                upgradeVariant || (isCreditsReady && !canUseCredits && !enhancedText) ? (
                   <ConnectedUpgradePrompt
-                    variant={upgradeVariant}
+                    variant={
+                      upgradeVariant ??
+                      resolveUpgradeVariant({
+                        isAuthenticated: true,
+                        tier: subscription?.tier,
+                        creditsRemaining: creditsRemaining ?? 0,
+                        creditsLimit,
+                      }) ?? 'limit_reached'
+                    }
                     layout="overlay"
                     creditsUsed={creditsUsed}
                     creditsLimit={creditsLimit}
                     remainingCredits={creditsRemaining}
+                    onDismiss={() => setUpgradeVariant(undefined)}
                   />
                 ) : undefined
               }
@@ -768,8 +777,7 @@ export default function EditorPage() {
             onClick={handleGenerate}
             disabled={
               !originalText.trim() ||
-              isGenerating ||
-              (isCreditsReady && !canUseCredits)
+              isGenerating
             }
             className="relative min-h-[3.25rem] max-w-md flex-1 gap-3 rounded-xl px-8 py-4 text-base font-semibold shadow-lg shadow-primary/10"
           >
