@@ -9,10 +9,6 @@ import { Label } from '@emotifyai/ui'
 import { toast } from '@emotifyai/ui'
 import { CheckCircle2, Eye, EyeOff, KeyRound, Loader2, ShieldCheck } from 'lucide-react'
 
-export const metadata = {
-    title: 'تعيين كلمة مرور جديدة - EmotifyAI',
-    description: 'أنشئ كلمة مرور جديدة آمنة لحسابك في EmotifyAI',
-}
 
 type State = 'idle' | 'loading' | 'success'
 
