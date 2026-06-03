@@ -12,7 +12,7 @@ import { AuthErrorHandler } from "@/components/auth/auth-error-handler";
 const gaMeasurementId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
 
 export const metadata: Metadata = {
-  title: "إيموتيفاي — تحسين نصوص المنتجات بالذكاء الاصطناعي",
+  title: "EmotifyAI — تحسين نصوص المنتجات بالذكاء الاصطناعي",
   description:
     "حوّل أوصاف منتجاتك إلى نصوص تسويقية جذابة بالعربية والإنجليزية. مصمم لسوق الخليج.",
 };

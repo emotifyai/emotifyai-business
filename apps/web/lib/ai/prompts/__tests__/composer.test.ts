@@ -5,7 +5,7 @@ describe('prompt composer', () => {
   it('builds cached system prompt with cache_control', () => {
     const cached = buildCachedSystemPrompt('ar-gulf')
     expect(cached.cache_control?.type).toBe('ephemeral')
-    expect(cached.text).toContain('إيموتيفاي')
+    expect(cached.text).toContain('EmotifyAI')
   })
 
   it('includes platform and tone in variable layer', () => {

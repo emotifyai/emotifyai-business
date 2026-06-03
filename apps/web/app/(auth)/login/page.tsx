@@ -5,8 +5,8 @@ import { Suspense } from 'react'
 import { PageLoading } from '@emotifyai/ui'
 
 export const metadata: Metadata = {
-    title: 'تسجيل الدخول - إيموتيفاي',
-    description: 'سجّل الدخول إلى حسابك في إيموتيفاي',
+    title: 'تسجيل الدخول - EmotifyAI',
+    description: 'سجّل الدخول إلى حسابك في EmotifyAI',
 }
 
 interface LoginPageProps {
@@ -15,7 +15,7 @@ interface LoginPageProps {
 
 async function LoginContent({ searchParams }: LoginPageProps) {
     const params = await searchParams
-    
+
     const urlParams = new URLSearchParams()
     if (params.source && typeof params.source === 'string') {
         urlParams.set('source', params.source)
@@ -32,7 +32,7 @@ async function LoginContent({ searchParams }: LoginPageProps) {
                     مرحباً بعودتك
                 </h1>
                 <p className="text-sm text-muted-foreground">
-                    سجّل الدخول لمتابعة استخدام إضافة إيموتيفاي
+                    سجّل الدخول لمتابعة استخدام إضافة EmotifyAI
                 </p>
             </div>
             <LoginForm />

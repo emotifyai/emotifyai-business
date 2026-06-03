@@ -69,7 +69,7 @@ export function SubscriptionCard({ tier, status, currentPeriodEnd, usage, bundle
                 </div>
                 <CardDescription>
                     {isLifetime
-                        ? "لديك وصول مدى الحياة إلى إيموتيفاي"
+                        ? "لديك وصول مدى الحياة إلى EmotifyAI"
                         : `تتجدد خطتك في ${formatDate(currentPeriodEnd)}`
                     }
                 </CardDescription>

@@ -172,7 +172,7 @@ function CreateKeyForm({
             <DialogFooter>
                 <Button
                     type="button"
-                    onClick={() => handleSubmit({ preventDefault: () => {} } as React.FormEvent)}
+                    onClick={() => handleSubmit({ preventDefault: () => { } } as React.FormEvent)}
                     disabled={isPending || !name.trim()}
                 >
                     {isPending && <Loader2 className="me-2 h-4 w-4 animate-spin" />}
@@ -214,7 +214,7 @@ function CreateKeyDialog({
                 <DialogHeader>
                     <DialogTitle>إنشاء مفتاح API</DialogTitle>
                     <DialogDescription>
-                        أنشئ مفتاح API جديداً لاستخدامه مع إضافة إيموتيفاي للمتصفح.
+                        أنشئ مفتاح API جديداً لاستخدامه مع إضافة EmotifyAI للمتصفح.
                     </DialogDescription>
                 </DialogHeader>
 

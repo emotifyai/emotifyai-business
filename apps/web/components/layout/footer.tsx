@@ -74,7 +74,7 @@ export function Footer() {
                 </div>
 
                 <div className="mt-10 flex flex-col items-center justify-between gap-4 border-t pt-6 text-sm text-muted-foreground sm:mt-16 sm:flex-row sm:pt-8">
-                    <p className="text-center sm:text-start">© {currentYear} إيموتيفاي. جميع الحقوق محفوظة.</p>
+                    <p className="text-center sm:text-start">© {currentYear} EmotifyAI. جميع الحقوق محفوظة.</p>
                 </div>
             </div>
         </footer>

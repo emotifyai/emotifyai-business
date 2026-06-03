@@ -11,9 +11,9 @@ import { EDITOR_PATH } from '@/lib/editor/session'
 export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
-  title: 'إيموتيفاي vs ChatGPT — أيهما يبيع أكثر؟',
+  title: 'EmotifyAI vs ChatGPT — أيهما يبيع أكثر؟',
   description:
-    'مقارنة موضوعية بين إيموتيفاي وChatGPT لكتابة نصوص المنتجات في السوق الخليجي — التخصص، اللهجة، المنصات، والتكلفة.',
+    'مقارنة موضوعية بين EmotifyAI وChatGPT لكتابة نصوص المنتجات في السوق الخليجي — التخصص، اللهجة، المنصات، والتكلفة.',
 }
 
 type Winner = 'emotify' | 'chatgpt' | 'tie'
@@ -184,7 +184,7 @@ export default async function VsChatGptPage() {
                 مقارنة موضوعية | مايو ٢٠٢٦
               </Badge>
               <h1 className="mb-3 text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">
-                إيموتيفاي vs ChatGPT
+                EmotifyAI vs ChatGPT
               </h1>
               <p className="mb-6 text-xl font-semibold text-foreground sm:text-2xl">
                 أيهما يبيع أكثر؟
@@ -196,7 +196,7 @@ export default async function VsChatGptPage() {
               <div className="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-muted-foreground">
                 <span className="inline-flex items-center gap-2">
                   <span className="size-2 rounded-full bg-primary" aria-hidden />
-                  إيموتيفاي يتفوق
+                  EmotifyAI يتفوق
                 </span>
                 <span className="inline-flex items-center gap-2">
                   <span className="size-2 rounded-full bg-destructive/70" aria-hidden />
@@ -216,7 +216,7 @@ export default async function VsChatGptPage() {
             <div className="hidden gap-4 sm:grid sm:grid-cols-2">
               <div className="rounded-xl border-2 border-primary/40 bg-primary/5 p-5 text-center">
                 <div className="flex flex-col items-center gap-2">
-                  <p className="text-lg font-bold text-primary">إيموتيفاي</p>
+                  <p className="text-lg font-bold text-primary">EmotifyAI</p>
                   <p className="text-sm text-muted-foreground">emotifyai.com</p>
                   <Badge className="mt-1">الأنسب للخليج</Badge>
                 </div>
@@ -247,7 +247,7 @@ export default async function VsChatGptPage() {
                 <div className="grid grid-cols-2 gap-6 text-center">
                   <div>
                     <p className="text-4xl font-bold text-primary sm:text-5xl">٥/٦</p>
-                    <p className="mt-2 text-sm font-medium text-foreground">إيموتيفاي</p>
+                    <p className="mt-2 text-sm font-medium text-foreground">EmotifyAI</p>
                   </div>
                   <div>
                     <p className="text-4xl font-bold text-muted-foreground sm:text-5xl">١/٦</p>
@@ -259,9 +259,9 @@ export default async function VsChatGptPage() {
 
             <Card className="border-border bg-card">
               <CardContent className="py-8 sm:py-10">
-                <h2 className="mb-4 text-xl font-bold">متى تستخدم إيموتيفاي؟</h2>
+                <h2 className="mb-4 text-xl font-bold">متى تستخدم EmotifyAI؟</h2>
                 <p className="text-sm leading-relaxed text-muted-foreground sm:text-base">
-                  إذا كنت تبيع منتجات في الخليج وتريد نصوص تبيع حقاً — إيموتيفاي أسرع
+                  إذا كنت تبيع منتجات في الخليج وتريد نصوص تبيع حقاً — EmotifyAI أسرع
                   وأذكى وأرخص لهذا الغرض تحديداً. ChatGPT أفضل إذا تحتاج أداة متعددة
                   الاستخدامات لأكثر من الكتابة التسويقية.
                 </p>

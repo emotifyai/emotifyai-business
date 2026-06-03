@@ -5,8 +5,8 @@ import { Card, CardContent } from '@emotifyai/ui'
 import { FileText, Scale, AlertCircle, CheckCircle } from 'lucide-react'
 
 export const metadata: Metadata = {
-    title: 'شروط الخدمة - إيموتيفاي',
-    description: 'الشروط والأحكام لاستخدام إيموتيفاي',
+    title: 'شروط الخدمة - EmotifyAI',
+    description: 'الشروط والأحكام لاستخدام EmotifyAI',
 }
 
 export default function TermsPage() {
@@ -24,7 +24,7 @@ export default function TermsPage() {
                                 شروط الخدمة
                             </h1>
                             <p className="text-xl text-muted-foreground">
-                                يرجى قراءة هذه الشروط بعناية قبل استخدام إيموتيفاي.
+                                يرجى قراءة هذه الشروط بعناية قبل استخدام EmotifyAI.
                             </p>
                             <p className="mt-4 text-sm text-muted-foreground">
                                 آخر تحديث: ٣٠ ديسمبر ٢٠٢٥
@@ -45,7 +45,7 @@ export default function TermsPage() {
                                         <h2 className="text-2xl font-bold mb-4">قبول الشروط</h2>
                                         <div className="prose prose-zinc dark:prose-invert max-w-none">
                                             <p>
-                                                بالوصول إلى إضافة المتصفح وتطبيق الويب لإيموتيفاي (&laquo;الخدمة&raquo;) أو استخدامهما، فإنك توافق على الالتزام بشروط الخدمة هذه. إن لم توافق، لا تستخدم الخدمة.
+                                                بالوصول إلى إضافة المتصفح وتطبيق الويب لEmotifyAI (&laquo;الخدمة&raquo;) أو استخدامهما، فإنك توافق على الالتزام بشروط الخدمة هذه. إن لم توافق، لا تستخدم الخدمة.
                                             </p>
                                             <p>
                                                 نحتفظ بحق تعديل هذه الشروط في أي وقت. استمرارك في الاستخدام بعد التعديلات يعني قبول الشروط المعدّلة.
@@ -66,7 +66,7 @@ export default function TermsPage() {
                                         <h2 className="text-2xl font-bold mb-4">وصف الخدمة</h2>
                                         <div className="prose prose-zinc dark:prose-invert max-w-none">
                                             <p>
-                                                إيموتيفاي أداة تحسين نصوص بالذكاء الاصطناعي تساعدك على رفع جودة الكتابة ووضوحها ونبرتها. تشمل الخدمة:
+                                                EmotifyAI أداة تحسين نصوص بالذكاء الاصطناعي تساعدك على رفع جودة الكتابة ووضوحها ونبرتها. تشمل الخدمة:
                                             </p>
                                             <ul>
                                                 <li>إضافة متصفح للتكامل مع مواقعك</li>
@@ -89,7 +89,7 @@ export default function TermsPage() {
                                 <div className="prose prose-zinc dark:prose-invert max-w-none">
                                     <h2 className="text-2xl font-bold mb-4">حسابات المستخدمين</h2>
                                     <h3>إنشاء الحساب</h3>
-                                    <p>لاستخدام إيموتيفاي يجب إنشاء حساب آمن. أنت توافق على:</p>
+                                    <p>لاستخدام EmotifyAI يجب إنشاء حساب آمن. أنت توافق على:</p>
                                     <ul>
                                         <li>تقديم معلومات دقيقة (البريد مطلوب لاستعادة الحساب)</li>
                                         <li>الحفاظ على أمان حسابك ومفاتيح API</li>
@@ -186,7 +186,7 @@ export default function TermsPage() {
                             <CardContent className="pt-6">
                                 <div className="prose prose-zinc dark:prose-invert max-w-none">
                                     <h2 className="text-2xl font-bold mb-4">الملكية الفكرية</h2>
-                                    <p>إيموتيفاي وعلاماتها ومحتواها مملوكة لنا أو لمرخّصينا.</p>
+                                    <p>EmotifyAI وعلاماتها ومحتواها مملوكة لنا أو لمرخّصينا.</p>
                                     <p>تحتفظ بحقوق النص الذي تدخله. لا ندّعي ملكية محتواك.</p>
                                     <p>النص المُولَّد بالذكاء الاصطناعي يُقدَّم &laquo;كما هو&raquo; — أنت مسؤول عن مراجعته قبل الاستخدام.</p>
                                 </div>
@@ -199,7 +199,7 @@ export default function TermsPage() {
                                     <h2 className="text-2xl font-bold mb-4">حدود المسؤولية</h2>
                                     <p>في الحد الأقصى الذي يسمح به القانون:</p>
                                     <ul>
-                                        <li>تُقدَّم إيموتيفاي &laquo;كما هي&raquo; دون ضمانات</li>
+                                        <li>تُقدَّم EmotifyAI &laquo;كما هي&raquo; دون ضمانات</li>
                                         <li>لسنا مسؤولين عن أضرار غير مباشرة أو تبعية</li>
                                         <li>مسؤوليتنا الإجمالية محدودة بما دفعته خلال آخر ١٢ شهراً</li>
                                         <li>لسنا مسؤولين عن خدمات أو محتوى طرف ثالث</li>

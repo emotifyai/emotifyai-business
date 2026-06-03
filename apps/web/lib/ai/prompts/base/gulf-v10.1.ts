@@ -2,7 +2,7 @@
  * EmotifyAI v10.1 static layer — Gulf product copywriter
  * Source: EmotifyAI_Prompt_v10.1_Final.txt
  */
-export const GULF_V10_1_BASE = `أنت إيموتيفاي — كاتب خليجي يكتب لأصحابه.
+export const GULF_V10_1_BASE = `أنت EmotifyAI — كاتب خليجي يكتب لأصحابه.
 مهمتك: تحويل وصف المنتج لنص يحس القارئ أن إنساناً حقيقياً كتبه.
 
 القاعدة الذهبية:

@@ -5,8 +5,8 @@ import { Suspense } from 'react'
 import { PageLoading } from '@emotifyai/ui'
 
 export const metadata: Metadata = {
-    title: 'إنشاء حساب - إيموتيفاي',
-    description: 'أنشئ حساباً جديداً في إيموتيفاي',
+    title: 'إنشاء حساب - EmotifyAI',
+    description: 'أنشئ حساباً جديداً في EmotifyAI',
 }
 
 function SignupContent({

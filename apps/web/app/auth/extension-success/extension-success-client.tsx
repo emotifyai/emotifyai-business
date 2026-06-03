@@ -12,13 +12,13 @@ export function ExtensionSuccessClient() {
         const notifyExtension = async () => {
             try {
                 const response = await fetch('/api/auth/session')
-                
+
                 if (response.ok) {
                     const data = await response.json()
-                    
+
                     if (data.valid && data.user) {
                         const productionExtensionId = process.env.NEXT_PUBLIC_EXTENSION_ID
-                        
+
                         if (productionExtensionId && (window as any).chrome?.runtime) {
                             try {
                                 await new Promise((resolve, reject) => {
@@ -26,25 +26,25 @@ export function ExtensionSuccessClient() {
                                         reject(new Error('Extension communication timeout'))
                                     }, 5000) as ReturnType<typeof setTimeout>
 
-                                    ;(window as any).chrome.runtime.sendMessage(
-                                        productionExtensionId,
-                                        {
-                                            type: 'EMOTIFYAI_AUTH_SUCCESS',
-                                            payload: {
-                                                user: data.user,
-                                                token: data.token
+                                        ; (window as any).chrome.runtime.sendMessage(
+                                            productionExtensionId,
+                                            {
+                                                type: 'EMOTIFYAI_AUTH_SUCCESS',
+                                                payload: {
+                                                    user: data.user,
+                                                    token: data.token
+                                                },
+                                                source: 'web_app'
                                             },
-                                            source: 'web_app'
-                                        },
-                                        (response: unknown) => {
-                                            clearTimeout(timeout)
-                                            if ((window as any).chrome.runtime.lastError) {
-                                                reject((window as any).chrome.runtime.lastError)
-                                            } else {
-                                                resolve(response)
+                                            (response: unknown) => {
+                                                clearTimeout(timeout)
+                                                if ((window as any).chrome.runtime.lastError) {
+                                                    reject((window as any).chrome.runtime.lastError)
+                                                } else {
+                                                    resolve(response)
+                                                }
                                             }
-                                        }
-                                    )
+                                        )
                                 })
                                 setNotificationSent(true)
                                 return
@@ -61,14 +61,14 @@ export function ExtensionSuccessClient() {
                             },
                             source: 'web_app'
                         }
-                        
+
                         window.postMessage(fallbackMessage, '*')
-                        
+
                         const customEvent = new CustomEvent('emotifyai-auth-success', {
                             detail: fallbackMessage
                         })
                         window.dispatchEvent(customEvent)
-                        
+
                         setNotificationSent(true)
                     }
                 }
@@ -117,10 +117,10 @@ export function ExtensionSuccessClient() {
                 <h1 className="text-2xl font-bold text-gray-900 mb-4">
                     كل شيء جاهز!
                 </h1>
-                
+
                 <p className="text-gray-600 mb-6 leading-relaxed">
                     حسابك جاهز — ٥ تحويلات مجانية بعد التسجيل.
-                    {notificationSent 
+                    {notificationSent
                         ? ' يجب أن تكون إضافتك متصلة تلقائياً!'
                         : ' أغلق هذا التبويب وانقر أيقونة الإضافة لإكمال الإعداد.'
                     }
@@ -137,7 +137,7 @@ export function ExtensionSuccessClient() {
                     ) : (
                         <ol className="text-sm text-blue-800 space-y-1 list-decimal list-inside">
                             <li>أغلق هذا التبويب</li>
-                            <li>انقر أيقونة إيموتيفاي</li>
+                            <li>انقر أيقونة EmotifyAI</li>
                             <li>ستكتشف الإضافة تسجيل دخولك تلقائياً</li>
                         </ol>
                     )}
@@ -147,7 +147,7 @@ export function ExtensionSuccessClient() {
                     <h3 className="font-semibold text-gray-900 mb-2">كيفية تحسين النص:</h3>
                     <ul className="text-sm text-gray-700 space-y-1">
                         <li>• حدّد نصاً في أي صفحة ويب</li>
-                        <li>• انقر بالزر الأيمن واختر &laquo;تحسين مع إيموتيفاي&raquo;</li>
+                        <li>• انقر بالزر الأيمن واختر &laquo;تحسين مع EmotifyAI&raquo;</li>
                         <li>• أو استخدم الاختصار: Ctrl+Shift+E</li>
                     </ul>
                 </div>
@@ -159,7 +159,7 @@ export function ExtensionSuccessClient() {
                     >
                         إغلاق هذا التبويب
                     </button>
-                    
+
                     <button
                         onClick={handleOpenDashboard}
                         className="w-full bg-gray-100 text-gray-700 py-3 px-4 rounded-lg font-medium hover:bg-gray-200 transition-colors"

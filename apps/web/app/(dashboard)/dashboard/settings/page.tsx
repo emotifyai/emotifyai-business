@@ -51,7 +51,7 @@ export default function SettingsPage() {
                     <CardHeader>
                         <CardTitle>التفضيلات</CardTitle>
                         <CardDescription>
-                            تخصيص تجربة إيموتيفاي
+                            تخصيص تجربة EmotifyAI
                         </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">

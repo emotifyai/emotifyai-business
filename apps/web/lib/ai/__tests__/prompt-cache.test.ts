@@ -20,7 +20,7 @@ describe('Prompt Caching', () => {
 
   describe('buildCachedSystemPrompt', () => {
     const routeCases: [PromptRouteId, string][] = [
-      ['ar-gulf', 'إيموتيفاي'],
+      ['ar-gulf', 'EmotifyAI'],
       ['en', 'EmotifyAI'],
       ['ar-msa', 'فصحى'],
     ]

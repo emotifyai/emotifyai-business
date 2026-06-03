@@ -7,8 +7,8 @@ import { createClient } from '@/lib/supabase/server'
 import { SubscriptionStatus } from '@/types/database'
 
 export const metadata: Metadata = {
-  title: 'الأسعار - إيموتيفاي',
-  description: 'خطط وأسعار إيموتيفاي بالريال السعودي',
+  title: 'الأسعار - EmotifyAI',
+  description: 'خطط وأسعار EmotifyAI بالريال السعودي',
 }
 
 interface PricingPageProps {

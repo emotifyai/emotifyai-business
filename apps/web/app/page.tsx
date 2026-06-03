@@ -44,7 +44,7 @@ export default async function Home() {
         <section className="page-container py-12 sm:py-16 md:py-24">
           <div className="mx-auto max-w-5xl">
             <div className="mb-8 text-center sm:mb-12">
-              <h2 className="mb-3 text-2xl font-bold sm:mb-4 sm:text-3xl">لماذا إيموتيفاي؟</h2>
+              <h2 className="mb-3 text-2xl font-bold sm:mb-4 sm:text-3xl">لماذا EmotifyAI؟</h2>
               <p className="text-sm text-muted-foreground sm:text-base">
                 ميزات قوية لتحسين نصوص منتجاتك في السوق الخليجي
               </p>

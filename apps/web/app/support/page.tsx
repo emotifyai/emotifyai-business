@@ -7,8 +7,8 @@ import { Button } from '@emotifyai/ui'
 import Link from 'next/link'
 
 export const metadata: Metadata = {
-    title: 'الدعم - إيموتيفاي',
-    description: 'احصل على المساعدة مع إيموتيفاي — تواصل مع الدعم واطّلع على التوثيق والأسئلة الشائعة',
+    title: 'الدعم - EmotifyAI',
+    description: 'احصل على المساعدة مع EmotifyAI — تواصل مع الدعم واطّلع على التوثيق والأسئلة الشائعة',
 }
 
 export default function SupportPage() {

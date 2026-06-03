@@ -5,8 +5,8 @@ import { Card, CardContent } from '@emotifyai/ui'
 import { Sparkles, Target, Zap, Shield, Globe, Users } from 'lucide-react'
 
 export const metadata: Metadata = {
-    title: 'من نحن - إيموتيفاي',
-    description: 'تعرّف على إيموتيفاي ورسالتنا في تحسين الكتابة بالذكاء الاصطناعي',
+    title: 'من نحن - EmotifyAI',
+    description: 'تعرّف على EmotifyAI ورسالتنا في تحسين الكتابة بالذكاء الاصطناعي',
 }
 
 export default function AboutPage() {
@@ -21,7 +21,7 @@ export default function AboutPage() {
                                 <Sparkles className="h-8 w-8 text-primary" />
                             </div>
                             <h1 className="mb-3 text-3xl font-bold tracking-tight sm:mb-4 sm:text-4xl md:text-5xl">
-                                عن إيموتيفاي
+                                عن EmotifyAI
                             </h1>
                             <p className="text-base text-muted-foreground sm:text-xl">
                                 نرفع مستوى كتابتك بقوة الذكاء الاصطناعي، ونجعل التواصل أسهل للجميع.
@@ -41,7 +41,7 @@ export default function AboutPage() {
                                     <div className="flex-1">
                                         <h2 className="text-2xl font-bold mb-4">رسالتنا</h2>
                                         <p className="text-lg text-muted-foreground leading-relaxed">
-                                            نؤمن أن اللغة لا يجب أن تكون حاجزاً أمام التواصل الفعّال. سواء كنت تكتب بريداً مهماً أو وثيقة تقنية أو نصاً إبداعياً، تساعدك إيموتيفاي على إيجاد الكلمات المناسبة فوراً — بالعربية أو الإنجليزية أو الفرنسية.
+                                            نؤمن أن اللغة لا يجب أن تكون حاجزاً أمام التواصل الفعّال. سواء كنت تكتب بريداً مهماً أو وثيقة تقنية أو نصاً إبداعياً، تساعدك EmotifyAI على إيجاد الكلمات المناسبة فوراً — بالعربية أو الإنجليزية أو الفرنسية.
                                         </p>
                                     </div>
                                 </div>
@@ -58,7 +58,7 @@ export default function AboutPage() {
                                         <h2 className="text-2xl font-bold mb-4">كيف يعمل</h2>
                                         <div className="space-y-4">
                                             <p className="text-muted-foreground leading-relaxed">
-                                                تعتمد إيموتيفاي على ذكاء اصطناعي متقدم يفهم سياق كتابتك ودقائها.
+                                                تعتمد EmotifyAI على ذكاء اصطناعي متقدم يفهم سياق كتابتك ودقائها.
                                             </p>
                                             <div className="grid gap-4 md:grid-cols-2">
                                                 <div className="rounded-lg border bg-card p-4">
@@ -89,7 +89,7 @@ export default function AboutPage() {
                                     <div className="flex-1">
                                         <h2 className="text-2xl font-bold mb-4">تميّز متعدد اللغات</h2>
                                         <p className="text-muted-foreground leading-relaxed mb-4">
-                                            تتخصص إيموتيفاي في ثلاث لغات بجودة عالية تناسب خصائص كل لغة:
+                                            تتخصص EmotifyAI في ثلاث لغات بجودة عالية تناسب خصائص كل لغة:
                                         </p>
                                         <div className="grid gap-3 md:grid-cols-3">
                                             <div className="rounded-lg border bg-card p-4 text-center">
@@ -122,7 +122,7 @@ export default function AboutPage() {
                                     <div className="flex-1">
                                         <h2 className="text-2xl font-bold mb-4">الخصوصية أولاً</h2>
                                         <p className="text-muted-foreground leading-relaxed mb-4">
-                                            نأخذ خصوصيتك على محمل الجد. صُممت إيموتيفاي بمنهج أمان أولاً:
+                                            نأخذ خصوصيتك على محمل الجد. صُممت EmotifyAI بمنهج أمان أولاً:
                                         </p>
                                         <ul className="space-y-2">
                                             <li className="flex items-start gap-2">
@@ -164,7 +164,7 @@ export default function AboutPage() {
                                     <div className="flex-1">
                                         <h2 className="text-2xl font-bold mb-4">من نخدم</h2>
                                         <p className="text-muted-foreground leading-relaxed mb-4">
-                                            بُنيت إيموتيفاي لكل من يكتب:
+                                            بُنيت EmotifyAI لكل من يكتب:
                                         </p>
                                         <div className="grid gap-3 sm:grid-cols-2">
                                             <div className="rounded-lg border bg-card p-3">

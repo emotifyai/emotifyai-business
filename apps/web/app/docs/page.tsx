@@ -5,8 +5,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@emotifyai/ui'
 import { BookOpen, Download, Key, MousePointerClick, Keyboard, Zap } from 'lucide-react'
 
 export const metadata: Metadata = {
-    title: 'التوثيق - إيموتيفاي',
-    description: 'دليل شامل لاستخدام إضافة إيموتيفاي وتطبيق الويب',
+    title: 'التوثيق - EmotifyAI',
+    description: 'دليل شامل لاستخدام إضافة EmotifyAI وتطبيق الويب',
 }
 
 export default function DocsPage() {
@@ -24,7 +24,7 @@ export default function DocsPage() {
                                 التوثيق
                             </h1>
                             <p className="text-xl text-muted-foreground">
-                                كل ما تحتاج معرفته لاستخدام إيموتيفاي في تحسين كتابتك.
+                                كل ما تحتاج معرفته لاستخدام EmotifyAI في تحسين كتابتك.
                             </p>
                         </div>
                     </div>
@@ -48,11 +48,11 @@ export default function DocsPage() {
                                         <ol className="space-y-3 text-sm">
                                             <li className="flex gap-3">
                                                 <span className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-primary/10 text-xs font-semibold text-primary">١</span>
-                                                <span className="text-muted-foreground">ثبّت إضافة إيموتيفاي من <strong className="text-foreground">Chrome Web Store</strong> أو <strong className="text-foreground">Firefox Add-ons</strong></span>
+                                                <span className="text-muted-foreground">ثبّت إضافة EmotifyAI من <strong className="text-foreground">Chrome Web Store</strong> أو <strong className="text-foreground">Firefox Add-ons</strong></span>
                                             </li>
                                             <li className="flex gap-3">
                                                 <span className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-primary/10 text-xs font-semibold text-primary">٢</span>
-                                                <span className="text-muted-foreground">انقر أيقونة إيموتيفاي في شريط أدوات المتصفح لفتح النافذة المنبثقة</span>
+                                                <span className="text-muted-foreground">انقر أيقونة EmotifyAI في شريط أدوات المتصفح لفتح النافذة المنبثقة</span>
                                             </li>
                                             <li className="flex gap-3">
                                                 <span className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-primary/10 text-xs font-semibold text-primary">٣</span>
@@ -91,7 +91,7 @@ export default function DocsPage() {
                         </div>
 
                         <div>
-                            <h2 className="text-3xl font-bold mb-6">استخدام إيموتيفاي</h2>
+                            <h2 className="text-3xl font-bold mb-6">استخدام EmotifyAI</h2>
                             <div className="grid gap-6">
                                 <Card>
                                     <CardHeader>
@@ -117,7 +117,7 @@ export default function DocsPage() {
                                                     </li>
                                                     <li className="flex gap-3">
                                                         <span className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-green-500/10 text-xs font-semibold text-green-500">٣</span>
-                                                        <span className="text-muted-foreground">مرّر على &laquo;إيموتيفاي&raquo; واختر &laquo;تحسين&raquo;</span>
+                                                        <span className="text-muted-foreground">مرّر على &laquo;EmotifyAI&raquo; واختر &laquo;تحسين&raquo;</span>
                                                     </li>
                                                     <li className="flex gap-3">
                                                         <span className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-green-500/10 text-xs font-semibold text-green-500">٤</span>
@@ -150,7 +150,7 @@ export default function DocsPage() {
                                                 <kbd className="rounded bg-muted px-2 py-1 text-xs font-semibold">Ctrl+Shift+E</kbd>
                                             </div>
                                             <div className="flex items-center justify-between rounded-lg border bg-card p-3">
-                                                <span className="text-sm text-muted-foreground">فتح نافذة إيموتيفاي</span>
+                                                <span className="text-sm text-muted-foreground">فتح نافذة EmotifyAI</span>
                                                 <kbd className="rounded bg-muted px-2 py-1 text-xs font-semibold">Ctrl+Shift+Y</kbd>
                                             </div>
                                             <p className="text-xs text-muted-foreground mt-2">

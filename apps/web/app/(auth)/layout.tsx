@@ -34,7 +34,7 @@ export default function AuthLayout({
                     <div className="relative z-20 mt-auto">
                         <blockquote className="space-y-2 rounded-xl border border-border/60 bg-card/40 p-4 backdrop-blur-sm dark:border-transparent dark:bg-transparent dark:p-0 dark:backdrop-blur-none">
                             <p className="text-lg leading-relaxed text-foreground/90 dark:text-white">
-                                &laquo;غيّرت إيموتيفاي طريقة كتابتي بالكامل. التحسين بالذكاء الاصطناعي دقيق وقوي، ورسائلي ووثائقي أصبحت أكثر احترافية.&raquo;
+                                &laquo;غيّرت EmotifyAI طريقة كتابتي بالكامل. التحسين بالذكاء الاصطناعي دقيق وقوي، ورسائلي ووثائقي أصبحت أكثر احترافية.&raquo;
                             </p>
                             <footer className="text-sm font-medium text-muted-foreground dark:text-white/80">
                                 صفاء الدوسري

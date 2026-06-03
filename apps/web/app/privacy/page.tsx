@@ -5,8 +5,8 @@ import { Card, CardContent } from '@emotifyai/ui'
 import { Shield, Lock, Eye, Database, FileText, UserCheck } from 'lucide-react'
 
 export const metadata: Metadata = {
-    title: 'سياسة الخصوصية - إيموتيفاي',
-    description: 'تعرّف على كيف تحمي إيموتيفاي خصوصيتك وتتعامل مع بياناتك',
+    title: 'سياسة الخصوصية - EmotifyAI',
+    description: 'تعرّف على كيف تحمي EmotifyAI خصوصيتك وتتعامل مع بياناتك',
 }
 
 export default function PrivacyPage() {
@@ -45,10 +45,10 @@ export default function PrivacyPage() {
                                         <h2 className="text-2xl font-bold mb-4">مقدمة</h2>
                                         <div className="prose prose-zinc dark:prose-invert max-w-none">
                                             <p>
-                                                تلتزم إيموتيفاي (&laquo;نحن&raquo; أو &laquo;لنا&raquo;) بحماية خصوصيتك. توضّح هذه السياسة كيف نجمع معلوماتك ونستخدمها ونفصح عنها ونؤمّنها عند استخدام إضافة المتصفح وتطبيق الويب. نؤمن بالشفافية الكاملة في ممارساتنا للبيانات.
+                                                تلتزم EmotifyAI (&laquo;نحن&raquo; أو &laquo;لنا&raquo;) بحماية خصوصيتك. توضّح هذه السياسة كيف نجمع معلوماتك ونستخدمها ونفصح عنها ونؤمّنها عند استخدام إضافة المتصفح وتطبيق الويب. نؤمن بالشفافية الكاملة في ممارساتنا للبيانات.
                                             </p>
                                             <p>
-                                                باستخدام إيموتيفاي، فإنك توافق على جمع المعلومات واستخدامها وفق هذه السياسة.
+                                                باستخدام EmotifyAI، فإنك توافق على جمع المعلومات واستخدامها وفق هذه السياسة.
                                             </p>
                                         </div>
                                     </div>
@@ -168,7 +168,7 @@ export default function PrivacyPage() {
                                             <h3 className="mt-6">مشاركة البيانات (مزوّدو الخدمة فقط)</h3>
                                             <p><strong>لا نبيع بيانات المستخدمين.</strong></p>
                                             <p>
-                                                نشارك البيانات فقط مع المزوّدين أعلاه لتشغيل إيموتيفاي. لا نشاركها للإعلان أو التتبّع عبر المواقع.
+                                                نشارك البيانات فقط مع المزوّدين أعلاه لتشغيل EmotifyAI. لا نشاركها للإعلان أو التتبّع عبر المواقع.
                                             </p>
                                             <h3 className="mt-6">سياسات المزوّدين</h3>
                                             <ul>

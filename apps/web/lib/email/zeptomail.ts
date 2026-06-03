@@ -1,47 +1,47 @@
 import { env } from '@/lib/env'
 
 export async function sendEmailWithZeptoMail(to: string, subject: string, htmlBody: string) {
-    if (!env.ZEPTOMAIL_SMTP_TOKEN) {
-        console.warn('[ZeptoMail] Token not configured. Skipping email to:', to)
-        return false
-    }
+  if (!env.ZEPTOMAIL_SMTP_TOKEN) {
+    console.warn('[ZeptoMail] Token not configured. Skipping email to:', to)
+    return false
+  }
 
-    // ZeptoMail API requires the token in the format "Zoho-enczapikey <token>"
-    const response = await fetch('https://api.zeptomail.com/v1.1/email', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-            'Authorization': `Zoho-enczapikey ${env.ZEPTOMAIL_SMTP_TOKEN}`,
+  // ZeptoMail API requires the token in the format "Zoho-enczapikey <token>"
+  const response = await fetch('https://api.zeptomail.com/v1.1/email', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      'Authorization': `Zoho-enczapikey ${env.ZEPTOMAIL_SMTP_TOKEN}`,
+    },
+    body: JSON.stringify({
+      from: {
+        address: 'noreply@emotifyai.com',
+        name: 'EmotifyAI',
+      },
+      to: [
+        {
+          email_address: {
+            address: to,
+          },
         },
-        body: JSON.stringify({
-            from: {
-                address: 'noreply@emotifyai.com',
-                name: 'إيموتيفاي',
-            },
-            to: [
-                {
-                    email_address: {
-                        address: to,
-                    },
-                },
-            ],
-            subject: subject,
-            htmlbody: htmlBody,
-        }),
-    })
+      ],
+      subject: subject,
+      htmlbody: htmlBody,
+    }),
+  })
 
-    if (!response.ok) {
-        const errorText = await response.text()
-        console.error('[ZeptoMail] Failed to send email:', errorText)
-        return false
-    }
+  if (!response.ok) {
+    const errorText = await response.text()
+    console.error('[ZeptoMail] Failed to send email:', errorText)
+    return false
+  }
 
-    return true
+  return true
 }
 
 export async function sendTrialEndedEmail(email: string) {
-    const htmlBody = `
+  const htmlBody = `
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -66,11 +66,11 @@ export async function sendTrialEndedEmail(email: string) {
 </body>
 </html>
 `
-    return sendEmailWithZeptoMail(email, 'انتهت فترة تجربتك المجانية - إيموتيفاي', htmlBody)
+  return sendEmailWithZeptoMail(email, 'انتهت فترة تجربتك المجانية - EmotifyAI', htmlBody)
 }
 
 export async function sendPaymentConfirmationEmail(email: string, creditsTotal: number) {
-    const htmlBody = `
+  const htmlBody = `
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -97,5 +97,5 @@ export async function sendPaymentConfirmationEmail(email: string, creditsTotal: 
 </body>
 </html>
 `
-    return sendEmailWithZeptoMail(email, 'تم تأكيد الدفع بنجاح - إيموتيفاي', htmlBody)
+  return sendEmailWithZeptoMail(email, 'تم تأكيد الدفع بنجاح - EmotifyAI', htmlBody)
 }

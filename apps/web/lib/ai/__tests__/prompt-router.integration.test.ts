@@ -53,7 +53,7 @@ describe('prompt router integration', () => {
     it('includes Gulf brand for ar-gulf route', () => {
       const prompt = buildCachedSystemPrompt('ar-gulf')
       expect(prompt.cache_control?.type).toBe('ephemeral')
-      expect(prompt.text).toContain('إيموتيفاي')
+      expect(prompt.text).toContain('EmotifyAI')
     })
 
     it('includes EmotifyAI for en route', () => {

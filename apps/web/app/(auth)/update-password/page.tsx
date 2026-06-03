@@ -10,8 +10,8 @@ import { toast } from '@emotifyai/ui'
 import { CheckCircle2, Eye, EyeOff, KeyRound, Loader2, ShieldCheck } from 'lucide-react'
 
 export const metadata = {
-    title: 'تعيين كلمة مرور جديدة - إيموتيفاي',
-    description: 'أنشئ كلمة مرور جديدة آمنة لحسابك في إيموتيفاي',
+    title: 'تعيين كلمة مرور جديدة - EmotifyAI',
+    description: 'أنشئ كلمة مرور جديدة آمنة لحسابك في EmotifyAI',
 }
 
 type State = 'idle' | 'loading' | 'success'
@@ -41,9 +41,8 @@ function StrengthBar({ password }: { password: string }) {
                 {[0, 1, 2, 3].map((i) => (
                     <div
                         key={i}
-                        className={`h-1 flex-1 rounded-full transition-all duration-300 ${
-                            i < score ? colors[score] : 'bg-muted'
-                        }`}
+                        className={`h-1 flex-1 rounded-full transition-all duration-300 ${i < score ? colors[score] : 'bg-muted'
+                            }`}
                     />
                 ))}
             </div>
@@ -184,11 +183,10 @@ export default function UpdatePasswordPage() {
                                     value={confirm}
                                     onChange={(e) => setConfirm(e.target.value)}
                                     placeholder="••••••••"
-                                    className={`pe-10 ${
-                                        confirm && !passwordsMatch
+                                    className={`pe-10 ${confirm && !passwordsMatch
                                             ? 'border-destructive focus-visible:ring-destructive'
                                             : ''
-                                    }`}
+                                        }`}
                                     required
                                 />
                                 <button
