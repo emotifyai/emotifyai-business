@@ -22,7 +22,13 @@ export function SignupForm() {
         e.preventDefault()
 
         try {
-            await signup.mutateAsync({ email, password, displayName })
+            const result = await signup.mutateAsync({ email, password, displayName })
+            
+            // If email confirmations are enabled in Supabase, session will be null upon signup
+            if (result?.session === null) {
+                router.push('/verify-email')
+                return
+            }
             
             const source = searchParams.get('source')
             const redirectTo = searchParams.get('redirect_to')

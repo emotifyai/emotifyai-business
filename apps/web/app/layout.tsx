@@ -7,6 +7,7 @@ import { arabicFontClassName } from "@/lib/fonts";
 import { QueryProvider } from "@/lib/query-provider";
 import { Toaster } from "@emotifyai/ui";
 import React from "react";
+import { AuthErrorHandler } from "@/components/auth/auth-error-handler";
 
 const gaMeasurementId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
 
@@ -51,6 +52,9 @@ export default function RootLayout({
           <QueryProvider>
             {children}
             <Toaster position="top-center" className="safe-area-top" />
+            <React.Suspense fallback={null}>
+              <AuthErrorHandler />
+            </React.Suspense>
           </QueryProvider>
         </ThemeProvider>
       </body>
