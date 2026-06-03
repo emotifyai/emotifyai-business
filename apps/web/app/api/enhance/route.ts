@@ -91,7 +91,6 @@ async function ensureCanEnhance(
                 // Registered users get the full combined pool (guest + signup bonus)
                 credits_limit: REGISTERED_FREE_CREDIT_TOTAL,
                 credits_used: 0,
-                credits_remaining: REGISTERED_FREE_CREDIT_TOTAL,
                 validity_days: freeDefaults.validityDays,
                 current_period_start: now.toISOString(),
                 current_period_end: periodEnd,

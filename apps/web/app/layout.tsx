@@ -7,12 +7,12 @@ import { arabicFontClassName } from "@/lib/fonts";
 import { QueryProvider } from "@/lib/query-provider";
 import { Toaster } from "@emotifyai/ui";
 import React from "react";
-import { AuthErrorHandler } from "@/components/auth/auth-error-handler";
+import { AuthMessageHandler } from "@/components/auth/auth-error-handler";
 
 const gaMeasurementId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
 
 export const metadata: Metadata = {
-  title: "EmotifyAI — تحسين نصوص المنتجات بالذكاء الاصطناعي",
+  title: "إيموتيفاي — تحسين نصوص المنتجات بالذكاء الاصطناعي",
   description:
     "حوّل أوصاف منتجاتك إلى نصوص تسويقية جذابة بالعربية والإنجليزية. مصمم لسوق الخليج.",
 };
@@ -53,7 +53,7 @@ export default function RootLayout({
             {children}
             <Toaster position="top-center" className="safe-area-top" />
             <React.Suspense fallback={null}>
-              <AuthErrorHandler />
+              <AuthMessageHandler />
             </React.Suspense>
           </QueryProvider>
         </ThemeProvider>

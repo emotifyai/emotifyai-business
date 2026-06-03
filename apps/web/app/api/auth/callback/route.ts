@@ -36,5 +36,10 @@ export async function GET(request: NextRequest) {
     }
 
     // For all other flows (email confirmation, OAuth, etc.) go to the requested page
+    if (next === '/dashboard' || next === '/') {
+        const symbol = next.includes('?') ? '&' : '?'
+        return NextResponse.redirect(`${origin}${next}${symbol}message=verified`)
+    }
+    
     return NextResponse.redirect(`${origin}${next}`)
 }
