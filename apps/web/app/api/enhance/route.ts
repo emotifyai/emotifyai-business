@@ -158,6 +158,23 @@ async function persistEnhancement(params: {
 
     await supabase.rpc('consume_credits', { user_uuid: userId, credits_to_consume: 1 }).single()
 
+    // Check if free trial just ended
+    try {
+        const { data: status } = await (supabase as any).rpc('get_user_credit_status', { user_uuid: userId }).single()
+        // If they are on free tier and hit exactly 0
+        if (status && status.tier_name === 'free' && status.credits_remaining === 0) {
+            const { data: profile } = await supabase.from('profiles').select('email').eq('id', userId).single()
+            if (profile?.email) {
+                // Dynamically import to avoid edge runtime issues if not fully supported, 
+                // though NextJS handles it well now.
+                const { sendTrialEndedEmail } = await import('@/lib/email/zeptomail')
+                await sendTrialEndedEmail(profile.email)
+            }
+        }
+    } catch (trialEmailError) {
+        console.error('[DUCK enhance/persist] Failed to send trial ended email:', trialEmailError)
+    }
+
     const usageLogData: UsageLogInsert = {
         user_id: userId,
         input_text: text,

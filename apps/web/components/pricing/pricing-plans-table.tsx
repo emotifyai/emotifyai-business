@@ -50,12 +50,14 @@ function PlanCard({
 
   return (
     <article
+      id={plan.id}
       className={cn(
-        'relative flex h-full flex-col rounded-2xl border bg-card p-5 text-card-foreground shadow-sm transition-shadow sm:p-6',
+        'relative flex h-full flex-col rounded-2xl border bg-card p-5 text-card-foreground shadow-sm transition-all duration-700 sm:p-6',
         plan.highlighted
           ? 'border-primary/50 shadow-[0_0_40px_-12px] shadow-primary/35'
           : 'border-border hover:border-primary/25',
-        isCurrent && 'ring-2 ring-primary/40'
+        isCurrent && 'ring-2 ring-primary/40',
+        'target:ring-4 target:ring-primary target:shadow-2xl target:shadow-primary/50 scroll-mt-24'
       )}
     >
       {plan.highlighted && (

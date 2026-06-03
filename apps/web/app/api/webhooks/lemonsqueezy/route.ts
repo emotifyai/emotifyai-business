@@ -5,6 +5,7 @@ import { SubscriptionStatus, SubscriptionTier } from '@/types/database'
 import type { LemonSqueezyWebhookPayload } from '@/types/api'
 import { getCreditsForTier, isBundleTier } from '@/lib/pricing/credits'
 import type { SubscriptionTier as AppSubscriptionTier } from '@/lib/subscription/types'
+import { sendPaymentConfirmationEmail } from '@/lib/email/zeptomail'
 
 /**
  * Verify webhook signature from Lemon Squeezy
@@ -316,6 +317,15 @@ export async function POST(request: NextRequest) {
                     }
 
                     console.log(`Bundle order processed: ${bundleTier} for ${userEmail}`)
+
+                    try {
+                        const { data: status } = await (supabase as any).rpc('get_user_credit_status', { user_uuid: profile.id }).single()
+                        if (status) {
+                            await sendPaymentConfirmationEmail(userEmail, status.credits_remaining)
+                        }
+                    } catch (emailError) {
+                        console.error('Failed to send payment confirmation email:', emailError)
+                    }
                 } else {
                     console.log(`Ignoring order - variant ${variantId} not configured`)
                 }
@@ -528,6 +538,28 @@ export async function POST(request: NextRequest) {
                 }
 
                 console.log(`Credits reset for subscription ${subscriptionId}`)
+
+                try {
+                    // Fetch profile to get email
+                    const { data: subData } = await supabase
+                        .from('subscriptions')
+                        .select('user_id, profiles(email)')
+                        .eq('lemon_squeezy_id', subscriptionId)
+                        .single()
+                    
+                    // @ts-ignore
+                    const userEmail = subData?.profiles?.email
+                    const userId = subData?.user_id
+
+                    if (userEmail && userId) {
+                        const { data: status } = await (supabase as any).rpc('get_user_credit_status', { user_uuid: userId }).single()
+                        if (status) {
+                            await sendPaymentConfirmationEmail(userEmail, status.credits_remaining)
+                        }
+                    }
+                } catch (emailError) {
+                    console.error('Failed to send payment confirmation email:', emailError)
+                }
                 break
             }
 
