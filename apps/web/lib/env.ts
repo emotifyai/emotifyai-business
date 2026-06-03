@@ -37,23 +37,29 @@ export const env = createEnv({
         // Lemon Squeezy Product Variant IDs
         /** @deprecated Lifetime offer retired — optional for legacy webhooks only */
         LEMONSQUEEZY_LIFETIME_LAUNCH_VARIANT_ID: z.string().optional(),
-        LEMONSQUEEZY_BASIC_MONTHLY_VARIANT_ID: z.string().min(1, {
-            message: 'LEMONSQUEEZY_BASIC_MONTHLY_VARIANT_ID is required',
-        }),
+        /** @deprecated Basic plan retired — optional for legacy webhooks only */
+        LEMONSQUEEZY_BASIC_MONTHLY_VARIANT_ID: z.string().optional(),
+        /** @deprecated Basic plan retired — optional for legacy webhooks only */
+        LEMONSQUEEZY_BASIC_ANNUAL_VARIANT_ID: z.string().optional(),
+        /** @deprecated Business plan retired — optional for legacy webhooks only */
+        LEMONSQUEEZY_BUSINESS_MONTHLY_VARIANT_ID: z.string().optional(),
+        /** @deprecated Business plan retired — optional for legacy webhooks only */
+        LEMONSQUEEZY_BUSINESS_ANNUAL_VARIANT_ID: z.string().optional(),
+
+        // Active subscription plans
         LEMONSQUEEZY_PRO_MONTHLY_VARIANT_ID: z.string().min(1, {
             message: 'LEMONSQUEEZY_PRO_MONTHLY_VARIANT_ID is required',
-        }),
-        LEMONSQUEEZY_BUSINESS_MONTHLY_VARIANT_ID: z.string().min(1, {
-            message: 'LEMONSQUEEZY_BUSINESS_MONTHLY_VARIANT_ID is required',
-        }),
-        LEMONSQUEEZY_BASIC_ANNUAL_VARIANT_ID: z.string().min(1, {
-            message: 'LEMONSQUEEZY_BASIC_ANNUAL_VARIANT_ID is required',
         }),
         LEMONSQUEEZY_PRO_ANNUAL_VARIANT_ID: z.string().min(1, {
             message: 'LEMONSQUEEZY_PRO_ANNUAL_VARIANT_ID is required',
         }),
-        LEMONSQUEEZY_BUSINESS_ANNUAL_VARIANT_ID: z.string().min(1, {
-            message: 'LEMONSQUEEZY_BUSINESS_ANNUAL_VARIANT_ID is required',
+
+        // One-time credit bundles
+        LEMONSQUEEZY_SMALL_BUNDLE_VARIANT_ID: z.string().min(1, {
+            message: 'LEMONSQUEEZY_SMALL_BUNDLE_VARIANT_ID is required',
+        }),
+        LEMONSQUEEZY_LARGE_BUNDLE_VARIANT_ID: z.string().min(1, {
+            message: 'LEMONSQUEEZY_LARGE_BUNDLE_VARIANT_ID is required',
         }),
 
         // Anthropic (Claude)
@@ -81,11 +87,9 @@ export const env = createEnv({
         RATE_LIMIT_RPM: z.coerce.number().int().positive().default(10),
         RATE_LIMIT_WINDOW: z.coerce.number().int().positive().default(60),
 
-        // Optional: Email Configuration
-        EMAIL_PROVIDER: z.string().optional(),
-        EMAIL_API_KEY: z.string().optional(),
-        EMAIL_FROM_ADDRESS: z.string().email().optional(),
-        EMAIL_FROM_NAME: z.string().optional(),
+        // ZeptoMail — used as the Supabase SMTP password and for future
+        // server-side transactional emails via the ZeptoMail REST API.
+        ZEPTOMAIL_SMTP_TOKEN: z.string().optional(),
 
         // Development Only
         DEBUG: z
@@ -150,11 +154,13 @@ export const env = createEnv({
         LEMONSQUEEZY_WEBHOOK_SECRET: process.env.LEMONSQUEEZY_WEBHOOK_SECRET,
         LEMONSQUEEZY_LIFETIME_LAUNCH_VARIANT_ID: process.env.LEMONSQUEEZY_LIFETIME_LAUNCH_VARIANT_ID,
         LEMONSQUEEZY_BASIC_MONTHLY_VARIANT_ID: process.env.LEMONSQUEEZY_BASIC_MONTHLY_VARIANT_ID,
-        LEMONSQUEEZY_PRO_MONTHLY_VARIANT_ID: process.env.LEMONSQUEEZY_PRO_MONTHLY_VARIANT_ID,
-        LEMONSQUEEZY_BUSINESS_MONTHLY_VARIANT_ID: process.env.LEMONSQUEEZY_BUSINESS_MONTHLY_VARIANT_ID,
         LEMONSQUEEZY_BASIC_ANNUAL_VARIANT_ID: process.env.LEMONSQUEEZY_BASIC_ANNUAL_VARIANT_ID,
-        LEMONSQUEEZY_PRO_ANNUAL_VARIANT_ID: process.env.LEMONSQUEEZY_PRO_ANNUAL_VARIANT_ID,
+        LEMONSQUEEZY_BUSINESS_MONTHLY_VARIANT_ID: process.env.LEMONSQUEEZY_BUSINESS_MONTHLY_VARIANT_ID,
         LEMONSQUEEZY_BUSINESS_ANNUAL_VARIANT_ID: process.env.LEMONSQUEEZY_BUSINESS_ANNUAL_VARIANT_ID,
+        LEMONSQUEEZY_PRO_MONTHLY_VARIANT_ID: process.env.LEMONSQUEEZY_PRO_MONTHLY_VARIANT_ID,
+        LEMONSQUEEZY_PRO_ANNUAL_VARIANT_ID: process.env.LEMONSQUEEZY_PRO_ANNUAL_VARIANT_ID,
+        LEMONSQUEEZY_SMALL_BUNDLE_VARIANT_ID: process.env.LEMONSQUEEZY_SMALL_BUNDLE_VARIANT_ID,
+        LEMONSQUEEZY_LARGE_BUNDLE_VARIANT_ID: process.env.LEMONSQUEEZY_LARGE_BUNDLE_VARIANT_ID,
         ANTHROPIC_API_KEY: process.env.ANTHROPIC_API_KEY,
         ANTHROPIC_MODEL: process.env.ANTHROPIC_MODEL,
         ANTHROPIC_MAX_TOKENS: process.env.ANTHROPIC_MAX_TOKENS,
@@ -165,10 +171,7 @@ export const env = createEnv({
         UPSTASH_REDIS_REST_TOKEN: process.env.UPSTASH_REDIS_REST_TOKEN,
         RATE_LIMIT_RPM: process.env.RATE_LIMIT_RPM,
         RATE_LIMIT_WINDOW: process.env.RATE_LIMIT_WINDOW,
-        EMAIL_PROVIDER: process.env.EMAIL_PROVIDER,
-        EMAIL_API_KEY: process.env.EMAIL_API_KEY,
-        EMAIL_FROM_ADDRESS: process.env.EMAIL_FROM_ADDRESS,
-        EMAIL_FROM_NAME: process.env.EMAIL_FROM_NAME,
+        ZEPTOMAIL_SMTP_TOKEN: process.env.ZEPTOMAIL_SMTP_TOKEN,
         DEBUG: process.env.DEBUG,
         SKIP_AUTH: process.env.SKIP_AUTH,
         MOCK_AI_RESPONSES: process.env.MOCK_AI_RESPONSES,

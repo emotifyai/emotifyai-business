@@ -48,6 +48,9 @@ export async function updateSession(request: NextRequest) {
     )
 
     // Auth routes (redirect away if already authenticated)
+    // Note: /update-password is intentionally excluded — an authenticated
+    // session is required to call supabase.auth.updateUser() after clicking
+    // the password-reset email link.
     const authPaths = ['/login', '/signup']
     const isAuthPath = authPaths.some((path) =>
         request.nextUrl.pathname.startsWith(path)

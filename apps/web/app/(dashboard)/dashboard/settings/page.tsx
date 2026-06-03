@@ -1,12 +1,15 @@
 'use client'
 
+import Link from 'next/link'
 import { useUser } from '@/lib/hooks/use-auth'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@emotifyai/ui'
+import { Button } from '@emotifyai/ui'
 import { Label } from '@emotifyai/ui'
 import { Switch } from '@emotifyai/ui'
 import { Skeleton } from '@emotifyai/ui'
 import { DeleteAccountDialog } from '@/components/settings/delete-account-dialog'
 import { ProfileSettingsForm } from '@/components/settings/profile-settings-form'
+import { KeyRound } from 'lucide-react'
 
 export default function SettingsPage() {
     const { data: user, isLoading } = useUser()
@@ -60,6 +63,31 @@ export default function SettingsPage() {
                                 </p>
                             </div>
                             <Switch defaultChecked />
+                        </div>
+                    </CardContent>
+                </Card>
+
+                <Card>
+                    <CardHeader>
+                        <CardTitle>الأمان</CardTitle>
+                        <CardDescription>
+                            إدارة كلمة المرور وإعدادات الحساب الأمنية
+                        </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="flex items-center justify-between gap-4">
+                            <div className="space-y-0.5">
+                                <p className="text-sm font-medium">كلمة المرور</p>
+                                <p className="text-sm text-muted-foreground">
+                                    غيّر كلمة المرور الخاصة بحسابك
+                                </p>
+                            </div>
+                            <Button variant="outline" size="sm" asChild>
+                                <Link href="/reset-password" className="flex items-center gap-2">
+                                    <KeyRound className="h-4 w-4" />
+                                    تغيير كلمة المرور
+                                </Link>
+                            </Button>
                         </div>
                     </CardContent>
                 </Card>
