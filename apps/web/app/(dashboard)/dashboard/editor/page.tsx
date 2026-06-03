@@ -98,8 +98,8 @@ export default function EditorPage() {
   const creditsRemaining =
     usage?.credits_remaining ?? subscription?.credits_remaining
   const creditsLimit =
-    subscription?.credits_limit ??
     (usage != null ? usage.credits_used + usage.credits_remaining : undefined) ??
+    subscription?.credits_limit ??
     REGISTERED_FREE_CREDIT_TOTAL
   const totalCredits =
     creditsLimit > 0 ? creditsLimit : creditsUsed + (creditsRemaining ?? 0)

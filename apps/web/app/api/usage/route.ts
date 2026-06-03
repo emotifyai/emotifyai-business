@@ -80,29 +80,18 @@ export async function GET(request: NextRequest) {
         } else {
             // Return usage statistics
             
-            // First get subscription data
-            const subscriptionResponse = await fetch(`${url.origin}/api/subscription`, {
-                headers: {
-                    'Authorization': request.headers.get('Authorization') || '',
-                    'Cookie': request.headers.get('Cookie') || ''
-                }
-            })
+            // Get total credit status using the database RPC
+            const { data: creditStatus, error: creditError } = await (supabase as any)
+                .rpc('get_user_credit_status', { user_uuid: user.id })
+                .single()
             
-            if (!subscriptionResponse.ok) {
+            if (creditError) {
                 return NextResponse.json({
                     success: false,
                     error: {
                         code: 'SUBSCRIPTION_ERROR',
-                        message: 'Failed to fetch subscription data'
+                        message: 'Failed to fetch credit status'
                     }
-                }, { status: 500 })
-            }
-
-            const subscriptionData = await subscriptionResponse.json()
-            if (!subscriptionData.success) {
-                return NextResponse.json({
-                    success: false,
-                    error: subscriptionData.error
                 }, { status: 500 })
             }
 
@@ -155,9 +144,9 @@ export async function GET(request: NextRequest) {
                 success: true,
                 data: {
                     total_enhancements: totalResult.count ?? 0,
-                    credits_used: subscriptionData.data.credits_used,
-                    credits_remaining: subscriptionData.data.credits_remaining,
-                    reset_date: subscriptionData.data.credits_reset_date,
+                    credits_used: creditStatus.credits_used,
+                    credits_remaining: creditStatus.credits_remaining,
+                    reset_date: creditStatus.credits_reset_date,
                     daily_usage: dailyResult.count ?? 0,
                     weekly_usage: weeklyResult.count ?? 0,
                     monthly_usage: monthlyResult.count ?? 0,
