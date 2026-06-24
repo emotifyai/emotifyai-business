@@ -2,7 +2,7 @@ import { Header } from '@/components/layout/header'
 import { Footer } from '@/components/layout/footer'
 import { Button } from '@emotifyai/ui'
 import { Card, CardHeader, CardTitle, CardDescription } from '@emotifyai/ui'
-import { Sparkles, Zap, Globe, Shield } from 'lucide-react'
+import { Sparkles, Zap, Globe, Shield, Layers, Heart, Users, MessageSquareQuote } from 'lucide-react'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { LandingHero } from '@/components/landing-hero'
@@ -14,6 +14,26 @@ export default async function Home() {
   const isAuthenticated = !!user
 
   const features = [
+    {
+  icon: Layers,
+  title: 'محرّك مبني، لا مجرّد ذكاء اصطناعي',
+  description: 'نظام طبقات صُقل عبر أشهر على منتجات خليجية حقيقية، ولا يزال يتطوّر — محرّك بُني ليكتب كما يكتب أمهر كاتب يعرف عميلك',
+},
+{
+  icon: Heart,
+  title: 'نكتب حيث يُتّخذ القرار',
+  description: 'قرار الشراء عاطفي قبل أن يكون منطقياً — مبدأ أثبتته أبحاث علم الأعصاب. لا نصف منتجك، بل نخاطب لحظة القرار',
+},
+{
+  icon: Users,
+  title: 'أربع نفسيات خليجية، لا قالب واحد',
+  description: 'لكل عميل دافع مختلف — الفخر، الطمأنينة، التميّز، الانتماء. نخاطب ما يحرّك عميلك، لا نصاً عاماً يصلح للكل ولا يقنع أحداً',
+},
+{
+  icon: MessageSquareQuote,
+  title: 'الكلمة أقوى سلاح للبيع',
+  description: 'منذ فجر الحضارات، الكلمة تُقنع وتُحرّك — قبل الصورة وقبل الفيديو. كل كلمة في مخرجاتنا مختارة لتخاطب قرار الشراء',
+},
     {
       icon: Sparkles,
       title: 'مدعوم بالذكاء الاصطناعي',
