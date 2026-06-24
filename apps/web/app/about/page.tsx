@@ -2,11 +2,11 @@ import { Metadata } from 'next'
 import { Header } from '@/components/layout/header'
 import { Footer } from '@/components/layout/footer'
 import { Card, CardContent } from '@emotifyai/ui'
-import { Sparkles, Target, Zap, Shield, Globe, Users } from 'lucide-react'
+import { Sparkles, Target, Zap, Globe, Heart, MessageSquareQuote } from 'lucide-react'
 
 export const metadata: Metadata = {
     title: 'من نحن - EmotifyAI',
-    description: 'تعرّف على EmotifyAI ورسالتنا في تحسين الكتابة بالذكاء الاصطناعي',
+    description: 'قصة إيموتيفاي: أداة متخصصة في النص الخليجي العاطفي الذي يبيع، بناها مصطفى راتب لتجار المتاجر الخليجية',
 }
 
 export default function AboutPage() {
@@ -21,10 +21,10 @@ export default function AboutPage() {
                                 <Sparkles className="h-8 w-8 text-primary" />
                             </div>
                             <h1 className="mb-3 text-3xl font-bold tracking-tight sm:mb-4 sm:text-4xl md:text-5xl">
-                                عن EmotifyAI
+                                من أنا
                             </h1>
                             <p className="text-base text-muted-foreground sm:text-xl">
-                                نرفع مستوى كتابتك بقوة الذكاء الاصطناعي، ونجعل التواصل أسهل للجميع.
+                                أنا مصطفى راتب، مؤسس إيموتيفاي. وهذه قصة الأداة التي بنيتها لتكتب نصاً خليجياً عاطفياً يبيع.
                             </p>
                         </div>
                     </div>
@@ -39,9 +39,9 @@ export default function AboutPage() {
                                         <Target className="h-6 w-6 text-primary" />
                                     </div>
                                     <div className="flex-1">
-                                        <h2 className="text-2xl font-bold mb-4">رسالتنا</h2>
+                                        <h2 className="text-2xl font-bold mb-4">البداية</h2>
                                         <p className="text-lg text-muted-foreground leading-relaxed">
-                                            نؤمن أن اللغة لا يجب أن تكون حاجزاً أمام التواصل الفعّال. سواء كنت تكتب بريداً مهماً أو وثيقة تقنية أو نصاً إبداعياً، تساعدك EmotifyAI على إيجاد الكلمات المناسبة فوراً — بالعربية أو الإنجليزية أو الفرنسية.
+                                            قبل سنة، لم أكن أحداً في هذا المجال. لا شهادة في البرمجة، ولا خلفية في الذكاء الاصطناعي. مجرد شخص يؤمن بشيء واحد: أن الكلمة، حين تُكتب صح، تحرّك الناس وتدفعهم للشراء.
                                         </p>
                                     </div>
                                 </div>
@@ -55,25 +55,30 @@ export default function AboutPage() {
                                         <Zap className="h-6 w-6 text-blue-500" />
                                     </div>
                                     <div className="flex-1">
-                                        <h2 className="text-2xl font-bold mb-4">كيف يعمل</h2>
+                                        <h2 className="text-2xl font-bold mb-4">الفجوة التي دفعتني</h2>
+                                        <p className="text-muted-foreground leading-relaxed">
+                                            أدوات الذكاء الاصطناعي العامة تتقن الإنجليزية، لكنها تتعثّر أمام العربية — النبرة، الإحساس، والطريقة التي يشتري بها الناس في منطقتنا فعلاً. كنت أرى تاجراً عنده منتج ممتاز، لكن وصفه بارد: «صحيح، وغير مقنع». المنتج يستاهل، لكن الكلمة خذلته. فقرّرت أبني الأداة التي تسدّ هذه الفجوة.
+                                        </p>
+                                    </div>
+                                </div>
+                            </CardContent>
+                        </Card>
+
+                        <Card>
+                            <CardContent className="pt-6">
+                                <div className="flex items-start gap-4">
+                                    <div className="rounded-lg bg-orange-500/10 p-2">
+                                        <Sparkles className="h-6 w-6 text-orange-500" />
+                                    </div>
+                                    <div className="flex-1">
+                                        <h2 className="text-2xl font-bold mb-4">الطريق لم يكن مستقيماً</h2>
                                         <div className="space-y-4">
                                             <p className="text-muted-foreground leading-relaxed">
-                                                تعتمد EmotifyAI على ذكاء اصطناعي متقدم يفهم سياق كتابتك ودقائها.
+                                                أخطأت في أول نسخة. بنيتها للديسكتوب، بينما جمهوري — تجار المتاجر الخليجيون — يديرون تجارتهم من جوالهم، وهم واقفون في مستودع أو بين اجتماعين. فرجعت من الصفر وبنيتها للجوال أولاً. وبدأتها كإضافة متصفح، ثم اكتشفت أن الإطار أضيق من الطموح، فأعدت بناءها تطبيق ويب كاملاً.
                                             </p>
-                                            <div className="grid gap-4 md:grid-cols-2">
-                                                <div className="rounded-lg border bg-card p-4">
-                                                    <h3 className="font-semibold mb-2">إضافة المتصفح</h3>
-                                                    <p className="text-sm text-muted-foreground">
-                                                        تندمج بسلاسة في سير عملك لتُحسّن النص مباشرة حيث تكتب.
-                                                    </p>
-                                                </div>
-                                                <div className="rounded-lg border bg-card p-4">
-                                                    <h3 className="font-semibold mb-2">لوحة التحكم</h3>
-                                                    <p className="text-sm text-muted-foreground">
-                                                        أدِر اشتراكك، تتبّع الاستخدام، واطّلع على مفاتيح API من مكان واحد.
-                                                    </p>
-                                                </div>
-                                            </div>
+                                            <p className="text-muted-foreground leading-relaxed">
+                                                كل فشل لسعني، وكل فشل علّمني ما لا يعلّمه أي فصل دراسي. تعلّمت السوق لأني عشت فيه، درست المنافسين والفجوات التي لا يملؤها أحد، وبنيت قلب المنتج بيدي — محرّك يجعل الكلمات تخرج إنسانية، لا مترجمة.
+                                            </p>
                                         </div>
                                     </div>
                                 </div>
@@ -87,27 +92,10 @@ export default function AboutPage() {
                                         <Globe className="h-6 w-6 text-green-500" />
                                     </div>
                                     <div className="flex-1">
-                                        <h2 className="text-2xl font-bold mb-4">تميّز متعدد اللغات</h2>
-                                        <p className="text-muted-foreground leading-relaxed mb-4">
-                                            تتخصص EmotifyAI في ثلاث لغات بجودة عالية تناسب خصائص كل لغة:
+                                        <h2 className="text-2xl font-bold mb-4">ليش خليجي عاطفي تحديداً</h2>
+                                        <p className="text-muted-foreground leading-relaxed">
+                                            لأن النص الذي يبيع في الخليج يحتاج أن يخاطب لهجة عميلك ونفسيّته، لا عربية فصيحة باردة. إيموتيفاي ليس أداة عامة تكتب بأي لغة لأي أحد؛ هو متخصص في شيء واحد ويتقنه: النص الخليجي العاطفي الذي يلمس قرار الشراء — مضبوط على كيف يفكّر العميل الخليجي، وكيف يشعر.
                                         </p>
-                                        <div className="grid gap-3 md:grid-cols-3">
-                                            <div className="rounded-lg border bg-card p-4 text-center">
-                                                <div className="text-2xl font-bold mb-1">🇬🇧</div>
-                                                <div className="font-semibold">الإنجليزية</div>
-                                                <div className="text-xs text-muted-foreground">احترافي وإبداعي</div>
-                                            </div>
-                                            <div className="rounded-lg border bg-card p-4 text-center">
-                                                <div className="text-2xl font-bold mb-1">🇸🇦</div>
-                                                <div className="font-semibold">العربية</div>
-                                                <div className="text-xs text-muted-foreground">يدعم RTL</div>
-                                            </div>
-                                            <div className="rounded-lg border bg-card p-4 text-center">
-                                                <div className="text-2xl font-bold mb-1">🇫🇷</div>
-                                                <div className="font-semibold">الفرنسية</div>
-                                                <div className="text-xs text-muted-foreground">رسمي وعفوي</div>
-                                            </div>
-                                        </div>
                                     </div>
                                 </div>
                             </CardContent>
@@ -117,39 +105,13 @@ export default function AboutPage() {
                             <CardContent className="pt-6">
                                 <div className="flex items-start gap-4">
                                     <div className="rounded-lg bg-purple-500/10 p-2">
-                                        <Shield className="h-6 w-6 text-purple-500" />
+                                        <Heart className="h-6 w-6 text-purple-500" />
                                     </div>
                                     <div className="flex-1">
-                                        <h2 className="text-2xl font-bold mb-4">الخصوصية أولاً</h2>
-                                        <p className="text-muted-foreground leading-relaxed mb-4">
-                                            نأخذ خصوصيتك على محمل الجد. صُممت EmotifyAI بمنهج أمان أولاً:
+                                        <h2 className="text-2xl font-bold mb-4">ما أؤمن به</h2>
+                                        <p className="text-muted-foreground leading-relaxed">
+                                            الكلمة أقدم سلاح نملكه. الحضارات قامت عليها، والصفقات تُغلق بها. وحتى اليوم، بكل تقنياتنا وآلاتنا الذكية، لم يحلّ شيء محلّ جملة تجعل الإنسان يشعر. الذكاء الاصطناعي لم يقتل الكلمة — بل جعل من يتقن استخدامها أثمن من أي وقت مضى.
                                         </p>
-                                        <ul className="space-y-2">
-                                            <li className="flex items-start gap-2">
-                                                <div className="mt-1 h-1.5 w-1.5 rounded-full bg-purple-500 flex-shrink-0" />
-                                                <span className="text-sm text-muted-foreground">
-                                                    <strong className="text-foreground">لا تخزين للنص:</strong> لا نحفظ النص المحسّن على خوادمنا
-                                                </span>
-                                            </li>
-                                            <li className="flex items-start gap-2">
-                                                <div className="mt-1 h-1.5 w-1.5 rounded-full bg-purple-500 flex-shrink-0" />
-                                                <span className="text-sm text-muted-foreground">
-                                                    <strong className="text-foreground">معالجة آمنة:</strong> يُعالَج النص بأمان ولا يُستخدم لتدريب نماذج الذكاء الاصطناعي
-                                                </span>
-                                            </li>
-                                            <li className="flex items-start gap-2">
-                                                <div className="mt-1 h-1.5 w-1.5 rounded-full bg-purple-500 flex-shrink-0" />
-                                                <span className="text-sm text-muted-foreground">
-                                                    <strong className="text-foreground">بدون تتبّع:</strong> لا نتتبع سجل تصفحك أو نشاطك
-                                                </span>
-                                            </li>
-                                            <li className="flex items-start gap-2">
-                                                <div className="mt-1 h-1.5 w-1.5 rounded-full bg-purple-500 flex-shrink-0" />
-                                                <span className="text-sm text-muted-foreground">
-                                                    <strong className="text-foreground">تشفير:</strong> جميع الاتصالات مشفّرة بمعايير صناعية
-                                                </span>
-                                            </li>
-                                        </ul>
                                     </div>
                                 </div>
                             </CardContent>
@@ -158,32 +120,14 @@ export default function AboutPage() {
                         <Card>
                             <CardContent className="pt-6">
                                 <div className="flex items-start gap-4">
-                                    <div className="rounded-lg bg-orange-500/10 p-2">
-                                        <Users className="h-6 w-6 text-orange-500" />
+                                    <div className="rounded-lg bg-primary/10 p-2">
+                                        <MessageSquareQuote className="h-6 w-6 text-primary" />
                                     </div>
                                     <div className="flex-1">
-                                        <h2 className="text-2xl font-bold mb-4">من نخدم</h2>
-                                        <p className="text-muted-foreground leading-relaxed mb-4">
-                                            بُنيت EmotifyAI لكل من يكتب:
+                                        <h2 className="text-2xl font-bold mb-4">وعدي لك</h2>
+                                        <p className="text-muted-foreground leading-relaxed">
+                                            ما زلت أبني، وما زلت أتعلّم. وأنا هنا، خلف الأداة، أسمع منك وأطوّرها معك. إذا كنت تبيع أونلاين وحسّيت أن وصف منتجك «صحيح، وغير مقنع» — جرّب إيموتيفاي، وقل لي رأيك.
                                         </p>
-                                        <div className="grid gap-3 sm:grid-cols-2">
-                                            <div className="rounded-lg border bg-card p-3">
-                                                <div className="font-semibold text-sm mb-1">المحترفون</div>
-                                                <div className="text-xs text-muted-foreground">رسائل ووثائق مصقولة</div>
-                                            </div>
-                                            <div className="rounded-lg border bg-card p-3">
-                                                <div className="font-semibold text-sm mb-1">الطلاب</div>
-                                                <div className="text-xs text-muted-foreground">تحسين المقالات والواجبات</div>
-                                            </div>
-                                            <div className="rounded-lg border bg-card p-3">
-                                                <div className="font-semibold text-sm mb-1">صنّاع المحتوى</div>
-                                                <div className="text-xs text-muted-foreground">مقالات ومنشورات أقوى</div>
-                                            </div>
-                                            <div className="rounded-lg border bg-card p-3">
-                                                <div className="font-semibold text-sm mb-1">غير الناطقين الأصليين</div>
-                                                <div className="text-xs text-muted-foreground">اكتب بثقة بأي لغة</div>
-                                            </div>
-                                        </div>
                                     </div>
                                 </div>
                             </CardContent>
