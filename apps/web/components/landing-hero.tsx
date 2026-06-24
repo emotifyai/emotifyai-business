@@ -43,25 +43,7 @@ const DEMO_PAIRS: TextDemoPair[] = [
     output:
       'قدام المرآة تعدّل الكتف وتبتسم — القطن يتشكّل معك مو ضدّك. صديقتك أول ما تشوفها تسأل من وين. تفصيل مخفي يخلي الخياطة ما تبان برّا، ومقاسات من 52 إلى 60. لما تلبسينها مو نفس العبايات اللي عندك في الخزانة.',
   },
-  {
-    lang: 'en',
-    input: "Men's EDP, oud and amber base, 8-hour wear, 100ml bottle",
-    output:
-      'You catch your reflection before you leave — one pass at your neck and you are set. The oud shows up in the room before you do; amber stays through the last handshake. Not a scent that fades by lunch — eight hours on skin. 100ml.',
-  },
-  {
-    lang: 'en',
-    input: 'Wireless earbuds, active noise canceling, 30 hours with charging case',
-    output:
-      'You put them in on the flight — and hear the track the way it was meant the first time. The cabin hum drops without you toggling anything; the case still has charge when you land. Thirty hours total before you think about a cable again.',
-  },
-  {
-    lang: 'fr',
-    input: 'Parfum homme EDP, notes oud et ambre, tenue 8 heures, flacon 100 ml',
-    output:
-      'Avant de fermer la porte — un passage sur le cou et c’est réglé. L’oud se fait remarquer dans la pièce avant que vous parliez ; l’ambre reste jusqu’à la dernière poignée de main. Pas un parfum qui s’éteint à midi — huit heures sur la peau. 100 ml.',
-  },
-]
+ ]
 
 const DEFAULT_CONFIG: EditorEnhanceConfig = {
   tone: 'marketing',
