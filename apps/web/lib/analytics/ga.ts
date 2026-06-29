@@ -1,6 +1,7 @@
 'use client'
 
 import { sendGAEvent } from '@next/third-parties/google'
+import { TIER_DEFINITIONS, type SubscriptionTierId } from '@emotifyai/config/pricing'
 
 function isGADebugMode(): boolean {
   if (process.env.NODE_ENV === 'development') return true
@@ -59,4 +60,27 @@ export function trackUpgradeClicked(source?: string): void {
 
 export function trackBundlePurchased(tier: string): void {
   trackGAEvent('bundle_purchased', { tier })
+}
+
+/**
+ * Purchase completed — fires the standard GA4 `purchase` event.
+ * Reads the fixed USD price from pricing config based on tier.
+ */
+export function trackPurchase(tier: SubscriptionTierId, transactionId: string): void {
+  const def = TIER_DEFINITIONS[tier]
+  if (!def) return
+
+  trackGAEvent('purchase', {
+    transaction_id: transactionId,
+    value: def.priceUsd,
+    currency: 'USD',
+    items: [
+      {
+        item_id: tier,
+        item_name: def.labelEn,
+        price: def.priceUsd,
+        quantity: 1,
+      },
+    ],
+  })
 }
