@@ -6,7 +6,7 @@ import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { Button, Card, CardContent, LoadingSpinner } from '@emotifyai/ui'
 import { CheckCircle2, PartyPopper } from 'lucide-react'
-import { trackBundlePurchased } from '@/lib/analytics/ga'
+import { trackPurchase } from '@/lib/analytics/ga'
 import { isBundleTier, type SubscriptionTierId } from '@emotifyai/config/pricing'
 import { fireSchoolPrideConfetti } from '@/lib/confetti'
 
@@ -18,7 +18,7 @@ export default function ThankYouPage() {
   const tier = searchParams.get('tier')
   const orderId = searchParams.get('order_id')
   const [verifyState, setVerifyState] = useState<VerifyState>('loading')
-  const bundleTracked = useRef(false)
+  const purchaseTracked = useRef(false)
   const confettiFired = useRef(false)
 
   // Guard: if there's no order_id, this page is being accessed directly — redirect away
@@ -61,14 +61,10 @@ export default function ThankYouPage() {
           setVerifyState('verified')
           const resolvedTier = data.tier ?? tier ?? undefined
 
-          if (
-            data.isBundle &&
-            resolvedTier &&
-            isBundleTier(resolvedTier as SubscriptionTierId) &&
-            !bundleTracked.current
-          ) {
-            bundleTracked.current = true
-            trackBundlePurchased(resolvedTier)
+         // حدث purchase موحّد لكل عملية شراء (شهري + حزمة) — مرة واحدة فقط
+          if (resolvedTier && orderId && !purchaseTracked.current) {
+            purchaseTracked.current = true
+            trackPurchase(resolvedTier as SubscriptionTierId, orderId)
           }
         } else if (data.pending) {
           setVerifyState('pending')
