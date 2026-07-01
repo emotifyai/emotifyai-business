@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { Button, Card, CardContent, LoadingSpinner } from '@emotifyai/ui'
@@ -13,7 +12,6 @@ import { fireSchoolPrideConfetti } from '@/lib/confetti'
 type VerifyState = 'loading' | 'verified' | 'pending' | 'failed'
 
 export default function ThankYouPage() {
-  const router = useRouter()
   const searchParams = useSearchParams()
   const tier = searchParams.get('tier')
   const orderId = searchParams.get('order_id')
@@ -21,16 +19,7 @@ export default function ThankYouPage() {
   const purchaseTracked = useRef(false)
   const confettiFired = useRef(false)
 
-  // Guard: if there's no order_id, this page is being accessed directly — redirect away
   useEffect(() => {
-    if (!orderId) {
-      router.replace('/pricing')
-    }
-  }, [orderId, router])
-
-  useEffect(() => {
-    if (!orderId) return // guarded above
-
     let cancelled = false
 
     async function verifyPayment() {
@@ -55,16 +44,18 @@ export default function ThankYouPage() {
           pending?: boolean
           isBundle?: boolean
           tier?: string
+          lemonSqueezyId?: string
         }
 
         if (data.verified) {
           setVerifyState('verified')
           const resolvedTier = data.tier ?? tier ?? undefined
+          const transactionId = orderId ?? data.lemonSqueezyId ?? undefined
 
-         // حدث purchase موحّد لكل عملية شراء (شهري + حزمة) — مرة واحدة فقط
-          if (resolvedTier && orderId && !purchaseTracked.current) {
+          // حدث purchase موحّد لكل عملية شراء (شهري + حزمة) — مرة واحدة فقط
+          if (resolvedTier && transactionId && !purchaseTracked.current) {
             purchaseTracked.current = true
-            trackPurchase(resolvedTier as SubscriptionTierId, orderId)
+            trackPurchase(resolvedTier as SubscriptionTierId, transactionId)
           }
         } else if (data.pending) {
           setVerifyState('pending')
@@ -92,9 +83,6 @@ export default function ThankYouPage() {
   }, [verifyState])
 
   const isBundle = tier ? isBundleTier(tier as SubscriptionTierId) : false
-
-  // Still loading or no order_id — show nothing (will redirect)
-  if (!orderId) return null
 
   return (
     <main className="page-container flex min-h-dvh flex-col items-center justify-center py-16" dir="rtl">
